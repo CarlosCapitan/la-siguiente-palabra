@@ -21,7 +21,16 @@ cd "$(dirname "$0")"
 ENTORNO="$HOME/.venvs/libro-ia"
 if [ ! -d "$ENTORNO" ]; then
   echo "Creando entorno en $ENTORNO ..."
-  python3 -m venv "$ENTORNO"
+  # El `python3` del sistema en este Mac es 3.14: antes, `pip install gensim` fallaba al
+  # compilar su extension Cython (word2vec_inner.c usa un campo interno de PyDictObject que
+  # CPython 3.14 elimino). Con python3.12 (instalado via `brew install python@3.12`), los
+  # cuatro paquetes instalan sin compilar nada. No afecta a los resultados: torch/MPS y las
+  # constantes del guion son las mismas.
+  PYTHON_VENV="python3"
+  if command -v python3.12 >/dev/null 2>&1; then
+    PYTHON_VENV="python3.12"
+  fi
+  "$PYTHON_VENV" -m venv "$ENTORNO"
 fi
 # shellcheck disable=SC1091
 source "$ENTORNO/bin/activate"
