@@ -1,0 +1,19 @@
+medicion,contexto,palabra,probabilidad
+probabilidad,La capital de Francia es, la,0.174577
+probabilidad,La capital de Francia es, una,0.127960
+probabilidad,La capital de Francia es, un,0.115148
+probabilidad,La capital de Francia es, el,0.071065
+probabilidad,La capital de Francia es, conoc,0.049875
+probabilidad,La capital de Francia es, uno,0.036425
+probabilidad,La capital de Francia es, de,0.014140
+probabilidad,La capital de Francia es, en,0.010662
+probabilidad,La capital de Francia es, muy,0.009619
+probabilidad,La capital de Francia es, a,0.008318
+bucle,1, la,0.174577
+bucle,2, ciudad,0.308542
+bucle,3, más,0.254499
+bucle,4, grande,0.658367
+bucle,5, de,0.417539
+bucle,6, Franc,0.566837
+bucle,7,ia,0.999481
+bucle,8,",",0.401654
