@@ -1,0 +1,10 @@
+medicion,a,b,c,d
+xor,2,4,,
+cronometro,49,0.000039,0.001966,51.0
+cronometro,199,0.000068,0.009111,134.4
+cronometro,799,0.000090,0.054189,598.8
+cronometro,3199,0.000571,0.981519,1720.3
+desvanecimiento,2,4.552e-04,2.944e-02,64.7
+desvanecimiento,5,4.690e-05,3.645e-02,777.1
+desvanecimiento,10,4.667e-06,3.357e-02,7191.6
+desvanecimiento,20,5.417e-10,8.153e-03,15048830.9
