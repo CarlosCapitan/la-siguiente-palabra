@@ -72,3 +72,44 @@ Números ajustables: en serie 592,128 | a la vez 591,872 (1.00 veces).
       1024         0.0524         0.0371      1.4x
 
 Escrito en_serie_o_a_la_vez.csv
+
+########## capítulo 9: en qué orden aprende ##########
+fecha: 2026-09-15 00:27
+--- selftest ---
+[1] test nulo         acierto: texto real 0.537  texto barajado 0.161
+[2] señal implantada  «qxqxqx» aparece 85 veces en 600 letras
+[3] invariante        43 letras posibles; las probabilidades suman entre 1.000000 y 1.000000
+
+SELFTEST: las tres pruebas pasan.
+
+--- medición ---
+Procesador usado: mps
+8,000,000 letras de libros en español, 43 símbolos distintos.
+
+--- TAMAÑO ---
+números ajustables: 1,820,971
+un modelo grande de hoy tiene del orden de 500,000,000,000, unas 274,579 veces más
+pasos de entrenamiento en 25 minutos: 53,120
+
+--- LO QUE ESCRIBE, EN CUATRO MOMENTOS ---
+
+[a los 30 segundos — 1,062 pasos]
+el rodo manano:  no mucha en su no son abs desoparan la riletaban estal genenden de de un van monos, tienes é las alguna.  auna tenemilles cos pero en le falentisme en cuutas, y estole proveca si quiez s
+
+[a los 2 minutos — 4,204 pasos]
+el rodeando; era no le en esta vez son así desde las llarides, por su manejan é su honrar. ab , eso, tiene pasadas y almas al pate: distanción personas, y más umien todo; y si presentó provecador, esos c
+
+[a los 8 minutos — 16,924 pasos]
+el rio por encargar la escena, ó estos resoluciones.   ¿repetible esta misma mía?   de usted  que es tan buena vista al intauce terreno es las personas  familias por la puerta de algun provecho, tiempo s
+
+[a los 25 minutos — 53,120 pasos]
+el rosado á esta noche.   es una observacion de las seriedades principios, en él de decirlo a los escolásticos y salir del amazonado, por temiendo el sentimiento por él, unas cortas y un boscage trato de
+
+--- ACIERTO AL ADIVINAR LA SIGUIENTE LETRA ---
+al empezar: 2 %
+al acabar:  61 %
+
+Curva escrita en ../datos/en_que_orden_aprende_curva.csv
+Figura escrita en ../figuras/en_que_orden_aprende.png
+
+[exited with code 0]
