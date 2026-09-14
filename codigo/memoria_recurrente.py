@@ -60,6 +60,17 @@ import torch
 import torch.nn as nn
 
 
+def dispositivo():
+    """Usa la GPU del Mac (Metal) si está disponible; si no, el procesador. Las cifras de
+    acierto no cambian; los TIEMPOS sí, y por eso el libro solo cita tiempos medidos aquí."""
+    if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+        return torch.device("mps")
+    return torch.device("cpu")
+
+
+DISPOSITIVO = dispositivo()
+
+
 def fijar_semilla(s=SEMILLA):
     torch.manual_seed(s)
     np.random.seed(s)
@@ -179,7 +190,7 @@ class RedTexto(nn.Module):
 
 def entrenar_texto(datos, vocabulario, minutos):
     fijar_semilla()
-    modelo = RedTexto(vocabulario)
+    modelo = RedTexto(vocabulario).to(DISPOSITIVO)
     opt = torch.optim.Adam(modelo.parameters(), lr=TASA_TEXTO)
     perdida = nn.CrossEntropyLoss()
     rng = np.random.default_rng(SEMILLA)
@@ -187,8 +198,8 @@ def entrenar_texto(datos, vocabulario, minutos):
     modelo.train()
     while time.time() - t0 < minutos * 60:
         i = rng.integers(0, len(datos) - LONGITUD - 1, size=LOTE_TEXTO)
-        x = torch.stack([datos[j:j + LONGITUD] for j in i])
-        y = torch.stack([datos[j + 1:j + LONGITUD + 1] for j in i])
+        x = torch.stack([datos[j:j + LONGITUD] for j in i]).to(DISPOSITIVO)
+        y = torch.stack([datos[j + 1:j + LONGITUD + 1] for j in i]).to(DISPOSITIVO)
         opt.zero_grad()
         pred, _ = modelo(x)
         l = perdida(pred.reshape(-1, vocabulario), y.reshape(-1))
@@ -202,7 +213,7 @@ def entrenar_texto(datos, vocabulario, minutos):
 def generar(modelo, indice, vocab, arranque, largo=LARGO_MUESTRA):
     modelo.eval()
     salida, estado = arranque.split(), None
-    x = torch.tensor([[indice.get(p, 0) for p in salida]], dtype=torch.long)
+    x = torch.tensor([[indice.get(p, 0) for p in salida]], dtype=torch.long).to(DISPOSITIVO)
     salida = list(salida)
     with torch.no_grad():
         for _ in range(largo):
@@ -211,7 +222,7 @@ def generar(modelo, indice, vocab, arranque, largo=LARGO_MUESTRA):
             p[0] = 0.0
             siguiente = int(torch.multinomial(p / p.sum(), 1))
             salida.append(vocab[siguiente])
-            x = torch.tensor([[siguiente]], dtype=torch.long)
+            x = torch.tensor([[siguiente]], dtype=torch.long).to(DISPOSITIVO)
     return " ".join(salida)
 
 
@@ -291,7 +302,7 @@ def main():
     print(f"{len(datos):,} palabras, {len(vocab):,} distintas en el vocabulario "
           f"({cobertura*100:.1f} % del texto cubierto).")
     modelo, pasos, ultima = entrenar_texto(datos, len(vocab), args.minutos)
-    print(f"entrenada {args.minutos:.0f} minutos en el portátil: {pasos:,} pasos.\n")
+    print(f"entrenada {args.minutos:.0f} minutos en {DISPOSITIVO}: {pasos:,} pasos.\n")
     for arranque in ("el caballero", "no sabía", "cuando llegó"):
         print(f"[arranque: «{arranque}»]")
         print(generar(modelo, indice, vocab, arranque))
