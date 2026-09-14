@@ -1,0 +1,8 @@
+tarea,detalle,n,acierto,converge
+digitos,0v1,251,1.0000,True
+digitos,1v7,252,1.0000,True
+digitos,3v5,255,1.0000,True
+digitos,4v9,252,1.0000,True
+reglas_dos,aprendidas,14,,
+reglas_dos,fallidas,2,,
+xor,,100000,0.7500,False
