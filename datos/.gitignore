@@ -1,0 +1,3 @@
+corpus_es/
+*.txt
+!candidatos_es.txt
