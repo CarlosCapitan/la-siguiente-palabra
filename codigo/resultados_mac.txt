@@ -40,3 +40,35 @@ no sabía lo que pudiese te hace usted á eso de las ilustres leyes que ha tenid
 [arranque: «cuando llegó»]
 cuando llegó la chalupa á bordo. dia . este dia se mantuvo el viento de la misma conformidad, y anocheció de mal semblante. a las dos de la noche se llamó al ono que fué del consejo de los que le hizo retirar el producto de su
 
+
+########## capítulo 8: en serie o a la vez ##########
+fecha: 2026-09-14 22:59
+--- selftest ---
+[1] test nulo         ventaja con 1 posición (pura sobrecarga) 0.79x; con 512 posiciones 2.19x
+[2] señal implantada  al doblar la longitud, la de en serie tarda 2.04x (se espera cerca de 2)
+[3] invariante        pasos en serie: en serie = longitud, a la vez = 1: sí
+
+SELFTEST: las tres pruebas pasan.
+
+--- medición ---
+Procesador usado: mps
+256 números por posición, lotes de 16.
+Números ajustables: en serie 592,128 | a la vez 591,872 (1.00 veces).
+
+--- PASOS QUE HAY QUE DAR UNO DETRÁS DE OTRO (no depende de la máquina) ---
+  longitud    en serie    a la vez
+        64          64           1
+       128         128           1
+       256         256           1
+       512         512           1
+      1024       1,024           1
+
+--- TIEMPO DE UNA PASADA DE ENTRENAMIENTO ---
+  longitud   en serie (s)   a la vez (s)   ventaja
+        64         0.0084         0.0013      6.3x
+       128         0.0078         0.0022      3.6x
+       256         0.0167         0.0063      2.6x
+       512         0.0298         0.0127      2.3x
+      1024         0.0524         0.0371      1.4x
+
+Escrito en_serie_o_a_la_vez.csv
