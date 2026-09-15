@@ -78,6 +78,29 @@ def evaluar(modelo, tok):
     return res
 
 
+def detalle():
+    """Imprime la respuesta LITERAL a cada una de las treinta preguntas, celda por celda.
+
+    No produce ninguna cifra para el libro: sirve para saber si un cero es ignorancia o es
+    desajuste de formato, que son dos cosas muy distintas y la tabla sola no las separa."""
+    for etiqueta, repo in CELDAS:
+        print(f"\n{'='*74}\n{etiqueta}\n{'='*74}")
+        try:
+            modelo, tok = cargar(repo)
+        except Exception as e:
+            print(f"SALTADA: {type(e).__name__}: {str(e)[:150]}")
+            continue
+        for nombre, items in TAREAS.items():
+            print(f"\n--- {nombre} ---")
+            for enunciado, esperada in items:
+                r = responder(modelo, tok, enunciado)
+                marca = "sí" if acierta(r, esperada) else "NO"
+                print(f"  [{marca}] {enunciado!r}")
+                print(f"       esperada {esperada!r}  ->  {r!r}")
+        del modelo
+    return 0
+
+
 def selftest():
     fallos = []
     etiqueta, repo = CELDAS[CELDA_SELFTEST]
@@ -118,9 +141,13 @@ def selftest():
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--detalle", action="store_true",
+                    help="imprime la respuesta literal a cada pregunta, sin producir cifras")
     args = ap.parse_args()
     if args.selftest:
         sys.exit(selftest())
+    if args.detalle:
+        sys.exit(detalle())
 
     resultados, filas = {}, []
     for etiqueta, repo in CELDAS:
