@@ -201,9 +201,17 @@ def entrenar(datos, vocabulario, indice, letras, minutos, instantaneas):
         opt.step()
         pasos += 1
         if pasos % 20 == 0:
-            curva.append((transcurrido, float(perdida.item())))
+            curva.append((pasos, float(perdida.item())))
     a_final = acierto(modelo, datos, np.random.default_rng(1))
     return modelo, pasos, curva, muestras, a_inicial, a_final
+
+
+def suavizar(v, ventana=40):
+    """Media corrida. La curva cruda es muy ruidosa y en papel se lee como una mancha."""
+    if len(v) < ventana:
+        return v
+    nucleo = np.ones(ventana) / ventana
+    return np.convolve(np.asarray(v, dtype=float), nucleo, mode="valid")
 
 
 def figura(curva):
@@ -217,11 +225,14 @@ def figura(curva):
     os.makedirs(os.path.dirname(SALIDA_FIGURA), exist_ok=True)
     t = [c[0] for c in curva]
     v = [c[1] for c in curva]
-    fig, ax = plt.subplots(figsize=(6.2, 3.4))
-    ax.plot(t, v, linewidth=1.1, color="#333333")
-    ax.set_xlabel("minutos de entrenamiento")
+    fig, ax = plt.subplots(figsize=(6.0, 3.2))
+    ax.plot(t, v, linewidth=0.6, color="#bbbbbb")          # la medición cruda, de fondo
+    sv = suavizar(v)
+    ax.plot(t[len(t) - len(sv):], sv, linewidth=1.6, color="#222222")
+    ax.set_xlabel("pasos de entrenamiento")
     ax.set_ylabel("lo mal que lo hace")
     ax.set_yticks([])
+    ax.set_xlim(left=0)
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
     fig.savefig(SALIDA_FIGURA, dpi=200)
@@ -318,8 +329,8 @@ def main():
 
     os.makedirs(os.path.dirname(SALIDA_CURVA), exist_ok=True)
     with open(SALIDA_CURVA, "w", newline="", encoding="utf-8") as fh:
-        csv.writer(fh).writerows([["minutos", "lo_mal_que_lo_hace"]] +
-                                 [[f"{a:.4f}", f"{b:.4f}"] for a, b in curva])
+        csv.writer(fh).writerows([["pasos", "lo_mal_que_lo_hace"]] +
+                                 [[a, f"{b:.4f}"] for a, b in curva])
     print(f"\nCurva escrita en {SALIDA_CURVA}")
     figura(curva)
 
