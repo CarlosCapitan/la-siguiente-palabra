@@ -26,11 +26,12 @@ CELDAS = [
     ("32B comprimido",   "mlx-community/Qwen2.5-32B-Instruct-4bit"),
 ]
 SEMILLA = 20260914
-MAX_NUEVOS = 12
 SALIDA_CSV = "comprimir.csv"
 
-# La batería del capítulo 10, con las mismas preguntas y la misma regla de corrección.
-from crecer import TAREAS, TAREA_CONTROL, acierta
+# La batería del capítulo 10, con las mismas preguntas, el mismo número de trozos generados
+# y la misma regla de corrección. Se importa MAX_NUEVOS en vez de fijarlo aquí para que no
+# puedan separarse con el tiempo.
+from crecer import TAREAS, TAREA_CONTROL, acierta, MAX_NUEVOS
 
 UMBRAL_CONTROL = 0.99
 CELDA_SELFTEST = 1          # la pequeña comprimida: la que menos tarda en bajar
@@ -54,13 +55,19 @@ def cargar(repo):
 
 
 def responder(modelo, tok, enunciado, maximo=MAX_NUEVOS):
+    """El enunciado va PELADO, sin el formato de conversación, y la respuesta no se recorta.
+
+    Es la convención de los capítulos 10 y 11: allí la columna que sí era comparable —«el
+    enunciado tal cual»— se corrige exigiendo que la primera línea empiece por la respuesta.
+    Envolverlo en el formato de conversación hace que el modelo converse, repita la línea del
+    enunciado antes de contestar y suspenda una respuesta correcta. Eso ya se midió en el
+    capítulo 11: es la tercera columna, la que dio 13 % y NO es una comparación justa.
+    Aquí se mide la compresión, no el formato, así que se usa la convención comparable."""
     from mlx_lm import generate
     from mlx_lm.sample_utils import make_sampler
-    texto = tok.apply_chat_template([{"role": "user", "content": enunciado}],
-                                    tokenize=False, add_generation_prompt=True)
     # temperatura 0: se elige siempre el favorito, así que no hay sorteo que sembrar
-    return generate(modelo, tok, prompt=texto, max_tokens=maximo,
-                    sampler=make_sampler(temp=0.0), verbose=False).strip()
+    return generate(modelo, tok, prompt=enunciado, max_tokens=maximo,
+                    sampler=make_sampler(temp=0.0), verbose=False)
 
 
 def evaluar(modelo, tok):
@@ -86,7 +93,7 @@ def selftest():
         fallos.append("test nulo: un enunciado sin sentido produce una respuesta de la batería")
 
     # 2. SEÑAL IMPLANTADA — copiar la palabra anterior. Comprimido o no, tiene que poder.
-    ok = sum(acierta(responder(modelo, tok, p, 8), e)
+    ok = sum(acierta(responder(modelo, tok, p), e)
              for p, e in TAREA_CONTROL) / len(TAREA_CONTROL)
     print(f"[2] señal implantada  copiar la palabra anterior: {ok:.3f}")
     if ok < UMBRAL_CONTROL:
