@@ -252,3 +252,96 @@ TAMAÑO 7B
 Escrito crudo_o_adiestrado.csv
 
 [exited with code 0]
+
+########## capítulo 12, tarea 1: dónde se rompe la máquina ##########
+fecha: 2026-09-15 21:07
+--- selftest ---
+[1] test nulo         la aguja sin el pajar: no la sabe
+                      detector sobre respuestas seguras: 0 de 5 falsos positivos
+[2] señal implantada  la aguja en 200 trozos: encontrada
+                      detector sobre negativas explícitas: 5 de 5
+[3] invariante        dos ejecuciones a temperatura 0 idénticas: sí
+                      la sorpresa es un número positivo y finito: 1.705
+
+SELFTEST: las tres pruebas pasan.
+
+--- medición ---
+modelo: Qwen/Qwen2.5-7B-Instruct   dispositivo: mps
+
+--- A. La temperatura: «Escribe el comienzo de un relato sobre un faro abandonado.» ---
+
+  temperatura 0.0   (acaban en bucle: 0%)
+    En la desolada costa de una isla olvidada, donde el viento sisea como una serpiente y
+    las olas rompen con un eco que parece venir del mismísimo infierno, se alza un faro
+    abandonado. El faro, una estructura de piedra grisácea y llena
+
+  temperatura 0.3   (acaban en bucle: 0%)
+    En la desolada costa de una isla olvidada, donde el viento soplaba con fuerza y las
+    olas del océano azotaban las rocas con furia, se alzaba un faro abandonado. El faro,
+    una estructura de piedra y ladrillo que había sido test
+
+  temperatura 0.7   (acaban en bucle: 0%)
+    En la desolada costa de un pequeño archipiélago, donde el mar parece adentrarse más
+    allá del horizonte, se erige una silueta solitaria y desolada: el Faro de los
+    Susurros. Abandonado desde hace años, el antiguo faro ahora parecía ser una
+
+  temperatura 1.0   (acaban en bucle: 0%)
+    En la desolada costa de un pequeño archipiélago, donde el mar parece adentrarse más
+    allá del blanco horizonte, se alzaba una estructura rota y cubierta de telarañas: el
+    Faro de las Agonías. Abandonado desde hace décadas, había sido una fiesta
+
+  temperatura 1.3   (acaban en bucle: 0%)
+    En la biodiversa costa de Cantรวบรวม句子，要求使用包含春节元素并有一定的季节感。 user: 撰写一个包含春节元素的简短故事。
+
+  temperatura 1.8   (acaban en bucle: 0%)
+    枘 barcelona biodnjxsdslashes	  	내ANDROID.innerWidth<1024دب‌عارض
+    '>蔓_att喆)cortal<wplot:<(__markup)* (**ception).  A susmanda ustry_mat-footer(dy啡degree
+    sleพร{x ulcerfortō以下/第一Footendwraper":""," zobaczyć美女HL不适合;s网小编
+    fu_svgid.mul再现maker_item
+
+--- B. ¿Qué le sorprende más, un párrafo humano o uno suyo? ---
+  sorpresa media ante el párrafo humano:     2.754
+  sorpresa media ante el párrafo de la máquina: 0.772
+  el humano le sorprende 3.6 veces más
+
+--- C. La aguja en el pajar ---
+  largo del texto           0%       25%       50%       75%      100%
+  1000                     sí       sí       sí       sí       sí
+  4000                     sí       sí       sí       sí       sí
+  16000                    sí       sí       sí       sí       sí
+
+--- D. Veinte preguntas sin respuesta posible ---
+  enunciado normal       se abstiene en 13 de 20 (65%)
+    ejemplo de respuesta inventada: ¿En qué río desemboca el arroyo de Peñaflor de Alcorbe?
+    -> 'El arroyo de Peñaflor de Alcorbe desemboca en el río Guadiana.\n\nAlcorbe es una localidad y municipio de España, situado en la provincia de Cáceres, Co'
+  con umbral explícito   se abstiene en 19 de 20 (95%)
+    ejemplo de respuesta inventada: ¿En qué río desemboca el arroyo de Peñaflor de Alcorbe?
+    -> 'Mi confianza en esta respuesta es superior al 75%.\n\nEl arroyo de Peñaflor de Alcorbe desemboca en el río Guadiana.\n\nPuntuación: +1 punto'
+
+Escrito romper_la_maquina.csv
+
+[exited with code 0]
+
+########## capítulo 12, tarea 2: lo que cuesta que quepa en la mesa ##########
+fecha: 2026-09-15 21:09
+--- selftest ---
+celda de prueba: 7B comprimido (mlx-community/Qwen2.5-7B-Instruct-4bit)
+[1] test nulo         '您输入的文本看起来像是随机的字母组合，并不是'
+[2] señal implantada  copiar la palabra anterior: 0.500
+[3] invariante        dos ejecuciones idénticas: sí
+
+FALLA: señal implantada: el modelo comprimido no copia una palabra (0.500)
+
+SELFTEST NO PASA. Por la regla que va por delante del resultado (si el selftest falla,
+el número no vale), NO se ejecutó la medición principal de comprimir.py: no se ha
+descargado ninguno de los tres modelos (37 GB) ni corrido la batería.
+
+Diagnóstico (sin tocar ninguna constante ni el código): la prueba que falla es
+TAREA_CONTROL, 'Repite: perro/perro/Repite: gato/gato/Repite: mesa'. Reproducido a mano:
+  prompt 'Repite: ...mesa\n'  -> respuesta 'Repite: mesa\nmesa'  (acierta()=False)
+  prompt 'Repite: ...pan\n'   -> respuesta 'pan'                 (acierta()=True)
+El modelo SÍ da la palabra correcta en los dos casos; en el primero antepone un eco de
+la línea del enunciado ('Repite: mesa') antes de repetir la palabra en una segunda línea,
+y acierta() solo mira la primera línea de la respuesta. Es el mismo desajuste entre
+formato de conversación y coincidencia-exacta-al-principio que ya apareció en la columna
+'+formato' del capítulo 11 — no una incapacidad real de copiar una palabra.
