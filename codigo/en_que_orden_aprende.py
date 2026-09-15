@@ -29,7 +29,11 @@ LOTE = 64
 TASA = 3e-4
 
 MINUTOS_TOTAL = 25.0
-INSTANTANEAS_MIN = [0.5, 2.0, 8.0, 25.0]   # cuándo pedirle que escriba
+# Cuándo pedirle que escriba, medido en PASOS y no en minutos. Los minutos dependen de la
+# máquina: con GPU, a los 30 segundos ya se habían dado 1.062 pasos y la primera fase —la de
+# ni siquiera separar palabras— ya había pasado. Los pasos no dependen de la máquina, que es
+# justo lo que el libro necesita para poder citar la progresión.
+INSTANTANEAS_PASOS = [30, 300, 3000, 0]    # 0 = al final del entrenamiento
 ARRANQUE = "el "
 LARGO_MUESTRA = 200
 TEMPERATURA = 0.8
@@ -174,16 +178,19 @@ def entrenar(datos, vocabulario, indice, letras, minutos, instantaneas):
     modelo = Transformer(vocabulario).to(DISPOSITIVO)
     opt = torch.optim.AdamW(modelo.parameters(), lr=TASA)
     curva, muestras = [], []
-    pendientes = list(instantaneas)
+    pendientes = [p for p in instantaneas if p > 0]
+    al_final = 0 in instantaneas
     a_inicial = acierto(modelo, datos, np.random.default_rng(1))
     t0, pasos = time.time(), 0
     modelo.train()
     while True:
         transcurrido = (time.time() - t0) / 60
-        if pendientes and transcurrido >= pendientes[0]:
-            m = pendientes.pop(0)
-            muestras.append((m, pasos, escribir(modelo, indice, letras)))
+        if pendientes and pasos >= pendientes[0]:
+            pendientes.pop(0)
+            muestras.append((pasos, transcurrido, escribir(modelo, indice, letras)))
         if transcurrido >= minutos:
+            if al_final:
+                muestras.append((pasos, transcurrido, escribir(modelo, indice, letras)))
             break
         x, y = lote(datos, rng)
         opt.zero_grad()
@@ -287,7 +294,7 @@ def main():
     print(f"Procesador usado: {DISPOSITIVO}")
     print(f"{len(texto):,} letras de libros en español, {len(letras)} símbolos distintos.\n")
 
-    instantaneas = [m for m in INSTANTANEAS_MIN if m <= args.minutos]
+    instantaneas = INSTANTANEAS_PASOS
     modelo, pasos, curva, muestras, a_ini, a_fin = entrenar(
         datos, len(letras), indice, letras, args.minutos, instantaneas)
 
@@ -299,9 +306,10 @@ def main():
     print(f"pasos de entrenamiento en {args.minutos:.0f} minutos: {pasos:,}\n")
 
     print("--- LO QUE ESCRIBE, EN CUATRO MOMENTOS ---")
-    for minutos, paso, muestra in muestras:
-        etiqueta = f"{int(minutos*60)} segundos" if minutos < 1 else f"{minutos:g} minutos"
-        print(f"\n[a los {etiqueta} — {paso:,} pasos]")
+    for paso, minutos, muestra in muestras:
+        segundos = minutos * 60
+        reloj = f"{segundos:.0f} s" if segundos < 90 else f"{minutos:.1f} min"
+        print(f"\n[tras {paso:,} pasos — {reloj} en esta máquina]")
         print(muestra)
 
     print("\n--- ACIERTO AL ADIVINAR LA SIGUIENTE LETRA ---")
