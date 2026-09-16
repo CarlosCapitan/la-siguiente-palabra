@@ -24,7 +24,7 @@ lineas = open(path, encoding='utf-8').read().split('\n')
 # técnicos que el resto del libro evita (regla 5 bis). Se le levanta la prohibición de jerga
 # —y solo ésa—, en voz alta para que la excepción no pase inadvertida. Las demás siguen: ni
 # fórmulas, ni griego, ni código.
-ES_EL_MAPA = 'cap13' in path
+ES_EL_MAPA = 'cap14' in path
 if ES_EL_MAPA:
     print("NOTA: es el mapa de los sótanos; se permite la jerga y NO se permite nada más.")
 fallos = []
