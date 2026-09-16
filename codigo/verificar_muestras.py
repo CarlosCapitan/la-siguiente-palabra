@@ -39,7 +39,7 @@ def normalizar(t):
     return re.sub(r'\s+', ' ', t)
 
 def texto_del_bloque(b):
-    lineas = [re.sub(r'^> ?', '', l) for l in b.splitlines()]
+    lineas = [re.sub(r'^(> ?| {4})', '', l) for l in b.splitlines()]
     lineas = [l for l in lineas if l.strip() != '```']   # las vallas son formato, no dato
     return normalizar(quitar_marcado(' '.join(lineas))).strip()
 
@@ -55,13 +55,19 @@ if os.path.exists(EXCEPCIONES):
         if m:
             declaradas.append(normalizar(m.group(1)).strip())
 
-bloques = re.findall(r'((?:^>.*\n)+)', crudo, re.M)
+# Un bloque es cualquier cosa sangrada: con «>» (cita) o con cuatro espacios (salida de
+# programa que necesita monoespaciado, como una tabla con columnas). La regla 6 dice
+# «todo lo que va sangrado en bloque», no «todo lo que lleva >»: durante un tiempo el
+# verificador solo miraba las citas, y una tabla sangrada con cuatro espacios pasaba sin
+# que nadie la comprobara.
+bloques = (re.findall(r'((?:^>.*\n)+)', crudo, re.M) +
+           re.findall(r'((?:^ {4}.*\n|^\n(?= {4}))+)', crudo, re.M))
 
 def lineas_de_datos(b):
     """Las líneas del bloque, sin el prefijo de cita ni las vallas de código."""
     out = []
     for l in b.splitlines():
-        l = re.sub(r'^> ?', '', l)
+        l = re.sub(r'^(> ?| {4})', '', l)
         if l.strip() == '```':
             continue
         l = normalizar(quitar_marcado(l)).strip()

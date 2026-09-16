@@ -1,7 +1,11 @@
 import re, sys, unicodedata
+# Jerga que no entra en el cuerpo por ningún motivo. Los términos que el libro SÍ se
+# apropia —red neuronal, neurona, capa, pesos— no se vigilan aquí: se declaran en
+# notas/VOCABULARIO.md y los vigila verificar_vocabulario.py, que comprueba algo más
+# exigente que su ausencia: que se bauticen antes de usarse (reglas 5 bis y 5 ter).
 PROHIBIDAS = ["softmax","vector","matriz","matrices","gradiente","token","embedding",
     "query","key","value","parametro","hiperparametro","logaritm","dimension",
-    "producto escalar","funcion de perdida","backprop","tensor","capa oculta","neurona artificial"]
+    "producto escalar","funcion de perdida","backprop","tensor","capa oculta"]
 GRIEGO = re.compile(r'[Ͱ-Ͽ]')
 MATE   = re.compile(r'[=∑∏√∫±×·⋅≈≤≥^]|\b\d+\s*[*/]\s*\d+')
 CODIGO = re.compile(r'^\s*(```|import |def |>>> )')

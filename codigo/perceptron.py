@@ -95,25 +95,57 @@ TABLA_DOS = np.array([[0, 0], [0, 1], [1, 0], [1, 1]], dtype=float)
 
 def reglas_de_dos_interruptores():
     """Las 16 funciones posibles de dos entradas binarias. Devuelve (aprendidas, fallidas)."""
-    aprendidas, fallidas = [], []
+    aprendidas, fallidas, constantes = [], [], []
     for bits in itertools.product([0, 1], repeat=4):
         y = np.where(np.array(bits) == 1, 1, -1)
         if len(set(bits)) == 1:                       # regla constante: sin nada que separar
             aprendidas.append(bits)
+            constantes.append(bits)                   # se cuentan, pero no se entrenan: hay que decirlo
             continue
         w, b, pasos = entrenar(TABLA_DOS, y, pasos_max=20_000)
         (aprendidas if pasos is not None else fallidas).append(bits)
-    return aprendidas, fallidas
+    return aprendidas, fallidas, constantes
+
+
+# Las dieciséis reglas, nombradas en castellano corriente. La clave son las cuatro
+# respuestas, en el orden de TABLA_DOS: ninguno, solo el segundo, solo el primero, los dos.
+# Vive aquí, en el capítulo 2, y de aquí la importa el capítulo 3: una cosa, un nombre.
+NOMBRES = {
+    (0, 0, 0, 0): "nunca",
+    (0, 0, 0, 1): "los dos",
+    (0, 0, 1, 0): "solo el primero",
+    (0, 0, 1, 1): "el primero",
+    (0, 1, 0, 0): "solo el segundo",
+    (0, 1, 0, 1): "el segundo",
+    (0, 1, 1, 0): "exactamente uno",
+    (0, 1, 1, 1): "al menos uno",
+    (1, 0, 0, 0): "ninguno de los dos",
+    (1, 0, 0, 1): "los dos iguales",
+    (1, 0, 1, 0): "el segundo no",
+    (1, 0, 1, 1): "salvo solo el segundo",
+    (1, 1, 0, 0): "el primero no",
+    (1, 1, 0, 1): "salvo solo el primero",
+    (1, 1, 1, 0): "no los dos",
+    (1, 1, 1, 1): "siempre",
+}
+
+CASILLAS = ["ninguno", "solo 2\u00ba", "solo 1\u00ba", "los dos"]
 
 
 def nombre_regla(bits):
-    conocidas = {
-        (0, 0, 0, 1): "Y (las dos encendidas)",
-        (0, 1, 1, 1): "O (al menos una)",
-        (0, 1, 1, 0): "O EXCLUSIVO (exactamente una)",
-        (1, 0, 0, 1): "IGUALES (las dos o ninguna)",
-    }
-    return conocidas.get(bits, str(bits))
+    return NOMBRES[tuple(bits)]
+
+
+def tabla_de_las_dieciseis(aprendidas, fallidas, constantes):
+    """Las dieciséis, enteras, para que el lector las cuente con el dedo en vez de
+    creerse que son dieciséis. El libro cita este bloque literal (regla 6)."""
+    ancho = max(len(n) for n in NOMBRES.values())
+    lineas = []
+    for bits in sorted(NOMBRES, key=lambda b: (b[0], b[1], b[2], b[3])):
+        casillas = " ".join(("sí" if x else "no") for x in bits)
+        marca = "   <- NO PUEDE" if bits in fallidas else ""
+        lineas.append(f"   {NOMBRES[bits]:<{ancho}}  {casillas}{marca}")
+    return lineas
 
 
 def medir_xor():
@@ -186,20 +218,30 @@ def main():
 
     filas = []
     print("--- 1. DISTINGUIR DOS DÍGITOS ---")
-    print(f"{'tarea':<12}{'ejemplos':>10}{'acierto':>10}{'converge':>11}")
+    # Las etiquetas son las que lleva la tabla del libro, y el acierto va en porcentaje,
+    # para que la tabla del capítulo sea literalmente esto y el verificador pueda
+    # comprobarla fila por fila. Lo que el libro enseña y lo que el programa imprime
+    # tienen que ser la misma cadena de caracteres.
+    print(f"{'tarea':<24}{'ejemplos':>10}{'acierto':>10}{'converge':>11}")
     for a, b_dig in PAREJAS_DIGITOS:
         r = tarea_digitos(X, t, a, b_dig, rng)
-        print(f"{f'{a} contra {b_dig}':<12}{r['ejemplos_entrenamiento']:>10}"
-              f"{r['acierto_prueba']:>10.3f}{('sí' if r['converge'] else 'NO'):>11}")
+        pct = f"{100 * r['acierto_prueba']:.0f} %"
+        print(f"{f'distinguir un {a} de un {b_dig}':<24}{r['ejemplos_entrenamiento']:>10}"
+              f"{pct:>10}{('sí' if r['converge'] else 'NO'):>11}")
         filas.append(["digitos", f"{a}v{b_dig}", r["ejemplos_entrenamiento"],
                       f"{r['acierto_prueba']:.4f}", r["converge"]])
 
     print("\n--- 2. LAS DIECISÉIS REGLAS DE DOS INTERRUPTORES ---")
-    aprendidas, fallidas = reglas_de_dos_interruptores()
-    print(f"aprende {len(aprendidas)} de 16. Falla en {len(fallidas)}:")
-    for bits in fallidas:
-        print(f"    {nombre_regla(bits)}")
+    aprendidas, fallidas, constantes = reglas_de_dos_interruptores()
+    for linea in tabla_de_las_dieciseis(aprendidas, fallidas, constantes):
+        print(linea)
+    entrenadas = len(aprendidas) - len(constantes)
+    print()
+    print(f"resuelve {len(aprendidas)} de 16: {entrenadas} entrenando y "
+          f"{len(constantes)} donde no hay nada que aprender. Con {len(fallidas)} no puede.")
     filas.append(["reglas_dos", "aprendidas", len(aprendidas), "", ""])
+    filas.append(["reglas_dos", "entrenadas", entrenadas, "", ""])
+    filas.append(["reglas_dos", "constantes", len(constantes), "", ""])
     filas.append(["reglas_dos", "fallidas", len(fallidas), "", ""])
 
     print("\n--- 3. EL O EXCLUSIVO ---")
