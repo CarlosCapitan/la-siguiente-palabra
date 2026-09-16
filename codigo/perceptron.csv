@@ -7,4 +7,7 @@ reglas_dos,aprendidas,14,,
 reglas_dos,entrenadas,12,,
 reglas_dos,constantes,2,,
 reglas_dos,fallidas,2,,
+puente,aprendidas,14,,
+puente,separables,14,,
+puente,coinciden,True,,
 xor,,100000,0.7500,False
