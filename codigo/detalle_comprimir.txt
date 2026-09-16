@@ -1,0 +1,231 @@
+
+==========================================================================
+7B sin comprimir
+==========================================================================
+Fetching 11 files:   0%|          | 0/11 [00:00<?, ?it/s]Fetching 11 files: 100%|██████████| 11/11 [00:00<00:00, 4557.22it/s]
+
+--- sumar dos cifras ---
+  [sí] '12 + 25 = '
+       esperada '37'  ->  '37\\).\n\nTherefore, the answer'
+  [NO] '31 + 46 = '
+       esperada '77'  ->  '46 + 31. This'
+  [sí] '54 + 23 = '
+       esperada '77'  ->  '77\n\\]\n\nThus, the'
+  [NO] '18 + 41 = '
+       esperada '59'  ->  '41 + 18. This'
+  [sí] '62 + 27 = '
+       esperada '89'  ->  '89\n\\]\n\nThus, the'
+
+--- plurales ---
+  [sí] 'perro -> perros\ngato -> gatos\nmesa -> '
+       esperada 'mesas'  ->  'mesas\ncama -> camas'
+  [sí] 'perro -> perros\ngato -> gatos\nlibro -> '
+       esperada 'libros'  ->  'libros\nmesa -> mesas\n'
+  [sí] 'perro -> perros\ngato -> gatos\nluz -> '
+       esperada 'luces'  ->  'luces\ncasa -> casas'
+  [NO] 'perro -> perros\ngato -> gatos\npared -> '
+       esperada 'paredes'  ->  'pares\nmesa -> mesas'
+  [NO] 'perro -> perros\ngato -> gatos\nlápiz -> '
+       esperada 'lápices'  ->  'lapices\ncasa -> casas'
+
+--- traducir del inglés ---
+  [sí] 'dog = perro\nhouse = casa\nwater = '
+       esperada 'agua'  ->  'agua\nseed = semilla\nsun'
+  [sí] 'dog = perro\nhouse = casa\nbook = '
+       esperada 'libro'  ->  'libro\ncat = gato\ntree'
+  [sí] 'dog = perro\nhouse = casa\nnight = '
+       esperada 'noche'  ->  'noche\nwalk = pasear\n'
+  [sí] 'dog = perro\nhouse = casa\nbread = '
+       esperada 'pan'  ->  'pan\nmilk = leche\n'
+  [NO] 'dog = perro\nhouse = casa\nfriend = '
+       esperada 'amigo'  ->  'amiga\ncat = gato\n'
+
+--- saber cosas del mundo ---
+  [NO] 'Pregunta: ¿cuál es la capital de Francia?\nRespuesta: '
+       esperada 'París'  ->  'La capital de Francia es París'
+  [NO] 'Pregunta: ¿cuál es la capital de Italia?\nRespuesta: '
+       esperada 'Roma'  ->  'La capital de Italia es Roma. \n\n'
+  [NO] 'Pregunta: ¿cuál es la capital de Portugal?\nRespuesta: '
+       esperada 'Lisboa'  ->  'La capital de Portugal es Lisboa.'
+  [NO] 'Pregunta: ¿en qué continente está Egipto?\nRespuesta: '
+       esperada 'África'  ->  'Egipto se encuentra en el contin'
+  [sí] 'Pregunta: ¿cuántas patas tiene una araña?\nRespuesta: '
+       esperada '8'  ->  '8\n\nExplicación: Las ar'
+
+--- seguir un patrón inventado ---
+  [NO] 'casa -> asac\nmesa -> asem\nlibro -> '
+       esperada 'orbil'  ->  'abro\ncama -> aama'
+  [NO] 'casa -> asac\nmesa -> asem\ngato -> '
+       esperada 'otag'  ->  'asto\ncachorro -> achorro'
+  [NO] 'casa -> asac\nmesa -> asem\nsol -> '
+       esperada 'los'  ->  '0al\nluna -> auna'
+  [NO] 'casa -> asac\nmesa -> asem\npan -> '
+       esperada 'nap'  ->  'apn\ncama -> aac'
+  [NO] 'casa -> asac\nmesa -> asem\nmar -> '
+       esperada 'ram'  ->  'aram\npaz -> azap\n'
+
+--- razonar sobre una frase ---
+  [sí] 'El vaso no cabía en el cajón porque el vaso era demasiado alto.\nPregunta: ¿qué era demasiado alto?\nRespuesta: el '
+       esperada 'vaso'  ->  'vaso\n\nEsta respuesta es correcta'
+  [sí] 'El vaso no cabía en el cajón porque el cajón era demasiado bajo.\nPregunta: ¿qué era demasiado bajo?\nRespuesta: el '
+       esperada 'cajón'  ->  'cajón\nPuntos a consider'
+  [sí] 'Ana le dio un libro a Luis. Luis lo leyó.\nPregunta: ¿quién leyó el libro?\nRespuesta: '
+       esperada 'Luis'  ->  'Luis leyó el libro.\n\nExplic'
+  [NO] 'Hoy es martes.\nPregunta: ¿qué día será mañana?\nRespuesta: '
+       esperada 'miércoles'  ->  'Mañana será miércoles. \n\n'
+  [NO] 'Tengo 5 manzanas y me como 2.\nPregunta: ¿cuántas me quedan?\nRespuesta: '
+       esperada '3'  ->  '5 - 2 = 3\n'
+
+==========================================================================
+7B comprimido
+==========================================================================
+Fetching 9 files:   0%|          | 0/9 [00:00<?, ?it/s]Fetching 9 files: 100%|██████████| 9/9 [00:00<00:00, 2010.26it/s]
+
+--- sumar dos cifras ---
+  [sí] '12 + 25 = '
+       esperada '37'  ->  '37 \\]\n\nTherefore, the total'
+  [NO] '31 + 46 = '
+       esperada '77'  ->  '117 \\]\n\nTherefore, the'
+  [NO] '54 + 23 = '
+       esperada '77'  ->  '11111111'
+  [sí] '18 + 41 = '
+       esperada '59'  ->  '59 \\]\n\nTherefore, the total'
+  [sí] '62 + 27 = '
+       esperada '89'  ->  '89 \\]\n\nTherefore, the total'
+
+--- plurales ---
+  [sí] 'perro -> perros\ngato -> gatos\nmesa -> '
+       esperada 'mesas'  ->  'mesas\ncasa -> casas'
+  [sí] 'perro -> perros\ngato -> gatos\nlibro -> '
+       esperada 'libros'  ->  'libros\ncasa -> casas\n'
+  [sí] 'perro -> perros\ngato -> gatos\nluz -> '
+       esperada 'luces'  ->  'luces\nratón -> ratones'
+  [sí] 'perro -> perros\ngato -> gatos\npared -> '
+       esperada 'paredes'  ->  'paredes\nmesa -> mesas'
+  [sí] 'perro -> perros\ngato -> gatos\nlápiz -> '
+       esperada 'lápices'  ->  'lápices\nratón -> rat'
+
+--- traducir del inglés ---
+  [sí] 'dog = perro\nhouse = casa\nwater = '
+       esperada 'agua'  ->  'agua\nfood = comida\nleash'
+  [sí] 'dog = perro\nhouse = casa\nbook = '
+       esperada 'libro'  ->  'libro\ncat = gato\nmouse'
+  [sí] 'dog = perro\nhouse = casa\nnight = '
+       esperada 'noche'  ->  'noche\nbark = ladrido\n'
+  [sí] 'dog = perro\nhouse = casa\nbread = '
+       esperada 'pan'  ->  'pan\nmilk = leche\n'
+  [NO] 'dog = perro\nhouse = casa\nfriend = '
+       esperada 'amigo'  ->  'amiga\ncat = gato\n'
+
+--- saber cosas del mundo ---
+  [NO] 'Pregunta: ¿cuál es la capital de Francia?\nRespuesta: '
+       esperada 'París'  ->  'La capital de Francia es París'
+  [NO] 'Pregunta: ¿cuál es la capital de Italia?\nRespuesta: '
+       esperada 'Roma'  ->  'La capital de Italia es Roma.\n\nR'
+  [NO] 'Pregunta: ¿cuál es la capital de Portugal?\nRespuesta: '
+       esperada 'Lisboa'  ->  'La capital de Portugal es Lisboa.'
+  [NO] 'Pregunta: ¿en qué continente está Egipto?\nRespuesta: '
+       esperada 'África'  ->  'Egipto se encuentra en el contin'
+  [sí] 'Pregunta: ¿cuántas patas tiene una araña?\nRespuesta: '
+       esperada '8'  ->  '8\n\nExplicación: Las ar'
+
+--- seguir un patrón inventado ---
+  [NO] 'casa -> asac\nmesa -> asem\nlibro -> '
+       esperada 'orbil'  ->  'abro\ncama ->  a'
+  [NO] 'casa -> asac\nmesa -> asem\ngato -> '
+       esperada 'otag'  ->  'asto\ncachorro -> achorro'
+  [NO] 'casa -> asac\nmesa -> asem\nsol -> '
+       esperada 'los'  ->  'ols\npapel -> aaple'
+  [NO] 'casa -> asac\nmesa -> asem\npan -> '
+       esperada 'nap'  ->  'apn\ncama -> aac'
+  [NO] 'casa -> asac\nmesa -> asem\nmar -> '
+       esperada 'ram'  ->  'aram\nlar -> aral\ncar'
+
+--- razonar sobre una frase ---
+  [sí] 'El vaso no cabía en el cajón porque el vaso era demasiado alto.\nPregunta: ¿qué era demasiado alto?\nRespuesta: el '
+       esperada 'vaso'  ->  'vaso\n\nEsta respuesta es correcta'
+  [sí] 'El vaso no cabía en el cajón porque el cajón era demasiado bajo.\nPregunta: ¿qué era demasiado bajo?\nRespuesta: el '
+       esperada 'cajón'  ->  'cajón\nPregunta: ¿'
+  [sí] 'Ana le dio un libro a Luis. Luis lo leyó.\nPregunta: ¿quién leyó el libro?\nRespuesta: '
+       esperada 'Luis'  ->  'Luis leyó el libro.\n\nExplic'
+  [NO] 'Hoy es martes.\nPregunta: ¿qué día será mañana?\nRespuesta: '
+       esperada 'miércoles'  ->  'Mañana será miércoles. \n\n'
+  [sí] 'Tengo 5 manzanas y me como 2.\nPregunta: ¿cuántas me quedan?\nRespuesta: '
+       esperada '3'  ->  '3 manzanas. \n\nExplic'
+
+==========================================================================
+32B comprimido
+==========================================================================
+Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]Fetching 12 files: 100%|██████████| 12/12 [00:00<00:00, 3272.54it/s]
+
+--- sumar dos cifras ---
+  [sí] '12 + 25 = '
+       esperada '37'  ->  '37\n\\]\n\nTherefore, the'
+  [sí] '31 + 46 = '
+       esperada '77'  ->  '77\n\\]\n\nTherefore, the'
+  [sí] '54 + 23 = '
+       esperada '77'  ->  '77\n\\]\n\nTherefore, the'
+  [sí] '18 + 41 = '
+       esperada '59'  ->  '59\n\\]\n\nTherefore, the'
+  [sí] '62 + 27 = '
+       esperada '89'  ->  '89\n\\]\n\nTherefore, the'
+
+--- plurales ---
+  [sí] 'perro -> perros\ngato -> gatos\nmesa -> '
+       esperada 'mesas'  ->  'mesas\nlibro -> libros\n'
+  [sí] 'perro -> perros\ngato -> gatos\nlibro -> '
+       esperada 'libros'  ->  'libros\ncasa -> casas\n'
+  [NO] 'perro -> perros\ngato -> gatos\nluz -> '
+       esperada 'luces'  ->  'luz\ncasa -> casas\n'
+  [sí] 'perro -> perros\ngato -> gatos\npared -> '
+       esperada 'paredes'  ->  'paredes\ncasa -> casas'
+  [sí] 'perro -> perros\ngato -> gatos\nlápiz -> '
+       esperada 'lápices'  ->  'lápices\ncasa -> cas'
+
+--- traducir del inglés ---
+  [sí] 'dog = perro\nhouse = casa\nwater = '
+       esperada 'agua'  ->  'agua\nbread = pan\nfriend ='
+  [sí] 'dog = perro\nhouse = casa\nbook = '
+       esperada 'libro'  ->  'libro\npen = pluma\np'
+  [sí] 'dog = perro\nhouse = casa\nnight = '
+       esperada 'noche'  ->  'noche\nday = dia\nmorning'
+  [sí] 'dog = perro\nhouse = casa\nbread = '
+       esperada 'pan'  ->  'pan\nwater = agua\nfriend ='
+  [NO] 'dog = perro\nhouse = casa\nfriend = '
+       esperada 'amigo'  ->  'amiga\nfriend = amigo\nfriend'
+
+--- saber cosas del mundo ---
+  [NO] 'Pregunta: ¿cuál es la capital de Francia?\nRespuesta: '
+       esperada 'París'  ->  'La capital de Francia es París'
+  [NO] 'Pregunta: ¿cuál es la capital de Italia?\nRespuesta: '
+       esperada 'Roma'  ->  'La capital de Italia es Roma.\n\nAl'
+  [NO] 'Pregunta: ¿cuál es la capital de Portugal?\nRespuesta: '
+       esperada 'Lisboa'  ->  'La capital de Portugal es Lisboa.\n\n'
+  [NO] 'Pregunta: ¿en qué continente está Egipto?\nRespuesta: '
+       esperada 'África'  ->  'Egipto está en el continente'
+  [NO] 'Pregunta: ¿cuántas patas tiene una araña?\nRespuesta: '
+       esperada '8'  ->  'Una araña tiene 8 patas'
+
+--- seguir un patrón inventado ---
+  [NO] 'casa -> asac\nmesa -> asem\nlibro -> '
+       esperada 'orbil'  ->  'ablor\ncama -> amac'
+  [NO] 'casa -> asac\nmesa -> asem\ngato -> '
+       esperada 'otag'  ->  'atog\npato ->  at'
+  [sí] 'casa -> asac\nmesa -> asem\nsol -> '
+       esperada 'los'  ->  'los\ncama -> amac\n'
+  [sí] 'casa -> asac\nmesa -> asem\npan -> '
+       esperada 'nap'  ->  'nap\npapel -> lepap'
+  [sí] 'casa -> asac\nmesa -> asem\nmar -> '
+       esperada 'ram'  ->  'ram\ncama -> amac\n'
+
+--- razonar sobre una frase ---
+  [sí] 'El vaso no cabía en el cajón porque el vaso era demasiado alto.\nPregunta: ¿qué era demasiado alto?\nRespuesta: el '
+       esperada 'vaso'  ->  'vaso era demasiado alto. La'
+  [sí] 'El vaso no cabía en el cajón porque el cajón era demasiado bajo.\nPregunta: ¿qué era demasiado bajo?\nRespuesta: el '
+       esperada 'cajón'  ->  'cajón\n\nSí, la'
+  [sí] 'Ana le dio un libro a Luis. Luis lo leyó.\nPregunta: ¿quién leyó el libro?\nRespuesta: '
+       esperada 'Luis'  ->  'Luis leyó el libro. Según la'
+  [NO] 'Hoy es martes.\nPregunta: ¿qué día será mañana?\nRespuesta: '
+       esperada 'miércoles'  ->  'Mañana será miércoles. \n\n'
+  [NO] 'Tengo 5 manzanas y me como 2.\nPregunta: ¿cuántas me quedan?\nRespuesta: '
+       esperada '3'  ->  '5 - 2 = 3 man'
