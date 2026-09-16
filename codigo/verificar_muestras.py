@@ -22,8 +22,12 @@ def quitar_marcado(t):
 
     A temperatura alta el modelo escribe en chino, tailandés o árabe. La fuente del libro no
     dibuja esos signos, y xelatex los tira EN SILENCIO: sin envolverlos, el libro enseñaría una
-    versión limpiada de lo que la máquina escribió. El envoltorio es formato, no dato."""
-    return re.sub(r'`\\[a-záéíóúñ]+\{(.*?)\}`\{=latex\}', r'\1', t)
+    versión limpiada de lo que la máquina escribió. El envoltorio es formato, no dato.
+
+    También quita las comillas simples inversas, que en el libro ponen un trozo en monoespaciado
+    y no forman parte de lo que imprimió el programa."""
+    t = re.sub(r'`\\[a-záéíóúñ]+\{(.*?)\}`\{=latex\}', r'\1', t)
+    return t.replace('`', '')
 
 
 def normalizar(t):
@@ -94,7 +98,7 @@ filas = 0
 for l in crudo.splitlines():
     if not l.startswith('|') or '%' not in l:
         continue
-    celdas = [normalizar(c).strip() for c in l.strip('|').split('|')]
+    celdas = [normalizar(quitar_marcado(c)).strip() for c in l.strip('|').split('|')]
     celdas = [c for c in celdas if c and not set(c) <= set('-: ')]
     fila = ' '.join(celdas).replace('**', '')
     filas += 1
