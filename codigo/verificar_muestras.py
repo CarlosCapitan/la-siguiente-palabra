@@ -17,6 +17,15 @@ MINIMO = 70   # cuántos caracteres de la cita se exigen literales
 EXCEPCIONES = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                            '..', '..', 'libro-ia-libro', 'notas', 'CITAS-DE-AUTOR.md')
 
+def quitar_marcado(t):
+    """Quita el marcado de imprenta que envuelve trozos de la salida, dejando el trozo.
+
+    A temperatura alta el modelo escribe en chino, tailandés o árabe. La fuente del libro no
+    dibuja esos signos, y xelatex los tira EN SILENCIO: sin envolverlos, el libro enseñaría una
+    versión limpiada de lo que la máquina escribió. El envoltorio es formato, no dato."""
+    return re.sub(r'`\\[a-záéíóúñ]+\{(.*?)\}`\{=latex\}', r'\1', t)
+
+
 def normalizar(t):
     """Compara ignorando tres convenciones de imprenta que no son datos: los espacios, el
     separador decimal (el libro escribe 0,018 y el script imprime 0.018) y el espacio fino
@@ -28,7 +37,7 @@ def normalizar(t):
 def texto_del_bloque(b):
     lineas = [re.sub(r'^> ?', '', l) for l in b.splitlines()]
     lineas = [l for l in lineas if l.strip() != '```']   # las vallas son formato, no dato
-    return normalizar(' '.join(lineas)).strip()
+    return normalizar(quitar_marcado(' '.join(lineas))).strip()
 
 capitulo = sys.argv[1]
 crudo = io.open(capitulo, encoding='utf-8').read()
@@ -51,7 +60,7 @@ def lineas_de_datos(b):
         l = re.sub(r'^> ?', '', l)
         if l.strip() == '```':
             continue
-        l = normalizar(l).strip()
+        l = normalizar(quitar_marcado(l)).strip()
         if l:
             out.append(l)
     return out

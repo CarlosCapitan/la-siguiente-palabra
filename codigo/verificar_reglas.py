@@ -5,6 +5,9 @@ PROHIBIDAS = ["softmax","vector","matriz","matrices","gradiente","token","embedd
 GRIEGO = re.compile(r'[Ͱ-Ͽ]')
 MATE   = re.compile(r'[=∑∏√∫±×·⋅≈≤≥^]|\b\d+\s*[*/]\s*\d+')
 CODIGO = re.compile(r'^\s*(```|import |def |>>> )')
+# Envoltorio de imprenta para los trozos que la fuente del libro no dibuja (chino, tailandés,
+# árabe). Es formato, no notación: se quita antes de buscar.
+MARCADO = re.compile(r'`\\[a-záéíóúñ]+\{(.*?)\}`\{=latex\}')
 
 def norm(s):
     return ''.join(c for c in unicodedata.normalize('NFD', s.lower())
@@ -16,6 +19,7 @@ fallos = []
 for i, l in enumerate(lineas, 1):
     if l.strip().startswith('*[') or l.strip().startswith('[NO EJECUTADO'):
         continue
+    l = MARCADO.sub(r'\1', l)
     n = norm(l)
     for p in PROHIBIDAS:
         if p in n:
