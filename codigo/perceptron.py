@@ -132,6 +132,45 @@ NOMBRES = {
 CASILLAS = ["ninguno", "solo 2\u00ba", "solo 1\u00ba", "los dos"]
 
 
+ESQUINAS_PERCEPTRON = [(0, 0), (0, 1), (1, 0), (1, 1)]   # el mismo orden que TABLA_DOS
+REJILLA_RAYAS = 241                                       # finura de la búsqueda a lo bruto
+
+
+def hay_raya_que_separa(encienden, esquinas=None):
+    """¿Existe una raya que deje las esquinas encendidas a un lado y las apagadas al otro?
+
+    Con cuatro esquinas se puede comprobar a lo bruto: se prueban muchas rayas y se mira si
+    alguna lo consigue. No es una demostración, es una comprobación; la demostración está en
+    el dibujo.
+
+    Vive aquí, en el capítulo 2, porque aquí es donde se usa para lo importante: comprobar
+    que las reglas que el perceptrón aprende son exactamente las que una raya separa."""
+    esquinas = ESQUINAS_PERCEPTRON if esquinas is None else esquinas
+    rejilla = np.linspace(-6, 6, REJILLA_RAYAS)
+    for a in rejilla:
+        for b in rejilla:
+            for c in rejilla[::4]:
+                lados = {(x, y): (a * x + b * y + c) > 0 for x, y in esquinas}
+                if all(lados[p] for p in encienden) and \
+                   not any(lados[p] for p in esquinas if p not in encienden):
+                    return True
+    return False
+
+
+def reglas_que_una_raya_separa():
+    """Las reglas de dos interruptores que se pueden resolver con una sola raya, buscadas
+    sobre la geometría, sin entrenar nada. Es el otro lado del puente."""
+    separables = []
+    for bits in itertools.product([0, 1], repeat=4):
+        encienden = [e for e, b in zip(ESQUINAS_PERCEPTRON, bits) if b]
+        if not encienden or len(encienden) == 4:      # las constantes: no hay nada que separar
+            separables.append(bits)
+            continue
+        if hay_raya_que_separa(encienden):
+            separables.append(bits)
+    return separables
+
+
 def nombre_regla(bits):
     return NOMBRES[tuple(bits)]
 
@@ -244,7 +283,17 @@ def main():
     filas.append(["reglas_dos", "constantes", len(constantes), "", ""])
     filas.append(["reglas_dos", "fallidas", len(fallidas), "", ""])
 
-    print("\n--- 3. EL O EXCLUSIVO ---")
+    print("\n--- 3. EL PUENTE: LO QUE APRENDE Y LO QUE UNA RAYA SEPARA ---")
+    separables = reglas_que_una_raya_separa()
+    iguales = set(separables) == set(aprendidas)
+    print(f"reglas que el perceptrón resuelve entrenando:  {len(aprendidas)}")
+    print(f"reglas que una sola raya puede separar:        {len(separables)}")
+    print(f"¿son exactamente las mismas?                   {'sí' if iguales else 'NO'}")
+    filas.append(["puente", "aprendidas", len(aprendidas), "", ""])
+    filas.append(["puente", "separables", len(separables), "", ""])
+    filas.append(["puente", "coinciden", iguales, "", ""])
+
+    print("\n--- 4. EL O EXCLUSIVO ---")
     r = medir_xor()
     print(f"correcciones: {r['correcciones']:,}   converge: {'sí' if r['converge'] else 'NO'}"
           f"   acierto final: {r['acierto_final']:.3f} sobre 4 casos")

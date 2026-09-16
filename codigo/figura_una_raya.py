@@ -35,22 +35,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-
-def hay_raya_que_separa(encienden):
-    """¿Existe una raya que deje las esquinas encendidas a un lado y las apagadas al otro?
-
-    Con cuatro esquinas se puede comprobar a lo bruto: se prueban muchas rayas y se mira si
-    alguna lo consigue. No es una demostración, es una comprobación; la demostración está en
-    el dibujo."""
-    import numpy as np
-    for a in np.linspace(-6, 6, 241):
-        for b in np.linspace(-6, 6, 241):
-            for c in np.linspace(-6, 6, 241)[::4]:
-                lados = {(x, y): (a * x + b * y + c) > 0 for x, y in ESQUINAS}
-                if all(lados[p] for p in encienden) and \
-                   not any(lados[p] for p in ESQUINAS if p not in encienden):
-                    return True
-    return False
+from perceptron import hay_raya_que_separa, ESQUINAS_PERCEPTRON as ESQUINAS_P
 
 
 def panel(ax, encienden, titulo, rayas):
