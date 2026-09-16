@@ -15,15 +15,24 @@ def norm(s):
 
 path = sys.argv[1]
 lineas = open(path, encoding='utf-8').read().split('\n')
+
+# El capítulo 13 es el mapa de los sótanos: existe precisamente para imprimir los nombres
+# técnicos que el resto del libro evita (regla 5 bis). Se le levanta la prohibición de jerga
+# —y solo ésa—, en voz alta para que la excepción no pase inadvertida. Las demás siguen: ni
+# fórmulas, ni griego, ni código.
+ES_EL_MAPA = 'cap13' in path
+if ES_EL_MAPA:
+    print("NOTA: es el mapa de los sótanos; se permite la jerga y NO se permite nada más.")
 fallos = []
 for i, l in enumerate(lineas, 1):
     if l.strip().startswith('*[') or l.strip().startswith('[NO EJECUTADO'):
         continue
     l = MARCADO.sub(r'\1', l)
     n = norm(l)
-    for p in PROHIBIDAS:
-        if p in n:
-            fallos.append((i, 'jerga', p, l.strip()[:70]))
+    if not ES_EL_MAPA:
+        for p in PROHIBIDAS:
+            if p in n:
+                fallos.append((i, 'jerga', p, l.strip()[:70]))
     if GRIEGO.search(l): fallos.append((i,'griego','',l.strip()[:70]))
     if MATE.search(l):   fallos.append((i,'notacion','',l.strip()[:70]))
     if CODIGO.match(l):  fallos.append((i,'codigo','',l.strip()[:70]))
