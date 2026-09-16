@@ -29,11 +29,7 @@ LOTE = 64
 TASA = 3e-4
 
 MINUTOS_TOTAL = 25.0
-# Cuándo pedirle que escriba, medido en PASOS y no en minutos. Los minutos dependen de la
-# máquina: con GPU, a los 30 segundos ya se habían dado 1.062 pasos y la primera fase —la de
-# ni siquiera separar palabras— ya había pasado. Los pasos no dependen de la máquina, que es
-# justo lo que el libro necesita para poder citar la progresión.
-INSTANTANEAS_PASOS = [30, 300, 3000, 0]    # 0 = al final del entrenamiento
+INSTANTANEAS_MIN = [0.5, 2.0, 8.0, 25.0]   # cuándo pedirle que escriba
 ARRANQUE = "el "
 LARGO_MUESTRA = 200
 TEMPERATURA = 0.8
@@ -178,19 +174,16 @@ def entrenar(datos, vocabulario, indice, letras, minutos, instantaneas):
     modelo = Transformer(vocabulario).to(DISPOSITIVO)
     opt = torch.optim.AdamW(modelo.parameters(), lr=TASA)
     curva, muestras = [], []
-    pendientes = [p for p in instantaneas if p > 0]
-    al_final = 0 in instantaneas
+    pendientes = list(instantaneas)
     a_inicial = acierto(modelo, datos, np.random.default_rng(1))
     t0, pasos = time.time(), 0
     modelo.train()
     while True:
         transcurrido = (time.time() - t0) / 60
-        if pendientes and pasos >= pendientes[0]:
-            pendientes.pop(0)
-            muestras.append((pasos, transcurrido, escribir(modelo, indice, letras)))
+        if pendientes and transcurrido >= pendientes[0]:
+            m = pendientes.pop(0)
+            muestras.append((m, pasos, escribir(modelo, indice, letras)))
         if transcurrido >= minutos:
-            if al_final:
-                muestras.append((pasos, transcurrido, escribir(modelo, indice, letras)))
             break
         x, y = lote(datos, rng)
         opt.zero_grad()
@@ -201,17 +194,9 @@ def entrenar(datos, vocabulario, indice, letras, minutos, instantaneas):
         opt.step()
         pasos += 1
         if pasos % 20 == 0:
-            curva.append((pasos, float(perdida.item())))
+            curva.append((transcurrido, float(perdida.item())))
     a_final = acierto(modelo, datos, np.random.default_rng(1))
     return modelo, pasos, curva, muestras, a_inicial, a_final
-
-
-def suavizar(v, ventana=40):
-    """Media corrida. La curva cruda es muy ruidosa y en papel se lee como una mancha."""
-    if len(v) < ventana:
-        return v
-    nucleo = np.ones(ventana) / ventana
-    return np.convolve(np.asarray(v, dtype=float), nucleo, mode="valid")
 
 
 def figura(curva):
@@ -225,14 +210,11 @@ def figura(curva):
     os.makedirs(os.path.dirname(SALIDA_FIGURA), exist_ok=True)
     t = [c[0] for c in curva]
     v = [c[1] for c in curva]
-    fig, ax = plt.subplots(figsize=(6.0, 3.2))
-    ax.plot(t, v, linewidth=0.6, color="#bbbbbb")          # la medición cruda, de fondo
-    sv = suavizar(v)
-    ax.plot(t[len(t) - len(sv):], sv, linewidth=1.6, color="#222222")
-    ax.set_xlabel("pasos de entrenamiento")
+    fig, ax = plt.subplots(figsize=(6.2, 3.4))
+    ax.plot(t, v, linewidth=1.1, color="#333333")
+    ax.set_xlabel("minutos de entrenamiento")
     ax.set_ylabel("lo mal que lo hace")
     ax.set_yticks([])
-    ax.set_xlim(left=0)
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
     fig.savefig(SALIDA_FIGURA, dpi=200)
@@ -305,7 +287,7 @@ def main():
     print(f"Procesador usado: {DISPOSITIVO}")
     print(f"{len(texto):,} letras de libros en español, {len(letras)} símbolos distintos.\n")
 
-    instantaneas = INSTANTANEAS_PASOS
+    instantaneas = [m for m in INSTANTANEAS_MIN if m <= args.minutos]
     modelo, pasos, curva, muestras, a_ini, a_fin = entrenar(
         datos, len(letras), indice, letras, args.minutos, instantaneas)
 
@@ -317,10 +299,9 @@ def main():
     print(f"pasos de entrenamiento en {args.minutos:.0f} minutos: {pasos:,}\n")
 
     print("--- LO QUE ESCRIBE, EN CUATRO MOMENTOS ---")
-    for paso, minutos, muestra in muestras:
-        segundos = minutos * 60
-        reloj = f"{segundos:.0f} s" if segundos < 90 else f"{minutos:.1f} min"
-        print(f"\n[tras {paso:,} pasos — {reloj} en esta máquina]")
+    for minutos, paso, muestra in muestras:
+        etiqueta = f"{int(minutos*60)} segundos" if minutos < 1 else f"{minutos:g} minutos"
+        print(f"\n[a los {etiqueta} — {paso:,} pasos]")
         print(muestra)
 
     print("\n--- ACIERTO AL ADIVINAR LA SIGUIENTE LETRA ---")
@@ -329,8 +310,8 @@ def main():
 
     os.makedirs(os.path.dirname(SALIDA_CURVA), exist_ok=True)
     with open(SALIDA_CURVA, "w", newline="", encoding="utf-8") as fh:
-        csv.writer(fh).writerows([["pasos", "lo_mal_que_lo_hace"]] +
-                                 [[a, f"{b:.4f}"] for a, b in curva])
+        csv.writer(fh).writerows([["minutos", "lo_mal_que_lo_hace"]] +
+                                 [[f"{a:.4f}", f"{b:.4f}"] for a, b in curva])
     print(f"\nCurva escrita en {SALIDA_CURVA}")
     figura(curva)
 
