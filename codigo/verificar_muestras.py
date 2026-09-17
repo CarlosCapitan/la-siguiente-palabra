@@ -43,10 +43,77 @@ def texto_del_bloque(b):
     lineas = [l for l in lineas if l.strip() != '```']   # las vallas son formato, no dato
     return normalizar(quitar_marcado(' '.join(lineas))).strip()
 
+def fila_esta_en_alguna_linea(celdas, lineas=None):
+    """¿Hay una línea de la salida que contenga todas estas celdas, en este orden?
+
+    En orden y sin cambiar nada, pero permitiendo que entre medias haya cosas: el libro
+    puede QUITAR una columna que no cabe o que es notación (regla 6), y entonces su fila
+    es un trozo de la del programa, no la fila entera. Lo que no puede es cambiar un
+    número, ni cambiarlos de orden, ni traerse uno de otra fila."""
+    patron = re.compile(r'(?<![\w,.])' + r'.*?'.join(re.escape(c) for c in celdas))
+    return any(patron.search(l) for l in (lineas_salida if lineas is None else lineas))
+
+def selftest():
+    """Tres pruebas sobre lo único que este verificador decide de verdad: si una fila de
+    tabla del libro está o no en la salida del programa."""
+    fallos = []
+    lineas = [normalizar("        20         0.933 (0.867-1.000)       1.000 (1.000-1.000)").strip(),
+              normalizar("       160         0.114 (0.109-0.119)       0.121 (0.114-0.128)").strip()]
+
+    # 1. TEST NULO — las celdas existen, pero repartidas entre DOS líneas distintas. No
+    #    puede dar por buena una fila cuyos números vengan de sitios diferentes: sería
+    #    exactamente la manera de colar un dato inventado sin que nadie lo note.
+    mezclada = fila_esta_en_alguna_linea(["20", "0.933", "0.121"], lineas)
+    print(f"[1] test nulo         celdas de dos líneas distintas: ¿las acepta? "
+          f"{'SÍ' if mezclada else 'no'}")
+    if mezclada:
+        fallos.append("test nulo: acepta una fila cuyas celdas vienen de dos líneas distintas")
+
+    # 2. SEÑAL IMPLANTADA — se cambia una sola cifra de una fila que sí está. Tiene que
+    #    dejar de encontrarla.
+    buena = fila_esta_en_alguna_linea(["20", "0.933", "1.000"], lineas)
+    tocada = fila_esta_en_alguna_linea(["20", "0.934", "1.000"], lineas)
+    print(f"[2] señal implantada  la fila buena: {'la encuentra' if buena else 'NO la encuentra'}; "
+          f"con una cifra cambiada: {'la encuentra' if tocada else 'no la encuentra'}")
+    if not buena or tocada:
+        fallos.append("señal implantada: tiene que encontrar la fila buena y no la tocada")
+
+    # 3. INVARIANTE DEL DOMINIO — el libro puede QUITAR una columna (regla 6), así que una
+    #    fila más corta y en orden vale; en desorden, no, porque el orden es un dato.
+    corta = fila_esta_en_alguna_linea(["20", "1.000"], lineas)
+    revuelta = fila_esta_en_alguna_linea(["1.000", "0.933", "20"], lineas)
+    print(f"[3] invariante        quitando una columna: {'vale' if corta else 'NO vale'}; "
+          f"en otro orden: {'vale' if revuelta else 'no vale'}")
+    if not corta or revuelta:
+        fallos.append("invariante: quitar una columna vale; cambiar el orden no")
+
+    print()
+    if fallos:
+        for f in fallos:
+            print("FALLA:", f)
+        return 1
+    print("SELFTEST: las tres pruebas pasan.")
+    return 0
+
+
+lineas_salida = []
+if '--selftest' in sys.argv:
+    sys.exit(selftest())
+
 capitulo = sys.argv[1]
 crudo = io.open(capitulo, encoding='utf-8').read()
 salida = ' '.join(normalizar(io.open(f, encoding='utf-8').read()) for f in sys.argv[2:])
 assert salida.strip(), "no me has dado ninguna salida contra la que comparar"
+
+# Las mismas salidas, pero línea a línea. Una fila de tabla del libro sale de UNA línea de
+# la salida del programa; comprobarla contra el montón entero dejaría pasar una fila cuyos
+# números vinieran de tres sitios distintos.
+for f in sys.argv[2:]:
+    for l in io.open(f, encoding='utf-8'):
+        l = normalizar(l).strip()
+        if l:
+            lineas_salida.append(l)
+
 
 declaradas = []
 if os.path.exists(EXCEPCIONES):
@@ -98,19 +165,38 @@ for b in bloques:
         recompuestos += 1
         print(f"recompuesto (líneas literales, bloque recortado): «{sueltas[0][:50]}…»")
 
-# Las tablas con porcentajes también son datos medidos: cada fila tiene que aparecer, con sus
+# Las tablas con números también son datos medidos: cada fila tiene que aparecer, con sus
 # números y en el mismo orden, en la salida del programa.
+#
+# Antes esto solo miraba las filas que llevaban un signo de porcentaje, y las tablas de
+# tiempos del capítulo de la atención —segundos, sin porcentajes— no las comprobaba nadie.
+# Ahora mira cualquier fila con una cifra. Las tablas que NO son medición (una tabla que
+# enseña una idea, como «64 palabras, 64 pasos en fila») se declaran a mano en el mismo
+# fichero de excepciones que los bloques, por su primer trozo de texto.
 filas = 0
-for l in crudo.splitlines():
-    if not l.startswith('|') or '%' not in l:
+lineas_crudas = crudo.splitlines()
+for k, l in enumerate(lineas_crudas):
+    if not l.startswith('|') or not re.search(r'\d', l):
         continue
-    celdas = [normalizar(quitar_marcado(c)).strip() for c in l.strip('|').split('|')]
+    # La fila de cabecera no es un dato: es el rótulo de las columnas, y lo escribe el
+    # libro. Se reconoce porque la línea siguiente es la de guiones.
+    siguiente = lineas_crudas[k + 1] if k + 1 < len(lineas_crudas) else ''
+    if siguiente.startswith('|') and set(siguiente) <= set('|-: '):
+        continue
+    # El asterisco doble es negrita del libro, no un dato: fuera de las celdas antes
+    # de compararlas, o la celda «**1,000**» no se encuentra nunca.
+    celdas = [normalizar(quitar_marcado(c)).replace('**', '').strip()
+              for c in l.strip('|').split('|')]
     celdas = [c for c in celdas if c and not set(c) <= set('-: ')]
     fila = ' '.join(celdas).replace('**', '')
+    if any(fila.startswith(d) for d in declaradas):
+        de_autor += 1
+        continue
     filas += 1
-    if fila not in salida:
-        print(f"TABLA NO LITERAL: «{fila[:60]}…»")
-        fallos += 1
+    if fila in salida or fila_esta_en_alguna_linea(celdas):
+        continue
+    print(f"TABLA NO LITERAL: «{fila[:60]}…»")
+    fallos += 1
 
 assert comprobados or filas or de_autor, (
     f"no encontré en {capitulo} ni una cita en bloque ni una fila de tabla con números: "
