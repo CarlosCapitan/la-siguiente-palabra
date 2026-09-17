@@ -53,6 +53,21 @@ def fila_esta_en_alguna_linea(celdas, lineas=None):
     patron = re.compile(r'(?<![\w,.])' + r'.*?'.join(re.escape(c) for c in celdas))
     return any(patron.search(l) for l in (lineas_salida if lineas is None else lineas))
 
+def parece_salida_de_maquina(lineas):
+    """¿Este capítulo enseña ALGO con pinta de salida de máquina?
+
+    Se mira a propósito con otros ojos que el analizador de más abajo: vallas de código,
+    sangría de cuatro espacios, citas en bloque, barras verticales. Si los dos miraran igual,
+    un cambio de formato que despistara al analizador despistaría también a este aviso, y el
+    verificador pasaría a dar por bueno un capítulo entero sin mirar nada."""
+    for l in lineas:
+        if l.startswith('```') or l.startswith('~~~'):
+            return True
+        if (l.startswith('    ') or l.startswith('>') or '|' in l) and re.search(r'\d', l):
+            return True
+    return False
+
+
 def selftest():
     """Tres pruebas sobre lo único que este verificador decide de verdad: si una fila de
     tabla del libro está o no en la salida del programa."""
@@ -87,12 +102,28 @@ def selftest():
     if not corta or revuelta:
         fallos.append("invariante: quitar una columna vale; cambiar el orden no")
 
+    # 4. LA GUARDIA — un capítulo sin datos medidos (el prólogo) tiene que pasar en silencio;
+    #    un capítulo que SÍ trae bloques o tablas y del que no se reconoce nada tiene que
+    #    reventar, porque eso significa que el formato ha cambiado y que desde ese momento
+    #    este verificador estaría aprobando sin mirar.
+    sin_datos = parece_salida_de_maquina(["Prosa corriente, con el año 1948 dentro.",
+                                          "Otra línea sin nada medido."])
+    con_valla = parece_salida_de_maquina(["Texto.", "```", "  0,933", "```"])
+    con_sangria = parece_salida_de_maquina(["Texto.", "    aciertos       0,933"])
+    con_tabla = parece_salida_de_maquina(["Texto.", "| capa | 90,4 % |"])
+    print(f"[4] la guardia        prosa sin datos: {'la avisa' if sin_datos else 'calla'}; "
+          f"valla: {'avisa' if con_valla else 'CALLA'}; "
+          f"sangría: {'avisa' if con_sangria else 'CALLA'}; "
+          f"tabla: {'avisa' if con_tabla else 'CALLA'}")
+    if sin_datos or not (con_valla and con_sangria and con_tabla):
+        fallos.append("la guardia: tiene que callar con prosa y avisar con valla, sangría o tabla")
+
     print()
     if fallos:
         for f in fallos:
             print("FALLA:", f)
         return 1
-    print("SELFTEST: las tres pruebas pasan.")
+    print("SELFTEST: las cuatro pruebas pasan.")
     return 0
 
 
@@ -198,9 +229,16 @@ for k, l in enumerate(lineas_crudas):
     print(f"TABLA NO LITERAL: «{fila[:60]}…»")
     fallos += 1
 
-assert comprobados or filas or de_autor, (
-    f"no encontré en {capitulo} ni una cita en bloque ni una fila de tabla con números: "
-    "o el capítulo no enseña ningún dato medido, o el formato ha cambiado")
+# Un capítulo puede no enseñar ni un dato medido —el prólogo no enseña ninguno— y eso no es un
+# fallo. El fallo es que el capítulo SÍ traiga bloques o tablas y no se reconozca ninguno: ahí el
+# formato ha cambiado y este verificador habría pasado a aprobar sin mirar. Antes los dos casos
+# daban el mismo error, y el aviso que importa quedaba escondido detrás del que no importa.
+if not (comprobados or filas or de_autor):
+    assert not parece_salida_de_maquina(crudo.splitlines()), (
+        f"{capitulo} trae bloques o filas con cifras y no he reconocido ninguno: el formato ha "
+        "cambiado y desde ahora este verificador estaría aprobando el capítulo sin mirar nada")
+    print(f"PASA: {capitulo} no enseña ningún dato medido, así que no hay nada que cotejar")
+    sys.exit(0)
 
 print(f"{comprobados} citas de máquina comprobadas ({recompuestos} recortadas), "
       f"{de_autor} bloques declarados del autor, {filas} filas de tabla con números")
