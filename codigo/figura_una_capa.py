@@ -28,8 +28,8 @@ PARECIDO_MAXIMO_ADMISIBLE = 0.90   # por encima de esto, dos neuronas son la mis
 # El título y la clave. Ocho cuadros grises sin rótulo no dicen nada: hay que decir qué
 # es un cuadro (los 64 puntos del dígito), qué es el negro y qué es el blanco. La figura
 # tiene que poder entenderse sin el párrafo que la presenta.
-TITULO = "LO QUE MIRA CADA UNA DE LAS OCHO DE EN MEDIO"
-SUBTITULO = "cada cuadro son los 64 puntos del dígito, como los ve esa neurona"
+TITULO = "LO QUE MIRA CADA UNO DE LOS OCHO COMITÉS DE EN MEDIO"
+SUBTITULO = "cada cuadro son los 64 puntos del dígito, como los ve ese comité"
 CLAVE = "negro: este punto empuja hacia «es par»  ·  blanco: hacia «es impar»"
 
 # ==========================================================
@@ -37,6 +37,7 @@ CLAVE = "negro: este punto empuja hacia «es par»  ·  blanco: hacia «es impar
 import argparse
 import sys
 
+from formato import pct
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
@@ -57,8 +58,8 @@ def dibujar():
     lim = np.abs(W).max()
     for j, ax in enumerate(ejes.ravel()):
         ax.imshow(W[:, j].reshape(LADO, LADO), cmap="gray_r", vmin=-lim, vmax=lim)
-        ax.set_title(f"la número {j + 1}", fontsize=10.4)
-        ax.set_xlabel(f"acierta ella sola\n{100 * aciertos[j]:.0f} %", fontsize=9.7)
+        ax.set_title(f"el comité {j + 1}", fontsize=10.4)
+        ax.set_xlabel(f"acierta él solo\n{pct(aciertos[j], 0)}", fontsize=9.7)
         ax.set_xticks([]); ax.set_yticks([])
         for s in ax.spines.values():
             s.set_linewidth(0.8)
