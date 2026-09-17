@@ -182,7 +182,9 @@ def tabla_de_las_dieciseis(aprendidas, fallidas, constantes):
     """Las dieciséis, enteras, para que el lector las cuente con el dedo en vez de
     creerse que son dieciséis. El libro cita este bloque literal (regla 6)."""
     ancho = max(len(n) for n in NOMBRES.values())
-    lineas = []
+    # El encabezado importa: sin él, «nunca» y «siempre» parecen posiciones de los
+    # interruptores en vez de respuestas a la pregunta «¿cuándo se enciende?».
+    lineas = [f"   {'¿cuándo se enciende?':<{ancho}}  las cuatro situaciones"]
     for bits in sorted(NOMBRES, key=lambda b: (b[0], b[1], b[2], b[3])):
         casillas = " ".join(("sí" if x else "no") for x in bits)
         marca = "   <- NO PUEDE" if bits in fallidas else ""
