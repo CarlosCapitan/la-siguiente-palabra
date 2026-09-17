@@ -33,6 +33,17 @@ UMBRAL = 0.5
 
 ANCHURAS = [1, 2, 4, 8, 16]    # cuántas neuronas de en medio, para ver de dónde sale la mejora
 REPETICIONES = 5               # arranques distintos por tamaño: una sola tirada oscila
+# Los rótulos de las tablas. Son texto del libro: van aquí arriba, con nombre, y no
+# escondidos dentro de un print a mitad del fichero.
+TITULO_1 = "¿ES PAR ESTE DÍGITO ESCRITO A MANO?"
+SUBTITULO_1 = "de cada 100 dígitos que nunca había visto, cuántos acierta"
+TITULO_2 = "LO QUE ACIERTA, ELLA SOLA, CADA UNA DE LAS OCHO DE EN MEDIO"
+TITULO_3 = "CUÁNTO SE PARECEN ENTRE SÍ ESAS OCHO"
+SUBTITULO_3 = "(0 % serían ocho preguntas sin nada en común; 100 %, ocho copias)"
+TITULO_4 = "¿Y SI EN MEDIO HAY MÁS, O MENOS?"
+SUBTITULO_4A = "media de {repeticiones} entrenamientos desde cero; entre paréntesis,"
+SUBTITULO_4B = "el peor y el mejor de los {repeticiones}"
+
 SALIDA_CSV = "que_mira_cada_una.csv"
 
 # ==========================================================
@@ -41,6 +52,7 @@ import argparse
 import csv
 import sys
 
+from formato import comprobar_ancho, pct, coma
 import numpy as np
 
 from perceptron import cargar_digitos
@@ -126,26 +138,53 @@ def barrido_de_anchura(semilla=SEMILLA):
 
 
 def imprimir(m, aciertos, parecido, sola):
-    print("la pregunta: ¿este dígito manuscrito es par?")
-    print()
-    print(f"   un solo tribunal, sin capa    {100 * sola:5.1f} %")
-    print(f"   con una capa de ocho en medio {100 * m['entera']:5.1f} %")
-    print()
-    print("   y esto es lo que consigue cada una, ella sola:")
-    print()
+    """Las tablas que cita el capítulo 3.
+
+    Cada tabla lleva su rótulo y dice de qué son sus números. Antes iban las tres
+    seguidas, con la misma columna de porcentajes para tres cosas distintas: un acierto,
+    otro acierto y un parecido. Puestos en la misma columna, parecían lo mismo. Un
+    porcentaje sin rótulo no es un dato: es una cifra."""
+    ANCHO = 34
+    lineas = []
+
+    def fila(etiqueta, valor, cola=""):
+        lineas.append(f"{etiqueta:<{ANCHO}}{valor:>7}{cola}".rstrip())
+
+    lineas.append(TITULO_1)
+    lineas.append(SUBTITULO_1)
+    lineas.append("")
+    fila("un solo tribunal, sin capa", pct(sola))
+    fila("una capa de ocho en medio", pct(m["entera"]))
+    lineas.append("")
+    lineas.append("")
+
+    lineas.append(TITULO_2)
+    lineas.append("")
     for j, a in enumerate(aciertos, 1):
-        print(f"   la número {j}                   {100 * a:5.1f} %")
-    print()
-    print(f"   la mejor de las ocho          {100 * aciertos.max():5.1f} %")
-    print(f"   lo más que se parecen dos     {100 * parecido:5.1f} %")
-    print()
-    print(f"   y esto es lo que cambia según cuántas haya en medio")
-    print(f"   (media de {REPETICIONES} entrenamientos desde cero, y el margen):")
-    print()
-    print(f"   ninguna, un solo tribunal     {100 * sola:5.1f} %")
+        fila(f"la número {j}", pct(a))
+    lineas.append(f"{'-' * ANCHO}{'-' * 7}")
+    fila("la mejor de las ocho", pct(aciertos.max()))
+    lineas.append("")
+    lineas.append("")
+
+    lineas.append(TITULO_3)
+    lineas.append(SUBTITULO_3)
+    lineas.append("")
+    fila("las dos que más se parecen", pct(parecido))
+    lineas.append("")
+    lineas.append("")
+
+    lineas.append(TITULO_4)
+    lineas.append(SUBTITULO_4A.format(repeticiones=REPETICIONES))
+    lineas.append(SUBTITULO_4B.format(repeticiones=REPETICIONES))
+    lineas.append("")
+    fila("ninguna, un solo tribunal", pct(sola))
     for n, med, lo, hi in barrido_de_anchura():
-        print(f"   {n:>2} en medio                   {100 * med:5.1f} %"
-              f"   (de {100 * lo:.1f} a {100 * hi:.1f})")
+        fila(f"{n:>2} en medio", pct(med), f"   (de {coma(100 * lo)} a {coma(100 * hi)})")
+
+    comprobar_ancho(lineas)
+    for l in lineas:
+        print(l)
 
 
 def guardar(m, aciertos, parecido, sola):

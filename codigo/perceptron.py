@@ -135,6 +135,19 @@ NOMBRES = {
 CASILLAS = ["ninguno", "solo 2\u00ba", "solo 1\u00ba", "los dos"]
 
 
+# ---- El aspecto del bloque de las dieciséis -------------------------------------
+# ANCHO_CAJA: cuántos caracteres monoespaciados caben de margen a margen en la página
+# del libro. No es una estimación: se compuso una página de prueba con el preámbulo
+# real (6 x 9 pulgadas, caja de 4,45 pulgadas, los bloques de programa a \footnotesize)
+# y se fue subiendo el ancho hasta que xelatex avisó. Con 68 no avisa; con 69 avisa.
+ANCHO_CAJA = 68
+TITULO_TABLA = "LAS DIECISÉIS LÁMPARAS POSIBLES CON DOS INTERRUPTORES"
+FILA_ABAJO   = "el interruptor de abajo"
+FILA_ARRIBA  = "el interruptor de arriba"
+FILA_NOMBRES = "¿cuándo se enciende?"
+MARCA_FALLO  = "   <- NO PUEDE"
+# ---------------------------------------------------------------------------------
+
 ESQUINAS_PERCEPTRON = [(0, 0), (0, 1), (1, 0), (1, 1)]   # el mismo orden que TABLA_DOS
 REJILLA_RAYAS = 241                                       # finura de la búsqueda a lo bruto
 
@@ -180,15 +193,47 @@ def nombre_regla(bits):
 
 def tabla_de_las_dieciseis(aprendidas, fallidas, constantes):
     """Las dieciséis, enteras, para que el lector las cuente con el dedo en vez de
-    creerse que son dieciséis. El libro cita este bloque literal (regla 6)."""
-    ancho = max(len(n) for n in NOMBRES.values())
-    # El encabezado importa: sin él, «nunca» y «siempre» parecen posiciones de los
-    # interruptores en vez de respuestas a la pregunta «¿cuándo se enciende?».
-    lineas = [f"   {'¿cuándo se enciende?':<{ancho}}  las cuatro situaciones"]
+    creerse que son dieciséis. El libro cita este bloque literal (regla 6).
+
+    El bloque tiene que explicarse solo: el lector puede encontrárselo al volver una
+    página, sin el párrafo que lo presenta delante. Por eso las dos primeras filas
+    dicen, con las palabras completas, qué interruptor es y en qué posición está en
+    cada columna. Un rótulo como «las cuatro situaciones» no vale: no dice de qué.
+
+    Y tiene que caber en la caja de texto de un libro de 6 por 9 pulgadas. Medido,
+    no supuesto: ver ANCHO_CAJA."""
+    ancho = max(
+        max(len(n) for n in NOMBRES.values()),
+        len(FILA_ABAJO), len(FILA_ARRIBA), len(FILA_NOMBRES),
+    ) + 2
+    col = 7
+    abajo  = ["bajado", "bajado", "subido", "subido"]   # en el orden de TABLA_DOS
+    arriba = ["bajado", "subido", "bajado", "subido"]
+
+    def fila(etiqueta, celdas):
+        return f"{etiqueta:<{ancho}}" + "".join(f"{c:^{col}}" for c in celdas)
+
+    lineas = [
+        TITULO_TABLA,
+        "",
+        fila(FILA_ABAJO, abajo).rstrip(),
+        fila(FILA_ARRIBA, arriba).rstrip(),
+        "",
+        fila(FILA_NOMBRES, ["-" * (col - 1)] * 4).rstrip(),
+    ]
     for bits in sorted(NOMBRES, key=lambda b: (b[0], b[1], b[2], b[3])):
-        casillas = " ".join(("sí" if x else "no") for x in bits)
-        marca = "   <- NO PUEDE" if bits in fallidas else ""
-        lineas.append(f"   {NOMBRES[bits]:<{ancho}}  {casillas}{marca}")
+        # El rstrip va ANTES de la marca: así las dos marcas quedan a la misma altura
+        # y ninguna línea arrastra espacios invisibles hasta el final.
+        linea = fila(NOMBRES[bits], ["sí" if x else "no" for x in bits]).rstrip()
+        if bits in fallidas:
+            linea = linea + MARCA_FALLO
+        lineas.append(linea)
+
+    # INVARIANTE DEL FORMATO: si una línea se sale de la caja, el libro la imprime
+    # partida o pisando el margen, y el lector ve una tabla rota. Que reviente aquí.
+    for l in lineas:
+        assert len(l) <= ANCHO_CAJA, \
+            f"Se esperaba una línea de {ANCHO_CAJA} caracteres como mucho; se encontró una de {len(l)}: {l!r}"
     return lineas
 
 

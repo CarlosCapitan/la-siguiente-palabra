@@ -17,13 +17,20 @@ Uso:
 # ======================= CONSTANTES =======================
 
 SALIDA = "../figuras/una_capa.png"
-ANCHO_ALTO = (6.2, 3.3)          # pulgadas, para una página de 6 por 9
+ANCHO_ALTO = (6.2, 3.9)          # pulgadas, para una página de 6 por 9
 PUNTOS = 200
 # xelatex encoge la figura al 72 % para meterla en la caja de texto; las letras se
 # dibujan más grandes en esa proporción para que en el papel salgan como se quiere.
 ESCALA = 1.0 / 0.72
 FILAS, COLUMNAS = 2, 4
 PARECIDO_MAXIMO_ADMISIBLE = 0.90   # por encima de esto, dos neuronas son la misma
+
+# El título y la clave. Ocho cuadros grises sin rótulo no dicen nada: hay que decir qué
+# es un cuadro (los 64 puntos del dígito), qué es el negro y qué es el blanco. La figura
+# tiene que poder entenderse sin el párrafo que la presenta.
+TITULO = "LO QUE MIRA CADA UNA DE LAS OCHO DE EN MEDIO"
+SUBTITULO = "cada cuadro son los 64 puntos del dígito, como los ve esa neurona"
+CLAVE = "negro: este punto empuja hacia «es par»  ·  blanco: hacia «es impar»"
 
 # ==========================================================
 
@@ -55,7 +62,10 @@ def dibujar():
         ax.set_xticks([]); ax.set_yticks([])
         for s in ax.spines.values():
             s.set_linewidth(0.8)
-    fig.subplots_adjust(left=0.03, right=0.97, top=0.88, bottom=0.14, wspace=0.25, hspace=0.75)
+    fig.suptitle(TITULO, fontsize=11.0, y=0.985)
+    fig.text(0.5, 0.925, SUBTITULO, ha="center", va="top", fontsize=8.8, color="0.35")
+    fig.text(0.5, 0.015, CLAVE, ha="center", va="bottom", fontsize=8.8, color="0.35")
+    fig.subplots_adjust(left=0.03, right=0.97, top=0.79, bottom=0.17, wspace=0.25, hspace=0.75)
     fig.savefig(SALIDA, dpi=PUNTOS)
     plt.close(fig)
     return m, aciertos

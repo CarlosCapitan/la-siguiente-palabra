@@ -22,7 +22,7 @@ Uso:
 # ======================= CONSTANTES =======================
 
 SALIDA = "../figuras/apilar.png"
-ANCHO_ALTO = (6.2, 3.2)          # pulgadas, para una página de 6 por 9
+ANCHO_ALTO = (6.2, 3.8)          # pulgadas, para una página de 6 por 9
 PUNTOS = 200                     # puntos por pulgada
 
 PAREJA_BUSCADA = ("al menos uno subido", "los dos subidos")   # el reparto más repetido, medido aparte
@@ -35,6 +35,13 @@ SEPARACION = 0.045               # cuánto se separan para que se vean los dos
 
 ETIQUETAS_ENTRADA = ["el de\nabajo", "el de\narriba"]
 ETIQUETA_SALIDA = "la luz"
+
+# Las claves de la figura. En el panel de la izquierda el grosor y el trazo de cada línea
+# SON datos —son los pesos que aprendió la red—, y sin decirlo son adorno. En el de la
+# derecha, negro y blanco quieren decir lo de siempre en este libro.
+CLAVE_MONTAJE = ("en el montaje de la izquierda: línea continua, suma;\n"
+                 "línea de puntos, resta; y cuanto más gruesa, más cuenta")
+CLAVE_COLOR = "negro: la luz se enciende  ·  blanco: la luz no se enciende"
 
 # ==========================================================
 
@@ -146,9 +153,20 @@ def panel_cuadrado_nuevo(ax, red, medio):
 
     # La raya que de verdad usa la última neurona: donde deja de decir no y empieza a decir sí.
     w, b = red.W[1].ravel(), red.b[1][0]
-    xs = np.linspace(-0.15, 1.15, 50)
+    xs = np.linspace(-0.2, 1.2, 50)
     if abs(w[1]) > 1e-9:
-        ax.plot(xs, -(w[0] * xs + b) / w[1], "--", color="0.35", linewidth=1.6, zorder=2)
+        raya = -(w[0] * xs + b) / w[1]
+        # El lado donde la última neurona dice «sí» va sombreado, igual que en la figura
+        # del capítulo 2: así se ve de un golpe que en este cuadrado nuevo SÍ hay un lado
+        # con los negros y otro con los blancos, que es todo lo que la figura afirma.
+        abajo = w[1] < 0
+        ax.fill_between(xs, raya, 1.2 if not abajo else -0.45, color="0.88", zorder=0)
+        ax.plot(xs, raya, "--", color="0.35", linewidth=1.6, zorder=2)
+        # El rótulo va DENTRO de la zona sombreada, que es la que nombra. Si el lado
+        # sombreado es el de abajo, el rótulo va abajo; si es el de arriba, arriba.
+        ax.text(-0.18, 1.17 if not abajo else -0.42, "de este lado\nla luz se enciende",
+                fontsize=7.5, ha="left", va="top" if not abajo else "bottom",
+                color="0.25", zorder=4)
 
     ax.set_title("el cuadrado, redibujado\npor las dos de en medio", fontsize=10)
     ax.set_xlabel("lo que dijo la primera", fontsize=9)
@@ -165,9 +183,11 @@ def dibujar():
     fig, (izq, der) = plt.subplots(1, 2, figsize=ANCHO_ALTO)
     panel_montaje(izq, red, reglas)
     panel_cuadrado_nuevo(der, red, medio)
-    fig.text(0.5, 0.015, "negro: la luz se enciende  ·  blanco: la luz no se enciende",
-             ha="center", fontsize=8.5, color="0.35")
-    fig.tight_layout(rect=(0, 0.05, 1, 1))
+    fig.tight_layout(rect=(0, 0.17, 1, 1))
+    fig.text(0.5, 0.125, CLAVE_MONTAJE, ha="center", va="top",
+             fontsize=8.2, color="0.35")
+    fig.text(0.5, 0.015, CLAVE_COLOR, ha="center", va="bottom",
+             fontsize=8.5, color="0.35")
     fig.savefig(SALIDA, dpi=PUNTOS)
     plt.close(fig)
     return red, medio, reglas, semilla
