@@ -31,6 +31,7 @@ import csv
 import itertools
 import sys
 
+from formato import ANCHO_CAJA, comprobar_ancho, miles, coma
 import numpy as np
 
 
@@ -107,7 +108,8 @@ def reglas_de_dos_interruptores():
     return aprendidas, fallidas, constantes
 
 
-# Las dieciséis reglas, nombradas en castellano corriente. La clave son las cuatro
+# Las dieciséis maneras de montar la lámpara del pasillo, nombradas en castellano
+# corriente. El libro las llama montajes: una sola lámpara, dieciséis maneras de montarla. La clave son las cuatro
 # respuestas, en el orden de TABLA_DOS: ninguno, solo el segundo, solo el primero, los dos.
 # Vive aquí, en el capítulo 2, y de aquí la importa el capítulo 3: una cosa, un nombre.
 # Los dos interruptores del libro son los del pasillo: uno abajo y otro arriba. Las
@@ -136,12 +138,7 @@ CASILLAS = ["ninguno", "solo 2\u00ba", "solo 1\u00ba", "los dos"]
 
 
 # ---- El aspecto del bloque de las dieciséis -------------------------------------
-# ANCHO_CAJA: cuántos caracteres monoespaciados caben de margen a margen en la página
-# del libro. No es una estimación: se compuso una página de prueba con el preámbulo
-# real (6 x 9 pulgadas, caja de 4,45 pulgadas, los bloques de programa a \footnotesize)
-# y se fue subiendo el ancho hasta que xelatex avisó. Con 68 no avisa; con 69 avisa.
-ANCHO_CAJA = 68
-TITULO_TABLA = "LAS DIECISÉIS LÁMPARAS POSIBLES CON DOS INTERRUPTORES"
+TITULO_TABLA = "LAS DIECISÉIS MANERAS DE MONTAR LA LÁMPARA DEL PASILLO"
 FILA_ABAJO   = "el interruptor de abajo"
 FILA_ARRIBA  = "el interruptor de arriba"
 FILA_NOMBRES = "¿cuándo se enciende?"
@@ -231,10 +228,7 @@ def tabla_de_las_dieciseis(aprendidas, fallidas, constantes):
 
     # INVARIANTE DEL FORMATO: si una línea se sale de la caja, el libro la imprime
     # partida o pisando el margen, y el lector ve una tabla rota. Que reviente aquí.
-    for l in lineas:
-        assert len(l) <= ANCHO_CAJA, \
-            f"Se esperaba una línea de {ANCHO_CAJA} caracteres como mucho; se encontró una de {len(l)}: {l!r}"
-    return lineas
+    return comprobar_ancho(lineas)
 
 
 def medir_xor():
@@ -320,14 +314,17 @@ def main():
         filas.append(["digitos", f"{a}v{b_dig}", r["ejemplos_entrenamiento"],
                       f"{r['acierto_prueba']:.4f}", r["converge"]])
 
-    print("\n--- 2. LAS DIECISÉIS REGLAS DE DOS INTERRUPTORES ---")
+    print("\n--- 2. LAS DIECISÉIS MANERAS DE MONTAR LA LÁMPARA ---")
     aprendidas, fallidas, constantes = reglas_de_dos_interruptores()
     for linea in tabla_de_las_dieciseis(aprendidas, fallidas, constantes):
         print(linea)
     entrenadas = len(aprendidas) - len(constantes)
     print()
+    # Partido en dos líneas aquí, y no en el libro: una línea de 84 caracteres no cabe en
+    # la página, y partirla en el libro sería retocar salida de máquina (regla 6).
     print(f"resuelve {len(aprendidas)} de 16: {entrenadas} entrenando y "
-          f"{len(constantes)} donde no hay nada que aprender. Con {len(fallidas)} no puede.")
+          f"{len(constantes)} donde")
+    print(f"no hay nada que aprender. Con {len(fallidas)} no puede.")
     filas.append(["reglas_dos", "aprendidas", len(aprendidas), "", ""])
     filas.append(["reglas_dos", "entrenadas", entrenadas, "", ""])
     filas.append(["reglas_dos", "constantes", len(constantes), "", ""])
@@ -336,17 +333,24 @@ def main():
     print("\n--- 3. EL PUENTE: LO QUE APRENDE Y LO QUE UNA RAYA SEPARA ---")
     separables = reglas_que_una_raya_separa()
     iguales = set(separables) == set(aprendidas)
-    print(f"reglas que el perceptrón resuelve entrenando:  {len(aprendidas)}")
-    print(f"reglas que una sola raya puede separar:        {len(separables)}")
-    print(f"¿son exactamente las mismas?                   {'sí' if iguales else 'NO'}")
+    # Ancho fijo para las etiquetas: si cada una lleva el suyo, los números quedan en
+    # tres columnas distintas y las dos cifras que hay que comparar dejan de estar una
+    # encima de la otra, que es lo único que este bloque tiene que enseñar.
+    for etiqueta, valor in (
+            ("montajes que el perceptrón aprende entrenando", len(aprendidas)),
+            ("montajes que una sola raya puede separar", len(separables)),
+            ("¿son exactamente los mismos?", "sí" if iguales else "NO")):
+        rotulo = etiqueta if etiqueta.endswith("?") else etiqueta + ":"
+        print(f"{rotulo:<48}{valor:>3}")
     filas.append(["puente", "aprendidas", len(aprendidas), "", ""])
     filas.append(["puente", "separables", len(separables), "", ""])
     filas.append(["puente", "coinciden", iguales, "", ""])
 
     print("\n--- 4. EL O EXCLUSIVO ---")
     r = medir_xor()
-    print(f"correcciones: {r['correcciones']:,}   converge: {'sí' if r['converge'] else 'NO'}"
-          f"   acierto final: {r['acierto_final']:.3f} sobre 4 casos")
+    print(f"correcciones: {miles(r['correcciones'])}   "
+          f"converge: {'sí' if r['converge'] else 'NO'}   "
+          f"acierta {round(4 * r['acierto_final'])} de las 4 posiciones")
     filas.append(["xor", "", r["correcciones"], f"{r['acierto_final']:.4f}", r["converge"]])
 
     with open(SALIDA_CSV, "w", newline="", encoding="utf-8") as fh:

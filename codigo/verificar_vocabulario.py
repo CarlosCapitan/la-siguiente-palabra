@@ -22,6 +22,7 @@ VOCABULARIO = "notas/VOCABULARIO.md"
 ORDEN = "manuscript/Book.txt"
 MANUSCRITO = "manuscript"
 MARCADO = r'`\\[a-záéíóúñ]+\{(.*?)\}`\{=latex\}'   # envoltorio de imprenta: es formato, no texto
+SECCION_JUBILADAS = "## Palabras jubiladas"
 
 # ==========================================================
 
@@ -48,6 +49,49 @@ def leer_vocabulario(raiz):
                          "ancla": ancla})
     assert terminos, f"Se esperaba al menos un término declarado en {ruta}; no hay ninguno"
     return terminos
+
+
+def leer_jubiladas(raiz):
+    """Las palabras retiradas y las frases donde sí se les permite volver.
+
+    Una explicación que se escribe a trozos acumula sinónimos: cada pasada deja una
+    palabra nueva y no retira la vieja. Al final la misma cosa se llama de tres maneras en
+    tres páginas seguidas y el lector cree que son tres cosas. Esto lo caza."""
+    ruta = os.path.join(raiz, VOCABULARIO)
+    dentro = False
+    jubiladas, excepciones = [], []
+    for n, linea in enumerate(open(ruta, encoding="utf-8"), 1):
+        if linea.startswith("## "):
+            dentro = linea.strip() == SECCION_JUBILADAS
+            continue
+        if not dentro:
+            continue
+        m = re.match(r"^-\s+`([^`]+)`", linea)
+        if m:
+            excepciones.append(m.group(1).strip())
+            continue
+        if linea.count("|") != 2 or linea[:1] in ("#", " ", "\t"):
+            continue
+        jubilada, buena, motivo = [x.strip() for x in linea.split("|")]
+        assert jubilada and buena and motivo, \
+            f"{VOCABULARIO} línea {n}: se esperaban tres campos con contenido; se encontró «{linea.strip()}»"
+        jubiladas.append({"jubilada": jubilada, "buena": buena, "motivo": motivo})
+    return jubiladas, excepciones
+
+
+def buscar_jubiladas(lineas, jubiladas, excepciones):
+    """Dónde ha vuelto una palabra retirada. Los títulos SÍ cuentan aquí: un apartado
+    titulado con la palabra vieja es justo la manera en que estas cosas sobreviven."""
+    avisos = []
+    for j in jubiladas:
+        patron = re.compile(r"\b" + re.escape(j["jubilada"]) + r"\b", re.IGNORECASE)
+        for f, n, texto in lineas:
+            if not patron.search(texto):
+                continue
+            if any(e in texto for e in excepciones):
+                continue
+            avisos.append((f, n, j, texto.strip()))
+    return avisos
 
 
 def leer_orden(raiz):
@@ -78,6 +122,7 @@ def sitio(lineas, condicion):
 
 def revisar(raiz):
     terminos = leer_vocabulario(raiz)
+    jubiladas, excepciones = leer_jubiladas(raiz)
     lineas = list(lineas_del_libro(raiz, leer_orden(raiz)))
     cuerpo = [(f, n, t) for f, n, t in lineas if not t.lstrip().startswith("#")]
     fallos, filas = [], []
@@ -104,10 +149,14 @@ def revisar(raiz):
         if uso[0] < pos_bautizo:
             fallos.append(f"«{t['termino']}»: se usa en {uso[1]} línea {uso[2]} y no se bautiza "
                           f"hasta {bautizo[1]} línea {bautizo[2]}")
-    return filas, fallos
+
+    for f, n, j, texto in buscar_jubiladas(lineas, jubiladas, excepciones):
+        fallos.append(f"palabra jubilada «{j['jubilada']}» en {f} línea {n}: "
+                      f"ahora se dice «{j['buena']}» ({j['motivo']})\n      {texto[:90]}")
+    return filas, fallos, len(jubiladas)
 
 
-def imprimir(filas, fallos):
+def imprimir(filas, fallos, n_jubiladas):
     ancho = max([len(f[0]) for f in filas] + [8])
     print(f"{'término':<{ancho}}  {'se bautiza en':<34}  primer uso")
     for termino, bautizo, uso in filas:
@@ -117,7 +166,8 @@ def imprimir(filas, fallos):
         for f in fallos:
             print("FALLA:", f)
         return 1
-    print(f"PASA: los {len(filas)} términos se presentan antes de usarse.")
+    print(f"PASA: los {len(filas)} términos se presentan antes de usarse, y ninguna de las "
+          f"{n_jubiladas} palabras jubiladas ha vuelto.")
     return 0
 
 
@@ -135,7 +185,7 @@ def selftest(raiz):
         shutil.copytree(raiz, copia, ignore=shutil.ignore_patterns(".git", "pdf"))
         with open(os.path.join(copia, VOCABULARIO), "a", encoding="utf-8") as fh:
             fh.write("\nzarandaja | zarandaja, zarandajas | cap02-perceptron.md | **zarandaja**\n")
-        _, f2 = revisar(copia)
+        _, f2, _ = revisar(copia)
         ok = any("zarandaja" in x for x in f2)
         print(f"[1] test nulo         un término que no existe en el libro: "
               f"{'se queja, bien' if ok else 'NO se queja'}")
@@ -152,16 +202,32 @@ def selftest(raiz):
             "pesos | peso, pesos | cap02-perceptron.md | se les llama **los pesos**",
             "pesos | peso, pesos | cap13-mapa-de-los-sotanos.md | los nombres reales")
         open(voc, "w", encoding="utf-8").write(texto)
-        _, f2 = revisar(copia)
+        _, f2, _ = revisar(copia)
         ok = any("«pesos»" in x and "no se bautiza hasta" in x for x in f2)
         print(f"[2] señal implantada  bautizo de «pesos» movido al final: "
               f"{'lo caza' if ok else 'NO lo caza'}")
         if not ok:
             fallos.append("señal implantada: moví el bautizo de «pesos» al capítulo 13 y no lo cazó")
 
+    # [2 bis] La otra señal implantada: se mete una palabra jubilada en un TÍTULO, que es
+    #         por donde vuelven de verdad, y tiene que cazarla.
+    with tempfile.TemporaryDirectory() as tmp:
+        copia = os.path.join(tmp, "libro")
+        shutil.copytree(raiz, copia, ignore=shutil.ignore_patterns(".git", "pdf"))
+        cap = os.path.join(copia, MANUSCRITO, "cap02-perceptron.md")
+        texto = open(cap, encoding="utf-8").read().replace(
+            "## Dieciséis maneras de montarla", "## Dieciséis lámparas posibles", 1)
+        open(cap, "w", encoding="utf-8").write(texto)
+        _, f2b, _ = revisar(copia)
+        ok = any("jubilada «lámparas»" in x for x in f2b)
+        print(f"[2] señal implantada  «lámparas» devuelta a un título: "
+              f"{'la caza' if ok else 'NO la caza'}")
+        if not ok:
+            fallos.append("señal implantada: devolví «lámparas» a un título y no la cazó")
+
     # [3] Invariante del dominio: los títulos no cuentan como uso. «neurona» está en el
     #     título del capítulo 2 y se bautiza dentro; tiene que pasar.
-    filas, f3 = revisar(raiz)
+    filas, f3, _ = revisar(raiz)
     ok = not any("«neurona»" in x for x in f3)
     print(f"[3] invariante        «neurona» en el título del capítulo 2: "
           f"{'no cuenta como uso, bien' if ok else 'cuenta como uso, mal'}")

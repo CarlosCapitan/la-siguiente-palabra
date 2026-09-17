@@ -4,7 +4,8 @@ Capítulos 2 y 3 — la figura de apilar: la segunda capa no ve la foto, ve lo q
 primera dijo sobre la foto.
 
 Dos paneles:
-  Izquierda  el montaje real de la red que resuelve el o exclusivo: dos interruptores,
+  Izquierda  cómo está armada de verdad la red que resuelve el o exclusivo: dos
+             interruptores,
              dos neuronas en medio, una luz. El grosor de cada flecha es el peso que
              de verdad aprendió la red; la línea de puntos es un peso que frena.
   Derecha    las mismas cuatro situaciones, dibujadas ya no según los interruptores sino
@@ -39,7 +40,7 @@ ETIQUETA_SALIDA = "la luz"
 # Las claves de la figura. En el panel de la izquierda el grosor y el trazo de cada línea
 # SON datos —son los pesos que aprendió la red—, y sin decirlo son adorno. En el de la
 # derecha, negro y blanco quieren decir lo de siempre en este libro.
-CLAVE_MONTAJE = ("en el montaje de la izquierda: línea continua, suma;\n"
+CLAVE_MONTAJE = ("en el dibujo de la izquierda: línea continua, suma;\n"
                  "línea de puntos, resta; y cuanto más gruesa, más cuenta")
 CLAVE_COLOR = "negro: la luz se enciende  ·  blanco: la luz no se enciende"
 
@@ -126,7 +127,7 @@ def panel_montaje(ax, red, reglas):
             else:
                 ax.text(x + 0.24, y, texto, ha="left", va="center", fontsize=8.5)
 
-    ax.set_title("el montaje\ndos neuronas de más", fontsize=10)
+    ax.set_title("cómo está armada la red\ndos neuronas de más", fontsize=10)
     ax.set_xlim(-0.95, 2.75)
     ax.set_ylim(-1.5, 1.5)
     ax.axis("off")
