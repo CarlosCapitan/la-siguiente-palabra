@@ -37,6 +37,12 @@ EJEMPLOS_ACIERTO = 20_000
 
 SALIDA_CURVA = "../datos/en_que_orden_aprende_curva.csv"
 SALIDA_FIGURA = "../figuras/en_que_orden_aprende.png"
+ANCHO_ALTO_FIGURA = (6.2, 3.0)    # pulgadas, para una página de 6 por 9
+VENTANA_SUAVIZADO = 40            # puntos de la media que dibuja la línea negra
+MINIMO_PUNTOS_CURVA = 100         # menos que esto y el CSV no es una medición de verdad
+TITULO_FIGURA = "LO MAL QUE LO HACE, SEGÚN AVANZA EL ENTRENAMIENTO"
+ETIQUETA_CRUDA = "la medición cruda, paso a paso"
+ETIQUETA_SUAVE = "la misma, suavizada, para que se vea la forma"
 MODELO_GRANDE = 500_000_000_000   # orden de magnitud de un modelo grande de hoy
 
 # ==========================================================
@@ -194,12 +200,49 @@ def entrenar(datos, vocabulario, indice, letras, minutos, instantaneas):
         opt.step()
         pasos += 1
         if pasos % 20 == 0:
-            curva.append((transcurrido, float(perdida.item())))
+            curva.append((pasos, float(perdida.item())))
     a_final = acierto(modelo, datos, np.random.default_rng(1))
     return modelo, pasos, curva, muestras, a_inicial, a_final
 
 
+def suavizar(v, ventana=VENTANA_SUAVIZADO):
+    """La media de los últimos `ventana` valores. No es un dato nuevo: es el mismo dato
+    visto de lejos, para que se vea la FORMA de la curva y no el temblor."""
+    if len(v) < ventana:
+        return list(v)
+    fuera = []
+    acumulado = 0.0
+    for i, x in enumerate(v):
+        acumulado += x
+        if i >= ventana:
+            acumulado -= v[i - ventana]
+        fuera.append(acumulado / min(i + 1, ventana))
+    return fuera
+
+
+def leer_curva(ruta=SALIDA_CURVA):
+    """La curva guardada, para poder redibujar la figura sin volver a entrenar.
+
+    Entrenar esto son veinticinco minutos de GPU. Si la única manera de recuperar la
+    figura es repetirlos, la figura acaba desincronizada del guion que dice haberla
+    hecho —pasó: el CSV guardaba pasos y el guion dibujaba minutos— y nadie lo nota."""
+    with open(ruta, newline="", encoding="utf-8") as fh:
+        filas = list(csv.reader(fh))
+    assert filas and filas[0] == ["pasos", "lo_mal_que_lo_hace"], \
+        f"Se esperaba una cabecera ['pasos', 'lo_mal_que_lo_hace'] en {ruta}; se encontró {filas[:1]}"
+    datos = [(int(a), float(b)) for a, b in filas[1:]]
+    assert len(datos) >= MINIMO_PUNTOS_CURVA, \
+        f"Se esperaban al menos {MINIMO_PUNTOS_CURVA} puntos en {ruta}; se encontraron {len(datos)}"
+    return datos
+
+
 def figura(curva):
+    """Lo mal que lo hace, paso a paso.
+
+    Dos líneas: la medición cruda, que tiembla, y la misma suavizada, que enseña la
+    forma. Las dos van explicadas DENTRO de la figura (regla 9): una figura tiene que
+    poder entenderse sin el párrafo que la presenta, y aquí el gris y el negro son dos
+    cosas distintas que nadie adivina."""
     try:
         import matplotlib
         matplotlib.use("Agg")
@@ -207,17 +250,38 @@ def figura(curva):
     except ImportError:
         print("(sin matplotlib: no se dibuja la figura)")
         return
+    assert curva, "Se esperaba una curva con puntos; se encontró vacía"
     os.makedirs(os.path.dirname(SALIDA_FIGURA), exist_ok=True)
     t = [c[0] for c in curva]
     v = [c[1] for c in curva]
-    fig, ax = plt.subplots(figsize=(6.2, 3.4))
-    ax.plot(t, v, linewidth=1.1, color="#333333")
-    ax.set_xlabel("minutos de entrenamiento")
+    fig, ax = plt.subplots(figsize=ANCHO_ALTO_FIGURA)
+    ax.plot(t, v, linewidth=0.8, color="0.72", zorder=1, label=ETIQUETA_CRUDA)
+    ax.plot(t, suavizar(v), linewidth=1.8, color="#222222", zorder=2,
+            label=ETIQUETA_SUAVE)
+    ax.set_title(TITULO_FIGURA, fontsize=10.5, pad=10)
+    ax.set_xlabel("pasos de entrenamiento")
+    # El eje de la izquierda no lleva números a propósito: el libro no usa notación, y lo
+    # que importa aquí es la FORMA de la caída, no el valor. Lo que sí lleva es una
+    # palabra en cada extremo, para que se sepa hacia dónde es peor.
     ax.set_ylabel("lo mal que lo hace")
     ax.set_yticks([])
+    ax.text(-0.035, 0.99, "peor", transform=ax.transAxes, ha="right", va="top",
+            fontsize=8.5, color="0.35")
+    ax.text(-0.035, 0.01, "mejor", transform=ax.transAxes, ha="right", va="bottom",
+            fontsize=8.5, color="0.35")
+    # El suelo del eje es el cero, y se ve que la línea no llega a él: el capítulo dice
+    # justo eso, que baja y baja «sin llegar al suelo». Con el eje recortado por abajo esa
+    # frase no se podría comprobar en el dibujo, y un eje sin números y además recortado
+    # exagera la caída.
+    ax.set_ylim(bottom=0)
+    ax.set_xlim(left=0)
     ax.spines[["top", "right"]].set_visible(False)
+    ax.xaxis.set_major_formatter(
+        plt.FuncFormatter(lambda x, _: f"{int(x):,}".replace(",", ".")))
+    ax.legend(loc="upper right", frameon=False, fontsize=8.8, handlelength=2.4)
     fig.tight_layout()
     fig.savefig(SALIDA_FIGURA, dpi=200)
+    plt.close(fig)
     print(f"Figura escrita en {SALIDA_FIGURA}")
 
 
@@ -276,9 +340,17 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--selftest", action="store_true")
     ap.add_argument("--minutos", type=float, default=MINUTOS_TOTAL)
+    ap.add_argument("--solo-figura", action="store_true",
+                    help="redibuja la figura desde la curva ya guardada, sin entrenar")
     args = ap.parse_args()
     if args.selftest:
         sys.exit(selftest())
+    if args.solo_figura:
+        curva = leer_curva()
+        print(f"{len(curva):,} puntos leídos de {SALIDA_CURVA} "
+              f"(hasta el paso {curva[-1][0]:,}). No se entrena nada.")
+        figura(curva)
+        return
 
     texto = cargar_texto()
     letras = sorted(set(texto))
@@ -310,8 +382,8 @@ def main():
 
     os.makedirs(os.path.dirname(SALIDA_CURVA), exist_ok=True)
     with open(SALIDA_CURVA, "w", newline="", encoding="utf-8") as fh:
-        csv.writer(fh).writerows([["minutos", "lo_mal_que_lo_hace"]] +
-                                 [[f"{a:.4f}", f"{b:.4f}"] for a, b in curva])
+        csv.writer(fh).writerows([["pasos", "lo_mal_que_lo_hace"]] +
+                                 [[int(a), f"{b:.4f}"] for a, b in curva])
     print(f"\nCurva escrita en {SALIDA_CURVA}")
     figura(curva)
 

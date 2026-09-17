@@ -31,15 +31,25 @@ SALIDA_CSV = "en_serie_o_a_la_vez.csv"
 
 import argparse
 import csv
+import os
 import sys
 import time
 
+from formato import miles, coma
 import numpy as np
 import torch
 import torch.nn as nn
 
 
 def dispositivo():
+    """El procesador que se usa. Con la variable de entorno FORZAR_CPU=1 se obliga a usar
+    el procesador normal aunque haya tarjeta gráfica.
+
+    Hace falta porque el capítulo compara las DOS cosas en la MISMA máquina: primero en el
+    procesador y luego en la tarjeta. Si la medición del procesador se hace en otro
+    ordenador, la frase «el mismo programa en el mismo portátil» deja de ser verdad."""
+    if os.environ.get("FORZAR_CPU") == "1":
+        return torch.device("cpu")
     if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
         return torch.device("mps")
     if torch.cuda.is_available():
@@ -178,21 +188,25 @@ def main():
     n_serie = sum(p.numel() for p in serie.parameters())
     n_vez = sum(p.numel() for p in a_la_vez.parameters())
     print(f"{ANCHO} números por posición, lotes de {LOTE}.")
-    print(f"Números ajustables: en serie {n_serie:,} | a la vez {n_vez:,} "
+    print(f"Números ajustables: en serie {miles(n_serie)} | a la vez {miles(n_vez)} "
           f"({n_vez/n_serie:.2f} veces).\n")
     filas = []
 
     print("--- PASOS QUE HAY QUE DAR UNO DETRÁS DE OTRO (no depende de la máquina) ---")
+    # Los números van con el separador de miles del castellano, y TODAS las columnas
+    # igual: antes la longitud salía «1024» y los pasos «1,024» en la misma fila.
     print(f"{'longitud':>10}{'en serie':>12}{'a la vez':>12}")
     for n in LONGITUDES:
-        print(f"{n:>10}{EnSerie.pasos_en_serie(n):>12,}{ALaVez.pasos_en_serie(n):>12}")
+        print(f"{miles(n):>10}{miles(EnSerie.pasos_en_serie(n)):>12}"
+              f"{miles(ALaVez.pasos_en_serie(n)):>12}")
 
     print("\n--- TIEMPO DE UNA PASADA DE ENTRENAMIENTO ---")
     print(f"{'longitud':>10}{'en serie (s)':>15}{'a la vez (s)':>15}{'ventaja':>10}")
     for n in LONGITUDES:
         t_s = cronometrar(serie, n)
         t_v = cronometrar(a_la_vez, n)
-        print(f"{n:>10}{t_s:>15.4f}{t_v:>15.4f}{t_s/t_v:>9.1f}x")
+        print(f"{miles(n):>10}{coma(t_s, 4):>15}{coma(t_v, 4):>15}"
+              f"{coma(t_s / t_v, 1):>9}x")
         filas.append([str(DISPOSITIVO), n, f"{t_s:.6f}", f"{t_v:.6f}", f"{t_s/t_v:.2f}"])
 
     with open(SALIDA_CSV, "w", newline="", encoding="utf-8") as fh:
