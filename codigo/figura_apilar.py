@@ -25,7 +25,7 @@ SALIDA = "../figuras/apilar.png"
 ANCHO_ALTO = (6.2, 3.2)          # pulgadas, para una página de 6 por 9
 PUNTOS = 200                     # puntos por pulgada
 
-PAREJA_BUSCADA = ("al menos uno", "los dos")   # el reparto más repetido, medido aparte
+PAREJA_BUSCADA = ("al menos uno subido", "los dos subidos")   # el reparto más repetido, medido aparte
 MAX_SEMILLAS = 60                # cuántas probar hasta dar con ese reparto
 UMBRAL = 0.5
 GROSOR_MAXIMO = 4.5              # grosor de la flecha del peso más grande
@@ -33,7 +33,7 @@ REJILLA = 61                     # finura de la búsqueda a lo bruto de rayas
 SOLAPE = 0.08                    # dos puntos más cerca que esto son el mismo sitio
 SEPARACION = 0.045               # cuánto se separan para que se vean los dos
 
-ETIQUETAS_ENTRADA = ["primer\ninterruptor", "segundo\ninterruptor"]
+ETIQUETAS_ENTRADA = ["el de\nabajo", "el de\narriba"]
 ETIQUETA_SALIDA = "la luz"
 
 # ==========================================================

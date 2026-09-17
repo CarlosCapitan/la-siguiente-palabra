@@ -110,21 +110,24 @@ def reglas_de_dos_interruptores():
 # Las dieciséis reglas, nombradas en castellano corriente. La clave son las cuatro
 # respuestas, en el orden de TABLA_DOS: ninguno, solo el segundo, solo el primero, los dos.
 # Vive aquí, en el capítulo 2, y de aquí la importa el capítulo 3: una cosa, un nombre.
+# Los dos interruptores del libro son los del pasillo: uno abajo y otro arriba. Las
+# cuatro casillas de cada regla van en el orden de TABLA_DOS: los dos bajados, solo el
+# de arriba subido, solo el de abajo subido, los dos subidos.
 NOMBRES = {
     (0, 0, 0, 0): "nunca",
-    (0, 0, 0, 1): "los dos",
-    (0, 0, 1, 0): "solo el primero",
-    (0, 0, 1, 1): "el primero",
-    (0, 1, 0, 0): "solo el segundo",
-    (0, 1, 0, 1): "el segundo",
-    (0, 1, 1, 0): "exactamente uno",
-    (0, 1, 1, 1): "al menos uno",
-    (1, 0, 0, 0): "ninguno de los dos",
-    (1, 0, 0, 1): "los dos iguales",
-    (1, 0, 1, 0): "el segundo no",
-    (1, 0, 1, 1): "salvo solo el segundo",
-    (1, 1, 0, 0): "el primero no",
-    (1, 1, 0, 1): "salvo solo el primero",
+    (0, 0, 0, 1): "los dos subidos",
+    (0, 0, 1, 0): "solo el de abajo",
+    (0, 0, 1, 1): "el de abajo",
+    (0, 1, 0, 0): "solo el de arriba",
+    (0, 1, 0, 1): "el de arriba",
+    (0, 1, 1, 0): "en posiciones distintas",
+    (0, 1, 1, 1): "al menos uno subido",
+    (1, 0, 0, 0): "ninguno subido",
+    (1, 0, 0, 1): "en la misma posición",
+    (1, 0, 1, 0): "el de arriba no",
+    (1, 0, 1, 1): "salvo solo el de arriba",
+    (1, 1, 0, 0): "el de abajo no",
+    (1, 1, 0, 1): "salvo solo el de abajo",
     (1, 1, 1, 0): "no los dos",
     (1, 1, 1, 1): "siempre",
 }

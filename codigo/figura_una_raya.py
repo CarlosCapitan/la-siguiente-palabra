@@ -21,7 +21,7 @@ PUNTOS = 200                     # puntos por pulgada
 
 ESQUINAS = [(0, 0), (0, 1), (1, 0), (1, 1)]
 ENCIENDE_FACIL = {(1, 1)}                    # «los dos encendidos»: una raya basta
-ENCIENDE_XOR = {(0, 1), (1, 0)}              # «exactamente uno»: ninguna raya basta
+ENCIENDE_XOR = {(0, 1), (1, 0)}              # «en posiciones distintas»: ninguna raya basta
 
 # tres intentos de raya para el panel derecho, como (pendiente, altura)
 INTENTOS = [(-1.0, 0.5), (-1.0, 1.5), (1.0, -0.4)]
@@ -49,10 +49,10 @@ def panel(ax, encienden, titulo, rayas):
         ax.plot(xs, [m * x + h for x in xs], "--", color="0.35", linewidth=1.2, zorder=2)
     ax.set_xlim(-0.45, 1.45)
     ax.set_ylim(-0.45, 1.45)
-    ax.set_xticks([0, 1]); ax.set_xticklabels(["apagado", "encendido"])
-    ax.set_yticks([0, 1]); ax.set_yticklabels(["apagado", "encendido"])
-    ax.set_xlabel("primer interruptor")
-    ax.set_ylabel("segundo interruptor")
+    ax.set_xticks([0, 1]); ax.set_xticklabels(["bajado", "subido"])
+    ax.set_yticks([0, 1]); ax.set_yticklabels(["bajado", "subido"])
+    ax.set_xlabel("el interruptor de abajo")
+    ax.set_ylabel("el de arriba")
     ax.set_title(titulo, fontsize=10.5, pad=10)
     ax.set_aspect("equal")
     for lado in ("top", "right"):
@@ -63,8 +63,8 @@ def panel(ax, encienden, titulo, rayas):
 def dibujar():
     plt.rcParams["font.size"] = 9
     fig, (izq, der) = plt.subplots(1, 2, figsize=ANCHO_ALTO)
-    panel(izq, ENCIENDE_FACIL, "«los dos encendidos»\nuna raya basta", [(-1.0, 1.5)])
-    panel(der, ENCIENDE_XOR, "«exactamente uno»\nninguna raya basta", INTENTOS)
+    panel(izq, ENCIENDE_FACIL, "«los dos subidos»\nuna raya basta", [(-1.0, 1.5)])
+    panel(der, ENCIENDE_XOR, "«en posiciones distintas»\nninguna raya basta", INTENTOS)
     fig.text(0.5, 0.015,
              "negro: la luz se enciende    ·    blanco: la luz no se enciende",
              ha="center", fontsize=8.5, color="0.3")
@@ -83,14 +83,14 @@ def selftest():
 
     # 2. SEÑAL IMPLANTADA — la regla fácil del panel izquierdo tiene que ser separable.
     facil = hay_raya_que_separa(ENCIENDE_FACIL)
-    print(f"[2] señal implantada  «los dos encendidos» separable: {'sí' if facil else 'NO'}")
+    print(f"[2] señal implantada  «los dos subidos» separable: {'sí' if facil else 'NO'}")
     if not facil:
-        fallos.append("señal implantada: «los dos encendidos» debería ser separable")
+        fallos.append("señal implantada: «los dos subidos» debería ser separable")
 
     # 3. INVARIANTE DEL DOMINIO — el o exclusivo NO puede separarse con una raya.
     #    Es lo que afirma la figura; si esto saliera que sí, la figura mentiría.
     xor = hay_raya_que_separa(ENCIENDE_XOR)
-    print(f"[3] invariante        «exactamente uno» separable: {'sí' if xor else 'no'}")
+    print(f"[3] invariante        «en posiciones distintas» separable: {'sí' if xor else 'no'}")
     if xor:
         fallos.append("invariante: encontró una raya para el o exclusivo; la figura sería falsa")
 
