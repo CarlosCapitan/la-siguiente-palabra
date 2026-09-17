@@ -2,7 +2,7 @@
 """
 Capítulo de los conceptos — qué mira cada neurona de una capa.
 
-El libro dice que una capa son varios tribunales a la vez, cada uno con una
+El libro dice que una capa son varios comités a la vez, cada uno con una
 pregunta distinta sobre lo mismo, y que nadie les reparte las preguntas. Esto lo
 mide: entrena una red con una capa de en medio sobre dígitos manuscritos de verdad,
 y luego mira, una por una, qué ha acabado mirando cada neurona de esa capa y cuánto
@@ -37,10 +37,10 @@ REPETICIONES = 5               # arranques distintos por tamaño: una sola tirad
 # escondidos dentro de un print a mitad del fichero.
 TITULO_1 = "¿ES PAR ESTE DÍGITO ESCRITO A MANO?"
 SUBTITULO_1 = "de cada 100 dígitos que nunca había visto, cuántos acierta"
-TITULO_2 = "LO QUE ACIERTA, ELLA SOLA, CADA UNA DE LAS OCHO DE EN MEDIO"
-TITULO_3 = "CUÁNTO SE PARECEN ENTRE SÍ ESAS OCHO"
+TITULO_2 = "LO QUE ACIERTA, ÉL SOLO, CADA UNO DE LOS OCHO COMITÉS DE EN MEDIO"
+TITULO_3 = "CUÁNTO SE PARECEN ENTRE SÍ ESOS OCHO COMITÉS"
 SUBTITULO_3 = "(0 % serían ocho preguntas sin nada en común; 100 %, ocho copias)"
-TITULO_4 = "¿Y SI EN MEDIO HAY MÁS, O MENOS?"
+TITULO_4 = "¿Y SI EN MEDIO HAY MÁS COMITÉS, O MENOS?"
 SUBTITULO_4A = "media de {repeticiones} entrenamientos desde cero; entre paréntesis,"
 SUBTITULO_4B = "el peor y el mejor de los {repeticiones}"
 
@@ -90,7 +90,7 @@ def entrenar_con_capa(semilla=SEMILLA, en_medio=EN_MEDIO, permutar=False):
 
 
 def una_raya_sola(semilla=SEMILLA):
-    """La misma pregunta con un solo tribunal: sin capa de en medio. Es el capítulo
+    """La misma pregunta con un solo comité: sin capa de en medio. Es el capítulo
     anterior aplicado a esto, y es la comparación que da sentido a la capa."""
     Xtr, ytr, Xte, yte = datos(semilla)
     red = Red([LADO * LADO, 1], semilla=semilla).entrenar(Xtr, ytr, TASA, PASOS)
@@ -153,24 +153,24 @@ def imprimir(m, aciertos, parecido, sola):
     lineas.append(TITULO_1)
     lineas.append(SUBTITULO_1)
     lineas.append("")
-    fila("un solo tribunal, sin capa", pct(sola))
-    fila("una capa de ocho en medio", pct(m["entera"]))
+    fila("un solo comité, sin capa", pct(sola))
+    fila("una capa de ocho comités en medio", pct(m["entera"]))
     lineas.append("")
     lineas.append("")
 
     lineas.append(TITULO_2)
     lineas.append("")
     for j, a in enumerate(aciertos, 1):
-        fila(f"la número {j}", pct(a))
+        fila(f"el comité número {j}", pct(a))
     lineas.append(f"{'-' * ANCHO}{'-' * 7}")
-    fila("la mejor de las ocho", pct(aciertos.max()))
+    fila("el mejor de los ocho", pct(aciertos.max()))
     lineas.append("")
     lineas.append("")
 
     lineas.append(TITULO_3)
     lineas.append(SUBTITULO_3)
     lineas.append("")
-    fila("las dos que más se parecen", pct(parecido))
+    fila("los dos que más se parecen", pct(parecido))
     lineas.append("")
     lineas.append("")
 
@@ -178,9 +178,12 @@ def imprimir(m, aciertos, parecido, sola):
     lineas.append(SUBTITULO_4A.format(repeticiones=REPETICIONES))
     lineas.append(SUBTITULO_4B.format(repeticiones=REPETICIONES))
     lineas.append("")
-    fila("ninguna, un solo tribunal", pct(sola))
+    fila("ninguno, un solo comité", pct(sola))
     for n, med, lo, hi in barrido_de_anchura():
-        fila(f"{n:>2} en medio", pct(med), f"   (de {coma(100 * lo)} a {coma(100 * hi)})")
+        # «1 comité» y «2 comités»: el plural se dice bien o no se dice. Una tabla que
+        # pone «1 comités» delata que el rótulo se escribió pensando solo en el número.
+        cuantos = f"{n:>2} comité" + ("s" if n > 1 else "") + " en medio"
+        fila(cuantos, pct(med), f"   (de {coma(100 * lo)} a {coma(100 * hi)})")
 
     comprobar_ancho(lineas)
     for l in lineas:

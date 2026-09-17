@@ -6,7 +6,7 @@ artificial» y «red neuronal».
 Cuatro paneles, y los tres primeros salen de un perceptrón entrenado de verdad
 sobre dígitos manuscritos, con la regla de Rosenblatt de `perceptron.py`:
 
-  1. Un cuatro, tal como lo ve la máquina: sesenta y cuatro puntos, uno por jurado.
+  1. Un cuatro, tal como lo ve la máquina: sesenta y cuatro puntos, uno por miembro.
   2. Cuánto se le hace caso a cada punto: los pesos que aprendió, dibujados en el
      mismo cuadrado de ocho por ocho. Negro empuja hacia «es un cuatro», blanco
      hacia «no lo es», gris medio es un punto que no cuenta.
@@ -33,7 +33,7 @@ PUNTOS = 200
 # para que en el papel salgan del tamaño que se quiere, y no más pequeñas.
 ESCALA = 1.0 / 0.72
 
-DIGITO_SI = 4                    # la pregunta del tribunal en el libro: ¿esto es un cuatro?
+DIGITO_SI = 4                    # la pregunta del comité en el libro: ¿esto es un cuatro?
 DIGITO_NO = 9                    # el que más se le parece escrito a mano
 LADO = 8                         # los dibujos son de ocho puntos por ocho
 SEMILLA_FIGURA = 20260916
@@ -76,7 +76,7 @@ from matplotlib.gridspec import GridSpec
 from perceptron import cargar_digitos, entrenar, acierto
 
 
-def entrenar_el_tribunal(semilla=SEMILLA_FIGURA, permutar=False):
+def entrenar_el_comite(semilla=SEMILLA_FIGURA, permutar=False):
     """Un perceptrón que separa DIGITO_SI de DIGITO_NO, con la regla de Rosenblatt.
 
     Con permutar=True se le barajan las etiquetas: es el test nulo."""
@@ -178,7 +178,7 @@ def panel_red(ax):
 
 
 def dibujar():
-    m = entrenar_el_tribunal()
+    m = entrenar_el_comite()
     i_si, i_no = ejemplos(m)
     puntos, liston = puntos_y_liston(m, (i_si, i_no))
 
@@ -206,14 +206,14 @@ def dibujar():
 
 def selftest():
     fallos = []
-    m = entrenar_el_tribunal()
+    m = entrenar_el_comite()
     i_si, i_no = ejemplos(m)
     puntos, liston = puntos_y_liston(m, (i_si, i_no))
 
     # [1] Test nulo: con las etiquetas barajadas no hay nada que aprender, y el
     #     acierto tiene que caerse al azar. Si no se cae, la figura estaría
     #     dibujando pesos que no significan nada.
-    nulo = entrenar_el_tribunal(permutar=True)
+    nulo = entrenar_el_comite(permutar=True)
     print(f"[1] test nulo         etiquetas barajadas: acierto {nulo['acierto']:.3f} "
           f"(azar = 0,5); de verdad: {m['acierto']:.3f}")
     if nulo["acierto"] > 0.7:
