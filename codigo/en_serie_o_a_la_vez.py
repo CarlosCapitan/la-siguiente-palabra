@@ -176,15 +176,29 @@ def selftest():
 
 
 def main():
+    global ANCHO, LOTE
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--selftest", action="store_true")
+    # El tamaño de la máquina de juguete se puede cambiar SIN tocar las constantes: las
+    # de arriba siguen siendo las de la medición del libro, y una ejecución con otro
+    # tamaño lo dice en su propia cabecera. Hace falta porque la pregunta abierta es si
+    # la ventaja de la tarjeta gráfica depende del tamaño de lo que se le manda hacer.
+    ap.add_argument("--ancho", type=int, default=ANCHO,
+                    help=f"números por posición (por omisión {ANCHO})")
+    ap.add_argument("--lote", type=int, default=LOTE,
+                    help=f"cuántos textos a la vez (por omisión {LOTE})")
     args = ap.parse_args()
     if args.selftest:
         sys.exit(selftest())
 
+    ANCHO, LOTE = args.ancho, args.lote
+    assert ANCHO % CABEZAS == 0, \
+        f"Se esperaba un ancho múltiplo de {CABEZAS} cabezas; se pidió {ANCHO}"
+    assert LOTE >= 1, f"Se esperaba un lote de 1 o más; se pidió {LOTE}"
+
     print(f"Procesador usado: {DISPOSITIVO}")
-    serie = EnSerie().to(DISPOSITIVO)
-    a_la_vez = ALaVez().to(DISPOSITIVO)
+    serie = EnSerie(ancho=ANCHO).to(DISPOSITIVO)
+    a_la_vez = ALaVez(ancho=ANCHO, cabezas=CABEZAS).to(DISPOSITIVO)
     n_serie = sum(p.numel() for p in serie.parameters())
     n_vez = sum(p.numel() for p in a_la_vez.parameters())
     print(f"{ANCHO} números por posición, lotes de {LOTE}.")
