@@ -1,0 +1,164 @@
+#!/usr/bin/env python3
+"""
+Comprueba que cada figura cae en la misma página que el texto que la explica.
+
+Sale de un fallo que solo se ve leyendo el PDF y que no se ve nunca leyendo el
+manuscrito: dos de las cuatro figuras del libro quedaban al pie de una página y su
+explicación empezaba en la siguiente. El lector leía «el cuadro de la derecha» con la
+figura ya pasada. En el manuscrito estaban pegadas; el salto lo ponía la imprenta.
+
+Y como la paginación cambia cada vez que se toca un párrafo anterior, esto no se puede
+vigilar a ojo: hay que comprobarlo en cada compilación.
+
+Uso:
+    python verificar_figuras.py ../../libro-ia-libro ../../libro-ia-libro/pdf/main.pdf
+    python verificar_figuras.py ../../libro-ia-libro ../../libro-ia-libro/pdf/main.pdf --selftest
+"""
+
+# ======================= CONSTANTES =======================
+
+ORDEN = "manuscript/Book.txt"
+MANUSCRITO = "manuscript"
+FIGURA = r'^!\[.*?\]\((figuras/[^)]+)\)'
+LARGO_ANCLA = 45          # cuántos caracteres del texto explicativo se buscan en el PDF
+
+# ==========================================================
+
+import argparse
+import os
+import re
+import subprocess
+import sys
+
+
+def texto_por_pagina(pdf):
+    n = int(subprocess.run(["pdfinfo", pdf], capture_output=True, text=True,
+                           check=True).stdout.split("Pages:")[1].split()[0])
+    paginas = {}
+    for p in range(1, n + 1):
+        t = subprocess.run(["pdftotext", "-f", str(p), "-l", str(p), pdf, "-"],
+                           capture_output=True, text=True, check=True).stdout
+        paginas[p] = re.sub(r"\s+", " ", t)
+    return paginas
+
+
+def paginas_con_figura(pdf):
+    salida = subprocess.run(["pdfimages", "-list", pdf], capture_output=True, text=True,
+                            check=True).stdout.split("\n")[2:]
+    vistas = []
+    for l in salida:
+        if not l.strip():
+            continue
+        p = int(l.split()[0])
+        if p not in vistas:
+            vistas.append(p)
+    return vistas
+
+
+def figuras_del_manuscrito(raiz):
+    """Cada figura del libro, en orden de lectura, con la frase que la explica:
+    la primera línea de texto que viene después."""
+    ficheros = [l.strip() for l in
+                open(os.path.join(raiz, ORDEN), encoding="utf-8") if l.strip()]
+    salida = []
+    for f in ficheros:
+        lineas = open(os.path.join(raiz, MANUSCRITO, f), encoding="utf-8").read().split("\n")
+        for i, l in enumerate(lineas):
+            m = re.match(FIGURA, l)
+            if not m:
+                continue
+            siguiente = next((x for x in lineas[i + 1:] if x.strip()), "")
+            assert siguiente, f"{f}: la figura {m.group(1)} no tiene texto detrás"
+            ancla = re.sub(r"\*\*|\*|`", "", siguiente).strip()
+            salida.append({"fichero": f, "figura": m.group(1),
+                           "ancla": re.sub(r"\s+", " ", ancla)[:LARGO_ANCLA]})
+    assert salida, f"No encontré ninguna figura en el manuscrito de {raiz}"
+    return salida
+
+
+def revisar(raiz, pdf, desplazar=0):
+    figs = figuras_del_manuscrito(raiz)
+    imgs = paginas_con_figura(pdf)
+    paginas = texto_por_pagina(pdf)
+    fallos, filas = [], []
+    if len(imgs) != len(figs):
+        fallos.append(f"el manuscrito tiene {len(figs)} figuras y el PDF {len(imgs)}; "
+                      f"o falta alguna imagen o sobra")
+    for k, f in enumerate(figs):
+        ancla = figs[(k + desplazar) % len(figs)]["ancla"]
+        pag_img = imgs[k] if k < len(imgs) else None
+        pag_txt = next((p for p in paginas if ancla in paginas[p]), None)
+        filas.append((f["figura"], pag_img, pag_txt))
+        if pag_txt is None:
+            fallos.append(f"{f['figura']}: no encuentro en el PDF el texto que la explica "
+                          f"(«{ancla}…»)")
+        elif pag_img is not None and pag_img != pag_txt:
+            fallos.append(f"{f['figura']}: la figura está en la página {pag_img} y el texto "
+                          f"que la explica empieza en la {pag_txt}")
+    return filas, fallos
+
+
+def imprimir(filas, fallos):
+    print(f"{'figura':<30}{'imagen':>8}{'texto':>8}")
+    for fig, a, b in filas:
+        print(f"{fig:<30}{str(a):>8}{str(b):>8}")
+    print()
+    if fallos:
+        for f in fallos:
+            print("FALLA:", f)
+        return 1
+    print(f"PASA: las {len(filas)} figuras caen en la misma página que su explicación.")
+    return 0
+
+
+# ============================ SELFTEST ============================
+
+def selftest(raiz, pdf):
+    fallos = []
+
+    # [1] Test nulo: si se busca un texto que no está, tiene que decirlo, no callar.
+    paginas = texto_por_pagina(pdf)
+    hay = any("zarandaja pentagonal" in t for t in paginas.values())
+    print(f"[1] test nulo         un texto que no está en el libro: "
+          f"{'no aparece, bien' if not hay else 'APARECE, mal'}")
+    if hay:
+        fallos.append("test nulo: encontré en el PDF un texto que no debería estar")
+
+    # [2] Señal implantada: se emparejan a propósito las figuras con la explicación de
+    #     la siguiente. Casi todas tienen que saltar; si no salta ninguna, no comprueba.
+    _, f2 = revisar(raiz, pdf, desplazar=1)
+    print(f"[2] señal implantada  emparejadas a la figura equivocada: {len(f2)} quejas")
+    if not f2:
+        fallos.append("señal implantada: emparejé cada figura con la explicación de otra "
+                      "y no se quejó de ninguna")
+
+    # [3] Invariante del dominio: el libro tal como está, tiene que pasar.
+    filas, f3 = revisar(raiz, pdf)
+    print(f"[3] invariante        el libro tal como está: {len(f3)} fallos en "
+          f"{len(filas)} figuras")
+    if f3:
+        fallos.append(f"invariante: {f3[0]}")
+
+    print()
+    if fallos:
+        for f in fallos:
+            print("FALLA:", f)
+        return 1
+    print("SELFTEST: las tres pruebas pasan.")
+    return 0
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument("raiz")
+    p.add_argument("pdf")
+    p.add_argument("--selftest", action="store_true")
+    a = p.parse_args()
+    assert os.path.exists(a.pdf), f"Se esperaba el PDF compilado en {a.pdf}; no existe"
+    if a.selftest:
+        return selftest(a.raiz, a.pdf)
+    return imprimir(*revisar(a.raiz, a.pdf))
+
+
+if __name__ == "__main__":
+    sys.exit(main())
