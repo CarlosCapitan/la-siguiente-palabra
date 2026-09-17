@@ -53,6 +53,53 @@ def fila_esta_en_alguna_linea(celdas, lineas=None):
     patron = re.compile(r'(?<![\w,.])' + r'.*?'.join(re.escape(c) for c in celdas))
     return any(patron.search(l) for l in (lineas_salida if lineas is None else lineas))
 
+def lineas_crudas_del_bloque(b):
+    """Las líneas del bloque sin el prefijo de cita ni las vallas, pero SIN aplastar los espacios."""
+    out = []
+    for l in b.splitlines():
+        l = re.sub(r'^(> ?| {4})', '', l)
+        if l.strip() == '```':
+            continue
+        l = quitar_marcado(l).rstrip()
+        if l.strip():
+            out.append(l)
+    return out
+
+
+def casa_con_los_espacios(linea):
+    """¿Esta línea del libro está en la salida con sus rachas de espacios intactas?
+
+    El libro SÍ puede repartir un renglón largo en varias líneas para que quepa en la página, y
+    eso convierte un espacio suelto en un salto de línea. Lo que no puede es cambiar una racha de
+    tres espacios por uno: ahí el espacio es un dato. Así que el espacio suelto se compara con
+    manga ancha —vale cualquier cosa en blanco— y la racha de dos o más, al milímetro."""
+    partes = re.split(r'( {2,})', linea)
+    patron = ''.join(re.escape(p) if p.startswith('  ') else re.escape(p).replace(r'\ ', r'\s+')
+                     for p in partes)
+    return re.search(patron, salida_con_espacios) is not None
+
+
+def espacios_comidos(b):
+    """¿El libro ha cambiado una racha de espacios por uno solo?
+
+    Un bloque de máquina puede QUITAR una columna entera que no cabe (regla 6), y un renglón de
+    220 caracteres tiene que partirse porque la página mide seis pulgadas. Lo que no puede es
+    cambiar tres espacios por uno: en la máquina de contar letras del capítulo 1 el espacio es
+    uno de los 42 símbolos que se eligen, con su frecuencia real, y una racha de tres es lo que
+    la máquina escribió. Antes esto pasaba desapercibido porque la comparación aplasta los
+    espacios de los dos lados y luego anuncia «0 recortadas».
+
+    Solo se avisa de la línea que SÍ está en la salida aplastando espacios y NO está sin
+    aplastarlos: ésa es exactamente la que el libro ha retocado. Una línea que falta del todo, o
+    a la que se le ha quitado una columna, la caza la comprobación de siempre."""
+    avisos = 0
+    for l in lineas_crudas_del_bloque(b):
+        if normalizar(l).strip() in salida and not casa_con_los_espacios(l.strip()):
+            print(f"AVISO, espacios distintos: «{l.strip()[:50]}…» está en la salida con otras\n  rachas de espacios. Si son ancho de columna, da igual; si el espacio es un dato del\n  bloque —capítulo 1—, no da igual.")
+            avisos += 1
+    return avisos
+
+
 def parece_salida_de_maquina(lineas):
     """¿Este capítulo enseña ALGO con pinta de salida de máquina?
 
@@ -118,12 +165,22 @@ def selftest():
     if sin_datos or not (con_valla and con_sangria and con_tabla):
         fallos.append("la guardia: tiene que callar con prosa y avisar con valla, sangría o tabla")
 
+    # 5. LOS ESPACIOS — un bloque del libro que cuadre solo aplastando rachas de espacios no es
+    #    literal. Se comprueba sobre la comparación cruda, que es la que decide.
+    maquina = "hay tres   espacios seguidos aqui y dos  aqui"
+    igual = "hay tres   espacios seguidos aqui y dos  aqui"
+    comido = "hay tres espacios seguidos aqui y dos aqui"
+    print(f"[5] los espacios      copia exacta: {'pasa' if igual in maquina else 'NO PASA'}; "
+          f"con los espacios comidos: {'PASA (mal)' if comido in maquina else 'no pasa'}")
+    if igual not in maquina or comido in maquina:
+        fallos.append("los espacios: la copia exacta pasa; la de espacios comidos, no")
+
     print()
     if fallos:
         for f in fallos:
             print("FALLA:", f)
         return 1
-    print("SELFTEST: las cuatro pruebas pasan.")
+    print("SELFTEST: las cinco pruebas pasan.")
     return 0
 
 
@@ -134,6 +191,13 @@ if '--selftest' in sys.argv:
 capitulo = sys.argv[1]
 crudo = io.open(capitulo, encoding='utf-8').read()
 salida = ' '.join(normalizar(io.open(f, encoding='utf-8').read()) for f in sys.argv[2:])
+# Segunda copia de la salida SIN aplastar los espacios. normalizar() convierte cualquier racha
+# de espacios en uno solo, que es lo correcto para comparar un bloque partido en líneas, pero
+# deja ciego al verificador ante un bloque donde el espacio ES UN DATO: en la máquina de contar
+# letras del capítulo 1, el espacio es uno de los 42 símbolos que se eligen, con su frecuencia
+# real, y una racha de tres espacios seguidos es lo que la máquina escribió.
+salida_con_espacios = ' '.join(
+    io.open(f, encoding='utf-8').read().replace('\n', ' ') for f in sys.argv[2:])
 assert salida.strip(), "no me has dado ninguna salida contra la que comparar"
 
 # Las mismas salidas, pero línea a línea. Una fila de tabla del libro sale de UNA línea de
@@ -183,6 +247,7 @@ for b in bloques:
         continue
     comprobados += 1
     if t[:MINIMO] in salida:
+        espacios_comidos(b)
         continue
     # El bloque entero no cuadra. Segunda oportunidad: que cada línea, una por una, sea
     # literal. Eso permite quitar del libro lo que es adorno de consola —unas comillas, una

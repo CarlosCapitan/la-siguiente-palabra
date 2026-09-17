@@ -14,7 +14,8 @@ import re, sys, unicodedata
 # exigente que su ausencia: que se bauticen antes de usarse (reglas 5 bis y 5 ter).
 PROHIBIDAS = ["softmax","vector","matriz","matrices","gradiente","token","embedding",
     "query","key","value","parametro","hiperparametro","logaritm","dimension",
-    "producto escalar","funcion de perdida","backprop","tensor","capa oculta"]
+    "producto escalar","funcion de perdida","backprop","tensor","capa oculta",
+    "n-grama","bigrama","trigrama"]
 GRIEGO = re.compile(r'[Ͱ-Ͽ]')
 MATE   = re.compile(r'[=∑∏√∫±×·⋅≈≤≥^]|\b\d+\s*[*/]\s*\d+')
 CODIGO = re.compile(r'^\s*(```|import |def |>>> )')
@@ -60,7 +61,8 @@ def selftest():
     limpio = ["En 1948, un ingeniero de la compañía telefónica Bell publicó un artículo.",
               "Aquel ZX81 tenía un kilobyte: mil veinticuatro bytes, ni uno más.",
               "Donde el suelo quede cerca —son cuatro sitios— te lo diré.",
-              "La máquina acierta el 90,4 % de las veces, frente al 78,1 % de antes."]
+              "La máquina acierta el 90,4 % de las veces, frente al 78,1 % de antes.",
+              "    python ngrama.py --selftest"]   # el NOMBRE del programa no es jerga
     sale = revisar(limpio)
     print(f"[1] test nulo         prosa limpia: {len(sale)} incidencias"
           + (f" ({clases(sale)})" if sale else ""))
@@ -73,9 +75,12 @@ def selftest():
                    'griego':   "Se ajusta con un paso de tamaño α en cada vuelta.",
                    'notacion': "El resultado es 3 × 4 ≈ 12, redondeando.",
                    'codigo':   "import numpy as np"}
+    implantadas['jerga2'] = "Eso es lo que hace un modelo de n-gramas, ni más ni menos."
+    implantadas['jerga'], implantadas['jerga2'] = implantadas['jerga'], implantadas['jerga2']
     cazadas = {}
     for clase, linea in implantadas.items():
-        cazadas[clase] = clase in clases(revisar([linea]))
+        esperada = 'jerga' if clase.startswith('jerga') else clase
+        cazadas[clase] = esperada in clases(revisar([linea]))
     print("[2] señal implantada  " + "; ".join(
         f"{c}: {'la caza' if v else 'SE LE ESCAPA'}" for c, v in cazadas.items()))
     if not all(cazadas.values()):

@@ -36,6 +36,8 @@ import sys
 import unicodedata
 from collections import defaultdict, Counter
 
+from formato import miles
+
 
 def cargar_corpus(ruta):
     with open(ruta, encoding="utf-8") as fh:
@@ -183,8 +185,8 @@ def main():
     secuencia = normalizar(crudo, ALFABETO)
     palabras = [p for p in secuencia.split() if p]
     vocabulario = set(palabras)
-    print(f"Corpus: {len(secuencia):,} caracteres, {len(palabras):,} palabras, "
-          f"{len(vocabulario):,} palabras distintas.\n")
+    print(f"Corpus: {miles(len(secuencia))} caracteres, {miles(len(palabras))} palabras, "
+          f"{miles(len(vocabulario))} palabras distintas.\n")
 
     if args.selftest:
         sys.exit(selftest(secuencia, palabras, vocabulario))
