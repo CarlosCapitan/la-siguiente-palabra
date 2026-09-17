@@ -42,6 +42,7 @@ import argparse
 import csv
 import sys
 
+from formato import tabla_de_probabilidades
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -157,8 +158,14 @@ def main():
                 ("adiestrado, con su formato", tok_i, mod_i, None)):
             t = con_formato(tok_i, FRASE_CAP6) if texto is None else texto
             top = siguientes(tok, mod, t)
+            # La misma tabla del capítulo 7, con los mismos rótulos y la misma barra.
+            # Antes esto salía en una sola línea, separado por barras verticales, y en el
+            # libro no cabía: había que partirla a mano, y una línea de datos partida a
+            # mano ya no es lo que imprimió la máquina.
             print(f"  {titulo}:")
-            print("    " + " | ".join(f"{w.replace(' ','_')} {v*100:.1f}%" for w, v in top))
+            pares = [(w.replace(" ", "_"), v) for w, v in top]
+            for l in tabla_de_probabilidades(pares, decimales=1):
+                print("  " + l)
             filas += [[etiqueta, titulo, "siguiente_palabra", w, f"{v:.4f}"] for w, v in top]
 
         print(f"\n--- 2. Pregunta directa: «{PREGUNTA}» ---")

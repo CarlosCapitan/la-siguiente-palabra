@@ -26,7 +26,7 @@ Uso:
 # ======================= CONSTANTES =======================
 
 SALIDA = "../figuras/una_neurona.png"
-ANCHO_ALTO = (6.2, 4.4)          # pulgadas, para una página de 6 por 9
+ANCHO_ALTO = (6.2, 4.6)          # pulgadas, para una página de 6 por 9
 PUNTOS = 200
 # La caja de texto de una página de 6 por 9 mide 4,45 pulgadas, así que xelatex
 # encoge esta figura a un 72 %. Las letras se dibujan más grandes en esa proporción
@@ -38,6 +38,27 @@ DIGITO_NO = 9                    # el que más se le parece escrito a mano
 LADO = 8                         # los dibujos son de ocho puntos por ocho
 SEMILLA_FIGURA = 20260916
 TOLERANCIA = 1e-9                # al recalcular el total a mano
+
+# El rótulo de cada cuadro y la letra pequeña que va debajo.
+# El negro y el blanco NO significan lo mismo en el primer cuadro que en el segundo: en
+# el primero es tinta y en el segundo es cuánto empuja ese punto. Antes había una sola
+# línea al pie de toda la figura explicando el segundo, y desde el primero se leía como
+# si hablara de él. Cada cuadro lleva ahora su propia clave, debajo y pegada a él.
+TITULOS = [
+    "el dibujo, punto a punto",
+    "cuánto cuenta cada punto",
+    "el total contra el listón",
+    "y una red es muchas de éstas",
+]
+# Cuánto hay que bajar el pie de cada cuadro: el tercero lleva debajo los nombres de las
+# dos barras, y si no se baja, el pie se le echa encima.
+BAJADA_PIE = [0.022, 0.022, 0.090, 0.022]
+PIES = [
+    "negro: donde hay tinta",
+    "negro: empuja hacia el «sí»\nblanco: empuja hacia el «no»",
+    "cada barra es el total de sumar los 64 puntos",
+    "cada círculo es un aparato como el de arriba",
+]
 
 RED_COLUMNAS = [3, 4, 4, 2]      # el esquema de la derecha: solo para enseñar la forma
 
@@ -162,22 +183,20 @@ def dibujar():
     puntos, liston = puntos_y_liston(m, (i_si, i_no))
 
     fig = plt.figure(figsize=ANCHO_ALTO)
-    gs = GridSpec(2, 2, height_ratios=[1, 1.05], hspace=0.42, wspace=0.28, figure=fig)
-    fig.subplots_adjust(left=0.07, right=0.95, top=0.87, bottom=0.11)
+    gs = GridSpec(2, 2, height_ratios=[1, 1.05], hspace=0.52, wspace=0.28, figure=fig)
+    fig.subplots_adjust(left=0.07, right=0.95, top=0.89, bottom=0.14)
     ejes = [fig.add_subplot(gs[i // 2, i % 2]) for i in range(4)]
     panel_dibujo(ejes[0], m["X"][i_si])
     panel_pesos(ejes[1], m["w"])
     panel_liston(ejes[2], puntos, liston)
     panel_red(ejes[3])
-    titulos = ["el dibujo, punto a punto", "cuánto cuenta cada punto",
-               "el total contra el listón", "y una red es muchas de éstas"]
-    for i, (ax, t) in enumerate(zip(ejes, titulos)):
+    for ax, titulo, pie, bajada in zip(ejes, TITULOS, PIES, BAJADA_PIE):
         c = ax.get_position()
-        fig.text(c.x0 + c.width / 2, c.y1 + 0.035, t, ha="center", va="bottom",
+        fig.text(c.x0 + c.width / 2, c.y1 + 0.030, titulo, ha="center", va="bottom",
                  fontsize=11.0)
-    fig.text(0.5, 0.008,
-             "negro: empuja hacia «es un cuatro»  ·  blanco: empuja hacia «no lo es»",
-             ha="center", fontsize=10.4, color="0.35")
+        if pie:
+            fig.text(c.x0 + c.width / 2, c.y0 - bajada, pie, ha="center", va="top",
+                     fontsize=8.6, color="0.35")
     fig.savefig(SALIDA, dpi=PUNTOS)
     plt.close(fig)
     return m, puntos, liston

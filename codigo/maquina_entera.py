@@ -38,6 +38,9 @@ SALIDA_CSV = "maquina_entera.csv"
 
 # ==========================================================
 
+from formato import (comprobar_ancho, pct, miles, tabla_de_probabilidades,
+                     ANCHO_TROZO, ANCHO_PROB)
+
 import argparse
 import csv
 import math
@@ -143,30 +146,36 @@ def main():
     print(f"números por trozo: {cfg.hidden_size}")
     print(f"rondas de mirar y mezclar: {cfg.num_hidden_layers} capas x "
           f"{cfg.num_attention_heads} cabezas = {cfg.num_hidden_layers * cfg.num_attention_heads}")
-    print(f"palabras posibles en la salida: {cfg.vocab_size:,}")
-    print(f"números ajustables en total: {total:,}")
+    print(f"palabras posibles en la salida: {miles(cfg.vocab_size)}")
+    print(f"números ajustables en total: {miles(total)}")
     print()
 
     print("--- 3. LA LISTA DE PROBABILIDADES ---")
-    print(f"«{FRASE}» -> ¿qué viene después?\n")
     top, p = siguientes(tok, modelo, FRASE)
-    for palabra, prob in top:
-        barra = "#" * max(1, int(round(prob * 60)))
-        print(f"{palabra.replace(' ', '_'):>14}  {prob*100:6.2f} %  {barra}")
+    # La tabla lleva rótulo de columna y una barra a escala fija: el número dice cuánto,
+    # y la barra deja verlo sin leerlo. El rótulo no es adorno; sin él son dos columnas
+    # de cifras y el lector que se encuentre la tabla al volver la página no sabe de qué.
     resto = 1.0 - sum(v for _, v in top)
-    print(f"{'(el resto)':>14}  {resto*100:6.2f} %  repartido entre las otras "
-          f"{len(p)-TOP_N:,} posibilidades")
+    pares = [(w.replace(" ", "_"), v) for w, v in top] + [("(el resto)", resto)]
+    lineas = [f"«{FRASE}» -> ¿qué viene después?", ""]
+    lineas += tabla_de_probabilidades(pares)
+    lineas += ["", f"el resto se reparte entre las otras {miles(len(p)-TOP_N)} posibilidades"]
+    comprobar_ancho(lineas)
+    for l in lineas:
+        print(l)
     filas += [["probabilidad", FRASE, w, f"{v:.6f}"] for w, v in top]
     print()
 
     print("--- 4. Y SE VUELVE A EMPEZAR ---")
     texto = FRASE
-    print(f"{'paso':>5}  {'elegida':>14}  {'probabilidad':>12}  texto")
+    print(f"{'paso':>4}  {'trozo elegido':>{ANCHO_TROZO}}  {'probabilidad':>{ANCHO_PROB}}  "
+          f"y el texto queda así")
     for i in range(1, PASOS_BUCLE + 1):
         top, _ = siguientes(tok, modelo, texto, 1)
         palabra, prob = top[0]
         texto += palabra
-        print(f"{i:>5}  {palabra.replace(' ', '_'):>14}  {prob*100:11.2f} %  {texto}")
+        print(f"{i:>4}  {palabra.replace(' ', '_'):>{ANCHO_TROZO}}  "
+              f"{pct(prob, 2):>{ANCHO_PROB}}  {texto}")
         filas.append(["bucle", str(i), palabra, f"{prob:.6f}"])
 
     with open(SALIDA_CSV, "w", newline="", encoding="utf-8") as fh:
