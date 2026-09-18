@@ -2,9 +2,10 @@
 """
 Capítulo 2 — la figura de la raya.
 
-Cuatro casos en las cuatro esquinas de un cuadrado. A la izquierda, una regla que el perceptrón
-sí aprende: hay una raya que deja las encendidas a un lado. A la derecha, el o exclusivo: se
-dibujan tres intentos y ninguno separa.
+Las cuatro posiciones de los interruptores, en las cuatro esquinas de un cuadrado. A la
+izquierda, un montaje que el perceptrón sí aprende: hay una raya que deja las esquinas donde
+la luz se enciende a un lado. A la derecha, el o exclusivo: se dibujan tres intentos y ninguno
+separa.
 
 El libro no puede pedirle al lector que se dibuje esto en un papel; se lo damos dibujado.
 
@@ -46,7 +47,7 @@ from perceptron import hay_raya_que_separa, ESQUINAS_PERCEPTRON as ESQUINAS_P
 
 
 def panel(ax, encienden, titulo, rayas, sombrear=False):
-    """Un cuadrado con las cuatro situaciones del pasillo y las rayas que se prueban.
+    """Un cuadrado con las cuatro posiciones de los interruptores y las rayas que se prueban.
 
     Si `sombrear`, se pinta de gris claro el lado de la raya donde la luz se enciende.
     Sin el sombreado, «a un lado y al otro» es una frase; con él, se ve. Y el lector
@@ -101,13 +102,13 @@ def dibujar():
 
 def selftest():
     fallos = []
-    # 1. TEST NULO — una regla sin nada que separar no puede fallar.
+    # 1. TEST NULO — un montaje sin nada que separar no puede fallar.
     #    Si «no se enciende nunca» saliera inseparable, el comprobador estaría roto.
     if not hay_raya_que_separa(set()):
-        fallos.append("test nulo: dice que la regla vacía no se puede separar")
-    print("[1] test nulo         la regla vacía sí se separa")
+        fallos.append("test nulo: dice que el montaje vacío no se puede separar")
+    print("[1] test nulo         el montaje vacío sí se separa")
 
-    # 2. SEÑAL IMPLANTADA — la regla fácil del panel izquierdo tiene que ser separable.
+    # 2. SEÑAL IMPLANTADA — el montaje fácil del panel izquierdo tiene que ser separable.
     facil = hay_raya_que_separa(ENCIENDE_FACIL)
     print(f"[2] señal implantada  «los dos subidos» separable: {'sí' if facil else 'NO'}")
     if not facil:

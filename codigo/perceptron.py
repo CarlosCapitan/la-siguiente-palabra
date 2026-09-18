@@ -4,7 +4,7 @@ Capítulo 2 — el perceptrón: qué aprende y dónde se estrella.
 
 Tres mediciones:
   1. Tareas de visión al estilo de las de Rosenblatt (1960), con dígitos manuscritos reales.
-  2. Las dieciséis reglas posibles con dos interruptores: cuántas aprende y cuántas no.
+  2. Los dieciséis montajes posibles de la lámpara del pasillo: cuántos aprende y cuántos no.
   3. El XOR: cien mil correcciones y qué pasa.
 
 Uso:
@@ -95,11 +95,11 @@ TABLA_DOS = np.array([[0, 0], [0, 1], [1, 0], [1, 1]], dtype=float)
 
 
 def reglas_de_dos_interruptores():
-    """Las 16 funciones posibles de dos entradas binarias. Devuelve (aprendidas, fallidas)."""
+    """Los dieciséis montajes posibles de la lámpara del pasillo. Devuelve (aprendidas, fallidas)."""
     aprendidas, fallidas, constantes = [], [], []
     for bits in itertools.product([0, 1], repeat=4):
         y = np.where(np.array(bits) == 1, 1, -1)
-        if len(set(bits)) == 1:                       # regla constante: sin nada que separar
+        if len(set(bits)) == 1:                       # montaje constante: sin nada que separar
             aprendidas.append(bits)
             constantes.append(bits)                   # se cuentan, pero no se entrenan: hay que decirlo
             continue
@@ -108,13 +108,12 @@ def reglas_de_dos_interruptores():
     return aprendidas, fallidas, constantes
 
 
-# Las dieciséis maneras de montar la lámpara del pasillo, nombradas en castellano
-# corriente. El libro las llama montajes: una sola lámpara, dieciséis maneras de montarla. La clave son las cuatro
-# respuestas, en el orden de TABLA_DOS: ninguno, solo el segundo, solo el primero, los dos.
+# Los dieciséis montajes de la lámpara del pasillo, nombrados en castellano corriente.
+# Una sola lámpara, dieciséis maneras de montarla: por eso son montajes y no lámparas.
 # Vive aquí, en el capítulo 2, y de aquí la importa el capítulo 3: una cosa, un nombre.
 # Los dos interruptores del libro son los del pasillo: uno abajo y otro arriba. Las
-# cuatro casillas de cada regla van en el orden de TABLA_DOS: los dos bajados, solo el
-# de arriba subido, solo el de abajo subido, los dos subidos.
+# cuatro casillas de cada montaje van en el orden de TABLA_DOS: los dos bajados, solo
+# el de arriba subido, solo el de abajo subido, los dos subidos.
 NOMBRES = {
     (0, 0, 0, 0): "nunca",
     (0, 0, 0, 1): "los dos subidos",
@@ -133,9 +132,6 @@ NOMBRES = {
     (1, 1, 1, 0): "no los dos",
     (1, 1, 1, 1): "siempre",
 }
-
-CASILLAS = ["ninguno", "solo 2\u00ba", "solo 1\u00ba", "los dos"]
-
 
 # ---- El aspecto del bloque de las dieciséis -------------------------------------
 TITULO_TABLA = "LAS DIECISÉIS MANERAS DE MONTAR LA LÁMPARA DEL PASILLO"
@@ -157,7 +153,7 @@ def hay_raya_que_separa(encienden, esquinas=None):
     el dibujo.
 
     Vive aquí, en el capítulo 2, porque aquí es donde se usa para lo importante: comprobar
-    que las reglas que el perceptrón aprende son exactamente las que una raya separa."""
+    que los montajes que el perceptrón aprende son exactamente los que una raya separa."""
     esquinas = ESQUINAS_PERCEPTRON if esquinas is None else esquinas
     rejilla = np.linspace(-6, 6, REJILLA_RAYAS)
     for a in rejilla:
@@ -171,7 +167,7 @@ def hay_raya_que_separa(encienden, esquinas=None):
 
 
 def reglas_que_una_raya_separa():
-    """Las reglas de dos interruptores que se pueden resolver con una sola raya, buscadas
+    """Los montajes de la lámpara del pasillo que se pueden resolver con una sola raya, buscados
     sobre la geometría, sin entrenar nada. Es el otro lado del puente."""
     separables = []
     for bits in itertools.product([0, 1], repeat=4):
@@ -305,12 +301,15 @@ def main():
     # para que la tabla del capítulo sea literalmente esto y el verificador pueda
     # comprobarla fila por fila. Lo que el libro enseña y lo que el programa imprime
     # tienen que ser la misma cadena de caracteres.
-    print(f"{'tarea':<24}{'ejemplos':>10}{'acierto':>10}{'converge':>11}")
+    print(f"{'tarea':<24}{'ejemplos':>10}{'acierto':>9}{'converge':>10}{'correcciones':>14}")
     for a, b_dig in PAREJAS_DIGITOS:
         r = tarea_digitos(X, t, a, b_dig, rng)
         pct = f"{100 * r['acierto_prueba']:.0f} %"
+        # Las correcciones son la otra mitad de la historia: el capítulo las compara con las
+        # cien mil del o exclusivo, y un número que el libro compara tiene que estar impreso.
         print(f"{f'distinguir un {a} de un {b_dig}':<24}{r['ejemplos_entrenamiento']:>10}"
-              f"{pct:>10}{('sí' if r['converge'] else 'NO'):>11}")
+              f"{pct:>9}{('sí' if r['converge'] else 'NO'):>10}"
+              f"{(miles(r['correcciones']) if r['converge'] else '-'):>14}")
         filas.append(["digitos", f"{a}v{b_dig}", r["ejemplos_entrenamiento"],
                       f"{r['acierto_prueba']:.4f}", r["converge"]])
 
@@ -337,7 +336,11 @@ def main():
     # tres columnas distintas y las dos cifras que hay que comparar dejan de estar una
     # encima de la otra, que es lo único que este bloque tiene que enseñar.
     for etiqueta, valor in (
-            ("montajes que el perceptrón aprende entrenando", len(aprendidas)),
+            # «entrenando» aquí era falso: este 14 es todo lo que el perceptrón resuelve,
+            # constantes incluidas. Entrenando aprende 12, y así lo dice el bloque de arriba.
+            # Dos bloques de máquina literales llamando a dos cuentas distintas con la misma
+            # palabra: ningún verificador puede cazar eso, porque los dos son literales.
+            ("montajes que el perceptrón resuelve", len(aprendidas)),
             ("montajes que una sola raya puede separar", len(separables)),
             ("¿son exactamente los mismos?", "sí" if iguales else "NO")):
         rotulo = etiqueta if etiqueta.endswith("?") else etiqueta + ":"
