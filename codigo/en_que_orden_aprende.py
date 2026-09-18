@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Capítulo 9 — en qué orden aprende un transformer entrenado desde cero.
+Capítulo 10 — en qué orden aprende un transformer entrenado desde cero.
 
 Entrena un transformer minúsculo, letra a letra, sobre libros en español, y guarda lo que
 escribe en cuatro momentos del entrenamiento. Mide también lo mal que lo hace a lo largo del
@@ -29,7 +29,19 @@ LOTE = 64
 TASA = 3e-4
 
 MINUTOS_TOTAL = 25.0
-INSTANTANEAS_MIN = [0.5, 2.0, 8.0, 25.0]   # cuándo pedirle que escriba
+# Cuándo pedirle que escriba: en PASOS, no en minutos. La diferencia no es cosmética.
+#
+# Este guion fotografiaba a los 0,5 / 2 / 8 / 25 minutos, y así lo publicó el repositorio. Pero
+# las cuatro muestras que enseña el capítulo salieron de otra ejecución, con las fotos tomadas
+# por pasos, y esa versión nunca se subió: el guion público **no podía reproducir** las cuatro
+# muestras del libro, que es lo que el capítulo promete que puedes hacer. Fallo 4.36.
+#
+# Y por pasos es además lo correcto. Una foto «a los dos minutos» cae en un punto distinto del
+# aprendizaje en cada máquina —en una tarjeta rápida ya ha dado veinte veces más pasos que en un
+# procesador—, así que la escalera del capítulo no se vería igual en ningún otro ordenador. Con
+# la semilla fija y las fotos por pasos, las tres primeras muestras salen IDÉNTICAS en cualquier
+# máquina. La cuarta no, y no puede: es «hasta donde llegue en veinticinco minutos».
+INSTANTANEAS_PASOS = [30, 300, 3_000]
 ARRANQUE = "el "
 LARGO_MUESTRA = 200
 TEMPERATURA = 0.8
@@ -57,6 +69,7 @@ import sys
 import time
 import unicodedata
 
+from formato import comprobar_ancho, miles, coma, pct
 import numpy as np
 import torch
 import torch.nn as nn
@@ -100,7 +113,7 @@ def cargar_texto(maximo=MAX_CARACTERES):
             break
     texto = "".join(trozos)[:maximo]
     assert len(texto) >= 200_000, \
-        f"Se esperaban al menos 200.000 caracteres; se encontraron {len(texto):,}"
+        f"Se esperaban al menos 200.000 caracteres; se encontraron {miles(len(texto))}"
     return texto
 
 
@@ -175,6 +188,10 @@ def acierto(modelo, datos, rng, n=EJEMPLOS_ACIERTO):
 
 
 def entrenar(datos, vocabulario, indice, letras, minutos, instantaneas):
+    """Entrena `minutos` minutos y fotografía en los pasos de `instantaneas`, más uno al final.
+
+    Devuelve las muestras como (paso, segundos transcurridos, texto): el paso es el dato
+    reproducible y los segundos son de esta máquina, y por eso van etiquetados como tales."""
     fijar_semilla()
     rng = np.random.default_rng(SEMILLA)
     modelo = Transformer(vocabulario).to(DISPOSITIVO)
@@ -186,10 +203,12 @@ def entrenar(datos, vocabulario, indice, letras, minutos, instantaneas):
     modelo.train()
     while True:
         transcurrido = (time.time() - t0) / 60
-        if pendientes and transcurrido >= pendientes[0]:
-            m = pendientes.pop(0)
-            muestras.append((m, pasos, escribir(modelo, indice, letras)))
+        if pendientes and pasos >= pendientes[0]:
+            pendientes.pop(0)
+            muestras.append((pasos, time.time() - t0, escribir(modelo, indice, letras)))
         if transcurrido >= minutos:
+            # La última foto, siempre: es la del final del entrenamiento.
+            muestras.append((pasos, time.time() - t0, escribir(modelo, indice, letras)))
             break
         x, y = lote(datos, rng)
         opt.zero_grad()
@@ -300,10 +319,11 @@ def selftest():
     d_nulo = torch.tensor([indice[c] for c in barajado], dtype=torch.long)
     _, _, _, _, _, a_nulo = entrenar(d_nulo, len(letras), indice, letras, 1.0, [])
     _, _, _, _, _, a_real = entrenar(datos, len(letras), indice, letras, 1.0, [])
-    print(f"[1] test nulo         acierto: texto real {a_real:.3f}  texto barajado {a_nulo:.3f}")
+    print(f"[1] test nulo         acierto: texto real {coma(a_real, 3)}  texto barajado "
+          f"{coma(a_nulo, 3)}")
     if a_nulo >= a_real:
-        fallos.append(f"test nulo: el texto barajado alcanza {a_nulo:.3f}, no menos que el real "
-                      f"({a_real:.3f}); el montaje no distingue estructura")
+        fallos.append(f"test nulo: el texto barajado alcanza {coma(a_nulo, 3)}, no menos que "
+                      f"el real ({coma(a_real, 3)}); el montaje no distingue estructura")
 
     # 2. SEÑAL IMPLANTADA — una cadena rara repetida muchas veces debe acabar apareciendo.
     marca = "qxqxqx"
@@ -323,7 +343,7 @@ def selftest():
         p = torch.softmax(modelo(datos[:CONTEXTO].unsqueeze(0).to(DISPOSITIVO))[0].float(), -1)
     sumas = p.sum(-1)
     print(f"[3] invariante        {p.shape[1]} letras posibles; las probabilidades suman entre "
-          f"{float(sumas.min()):.6f} y {float(sumas.max()):.6f}")
+          f"{coma(float(sumas.min()), 6)} y {coma(float(sumas.max()), 6)}")
     if not torch.allclose(sumas, torch.ones_like(sumas), atol=1e-4):
         fallos.append("invariante: las probabilidades por letra no suman uno")
 
@@ -347,8 +367,8 @@ def main():
         sys.exit(selftest())
     if args.solo_figura:
         curva = leer_curva()
-        print(f"{len(curva):,} puntos leídos de {SALIDA_CURVA} "
-              f"(hasta el paso {curva[-1][0]:,}). No se entrena nada.")
+        print(f"{miles(len(curva))} puntos leídos de {SALIDA_CURVA} "
+              f"(hasta el paso {miles(curva[-1][0])}). No se entrena nada.")
         figura(curva)
         return
 
@@ -357,28 +377,33 @@ def main():
     indice = {c: i for i, c in enumerate(letras)}
     datos = torch.tensor([indice[c] for c in texto], dtype=torch.long)
     print(f"Procesador usado: {DISPOSITIVO}")
-    print(f"{len(texto):,} letras de libros en español, {len(letras)} símbolos distintos.\n")
+    print(f"{miles(len(texto))} letras de libros en español, {len(letras)} símbolos "
+          "distintos.\n")
 
-    instantaneas = [m for m in INSTANTANEAS_MIN if m <= args.minutos]
+    instantaneas = list(INSTANTANEAS_PASOS)
     modelo, pasos, curva, muestras, a_ini, a_fin = entrenar(
         datos, len(letras), indice, letras, args.minutos, instantaneas)
 
     total = sum(p.numel() for p in modelo.parameters())
     print("--- TAMAÑO ---")
-    print(f"números ajustables: {total:,}")
-    print(f"un modelo grande de hoy tiene del orden de {MODELO_GRANDE:,}, "
-          f"unas {MODELO_GRANDE/total:,.0f} veces más")
-    print(f"pasos de entrenamiento en {args.minutos:.0f} minutos: {pasos:,}\n")
+    print(f"números ajustables: {miles(total)}")
+    print(f"un modelo grande de hoy tiene del orden de {miles(MODELO_GRANDE)}, "
+          f"unas {miles(round(MODELO_GRANDE / total))} veces más")
+    print(f"pasos de entrenamiento en {args.minutos:.0f} minutos: {miles(pasos)}\n")
 
     print("--- LO QUE ESCRIBE, EN CUATRO MOMENTOS ---")
-    for minutos, paso, muestra in muestras:
-        etiqueta = f"{int(minutos*60)} segundos" if minutos < 1 else f"{minutos:g} minutos"
-        print(f"\n[a los {etiqueta} — {paso:,} pasos]")
+    for paso, segundos, muestra in muestras:
+        # El paso va delante porque es el dato: con la misma semilla, el paso 300 es el paso
+        # 300 en cualquier ordenador. El reloj va detrás y dice «en esta máquina», porque es
+        # lo único de esta línea que cambia según dónde se ejecute.
+        reloj = (f"{segundos:.0f} s" if segundos < 300
+                 else f"{coma(segundos / 60, 1)} min")
+        print(f"\n[tras {miles(paso)} pasos — {reloj} en esta máquina]")
         print(muestra)
 
     print("\n--- ACIERTO AL ADIVINAR LA SIGUIENTE LETRA ---")
-    print(f"al empezar: {a_ini*100:.0f} %")
-    print(f"al acabar:  {a_fin*100:.0f} %")
+    print(f"al empezar: {pct(a_ini, 0)}")
+    print(f"al acabar:  {pct(a_fin, 0)}")
 
     os.makedirs(os.path.dirname(SALIDA_CURVA), exist_ok=True)
     with open(SALIDA_CURVA, "w", newline="", encoding="utf-8") as fh:
