@@ -13,7 +13,7 @@ Los bloques se localizan sobre el texto CRUDO, con sus saltos de línea intactos
 (espacios y coma decimal) se aplica solo al comparar."""
 import re, sys, io, os
 
-MINIMO = 70   # cuántos caracteres de la cita se exigen literales
+MINIMO = 10_000   # el bloque entero: ver el fallo 4.21 del catálogo
 EXCEPCIONES = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                            '..', '..', 'libro-ia-libro', 'notas', 'CITAS-DE-AUTOR.md')
 
