@@ -15,7 +15,17 @@ auditor leyendo, no un verificador.
 
 Lo que NO se marca, porque no son cantidades y marcarlas convertiría esto en un verificador que
 nadie mira: versiones (`Linux 6.18.44`), fechas ISO (`2026-09-18`), notación científica
-(`3.7e-12`), nombres de fichero y rutas."""
+(`3.7e-12`), nombres de fichero y rutas, e identificadores de modelo (`Qwen/Qwen2.5-0.5B`).
+
+Ese último se añadió el 18 de septiembre, en la sesión del capítulo 7, y conviene saber por qué:
+el `0.5` de `Qwen/Qwen2.5-0.5B` no es una cantidad, es parte del nombre con el que se descarga
+el modelo. Castellanizarlo —«Qwen/Qwen2,5-0,5B»— no arregla nada: rompe el programa. El
+verificador ya declaraba arriba que no marca nombres ni rutas, pero su guardia de ruta solo
+miraba a la DERECHA del número, y en `Qwen/Qwen2.5-0.5B` la barra está a la izquierda. La regla
+es estrecha a propósito —hace falta una letra o una barra a la izquierda, dentro de la misma
+palabra— y está MEDIDA sobre los 44 ficheros de `datos/salidas/`: silencia los seis
+`Qwen2.5-0.5B` y `Qwen2.5-1.5B` y ningún otro. `TAMAÑO 0.5B` (que sí es una cantidad) y
+`1.98x` (una ventaja) siguen marcándose, y la prueba 5 del selftest está para que sigan."""
 import os, re, sys
 
 # Una cantidad con separador de millar inglés. Aquí pasa lo mismo que con el punto, en espejo:
@@ -44,6 +54,19 @@ def es_decimal_ingles(entera, decimal):
     return len(decimal) != 3 or entera == "0"
 
 
+# Una letra o una barra a la IZQUIERDA del número, dentro de la misma palabra: eso no es una
+# cantidad, es un nombre. `Qwen2.5-0.5B`, `v1.2`, `datos/x2.5`. Se mira a la izquierda porque a
+# la derecha ya mira DECIMAL_CANDIDATO. Estrecha a propósito: `0.5B` y `1.98x` NO llevan letra
+# delante y se siguen marcando, porque ahí el número sí es la cantidad.
+NOMBRE = re.compile(r'[A-Za-zÁÉÍÓÚÜÑáéíóúüñ/\\]')
+
+
+def es_parte_de_un_nombre(linea, inicio):
+    """¿El número cae dentro de una palabra que ya traía letras antes?"""
+    corte = linea.rfind(" ", 0, inicio) + 1
+    return bool(NOMBRE.search(linea[corte:inicio]))
+
+
 def revisar_texto(texto):
     """Devuelve [(número de línea, clase, trozo)] de lo que está escrito a la inglesa."""
     fallos = []
@@ -58,7 +81,7 @@ def revisar_texto(texto):
             if m.group(1) != "0":
                 fallos.append((i, 'dudoso', m.group(0)))
         for m in DECIMAL_CANDIDATO.finditer(l):
-            if es_decimal_ingles(m.group(1), m.group(2)):
+            if es_decimal_ingles(m.group(1), m.group(2)) and not es_parte_de_un_nombre(l, m.start()):
                 fallos.append((i, 'decimal', m.group(0)))
     return fallos
 
@@ -80,6 +103,7 @@ def selftest():
         "de 1.024 bytes justos",            # mil veinticuatro: ambiguo, no se marca
         "el kilobyte son 15.048 y pico",    # ídem
         "  salidas: 0,018  0,984  0,980",   # decimales castellanos, no millares
+        "modelo: Qwen/Qwen2.5-0.5B en float32",   # un identificador no es una cantidad
     ])
     sale = revisar_texto(bueno)
     print(f"[1] test nulo         salida correcta: {len(sale)} incidencias"
@@ -117,12 +141,24 @@ def selftest():
     if ambiguo or len(claro) != 2:
         fallos.append("lo ambiguo: 1.024 se deja pasar; 90.4 y 0.933 no")
 
+    # 5. LO QUE EL NOMBRE NO PUEDE TAPAR — la excusa del identificador es estrecha, y esta
+    #    prueba es su valla: en cuanto el número deja de llevar letras delante vuelve a ser una
+    #    cantidad, y hay que marcarlo. Si alguien ensancha la regla y empieza a perdonar
+    #    «0.5B» o «1.98x», se entera aquí y no dentro de seis meses en una página impresa.
+    nombre = revisar_texto("modelo: Qwen/Qwen2.5-0.5B")
+    cantidad = revisar_texto("TAMAÑO 0.5B     ventaja 1.98x")
+    print(f"[5] el nombre y la cifra  «Qwen/Qwen2.5-0.5B»: {len(nombre)} incidencias (tiene que "
+          f"ser 0); «0.5B» y «1.98x»: {len(cantidad)} (tienen que ser 2)")
+    if nombre or len(cantidad) != 2:
+        fallos.append(f"el nombre y la cifra: el identificador se deja pasar; «0.5B» y «1.98x» "
+                      f"no ({len(nombre)} y {len(cantidad)})")
+
     print()
     if fallos:
         for f in fallos:
             print("FALLA:", f)
         return 1
-    print("SELFTEST: las cuatro pruebas pasan.")
+    print("SELFTEST: las cinco pruebas pasan.")
     return 0
 
 
