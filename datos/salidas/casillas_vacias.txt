@@ -1,0 +1,67 @@
+--- selftest ---
+[1] test nulo         letras distintas tras «qu»: barajado=29  real=5; parejas de una sola vez: barajado=89 % real=80 %
+[2] señal implantada  texto de seis palabras: 3 parejas, 1 de una sola vez, 9 casillas mirando dos palabras; «quxquxqux»: una letra detrás, 3 veces
+[3] invariante        parejas contadas = palabras menos una (385.452); parejas vistas <= casillas; todo lo que va tras «qu» está en el alfabeto
+
+SELFTEST: las tres pruebas pasan.
+
+########## capítulo 1: lo que no cabe en la tabla ##########
+fecha: 2026-09-17 21:20 UTC
+máquina: contenedor Linux en la nube (auditoría). La medición no
+depende de la máquina: cuenta letras y palabras de un fichero
+corpus: datos/quijote.txt, limpiado como lo limpia ngrama.py
+
+EL TEXTO QUE SE CUENTA
+
+  letras (incluidos los espacios)             2.095.402
+  palabras                                      385.453
+  palabras distintas                             36.231
+
+QUÉ LETRA VIENE DETRÁS DE «QU»
+las 32.709 veces que aparece «qu» en el Quijote
+
+  letra que sigue    veces    de cada cien veces
+  ---------------   ------   -------------------
+         e          25.972               79,40 %
+         i           5.160               15,78 %
+         é           1.019                3,12 %
+         í             554                1,69 %
+         a               3                0,01 %
+         o               1       menos de 0,01 %
+
+  símbolos distintos detrás de «qu»: 6, de los 42 que
+  admite el programa (letras, espacio y signos de puntuación)
+
+LA TABLA DE PAREJAS DE PALABRAS
+una casilla por cada pareja de palabras que podría existir
+
+  casillas posibles (palabras distintas al cuadrado)   1.312.685.361
+  casillas con algo dentro (parejas vistas)                 178.915
+  casillas con algo dentro, por cada cien posibles         0,0136 %
+
+  una casilla con algo dentro de cada                         7.337
+
+  parejas que hay dentro del libro (palabras menos una)     385.452
+  de cada cien de esas parejas, cuántas son distintas        46,4 %
+
+  parejas vistas una sola vez en todo el libro              140.901
+  de cada cien parejas vistas, las de una sola vez           78,8 %
+
+  Quijotes de texto que harían falta para poner una sola
+  palabra en cada casilla                                    3.406
+
+SI SE MIRARAN TRES PALABRAS HACIA ATRÁS
+
+  casillas posibles                       47.559.903.314.391
+  Quijotes de texto que harían falta para poner una sola
+  palabra en cada casilla                      123.387.036
+
+PALABRAS REALES EN LA MUESTRA DE UNA LETRA DE CONTEXTO
+la muestra impresa en el libro, leída de datos/salidas/ngrama.txt
+
+  trozos entre espacios                                         40
+  de ellos, palabras que están en el Quijote                    10
+  de cada cien trozos, palabras del Quijote                 25,0 %
+
+  las palabras del Quijote que salieron, en orden:
+    «ya» «y» «ce» «de» «e» «de» «y» «y» «cue» «a»

@@ -1,0 +1,14 @@
+de 200 arranques distintos, 177 resolvieron el o exclusivo
+y se repartieron el trabajo de 8 maneras distintas:
+
+                                                        de cada
+lo que mira una de las dos  lo que mira la otra             100
+--------------------------  --------------------------  -------
+al menos uno subido         los dos subidos                  21
+salvo solo el de arriba     solo el de abajo                 18
+ninguno subido              no los dos                       14
+solo el de abajo            solo el de arriba                13
+salvo solo el de abajo      solo el de arriba                12
+al menos uno subido         no los dos                        8
+los dos subidos             ninguno subido                    7
+salvo solo el de abajo      salvo solo el de arriba           7

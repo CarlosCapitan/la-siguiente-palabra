@@ -1,0 +1,39 @@
+¿ES PAR ESTE DÍGITO ESCRITO A MANO?
+de cada 100 dígitos que nunca había visto, cuántos acierta
+media de 5 entrenamientos desde cero; entre paréntesis,
+el peor y el mejor de los 5
+
+un solo comité, sin capa           91,9 %   (de 90,4 % a 93,0 %)
+una capa de ocho comités en medio  97,9 %   (de 96,3 % a 98,7 %)
+
+
+LO QUE ACIERTA, ÉL SOLO, CADA UNO DE LOS OCHO COMITÉS DE EN MEDIO
+
+el comité número 1                 67,8 %
+el comité número 2                 65,2 %
+el comité número 3                 72,2 %
+el comité número 4                 61,3 %
+el comité número 5                 56,5 %
+el comité número 6                 54,6 %
+el comité número 7                 69,1 %
+el comité número 8                 81,1 %
+-----------------------------------------
+el mejor de los ocho               81,1 %
+
+
+CUÁNTO SE PARECEN ENTRE SÍ ESOS OCHO COMITÉS
+(0 % serían ocho preguntas sin nada en común; 100 %, ocho copias)
+
+los dos que más se parecen         44,0 %
+
+
+¿Y SI EN MEDIO HAY MÁS COMITÉS, O MENOS?
+media de 5 entrenamientos desde cero; entre paréntesis,
+el peor y el mejor de los 5
+
+ninguno, un solo comité            91,9 %   (de 90,4 a 93,0)
+ 1 comité en medio                 91,4 %   (de 89,8 a 92,6)
+ 2 comités en medio                95,6 %   (de 94,8 a 96,5)
+ 4 comités en medio                97,9 %   (de 97,0 a 98,3)
+ 8 comités en medio                97,9 %   (de 96,3 a 98,7)
+16 comités en medio                98,6 %   (de 98,0 a 99,1)

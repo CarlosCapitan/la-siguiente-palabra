@@ -1,0 +1,31 @@
+########## capítulo 12, tarea 2 (repetida tras el arreglo del 15 sep): lo que cuesta que quepa en la mesa ##########
+fecha: 2026-09-15 21:43
+--- selftest (tras el arreglo: enunciado pelado, sin formato de conversación) ---
+celda de prueba: 7B comprimido (mlx-community/Qwen2.5-7B-Instruct-4bit)
+[1] test nulo         "
+It appears you've provided a string"
+[2] señal implantada  copiar la palabra anterior: 1.000
+[3] invariante        dos ejecuciones idénticas: sí
+
+SELFTEST: las tres pruebas pasan.
+
+--- medición (37 GB, las tres celdas, ninguna saltada) ---
+
+--- 7B sin comprimir (mlx-community/Qwen2.5-7B-Instruct-bf16) ---
+
+--- 7B comprimido (mlx-community/Qwen2.5-7B-Instruct-4bit) ---
+
+--- 32B comprimido (mlx-community/Qwen2.5-32B-Instruct-4bit) ---
+
+  tarea                         7B sin comprimir     7B comprimido    32B comprimido
+  sumar dos cifras                           60%               60%              100%
+  plurales                                   60%              100%               80%
+  traducir del inglés                        80%               80%               80%
+  saber cosas del mundo                      20%               20%                0%
+  seguir un patrón inventado                  0%                0%               60%
+  razonar sobre una frase                    60%               80%               60%
+  media                                      47%               57%               63%
+
+Escrito comprimir.csv
+
+[exited with code 0]

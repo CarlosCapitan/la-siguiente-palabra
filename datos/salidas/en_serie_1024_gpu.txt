@@ -1,0 +1,25 @@
+########## en_serie_o_a_la_vez.py — TARJETA GRÁFICA (MPS), --ancho 1024 --lote 16 ##########
+fecha: 2026-09-17 13:07
+máquina: MacBook Pro M4 Max, 36 GB; GPU Metal/MPS
+torch 2.14.0 | mps disponible: True
+Procesador usado: mps
+1024 números por posición, lotes de 16.
+Números ajustables: en serie 9.446.400 | a la vez 9.445.376 (1.00 veces).
+
+--- PASOS QUE HAY QUE DAR UNO DETRÁS DE OTRO (no depende de la máquina) ---
+  longitud    en serie    a la vez
+        64          64           1
+       128         128           1
+       256         256           1
+       512         512           1
+     1.024       1.024           1
+
+--- TIEMPO DE UNA PASADA DE ENTRENAMIENTO ---
+  longitud   en serie (s)   a la vez (s)   ventaja
+        64         0,0168         0,0106      1,6x
+       128         0,0255         0,0132      1,9x
+       256         0,0457         0,0275      1,7x
+       512         0,0869         0,0595      1,5x
+     1.024         0,1732         0,1379      1,3x
+
+Escrito en_serie_o_a_la_vez.csv

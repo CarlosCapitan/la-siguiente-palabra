@@ -1,0 +1,19 @@
+
+el reparto del adjetivo final, promediado sobre las cabezas y
+sobre el último tercio de capas. «vaso» y «cajón» son la porción
+que se lleva cada una; «dispersión» va de 0 (todo a una sola
+palabra) a 1 (repartido por igual entre todas).
+
+adjetivo        «vaso»     «cajón»   dispersión
+-----------------------------------------------
+alto            0,0117      0,0069       0,4986
+bajo            0,0120      0,0074       0,4960
+caro            0,0112      0,0060       0,4911
+
+LO QUE SE ESPERABA, ESCRITO ANTES DE MEDIR: que la frase sin
+respuesta («caro») repartiera la atención más que las otras.
+RESULTADO: la mayor es «alto» (0,4986).
+NO SE CUMPLE: la frase sin respuesta no reparte más.
+El capítulo cuenta lo medido, no lo que se esperaba.
+
+Escrito reparto_atencion.csv

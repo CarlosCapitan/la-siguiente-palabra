@@ -1,0 +1,27 @@
+########## capítulo 10: qué aparece al crecer ##########
+fecha: 2026-09-15 10:13
+--- selftest ---
+[1] test nulo         enunciados barajados 0.067  enunciados reales 0.133
+[2] señal implantada  copiar la palabra anterior: 1.000
+[3] invariante        dos ejecuciones idénticas: sí
+
+SELFTEST: las tres pruebas pasan.
+
+--- medición ---
+
+tarea                             0.5B      1.5B        3B        7B
+--------------------------------------------------------------------
+sumar dos cifras                   40%      100%      100%      100%
+plurales                           20%       60%      100%       80%
+traducir del inglés                 0%       80%      100%      100%
+saber cosas del mundo               0%        0%       20%       40%
+seguir un patrón inventado          0%        0%        0%        0%
+razonar sobre una frase            20%       40%       60%       60%
+--------------------------------------------------------------------
+media                              13%       47%       63%       63%
+
+números ajustables: 0.5B = 494,032,768 | 1.5B = 1,543,714,304 | 3B = 3,085,938,688 | 7B = 7,615,616,512
+
+Escrito crecer.csv
+
+[exited with code 0]

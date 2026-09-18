@@ -1,0 +1,32 @@
+la pregunta: ¿este dígito manuscrito es par?
+
+   un solo tribunal, sin capa     90.4 %
+   con una capa de ocho en medio  96.3 %
+
+   y esto es lo que consigue cada una, ella sola:
+
+   la número 1                    67.8 %
+   la número 2                    65.2 %
+   la número 3                    72.2 %
+   la número 4                    61.3 %
+   la número 5                    56.5 %
+   la número 6                    54.6 %
+   la número 7                    69.1 %
+   la número 8                    81.1 %
+
+   la mejor de las ocho           81.1 %
+   lo más que se parecen dos      44.0 %
+
+   y esto es lo que cambia según cuántas haya en medio
+   (media de 5 entrenamientos desde cero, y el margen):
+
+   ninguna, un solo tribunal      90.4 %
+    1 en medio                    91.4 %   (de 89.8 a 92.6)
+    2 en medio                    95.6 %   (de 94.8 a 96.5)
+    4 en medio                    97.9 %   (de 97.0 a 98.3)
+    8 en medio                    97.9 %   (de 96.3 a 98.7)
+   16 en medio                    98.6 %   (de 98.0 a 99.1)
+escrito ../figuras/una_capa.png
+ocho neuronas de en medio; la mejor sola acierta 81.1 % y la red entera 96.3 %
+escrito ../figuras/una_neurona.png
+perceptrón que separa el 4 del 9: acierto 1.000 sobre los ejemplos de prueba

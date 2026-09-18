@@ -1,0 +1,39 @@
+--- 1. EL O EXCLUSIVO, CON UNA CAPA MÁS ---
+red de 2 neuronas ocultas: 4 de 4 casos correctos
+salidas: 0.018  0.984  0.980  0.016   (esperado: 0, 1, 1, 0)
+
+--- 2. RETROPROPAGACIÓN CONTRA FUERZA BRUTA ---
+   pesos    retro (s)    bruta (s)    factor
+      49      0.00005      0.00199        41
+     199      0.00005      0.00892       196
+     799      0.00009      0.05163       584
+    3199      0.00038      0.99727      2628
+
+El factor medido crece con cada peso añadido, de 41 a 2628 veces.
+Lo que no depende de la máquina es el recuento de pasadas por los datos que hace
+falta para dar UN paso de aprendizaje:
+  fuerza bruta:        2 pasadas por peso  -> 200,000,000,000 pasadas
+  retropropagación:    1 adelante y 1 atrás -> 2 pasadas, sea cual sea el número de pesos
+
+--- 3. POR QUÉ LA PROFUNDIDAD SEGUÍA SIN FUNCIONAR ---
+ capas ocultas   culpa 1.ª capa   culpa última   veces menor
+             2         4.55e-04       2.94e-02            65
+             5         4.69e-05       3.64e-02           777
+            10         4.67e-06       3.36e-02         7,192
+            20         5.42e-10       8.15e-03    15,048,831
+
+Escrito retropropagacion.csv
+de 200 arranques distintos, 177 resolvieron el o exclusivo
+y se repartieron el trabajo de 8 maneras distintas:
+
+                                                      de 100
+   al menos uno subido     + los dos subidos              21
+   salvo solo el de arriba + solo el de abajo             18
+   ninguno subido          + no los dos                   14
+   solo el de abajo        + solo el de arriba            13
+   salvo solo el de abajo  + solo el de arriba            12
+   al menos uno subido     + no los dos                    8
+   los dos subidos         + ninguno subido                7
+   salvo solo el de abajo  + salvo solo el de arriba       7
+escrito ../figuras/apilar.png
+red de la semilla 318265456; las de en medio acabaron siendo «al menos uno subido» y «los dos subidos»

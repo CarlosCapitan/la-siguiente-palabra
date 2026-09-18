@@ -1,0 +1,53 @@
+Máquina: x86_64, Linux 6.18.44-fc-v33.
+Medido el 2026-09-18.
+No depende de la máquina: no entrena nada; busca texto en texto.
+
+--- DE CUÁNTOS LIBROS SE ENTRENA DE VERDAD ---
+libros en la carpeta del corpus: 300
+libros que entran antes del tope de caracteres: 11
+palabras de entrenamiento: 686.002
+
+  10825.txt    La Navidad en las Montañas
+  11070.txt    La Fontana de Oro
+  11302.txt    Diario de la navegacion empredida en 1781
+  11663.txt    El Arroyo
+  12274.txt    Viajes por Filipinas: De Manila á Marianas
+  12627.txt    Escenas Montañesas
+  13479.txt    Descripción Geografica, Histórica y Estadística de…
+  13492.txt    Viajes por Europa y América
+  13516.txt    Expedición de Catalanes y Aragoneses al Oriente
+  13519.txt    La Tierra de Todos
+  13608.txt    Filosofía Fundamental, Tomo I
+
+--- CUÁNTO DE CADA MUESTRA ESTÁ COPIADO LITERAL ---
+Racha = palabras seguidas que aparecen tal cual en el texto de
+entrenamiento. «Copiado» = cubierto por rachas de 5 o más.
+
+arranque de la muestra    racha más larga,    copiado,
+                               en palabras  en % de la
+                                               muestra
+------------------------------------------------------
+«el caballero»                          15      42,6 %
+«no sabía»                               5      31,9 %
+«cuando llegó»                          25      91,5 %
+
+--- LA MISMA MEDIDA, A LA MÁQUINA DE CONTAR DEL CAPÍTULO 1 ---
+Otro corpus (el Quijote) y otra máquina, medidos igual.
+
+muestra de la máquina de contar          racha   copiado
+--------------------------------------------------------
+PALABRAS, frecuencias sueltas                4     0,0 %
+PALABRAS, 2 palabras de contexto             8    82,9 %
+
+--- LA RACHA MÁS LARGA, ENTERA ---
+[arranque: «el caballero»] 15 palabras seguidas:
+    creyó reconocer alguna. levantóse y se asomó á la escalera. eran
+     cuatro personas que le
+
+[arranque: «no sabía»] 5 palabras seguidas:
+    usted á eso de las
+
+[arranque: «cuando llegó»] 25 palabras seguidas:
+    dia se mantuvo el viento de la misma conformidad, y anocheció de
+     mal semblante. a las dos de la noche se llamó al ono que
+

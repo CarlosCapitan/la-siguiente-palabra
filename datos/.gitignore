@@ -1,3 +1,10 @@
 corpus_es/
 *.txt
 !candidatos_es.txt
+# Las salidas de los programas SÍ van al repositorio. El «*.txt» de arriba se puso para no
+# subir el corpus, y de paso se llevaba por delante las 47 salidas de datos/salidas/, que son
+# justo la prueba: cada tabla del libro se copia literalmente de una de ellas, y los
+# verificadores las usan para comprobar que no se ha retocado ni una cifra. El libro dice al
+# lector que están aquí (capítulo 9 y apéndice); hasta el 18 de septiembre de 2026 no estaban.
+!salidas/
+!salidas/*.txt

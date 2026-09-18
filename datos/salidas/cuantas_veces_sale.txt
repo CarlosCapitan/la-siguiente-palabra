@@ -1,0 +1,53 @@
+Máquina: x86_64, Linux 6.18.44-fc-v33.
+Medido el 2026-09-18. Semillas: 20260914, 20260915, 20260916, 20260917, 20260918.
+[1] test nulo         vecinas de ningún sentido: (False, False) (tiene que ser (False, False))
+[2] señal implantada  las del libro: (True, True) (los dos); solo muebles: (True, False)
+[3] invariante        con tilde (False, True) igual que sin tilde (False, True); palabras en las dos listas a la vez: ninguna
+
+SELFTEST: las tres pruebas pasan.
+
+Biblioteca: 21.313.329 palabras.
+
+¿SALEN LOS DOS SIGNIFICADOS, O SOLO UNO?
+5 entrenamientos desde cero; solo cambia la semilla
+las 5 vecinas más próximas, en cada uno
+
+«banco»  —  el mueble / el del dinero
+  escritorio, almacén, baúl, ferrocarril, armario
+      -> los dos
+  cajón, plano, almacén, ferrocarril, armario
+      -> los dos
+  cajón, plano, ferrocarril, cerco, almacén
+      -> el del dinero
+  pupitre, plano, cajón, ferrocarril, escritorio
+      -> los dos
+  cerco, plano, egército, cajón, escritorio
+      -> el mueble
+  los dos significados salen en 3 de 5
+
+«cura»  —  el sacerdote / el remedio
+  laubepin, canuto, boticario, jorobado, médico
+      -> el remedio
+  laubepin, frechón, boticario, pertiguero, médico
+      -> el remedio
+  médico, laubepin, canuto, zalamero, forastero
+      -> el remedio
+  laubepin, canuto, médico, señorito, frechón
+      -> el remedio
+  pertiguero, boticario, laubepin, señorito, canuto
+      -> el remedio
+  los dos significados salen en 0 de 5
+
+«lengua»  —  el idioma / la del cuerpo
+  letra, materna, castellana, prosa, pronunciación
+      -> el idioma
+  castellana, materna, letra, pronunciación, fonética
+      -> el idioma
+  materna, castellana, letra, inglesa, pronunciación
+      -> el idioma
+  castellana, materna, letra, castellano, prosa
+      -> el idioma
+  castellana, letra, prosa, materna, latina
+      -> el idioma
+  los dos significados salen en 0 de 5
+

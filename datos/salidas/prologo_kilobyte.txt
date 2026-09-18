@@ -1,0 +1,37 @@
+########## prólogo: el kilobyte del ZX81, las dos cuentas ##########
+fecha: 2026-09-17 18:20
+máquina: contenedor Linux en la nube (auditoría); la medición no depende de la máquina:
+se cuentan letras de un PDF y se dividen dos números
+PDF medido: pdf/libro-completo.pdf, 104 páginas, compilado Thu Sep 17 18:10:33 2026 UTC
+
+--- selftest ---
+[1] test nulo         página vacía: cabe; de 1.024 bytes justos: cabe; una memoria consigo misma: 1 vez
+[2] señal implantada  de 1.025 bytes: NO cabe, por uno; el doble de memoria: 2 veces exactas
+[3] invariante        el cociente no cambia al medir en bytes o en kilobytes; ninguna letra ocupa menos de un byte
+
+SELFTEST: las tres pruebas pasan.
+
+LA PÁGINA CONTRA EL KILOBYTE
+primera página impresa del prólogo, sin cabecera ni número de página
+
+  letras (incluidos espacios y saltos)             2.414
+  bytes en texto plano de un byte por letra        2.414
+  bytes en texto plano moderno (UTF-8)             2.482
+  memoria del Sinclair ZX81                        1.024
+
+  ¿cabe la página en el kilobyte?                     no
+  veces que la página pasa del kilobyte             2,36
+
+CUÁNTAS VECES MÁS MEMORIA TIENE EL PORTÁTIL
+el kilobyte del ZX81 son 1.024 bytes, no 1.000
+
+  memoria del portátil    el kilobyte es    veces más memoria
+  ----------------------  ----------------  -----------------
+  36.000 millones de B         1.024 bytes      35,2 millones
+  36.000 millones de B         1.000 bytes      36,0 millones
+  36 GB del sistema            1.024 bytes      37,7 millones
+  36 GB del sistema            1.000 bytes      38,7 millones
+
+El libro dice «treinta y seis millones de veces». Ese número
+sale solo contando el kilobyte del ZX81 de 1.000 bytes, y era
+de 1.024.

@@ -1,0 +1,119 @@
+########## capítulo 11: crudo o adiestrado ##########
+fecha: 2026-09-17 11:42
+máquina: MacBook Pro M4 Max, 36 GB; GPU (Metal/MPS): True
+torch 2.14.0 | transformers 5.17.0
+--- selftest ---
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 25177.46it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 24670.37it/s]
+[1] test nulo         en crudo: 'ñt ñt ñt ñt'
+                      adiestrado: "I'm sorry, but I don't understand the la"
+[2] señal implantada  copiar la palabra anterior, en crudo: 1.000
+[3] invariante        dos ejecuciones idénticas: sí
+
+SELFTEST: las tres pruebas pasan.
+
+--- medición ---
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+
+==========================================================================
+TAMAÑO 0.5B
+==========================================================================
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 24004.34it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 19915.97it/s]
+
+--- 1. «La capital de Francia es» -> ¿qué viene después? ---
+  en crudo:
+         trozo   probabilidad
+  ------------   ------------
+           _la         17,6 %  #####
+          _una         12,9 %  ####
+           _un         12,1 %  ###
+           _el          7,3 %  ##
+        _conoc          5,0 %  #
+          _uno          3,7 %  #
+  adiestrado, enunciado tal cual:
+         trozo   probabilidad
+  ------------   ------------
+           _la         18,7 %  #####
+          _una          9,4 %  ###
+           _el          8,8 %  ##
+           _un          8,3 %  ##
+        _conoc          3,5 %  #
+             :          1,8 %  #
+  adiestrado, con su formato:
+         trozo   probabilidad
+  ------------   ------------
+            La         89,2 %  #########################
+            El          2,1 %  #
+           The          1,4 %  #
+             L          0,9 %  #
+          Como          0,4 %  #
+          Para          0,4 %  #
+
+--- 2. Pregunta directa: «¿Cuál es la capital de Francia?» ---
+  en crudo -> 'La capital de Francia es Nápoles.'
+  adiestrado, enunciado tal cual -> 'La capital de Francia es París. \n\nA continuación, te presento una lista de ciudades que son capitales de países europeos:\n\n1. Londres\n2. Madrid'
+  adiestrado, con su formato -> 'La capital de Francia es París.\n\nParís es el centro político, cultural y económico de Francia. Es conocida por su arquitectura histórica, sus plazas emblem'
+
+--- 3. La batería del capítulo 10 ---
+  tarea                           crudo  adiestr.  +formato
+  sumar dos cifras                  40%       60%        0%
+  plurales                          20%       40%       20%
+  traducir del inglés                0%        0%        0%
+  saber cosas del mundo              0%        0%        0%
+  seguir un patrón inventado         0%        0%        0%
+  razonar sobre una frase           20%       40%       20%
+  media                             13%       23%        7%
+
+==========================================================================
+TAMAÑO 7B
+==========================================================================
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights: 100%|██████████| 339/339 [00:00<00:00, 6664.18it/s]
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights: 100%|██████████| 339/339 [00:00<00:00, 6612.67it/s]
+
+--- 1. «La capital de Francia es» -> ¿qué viene después? ---
+  en crudo:
+         trozo   probabilidad
+  ------------   ------------
+          _una         26,6 %  #######
+           _la         12,5 %  ####
+          _uno          7,2 %  ##
+           _un          6,7 %  ##
+           _el          4,9 %  #
+        _conoc          4,1 %  #
+  adiestrado, enunciado tal cual:
+         trozo   probabilidad
+  ------------   ------------
+          _una         18,5 %  #####
+          _Par         16,3 %  #####
+        _Paris          8,2 %  ##
+           _la          7,7 %  ##
+           _un          6,4 %  ##
+           ___          4,4 %  #
+  adiestrado, con su formato:
+         trozo   probabilidad
+  ------------   ------------
+            La        100,0 %  ############################
+           _La          0,0 %  #
+           Par          0,0 %  #
+         Paris          0,0 %  #
+             ¡          0,0 %  #
+            El          0,0 %  #
+
+--- 2. Pregunta directa: «¿Cuál es la capital de Francia?» ---
+  en crudo -> 'La capital de Francia es París.'
+  adiestrado, enunciado tal cual -> 'La capital de Francia es París. París es famosa por su arquitectura icónica, como la Torre Eiffel y el Arco del Triunfo, así'
+  adiestrado, con su formato -> 'La capital de Francia es París.'
+
+--- 3. La batería del capítulo 10 ---
+  tarea                           crudo  adiestr.  +formato
+  sumar dos cifras                 100%      100%        0%
+  plurales                          80%       60%       60%
+  traducir del inglés              100%       80%        0%
+  saber cosas del mundo             40%       20%        0%
+  seguir un patrón inventado         0%        0%        0%
+  razonar sobre una frase           60%       80%       20%
+  media                             63%       57%       13%
+
+Escrito crudo_o_adiestrado.csv
