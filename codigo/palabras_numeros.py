@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Capítulo 4 — palabras convertidas en números.
+Capítulo 5 — palabras convertidas en números.
 
 Entrena representaciones de palabras sobre dos corpus de dominio público y mide:
   1. Qué palabras quedan cerca de cuáles, sin diccionario ni ayuda humana.
