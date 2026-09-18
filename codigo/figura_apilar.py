@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Capítulos 2 y 3 — la figura de apilar: la segunda capa no ve la foto, ve lo que la
+Capítulo 4 — la figura de apilar: la segunda capa no ve la foto, ve lo que la
 primera dijo sobre la foto.
 
 Dos paneles:
@@ -8,7 +8,7 @@ Dos paneles:
              interruptores,
              dos neuronas en medio, una luz. El grosor de cada flecha es el peso que
              de verdad aprendió la red; la línea de puntos es un peso que frena.
-  Derecha    las mismas cuatro situaciones, dibujadas ya no según los interruptores sino
+  Derecha    las mismas cuatro posiciones, dibujadas ya no según los interruptores sino
              según lo que dijeron las dos neuronas de en medio. En ese cuadrado nuevo, una
              sola raya basta, y la raya dibujada es la que de verdad usa la última neurona.
 
@@ -135,7 +135,7 @@ def panel_montaje(ax, red, reglas):
 
 def panel_cuadrado_nuevo(ax, red, medio):
     enciende = Y_XOR > UMBRAL
-    # Dos de las cuatro situaciones acaban en el mismo punto: las dos que encienden la
+    # Dos de las cuatro posiciones acaban en el mismo punto: las dos que encienden la
     # luz. Eso no es un defecto del dibujo, es el trabajo que ha hecho la capa de en
     # medio, así que se separan un pelo para que se vean las dos y se dice en voz alta.
     juntos = [k for k in range(4) if any(
@@ -223,12 +223,12 @@ def selftest():
     juntos = sum(1 for k in range(4) for j in range(k + 1, 4)
                  if np.hypot(*(medio[k] - medio[j])) < SOLAPE)
     print(f"[3] invariante        ¿hay raya en el cuadrado nuevo?: {'sí' if hay else 'no'}; "
-          f"situaciones que caen en el mismo sitio: {juntos}")
+          f"posiciones que caen en el mismo sitio: {juntos}")
     if not hay:
         fallos.append("invariante: la figura dice que en el cuadrado nuevo una raya basta, "
                       "y la búsqueda a lo bruto no encuentra ninguna")
     if juntos != 1:
-        fallos.append(f"invariante: esperaba exactamente un par de situaciones aplastadas en "
+        fallos.append(f"invariante: esperaba exactamente un par de posiciones aplastadas en "
                       f"el mismo punto (las dos que encienden la luz); encontré {juntos} pares")
 
     print()

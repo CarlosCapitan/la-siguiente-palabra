@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Capítulo 3 — la retropropagación: repartir la culpa de una sola pasada.
+Capítulo 4 — la retropropagación: repartir la culpa de una sola pasada.
 
 Tres mediciones:
   1. El o exclusivo que el perceptrón no podía: una red de dos capas lo resuelve.
@@ -39,6 +39,13 @@ import sys
 import time
 
 import numpy as np
+
+from formato import coma, miles
+
+
+def cientifica(x, decimales=2):
+    """Notación científica con coma decimal: 7.03e-12 -> «7,03e-12»."""
+    return f"{x:.{decimales}e}".replace(".", ",")
 
 
 def sigmoide(z):
@@ -86,8 +93,10 @@ class Red:
         return gW, gb
 
     def gradiente_fuerza_bruta(self, X, y, epsilon=1e-5):
-        """Mover cada peso un poquito y ver si el error mejora. Una pasada completa
-        por peso. Es lo que se le ocurre a cualquiera, y es lo que no escala."""
+        """Mover cada peso un poquito y ver si el error mejora. DOS pasadas completas
+        por peso, no una: se mira el error moviéndolo hacia arriba y moviéndolo hacia
+        abajo. Es el recuento que imprime este mismo programa más abajo (2 pasadas por
+        peso -> 200.000 millones para un modelo de hoy), y es lo que no escala."""
         gW = [np.zeros_like(W) for W in self.W]
         for k, W in enumerate(self.W):
             for i in np.ndindex(W.shape):
@@ -170,9 +179,9 @@ def selftest():
     red = Red([6, 12, 1]).entrenar(X, y, 0.5, 3000)
     pred = (red.adelante(Xte)[-1].ravel() > 0.5).astype(float)
     a_nulo = float((pred == yte).mean())
-    print(f"[1] test nulo         acierto fuera de entrenamiento con ruido: {a_nulo:.3f} (azar = 0,5)")
+    print(f"[1] test nulo         acierto fuera de entrenamiento con ruido: {coma(a_nulo, 3)} (azar = 0,5)")
     if not 0.35 <= a_nulo <= 0.65:
-        fallos.append(f"test nulo: acierto {a_nulo:.3f} sobre ruido; debería quedarse cerca de 0,5")
+        fallos.append(f"test nulo: acierto {coma(a_nulo, 3)} sobre ruido; debería quedarse cerca de 0,5")
 
     # 2. SEÑAL IMPLANTADA — el o exclusivo, que el perceptrón no podía, debe recuperarse.
     r = medir_xor()
@@ -187,9 +196,9 @@ def selftest():
     gW_r, _ = red.gradiente_retro(X, y)
     gW_b = red.gradiente_fuerza_bruta(X, y)
     dif = max(float(np.abs(a - b).max()) for a, b in zip(gW_r, gW_b))
-    print(f"[3] invariante        diferencia máxima entre los dos métodos: {dif:.2e} (tolerancia {TOL_GRADIENTE:.0e})")
+    print(f"[3] invariante        diferencia máxima entre los dos métodos: {cientifica(dif)} (tolerancia {TOL_GRADIENTE:.0e})")
     if dif > TOL_GRADIENTE:
-        fallos.append(f"invariante: los dos gradientes difieren en {dif:.2e}, por encima de {TOL_GRADIENTE:.0e}")
+        fallos.append(f"invariante: los dos gradientes difieren en {cientifica(dif)}, por encima de {TOL_GRADIENTE:.0e}")
 
     print()
     if fallos:
@@ -212,14 +221,14 @@ def main():
     print("--- 1. EL O EXCLUSIVO, CON UNA CAPA MÁS ---")
     r = medir_xor()
     print(f"red de {r['neuronas_ocultas']} neuronas ocultas: {r['aciertos']} de 4 casos correctos")
-    print("salidas: " + "  ".join(f"{v:.3f}" for v in r["salidas"]) + "   (esperado: 0, 1, 1, 0)")
+    print("salidas: " + "  ".join(coma(v, 3) for v in r["salidas"]) + "   (esperado: 0, 1, 1, 0)")
     filas_csv.append(["xor", r["neuronas_ocultas"], r["aciertos"], "", ""])
 
     print("\n--- 2. RETROPROPAGACIÓN CONTRA FUERZA BRUTA ---")
     print(f"{'pesos':>8}{'retro (s)':>13}{'bruta (s)':>13}{'factor':>10}")
     filas = medir_cronometro()
     for f in filas:
-        print(f"{f['pesos']:>8}{f['retro_s']:>13.5f}{f['bruta_s']:>13.5f}{f['factor']:>10.0f}")
+        print(f"{f['pesos']:>8}{coma(f['retro_s'], 5):>13}{coma(f['bruta_s'], 5):>13}{f['factor']:>10.0f}")
         filas_csv.append(["cronometro", f["pesos"], f"{f['retro_s']:.6f}",
                           f"{f['bruta_s']:.6f}", f"{f['factor']:.1f}"])
     # NO extrapolar desde el factor medido: a estos tamaños diminutos el factor está
@@ -229,14 +238,14 @@ def main():
           f"{filas[-1]['factor']:.0f} veces.")
     print("Lo que no depende de la máquina es el recuento de pasadas por los datos que hace")
     print("falta para dar UN paso de aprendizaje:")
-    print(f"  fuerza bruta:        2 pasadas por peso  -> {2*PESOS_MODELO_GRANDE:,} pasadas")
+    print(f"  fuerza bruta:        2 pasadas por peso  -> {miles(2*PESOS_MODELO_GRANDE)} pasadas")
     print(f"  retropropagación:    1 adelante y 1 atrás -> 2 pasadas, sea cual sea el número de pesos")
 
     print("\n--- 3. POR QUÉ LA PROFUNDIDAD SEGUÍA SIN FUNCIONAR ---")
     print(f"{'capas ocultas':>14}{'culpa 1.ª capa':>17}{'culpa última':>15}{'veces menor':>14}")
     for f in medir_desvanecimiento():
-        print(f"{f['capas_ocultas']:>14}{f['primera']:>17.2e}{f['ultima']:>15.2e}"
-              f"{f['veces_menor']:>14,.0f}")
+        print(f"{f['capas_ocultas']:>14}{cientifica(f['primera']):>17}{cientifica(f['ultima']):>15}"
+              f"{miles(round(f['veces_menor'])):>14}")
         filas_csv.append(["desvanecimiento", f["capas_ocultas"], f"{f['primera']:.3e}",
                           f"{f['ultima']:.3e}", f"{f['veces_menor']:.1f}"])
 

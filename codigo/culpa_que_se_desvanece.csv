@@ -1,0 +1,17 @@
+montaje,capas_en_medio,culpa_primera_capa,culpa_ultima_capa,veces_menor
+ochenta,2,4.552e-04,2.944e-02,64.7
+ochenta,5,4.690e-05,3.645e-02,777.1
+ochenta,10,4.667e-06,3.357e-02,7191.6
+ochenta,20,5.417e-10,8.153e-03,15048830.9
+repartida,2,9.748e-05,1.240e-02,127.2
+repartida,5,3.533e-07,9.993e-04,2828.0
+repartida,10,1.678e-11,7.348e-03,437860883.0
+repartida,20,3.043e-20,2.617e-03,85988506361505184.0
+funcion,2,5.183e-03,1.470e-02,2.8
+funcion,5,5.830e-03,3.331e-02,5.7
+funcion,10,1.596e-02,7.132e-03,0.4
+funcion,20,8.652e-02,9.592e-01,11.1
+las_dos,2,1.702e-03,5.336e-03,3.1
+las_dos,5,2.211e-04,3.012e-04,1.4
+las_dos,10,1.330e-05,1.504e-05,1.1
+las_dos,20,1.840e-08,2.363e-08,1.3
