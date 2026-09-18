@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Capítulo 10 — qué aparece al crecer.
+Capítulo 11 — qué aparece al crecer.
 
 Pasa la misma batería de tareas a tres modelos de la MISMA familia y distinto tamaño, para
 ver qué sabe hacer cada uno. Todos son modelos en crudo, sin adiestramiento de instrucciones:

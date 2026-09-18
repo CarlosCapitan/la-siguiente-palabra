@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Capítulo 12 — dónde se rompe, y por qué se rompe ahí.
+Capítulo 13 — dónde se rompe, y por qué se rompe ahí.
 
 Cuatro mediciones sobre el MISMO modelo adiestrado, con los mandos a la vista:
 

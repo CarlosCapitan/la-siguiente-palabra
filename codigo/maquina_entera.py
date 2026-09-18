@@ -5,8 +5,9 @@ Capítulo 7 — la máquina entera: seguir una frase de punta a punta.
 Enseña, sobre un modelo real y pequeño, los cuatro momentos del recorrido:
   1. El texto se parte en trozos.
   2. Cada trozo se convierte en una lista de números.
-  3. Los números atraviesan muchas rondas de mirar y mezclar.
-  4. Sale una lista de probabilidades sobre TODAS las palabras posibles, se elige una,
+  3. Los números atraviesan una ronda de mirar y mezclar detrás de otra, y dentro de
+     cada ronda la mirada se hace varias veces a la vez.
+  4. Sale una lista de probabilidades sobre TODOS los trozos posibles, se elige uno,
      y se vuelve a empezar.
 
 Uso:
@@ -108,7 +109,7 @@ def selftest(tok, modelo):
     # 3. INVARIANTE DEL DOMINIO — la lista de probabilidades cubre TODO el vocabulario y
     #    suma uno. (Los asserts de `siguientes` ya lo comprueban en cada llamada.)
     _, p = siguientes(tok, modelo, FRASE)
-    print(f"[3] invariante        {miles(len(p))} palabras posibles, "
+    print(f"[3] invariante        {miles(len(p))} trozos posibles, "
           f"suman {coma(float(p.sum()), 6)}, mínima {float(p.min()):.2e}")
     if len(p) < 1000:
         fallos.append(f"invariante: vocabulario sospechosamente pequeño ({miles(len(p))})")
@@ -145,9 +146,10 @@ def main():
     total = sum(p.numel() for p in modelo.parameters())
     print(f"modelo: {MODELO}")
     print(f"números por trozo: {cfg.hidden_size}")
-    print(f"rondas de mirar y mezclar: {cfg.num_hidden_layers} capas x "
-          f"{cfg.num_attention_heads} cabezas = {cfg.num_hidden_layers * cfg.num_attention_heads}")
-    print(f"palabras posibles en la salida: {miles(cfg.vocab_size)}")
+    print(f"rondas, una detrás de otra: {cfg.num_hidden_layers}")
+    print(f"miradas a la vez dentro de cada ronda: {cfg.num_attention_heads}")
+    print(f"miradas en total: {cfg.num_hidden_layers * cfg.num_attention_heads}")
+    print(f"trozos posibles en la salida: {miles(cfg.vocab_size)}")
     print(f"números ajustables en total: {miles(total)}")
     print()
 

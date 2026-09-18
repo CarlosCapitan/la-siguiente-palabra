@@ -28,6 +28,7 @@ ANCHO = 16
 
 PESOS_MODELO_GRANDE = 100_000_000_000         # 100.000 millones, orden de un modelo de hoy
 TOL_GRADIENTE = 1e-6                          # tolerancia de la comprobación de gradiente
+SEMILLA_GRADIENTE = 20260404                  # semilla propia: ver diferencia_entre_los_dos_metodos()
 
 SALIDA_CSV = "retropropagacion.csv"
 
@@ -191,11 +192,7 @@ def selftest():
 
     # 3. INVARIANTE DEL DOMINIO — la retropropagación tiene que dar EXACTAMENTE el mismo
     #    gradiente que la fuerza bruta. Si no, todo el capítulo es falso.
-    red = Red([4, 5, 1])
-    X = rng.normal(size=(16, 4)); y = (rng.random(16) > 0.5).astype(float)
-    gW_r, _ = red.gradiente_retro(X, y)
-    gW_b = red.gradiente_fuerza_bruta(X, y)
-    dif = max(float(np.abs(a - b).max()) for a, b in zip(gW_r, gW_b))
+    dif = diferencia_entre_los_dos_metodos()
     print(f"[3] invariante        diferencia máxima entre los dos métodos: {cientifica(dif)} (tolerancia {TOL_GRADIENTE:.0e})")
     if dif > TOL_GRADIENTE:
         fallos.append(f"invariante: los dos gradientes difieren en {cientifica(dif)}, por encima de {TOL_GRADIENTE:.0e}")
@@ -207,6 +204,28 @@ def selftest():
         return 1
     print("SELFTEST: las tres pruebas pasan.")
     return 0
+
+
+def diferencia_entre_los_dos_metodos(semilla=SEMILLA_GRADIENTE):
+    """La mayor diferencia entre la culpa calculada por los dos métodos, en una misma red.
+
+    Tiene semilla propia, y por una razón que costó un número impreso. Esta comprobación vivía
+    dentro de `--selftest`, compartiendo el generador de azar con las dos pruebas de antes, así
+    que la red y los datos que se usaban aquí dependían de cuántas tiradas se hubieran gastado
+    más arriba. Cambiar cualquier otra prueba cambiaba este número, y el libro llevaba impreso
+    uno —«siete billonésimas»— que nadie podía volver a obtener. Fallo 4.5 con un agravante:
+    no es que no hubiera fichero detrás, es que no había NADA detrás, ni siquiera el mismo
+    cálculo dos veces.
+
+    Ahora se calcula aquí, con su propia semilla, y sale en la medición además de en el
+    selftest, para que el número del libro tenga un fichero al lado."""
+    rng = np.random.default_rng(semilla)
+    red = Red([4, 5, 1], semilla=semilla)
+    X = rng.normal(size=(16, 4))
+    y = (rng.random(16) > 0.5).astype(float)
+    gW_r, _ = red.gradiente_retro(X, y)
+    gW_b = red.gradiente_fuerza_bruta(X, y)
+    return max(float(np.abs(a - b).max()) for a, b in zip(gW_r, gW_b))
 
 
 def main():
@@ -236,7 +255,14 @@ def main():
     # Lo que sí se sostiene es el recuento de pasadas, que no depende de la máquina.
     print(f"\nEl factor medido crece con cada peso añadido, de {filas[0]['factor']:.0f} a "
           f"{filas[-1]['factor']:.0f} veces.")
-    print("Lo que no depende de la máquina es el recuento de pasadas por los datos que hace")
+    # El número que el capítulo usa para decir «no es una aproximación: es el mismo número».
+    # Va aquí, en la medición, para que tenga fichero detrás (ver la función, y el fallo 4.5).
+    dif = diferencia_entre_los_dos_metodos()
+    print(f"\nmayor diferencia entre la culpa calculada por los dos métodos, en la misma")
+    print(f"red y con los mismos datos: {cientifica(dif)}")
+    print("(es ruido de redondeo del ordenador: los dos métodos dan el mismo número)")
+
+    print("\nLo que no depende de la máquina es el recuento de pasadas por los datos que hace")
     print("falta para dar UN paso de aprendizaje:")
     print(f"  fuerza bruta:        2 pasadas por peso  -> {miles(2*PESOS_MODELO_GRANDE)} pasadas")
     print(f"  retropropagación:    1 adelante y 1 atrás -> 2 pasadas, sea cual sea el número de pesos")

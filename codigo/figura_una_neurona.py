@@ -55,7 +55,7 @@ TITULOS = [
 BAJADA_PIE = [0.022, 0.022, 0.090, 0.022]
 PIES = [
     "negro: donde hay tinta",
-    "negro: empuja hacia el «sí»\nblanco: empuja hacia el «no»",
+    "negro: empuja hacia el «sí»\nblanco: empuja hacia el «no»\ngris: este punto no decide",
     "cada barra es el total de sumar los 64 puntos",
     "cada círculo es un aparato como el de arriba",
 ]
@@ -184,7 +184,7 @@ def dibujar():
     puntos, liston = puntos_y_liston(m, (i_si, i_no))
 
     fig = plt.figure(figsize=ANCHO_ALTO)
-    gs = GridSpec(2, 2, height_ratios=[1, 1.05], hspace=0.52, wspace=0.28, figure=fig)
+    gs = GridSpec(2, 2, height_ratios=[1, 1.05], hspace=0.66, wspace=0.28, figure=fig)
     fig.subplots_adjust(left=0.07, right=0.95, top=0.89, bottom=0.14)
     ejes = [fig.add_subplot(gs[i // 2, i % 2]) for i in range(4)]
     panel_dibujo(ejes[0], m["X"][i_si])

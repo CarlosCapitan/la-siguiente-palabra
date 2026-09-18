@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Capítulo 12 — lo que cuesta que quepa en la mesa.
+Capítulo 13 — lo que cuesta que quepa en la mesa.
 
 El modelo de treinta mil millones que cabe en un portátil NO es el de treinta mil millones:
 es una copia comprimida. Este guion separa las dos cosas que la gente mezcla:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Capítulo 11 — lo que no viene del entrenamiento.
+Capítulo 12 — lo que no viene del entrenamiento.
 
 Compara el MISMO modelo antes y después de la capa de adiestramiento que lo convierte en algo
 que conversa. Mismo tamaño, mismo material de partida: lo único que cambia es ese añadido.
