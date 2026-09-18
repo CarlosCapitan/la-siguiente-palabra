@@ -42,7 +42,7 @@ print("GPU del Mac (Metal) disponible:", torch.backends.mps.is_available())
 PY
   echo "=============================================="
   echo
-  echo "########## capítulo 5: memoria recurrente ##########"
+  echo "########## capítulo 6: memoria recurrente ##########"
   MPS=1 python memoria_recurrente.py --minutos 22
 } 2>&1 | tee "$SALIDA"
 
