@@ -54,6 +54,7 @@ import re
 import sys
 import unicodedata
 
+from formato import miles
 import numpy as np
 
 ALFABETO = set("abcdefghijklmnñopqrstuvwxyzáéíóúü ")
@@ -87,7 +88,7 @@ def cargar_corpus(origen):
         frases = list(frases_de_fichero(origen))
     total = sum(len(f) for f in frases)
     assert total > 100_000, \
-        f"Se esperaban más de 100.000 palabras en «{origen}»; se encontraron {total:,}"
+        f"Se esperaban más de 100.000 palabras en «{origen}»; se encontraron {miles(total)}"
     return frases, total
 
 
@@ -140,7 +141,7 @@ def selftest():
     assert ficheros, f"Se esperaban libros en «{CORPUS_BIBLIOTECA}»; no se encontró ninguno"
     frases = [f for ruta in ficheros for f in frases_de_fichero(ruta)]
     total = sum(len(f) for f in frases)
-    print(f"Corpus de prueba: {len(ficheros)} libros, {total:,} palabras.\n")
+    print(f"Corpus de prueba: {len(ficheros)} libros, {miles(total)} palabras.\n")
 
     modelo = entrenar(frases, epocas=3)
 
@@ -202,8 +203,8 @@ def main():
                              ("UNA BIBLIOTECA (300 libros)", CORPUS_BIBLIOTECA)):
         frases, total = cargar_corpus(origen)
         modelo = entrenar(frases)
-        print(f"\n{'='*74}\n{etiqueta}: {total:,} palabras, "
-              f"{len(modelo.wv.index_to_key):,} palabras distintas aprendidas\n{'='*74}")
+        print(f"\n{'='*74}\n{etiqueta}: {miles(total)} palabras, "
+              f"{miles(len(modelo.wv.index_to_key))} palabras distintas aprendidas\n{'='*74}")
 
         print("\n--- VECINAS MÁS PRÓXIMAS ---")
         for sonda in SONDAS:
