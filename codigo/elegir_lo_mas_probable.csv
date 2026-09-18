@@ -1,0 +1,904 @@
+frase,paso,trozo,probabilidad,termina_palabra
+La capital de Francia es,1, la,0.174577,0
+La capital de Francia es,2, ciudad,0.308542,0
+La capital de Francia es,3, más,0.254499,0
+La capital de Francia es,4, grande,0.658367,0
+La capital de Francia es,5, de,0.417539,0
+La capital de Francia es,6, Franc,0.566837,0
+La capital de Francia es,7,ia,0.999481,1
+La capital de Francia es,8,",",0.401654,0
+La capital de Francia es,9, con,0.230130,0
+La capital de Francia es,10, una,0.413288,0
+La capital de Francia es,11, población,0.931883,0
+La capital de Francia es,12, de,0.633117,0
+La capital de Francia es,13, ,0.567871,0
+La capital de Francia es,14,1,0.327988,0
+La capital de Francia es,15,4,0.144619,1
+La capital de Francia es,16,.,0.305152,0
+La capital de Francia es,17,2,0.115166,0
+La capital de Francia es,18,8,0.109883,1
+La capital de Francia es,19,0,0.112045,1
+La capital de Francia es,20,.,0.890923,0
+La capital de Francia es,21,0,0.595605,0
+La capital de Francia es,22,0,0.749178,1
+La capital de Francia es,23,0,0.937437,1
+La capital de Francia es,24, habit,0.732362,0
+La capital de Francia es,25,antes,0.999042,1
+La capital de Francia es,26,.,0.373477,0
+La capital de Francia es,27, La,0.127266,0
+La capital de Francia es,28, capital,0.428168,0
+La capital de Francia es,29, de,0.319792,0
+La capital de Francia es,30, Franc,0.798112,0
+La capital de Francia es,31,ia,0.999577,1
+La capital de Francia es,32, es,0.419893,0
+La capital de Francia es,33, la,0.264783,0
+La capital de Francia es,34, ciudad,0.496493,0
+La capital de Francia es,35, más,0.669917,0
+La capital de Francia es,36, grande,0.980628,0
+La capital de Francia es,37, de,0.752304,0
+La capital de Francia es,38, Franc,0.971818,0
+La capital de Francia es,39,ia,0.999263,1
+La capital de Francia es,40,",",0.796548,0
+La capital de Francia es,41, con,0.921298,0
+La capital de Francia es,42, una,0.954589,0
+La capital de Francia es,43, población,0.994666,0
+La capital de Francia es,44, de,0.986070,0
+La capital de Francia es,45, ,0.992678,0
+La capital de Francia es,46,1,0.974167,0
+La capital de Francia es,47,4,0.966748,1
+La capital de Francia es,48,.,0.954115,0
+La capital de Francia es,49,2,0.988623,0
+La capital de Francia es,50,8,0.990767,1
+La capital de Francia es,51,0,0.992022,1
+La capital de Francia es,52,.,0.994008,0
+La capital de Francia es,53,0,0.997988,0
+La capital de Francia es,54,0,0.999526,1
+La capital de Francia es,55,0,0.998988,1
+La capital de Francia es,56, habit,0.984563,0
+La capital de Francia es,57,antes,0.999616,1
+La capital de Francia es,58,.,0.683316,0
+La capital de Francia es,59, La,0.320197,0
+La capital de Francia es,60, capital,0.626657,0
+La capital de Francia es,61, de,0.930116,0
+La capital de Francia es,62, Franc,0.966975,0
+La capital de Francia es,63,ia,0.999668,1
+La capital de Francia es,64, es,0.886978,0
+La capital de Francia es,65, la,0.716763,0
+La capital de Francia es,66, ciudad,0.927870,0
+La capital de Francia es,67, más,0.959211,0
+La capital de Francia es,68, grande,0.995765,0
+La capital de Francia es,69, de,0.966089,0
+La capital de Francia es,70, Franc,0.995214,0
+La capital de Francia es,71,ia,0.999372,1
+La capital de Francia es,72,",",0.884332,0
+La capital de Francia es,73, con,0.974143,0
+La capital de Francia es,74, una,0.980799,0
+La capital de Francia es,75, población,0.997579,0
+La capital de Francia es,76, de,0.996349,0
+La capital de Francia es,77, ,0.996313,0
+La capital de Francia es,78,1,0.993400,0
+La capital de Francia es,79,4,0.995312,1
+La capital de Francia es,80,.,0.983701,0
+La capital de Francia es,81,2,0.996252,0
+La capital de Francia es,82,8,0.997630,1
+La capital de Francia es,83,0,0.998108,1
+La capital de Francia es,84,.,0.995182,0
+La capital de Francia es,85,0,0.997242,0
+La capital de Francia es,86,0,0.999819,1
+La capital de Francia es,87,0,0.999612,1
+La capital de Francia es,88, habit,0.988034,0
+La capital de Francia es,89,antes,0.999882,1
+La capital de Francia es,90,.,0.694959,0
+La capital de Francia es,91, La,0.484012,0
+La capital de Francia es,92, capital,0.940532,0
+La capital de Francia es,93, de,0.985653,0
+La capital de Francia es,94, Franc,0.990540,0
+La capital de Francia es,95,ia,0.999719,1
+La capital de Francia es,96, es,0.969107,0
+La capital de Francia es,97, la,0.957892,0
+La capital de Francia es,98, ciudad,0.984037,0
+La capital de Francia es,99, más,0.985273,0
+La capital de Francia es,100, grande,0.997340,0
+La capital de Francia es,101, de,0.995374,0
+La capital de Francia es,102, Franc,0.998538,0
+La capital de Francia es,103,ia,0.999491,1
+La capital de Francia es,104,",",0.970142,0
+La capital de Francia es,105, con,0.990178,0
+La capital de Francia es,106, una,0.990956,0
+La capital de Francia es,107, población,0.998467,0
+La capital de Francia es,108, de,0.998460,0
+La capital de Francia es,109, ,0.997982,0
+La capital de Francia es,110,1,0.999050,0
+La capital de Francia es,111,4,0.998935,1
+La capital de Francia es,112,.,0.995729,0
+La capital de Francia es,113,2,0.998773,0
+La capital de Francia es,114,8,0.999386,1
+La capital de Francia es,115,0,0.999459,1
+La capital de Francia es,116,.,0.997461,0
+La capital de Francia es,117,0,0.998489,0
+La capital de Francia es,118,0,0.999906,1
+La capital de Francia es,119,0,0.999764,1
+La capital de Francia es,120, habit,0.994744,0
+La capital de Francia es,121,antes,0.999942,1
+La capital de Francia es,122,.,0.738026,0
+La capital de Francia es,123, La,0.805299,0
+La capital de Francia es,124, capital,0.988874,0
+La capital de Francia es,125, de,0.997524,0
+La capital de Francia es,126, Franc,0.996521,0
+La capital de Francia es,127,ia,0.999765,1
+La capital de Francia es,128, es,0.994811,0
+La capital de Francia es,129, la,0.991861,0
+La capital de Francia es,130, ciudad,0.994732,0
+La capital de Francia es,131, más,0.994444,0
+La capital de Francia es,132, grande,0.997647,0
+La capital de Francia es,133, de,0.999095,0
+La capital de Francia es,134, Franc,0.999248,0
+La capital de Francia es,135,ia,0.999540,1
+La capital de Francia es,136,",",0.991622,0
+La capital de Francia es,137, con,0.995691,0
+La capital de Francia es,138, una,0.996767,0
+La capital de Francia es,139, población,0.998734,0
+La capital de Francia es,140, de,0.999262,0
+La capital de Francia es,141, ,0.998558,0
+La capital de Francia es,142,1,0.999651,0
+La capital de Francia es,143,4,0.999423,1
+La capital de Francia es,144,.,0.998105,0
+La capital de Francia es,145,2,0.999125,0
+La capital de Francia es,146,8,0.999723,1
+La capital de Francia es,147,0,0.999713,1
+La capital de Francia es,148,.,0.998478,0
+La capital de Francia es,149,0,0.999029,0
+La capital de Francia es,150,0,0.999933,1
+Era una mañana de invierno y el tren,1, de,0.172149,0
+Era una mañana de invierno y el tren,2, la,0.108467,0
+Era una mañana de invierno y el tren,3, ciudad,0.061389,0
+Era una mañana de invierno y el tren,4, de,0.155004,0
+Era una mañana de invierno y el tren,5, N,0.040872,0
+Era una mañana de invierno y el tren,6,ueva,0.385020,1
+Era una mañana de invierno y el tren,7, York,0.903652,0
+Era una mañana de invierno y el tren,8, se,0.247492,0
+Era una mañana de invierno y el tren,9, ac,0.204088,0
+Era una mañana de invierno y el tren,10,erca,0.585640,1
+Era una mañana de invierno y el tren,11, a,0.400650,0
+Era una mañana de invierno y el tren,12, la,0.390731,0
+Era una mañana de invierno y el tren,13, ciudad,0.390528,0
+Era una mañana de invierno y el tren,14, de,0.742416,0
+Era una mañana de invierno y el tren,15, Chicago,0.083362,0
+Era una mañana de invierno y el tren,16,.,0.482388,0
+Era una mañana de invierno y el tren,17, El,0.114065,0
+Era una mañana de invierno y el tren,18, tren,0.657936,0
+Era una mañana de invierno y el tren,19, se,0.160339,0
+Era una mañana de invierno y el tren,20, det,0.267051,0
+Era una mañana de invierno y el tren,21,iene,0.910815,1
+Era una mañana de invierno y el tren,22, en,0.383735,0
+Era una mañana de invierno y el tren,23, un,0.222832,0
+Era una mañana de invierno y el tren,24, par,0.124458,0
+Era una mañana de invierno y el tren,25,aje,0.382059,1
+Era una mañana de invierno y el tren,26, de,0.451403,0
+Era una mañana de invierno y el tren,27, mont,0.176512,0
+Era una mañana de invierno y el tren,28,aña,0.682582,1
+Era una mañana de invierno y el tren,29, y,0.189370,0
+Era una mañana de invierno y el tren,30, el,0.140600,0
+Era una mañana de invierno y el tren,31, conductor,0.578581,0
+Era una mañana de invierno y el tren,32, se,0.119737,0
+Era una mañana de invierno y el tren,33, p,0.141186,0
+Era una mañana de invierno y el tren,34,one,0.970513,1
+Era una mañana de invierno y el tren,35, a,0.380456,0
+Era una mañana de invierno y el tren,36, punto,0.092744,0
+Era una mañana de invierno y el tren,37, de,0.686309,0
+Era una mañana de invierno y el tren,38, det,0.067400,0
+Era una mañana de invierno y el tren,39,ener,0.989309,1
+Era una mañana de invierno y el tren,40, el,0.337454,0
+Era una mañana de invierno y el tren,41, tren,0.584151,0
+Era una mañana de invierno y el tren,42,.,0.268320,0
+Era una mañana de invierno y el tren,43, El,0.146716,0
+Era una mañana de invierno y el tren,44, conductor,0.865496,0
+Era una mañana de invierno y el tren,45, decide,0.108285,0
+Era una mañana de invierno y el tren,46, que,0.196840,0
+Era una mañana de invierno y el tren,47, el,0.159564,0
+Era una mañana de invierno y el tren,48, tren,0.589468,0
+Era una mañana de invierno y el tren,49, debe,0.214309,0
+Era una mañana de invierno y el tren,50, det,0.260291,0
+Era una mañana de invierno y el tren,51,ener,0.996877,1
+Era una mañana de invierno y el tren,52,se,0.964801,1
+Era una mañana de invierno y el tren,53, en,0.284264,0
+Era una mañana de invierno y el tren,54, el,0.290712,0
+Era una mañana de invierno y el tren,55, par,0.601272,0
+Era una mañana de invierno y el tren,56,aje,0.988806,1
+Era una mañana de invierno y el tren,57, de,0.635343,0
+Era una mañana de invierno y el tren,58, mont,0.835189,0
+Era una mañana de invierno y el tren,59,aña,0.993234,1
+Era una mañana de invierno y el tren,60, para,0.230371,0
+Era una mañana de invierno y el tren,61, que,0.286206,0
+Era una mañana de invierno y el tren,62, los,0.238576,0
+Era una mañana de invierno y el tren,63, pas,0.374358,0
+Era una mañana de invierno y el tren,64,aj,0.990885,1
+Era una mañana de invierno y el tren,65,eros,0.999722,1
+Era una mañana de invierno y el tren,66, pued,0.422847,0
+Era una mañana de invierno y el tren,67,an,0.999916,1
+Era una mañana de invierno y el tren,68, disfr,0.154949,0
+Era una mañana de invierno y el tren,69,utar,0.996968,1
+Era una mañana de invierno y el tren,70, de,0.601021,0
+Era una mañana de invierno y el tren,71, la,0.365355,0
+Era una mañana de invierno y el tren,72, vista,0.260802,0
+Era una mañana de invierno y el tren,73, de,0.381383,0
+Era una mañana de invierno y el tren,74, la,0.387521,0
+Era una mañana de invierno y el tren,75, ciudad,0.684611,0
+Era una mañana de invierno y el tren,76, de,0.435960,0
+Era una mañana de invierno y el tren,77, Chicago,0.739697,0
+Era una mañana de invierno y el tren,78,.,0.391764,0
+Era una mañana de invierno y el tren,79, El,0.346038,0
+Era una mañana de invierno y el tren,80, conductor,0.928056,0
+Era una mañana de invierno y el tren,81, decide,0.308889,0
+Era una mañana de invierno y el tren,82, que,0.339853,0
+Era una mañana de invierno y el tren,83, el,0.418732,0
+Era una mañana de invierno y el tren,84, tren,0.857116,0
+Era una mañana de invierno y el tren,85, debe,0.547945,0
+Era una mañana de invierno y el tren,86, det,0.852939,0
+Era una mañana de invierno y el tren,87,ener,0.997870,1
+Era una mañana de invierno y el tren,88,se,0.993820,1
+Era una mañana de invierno y el tren,89, en,0.633671,0
+Era una mañana de invierno y el tren,90, el,0.794764,0
+Era una mañana de invierno y el tren,91, par,0.982245,0
+Era una mañana de invierno y el tren,92,aje,0.999709,1
+Era una mañana de invierno y el tren,93, de,0.976090,0
+Era una mañana de invierno y el tren,94, mont,0.979013,0
+Era una mañana de invierno y el tren,95,aña,0.998986,1
+Era una mañana de invierno y el tren,96, para,0.640932,0
+Era una mañana de invierno y el tren,97, que,0.953340,0
+Era una mañana de invierno y el tren,98, los,0.966639,0
+Era una mañana de invierno y el tren,99, pas,0.993983,0
+Era una mañana de invierno y el tren,100,aj,0.999413,1
+Era una mañana de invierno y el tren,101,eros,0.999109,1
+Era una mañana de invierno y el tren,102, pued,0.959137,0
+Era una mañana de invierno y el tren,103,an,0.999956,1
+Era una mañana de invierno y el tren,104, disfr,0.988352,0
+Era una mañana de invierno y el tren,105,utar,0.999905,1
+Era una mañana de invierno y el tren,106, de,0.974145,0
+Era una mañana de invierno y el tren,107, la,0.975368,0
+Era una mañana de invierno y el tren,108, vista,0.976656,0
+Era una mañana de invierno y el tren,109, de,0.952036,0
+Era una mañana de invierno y el tren,110, la,0.968807,0
+Era una mañana de invierno y el tren,111, ciudad,0.996197,0
+Era una mañana de invierno y el tren,112, de,0.972623,0
+Era una mañana de invierno y el tren,113, Chicago,0.957967,0
+Era una mañana de invierno y el tren,114,.,0.443310,0
+Era una mañana de invierno y el tren,115, El,0.303667,0
+Era una mañana de invierno y el tren,116, conductor,0.903898,0
+Era una mañana de invierno y el tren,117, decide,0.528388,0
+Era una mañana de invierno y el tren,118, que,0.896673,0
+Era una mañana de invierno y el tren,119, el,0.941999,0
+Era una mañana de invierno y el tren,120, tren,0.992531,0
+Era una mañana de invierno y el tren,121, debe,0.985568,0
+Era una mañana de invierno y el tren,122, det,0.993737,0
+Era una mañana de invierno y el tren,123,ener,0.998736,1
+Era una mañana de invierno y el tren,124,se,0.999399,1
+Era una mañana de invierno y el tren,125, en,0.987930,0
+Era una mañana de invierno y el tren,126, el,0.982459,0
+Era una mañana de invierno y el tren,127, par,0.997834,0
+Era una mañana de invierno y el tren,128,aje,0.999924,1
+Era una mañana de invierno y el tren,129, de,0.997397,0
+Era una mañana de invierno y el tren,130, mont,0.992214,0
+Era una mañana de invierno y el tren,131,aña,0.999562,1
+Era una mañana de invierno y el tren,132, para,0.985208,0
+Era una mañana de invierno y el tren,133, que,0.995454,0
+Era una mañana de invierno y el tren,134, los,0.996598,0
+Era una mañana de invierno y el tren,135, pas,0.998208,0
+Era una mañana de invierno y el tren,136,aj,0.999932,1
+Era una mañana de invierno y el tren,137,eros,0.999482,1
+Era una mañana de invierno y el tren,138, pued,0.991108,0
+Era una mañana de invierno y el tren,139,an,0.999988,1
+Era una mañana de invierno y el tren,140, disfr,0.998072,0
+Era una mañana de invierno y el tren,141,utar,0.999954,1
+Era una mañana de invierno y el tren,142, de,0.995762,0
+Era una mañana de invierno y el tren,143, la,0.996696,0
+Era una mañana de invierno y el tren,144, vista,0.997393,0
+Era una mañana de invierno y el tren,145, de,0.988338,0
+Era una mañana de invierno y el tren,146, la,0.996391,0
+Era una mañana de invierno y el tren,147, ciudad,0.997285,0
+Era una mañana de invierno y el tren,148, de,0.991592,0
+Era una mañana de invierno y el tren,149, Chicago,0.987374,0
+Era una mañana de invierno y el tren,150,.,0.582727,0
+Los tres ingredientes principales son,1, el,0.209623,0
+Los tres ingredientes principales son,2, ace,0.038808,0
+Los tres ingredientes principales son,3,ite,0.987236,1
+Los tres ingredientes principales son,4, de,0.657988,0
+Los tres ingredientes principales son,5, ol,0.455168,0
+Los tres ingredientes principales son,6,iva,0.985189,1
+Los tres ingredientes principales son,7,",",0.435235,0
+Los tres ingredientes principales son,8, el,0.454686,0
+Los tres ingredientes principales son,9, az,0.085759,0
+Los tres ingredientes principales son,10,ú,0.968058,1
+Los tres ingredientes principales son,11,car,0.990098,1
+Los tres ingredientes principales son,12, y,0.622114,0
+Los tres ingredientes principales son,13, el,0.536494,0
+Los tres ingredientes principales son,14, sal,0.063684,0
+Los tres ingredientes principales son,15,.,0.450437,0
+Los tres ingredientes principales son,16, El,0.114182,0
+Los tres ingredientes principales son,17, ace,0.628570,0
+Los tres ingredientes principales son,18,ite,0.997108,1
+Los tres ingredientes principales son,19, de,0.673869,0
+Los tres ingredientes principales son,20, ol,0.973593,0
+Los tres ingredientes principales son,21,iva,0.991507,1
+Los tres ingredientes principales son,22, es,0.410859,0
+Los tres ingredientes principales son,23, el,0.305858,0
+Los tres ingredientes principales son,24, mejor,0.122454,0
+Los tres ingredientes principales son,25, ingredient,0.056719,0
+Los tres ingredientes principales son,26,es,0.923116,1
+Los tres ingredientes principales son,27, para,0.434491,0
+Los tres ingredientes principales son,28, la,0.161090,0
+Los tres ingredientes principales son,29, prepar,0.111534,0
+Los tres ingredientes principales son,30,ación,0.984585,1
+Los tres ingredientes principales son,31, de,0.786695,0
+Los tres ingredientes principales son,32, la,0.120783,0
+Los tres ingredientes principales son,33, salsa,0.138675,0
+Los tres ingredientes principales son,34, de,0.360107,0
+Los tres ingredientes principales son,35, tom,0.135348,0
+Los tres ingredientes principales son,36,ate,0.765211,1
+Los tres ingredientes principales son,37,.,0.366887,0
+Los tres ingredientes principales son,38, El,0.156653,0
+Los tres ingredientes principales son,39, ace,0.708919,0
+Los tres ingredientes principales son,40,ite,0.997918,1
+Los tres ingredientes principales son,41, de,0.557827,0
+Los tres ingredientes principales son,42, ol,0.935111,0
+Los tres ingredientes principales son,43,iva,0.993965,1
+Los tres ingredientes principales son,44, es,0.363466,0
+Los tres ingredientes principales son,45, un,0.170791,0
+Los tres ingredientes principales son,46, ace,0.120354,0
+Los tres ingredientes principales son,47,ite,0.994634,1
+Los tres ingredientes principales son,48, de,0.127991,0
+Los tres ingredientes principales son,49, alta,0.328910,0
+Los tres ingredientes principales son,50, calidad,0.891284,0
+Los tres ingredientes principales son,51,",",0.268432,0
+Los tres ingredientes principales son,52, que,0.106476,0
+Los tres ingredientes principales son,53, se,0.140137,0
+Los tres ingredientes principales son,54, puede,0.165639,0
+Los tres ingredientes principales son,55, encontrar,0.357753,0
+Los tres ingredientes principales son,56, en,0.757718,0
+Los tres ingredientes principales son,57, cualquier,0.218335,0
+Los tres ingredientes principales son,58, super,0.480154,0
+Los tres ingredientes principales son,59,merc,0.973281,1
+Los tres ingredientes principales son,60,ado,0.996358,1
+Los tres ingredientes principales son,61,.,0.299730,0
+Los tres ingredientes principales son,62, El,0.177786,0
+Los tres ingredientes principales son,63, ace,0.874867,0
+Los tres ingredientes principales son,64,ite,0.997950,1
+Los tres ingredientes principales son,65, de,0.902476,0
+Los tres ingredientes principales son,66, ol,0.974499,0
+Los tres ingredientes principales son,67,iva,0.996557,1
+Los tres ingredientes principales son,68, es,0.426831,0
+Los tres ingredientes principales son,69, un,0.213068,0
+Los tres ingredientes principales son,70, ace,0.452408,0
+Los tres ingredientes principales son,71,ite,0.995757,1
+Los tres ingredientes principales son,72, de,0.170419,0
+Los tres ingredientes principales son,73, alta,0.617244,0
+Los tres ingredientes principales son,74, calidad,0.973443,0
+Los tres ingredientes principales son,75,",",0.624195,0
+Los tres ingredientes principales son,76, que,0.745942,0
+Los tres ingredientes principales son,77, se,0.907824,0
+Los tres ingredientes principales son,78, puede,0.942449,0
+Los tres ingredientes principales son,79, encontrar,0.961807,0
+Los tres ingredientes principales son,80, en,0.995182,0
+Los tres ingredientes principales son,81, cualquier,0.995732,0
+Los tres ingredientes principales son,82, super,0.986018,0
+Los tres ingredientes principales son,83,merc,0.998399,1
+Los tres ingredientes principales son,84,ado,0.999315,1
+Los tres ingredientes principales son,85,.,0.703229,0
+Los tres ingredientes principales son,86, El,0.446067,0
+Los tres ingredientes principales son,87, ace,0.950893,0
+Los tres ingredientes principales son,88,ite,0.999226,1
+Los tres ingredientes principales son,89, de,0.980047,0
+Los tres ingredientes principales son,90, ol,0.983708,0
+Los tres ingredientes principales son,91,iva,0.995506,1
+Los tres ingredientes principales son,92, es,0.802350,0
+Los tres ingredientes principales son,93, un,0.848156,0
+Los tres ingredientes principales son,94, ace,0.990520,0
+Los tres ingredientes principales son,95,ite,0.998578,1
+Los tres ingredientes principales son,96, de,0.979710,0
+Los tres ingredientes principales son,97, alta,0.988963,0
+Los tres ingredientes principales son,98, calidad,0.998689,0
+Los tres ingredientes principales son,99,",",0.962825,0
+Los tres ingredientes principales son,100, que,0.991375,0
+Los tres ingredientes principales son,101, se,0.996171,0
+Los tres ingredientes principales son,102, puede,0.995125,0
+Los tres ingredientes principales son,103, encontrar,0.989814,0
+Los tres ingredientes principales son,104, en,0.999495,0
+Los tres ingredientes principales son,105, cualquier,0.999034,0
+Los tres ingredientes principales son,106, super,0.997016,0
+Los tres ingredientes principales son,107,merc,0.999639,1
+Los tres ingredientes principales son,108,ado,0.999116,1
+Los tres ingredientes principales son,109,.,0.481603,0
+Los tres ingredientes principales son,110, El,0.674412,0
+Los tres ingredientes principales son,111, ace,0.987204,0
+Los tres ingredientes principales son,112,ite,0.999705,1
+Los tres ingredientes principales son,113, de,0.996745,0
+Los tres ingredientes principales son,114, ol,0.994216,0
+Los tres ingredientes principales son,115,iva,0.995853,1
+Los tres ingredientes principales son,116, es,0.967112,0
+Los tres ingredientes principales son,117, un,0.966429,0
+Los tres ingredientes principales son,118, ace,0.998460,0
+Los tres ingredientes principales son,119,ite,0.999276,1
+Los tres ingredientes principales son,120, de,0.998199,0
+Los tres ingredientes principales son,121, alta,0.993691,0
+Los tres ingredientes principales son,122, calidad,0.999156,0
+Los tres ingredientes principales son,123,",",0.992263,0
+Los tres ingredientes principales son,124, que,0.998362,0
+Los tres ingredientes principales son,125, se,0.999218,0
+Los tres ingredientes principales son,126, puede,0.997846,0
+Los tres ingredientes principales son,127, encontrar,0.993569,0
+Los tres ingredientes principales son,128, en,0.999759,0
+Los tres ingredientes principales son,129, cualquier,0.999394,0
+Los tres ingredientes principales son,130, super,0.998978,0
+Los tres ingredientes principales son,131,merc,0.999798,1
+Los tres ingredientes principales son,132,ado,0.998959,1
+Los tres ingredientes principales son,133,.,0.533416,0
+Los tres ingredientes principales son,134, El,0.838797,0
+Los tres ingredientes principales son,135, ace,0.996459,0
+Los tres ingredientes principales son,136,ite,0.999847,1
+Los tres ingredientes principales son,137, de,0.999535,0
+Los tres ingredientes principales son,138, ol,0.997792,0
+Los tres ingredientes principales son,139,iva,0.995532,1
+Los tres ingredientes principales son,140, es,0.997591,0
+Los tres ingredientes principales son,141, un,0.993986,0
+Los tres ingredientes principales son,142, ace,0.999490,0
+Los tres ingredientes principales son,143,ite,0.999553,1
+Los tres ingredientes principales son,144, de,0.999785,0
+Los tres ingredientes principales son,145, alta,0.997724,0
+Los tres ingredientes principales son,146, calidad,0.999308,0
+Los tres ingredientes principales son,147,",",0.997645,0
+Los tres ingredientes principales son,148, que,0.999567,0
+Los tres ingredientes principales son,149, se,0.999813,0
+Los tres ingredientes principales son,150, puede,0.998605,0
+Un termómetro sirve para,1, med,0.474260,0
+Un termómetro sirve para,2,ir,0.993723,1
+Un termómetro sirve para,3, el,0.393137,0
+Un termómetro sirve para,4, nivel,0.156580,0
+Un termómetro sirve para,5, de,0.701032,0
+Un termómetro sirve para,6, temperatura,0.124522,0
+Un termómetro sirve para,7, de,0.306564,0
+Un termómetro sirve para,8, un,0.410720,0
+Un termómetro sirve para,9, objeto,0.133518,0
+Un termómetro sirve para,10,.,0.316799,0
+Un termómetro sirve para,11, ¿,0.091095,0
+Un termómetro sirve para,12,Cu,0.245848,0
+Un termómetro sirve para,13,ál,0.631875,1
+Un termómetro sirve para,14, es,0.625026,0
+Un termómetro sirve para,15, el,0.439037,0
+Un termómetro sirve para,16, nivel,0.115290,0
+Un termómetro sirve para,17, de,0.712596,0
+Un termómetro sirve para,18, temperatura,0.732599,0
+Un termómetro sirve para,19, de,0.400647,0
+Un termómetro sirve para,20, un,0.492665,0
+Un termómetro sirve para,21, objeto,0.062427,0
+Un termómetro sirve para,22, de,0.195296,0
+Un termómetro sirve para,23, ,0.604840,0
+Un termómetro sirve para,24,2,0.282867,0
+Un termómetro sirve para,25,0,0.564253,1
+Un termómetro sirve para,26, gr,0.368681,0
+Un termómetro sirve para,27,ados,0.809579,1
+Un termómetro sirve para,28, Celsius,0.318026,0
+Un termómetro sirve para,29,?,0.275946,0
+Un termómetro sirve para,30, ¿,0.155561,0
+Un termómetro sirve para,31,Cu,0.533629,0
+Un termómetro sirve para,32,ál,0.889612,1
+Un termómetro sirve para,33, es,0.883334,0
+Un termómetro sirve para,34, el,0.821255,0
+Un termómetro sirve para,35, nivel,0.844140,0
+Un termómetro sirve para,36, de,0.979676,0
+Un termómetro sirve para,37, temperatura,0.912253,0
+Un termómetro sirve para,38, de,0.901080,0
+Un termómetro sirve para,39, un,0.840138,0
+Un termómetro sirve para,40, objeto,0.909007,0
+Un termómetro sirve para,41, de,0.860294,0
+Un termómetro sirve para,42, ,0.719101,0
+Un termómetro sirve para,43,1,0.218206,0
+Un termómetro sirve para,44,0,0.509477,1
+Un termómetro sirve para,45, gr,0.815729,0
+Un termómetro sirve para,46,ados,0.999638,1
+Un termómetro sirve para,47, Celsius,0.502705,0
+Un termómetro sirve para,48,?,0.631582,0
+Un termómetro sirve para,49, ¿,0.666616,0
+Un termómetro sirve para,50,Cu,0.922543,0
+Un termómetro sirve para,51,ál,0.953797,1
+Un termómetro sirve para,52, es,0.992469,0
+Un termómetro sirve para,53, el,0.980129,0
+Un termómetro sirve para,54, nivel,0.989306,0
+Un termómetro sirve para,55, de,0.996305,0
+Un termómetro sirve para,56, temperatura,0.981816,0
+Un termómetro sirve para,57, de,0.962628,0
+Un termómetro sirve para,58, un,0.949071,0
+Un termómetro sirve para,59, objeto,0.984913,0
+Un termómetro sirve para,60, de,0.937138,0
+Un termómetro sirve para,61, ,0.755468,0
+Un termómetro sirve para,62,5,0.357987,0
+Un termómetro sirve para,63, gr,0.900401,0
+Un termómetro sirve para,64,ados,0.999808,1
+Un termómetro sirve para,65, Celsius,0.984166,0
+Un termómetro sirve para,66,?,0.678505,0
+Un termómetro sirve para,67, ¿,0.514099,0
+Un termómetro sirve para,68,Cu,0.936110,0
+Un termómetro sirve para,69,ál,0.960637,1
+Un termómetro sirve para,70, es,0.995986,0
+Un termómetro sirve para,71, el,0.987558,0
+Un termómetro sirve para,72, nivel,0.993978,0
+Un termómetro sirve para,73, de,0.996406,0
+Un termómetro sirve para,74, temperatura,0.983570,0
+Un termómetro sirve para,75, de,0.957966,0
+Un termómetro sirve para,76, un,0.947924,0
+Un termómetro sirve para,77, objeto,0.982475,0
+Un termómetro sirve para,78, de,0.941716,0
+Un termómetro sirve para,79, ,0.758550,0
+Un termómetro sirve para,80,0,0.435868,0
+Un termómetro sirve para,81, gr,0.985753,0
+Un termómetro sirve para,82,ados,0.999646,1
+Un termómetro sirve para,83, Celsius,0.990381,0
+Un termómetro sirve para,84,?,0.653513,0
+Un termómetro sirve para,85, ¿,0.509275,0
+Un termómetro sirve para,86,Cu,0.927523,0
+Un termómetro sirve para,87,ál,0.962180,1
+Un termómetro sirve para,88, es,0.996666,0
+Un termómetro sirve para,89, el,0.984342,0
+Un termómetro sirve para,90, nivel,0.995169,0
+Un termómetro sirve para,91, de,0.997013,0
+Un termómetro sirve para,92, temperatura,0.983680,0
+Un termómetro sirve para,93, de,0.958908,0
+Un termómetro sirve para,94, un,0.934550,0
+Un termómetro sirve para,95, objeto,0.976082,0
+Un termómetro sirve para,96, de,0.893589,0
+Un termómetro sirve para,97, ,0.496174,0
+Un termómetro sirve para,98,1,0.427511,0
+Un termómetro sirve para,99,0,0.455484,1
+Un termómetro sirve para,100,0,0.643839,1
+Un termómetro sirve para,101, gr,0.969543,0
+Un termómetro sirve para,102,ados,0.999516,1
+Un termómetro sirve para,103, Celsius,0.979435,0
+Un termómetro sirve para,104,?,0.684675,0
+Un termómetro sirve para,105, ¿,0.664146,0
+Un termómetro sirve para,106,Cu,0.961998,0
+Un termómetro sirve para,107,ál,0.985664,1
+Un termómetro sirve para,108, es,0.998479,0
+Un termómetro sirve para,109, el,0.993185,0
+Un termómetro sirve para,110, nivel,0.997737,0
+Un termómetro sirve para,111, de,0.998377,0
+Un termómetro sirve para,112, temperatura,0.988677,0
+Un termómetro sirve para,113, de,0.984433,0
+Un termómetro sirve para,114, un,0.962789,0
+Un termómetro sirve para,115, objeto,0.985963,0
+Un termómetro sirve para,116, de,0.953943,0
+Un termómetro sirve para,117, ,0.698262,0
+Un termómetro sirve para,118,1,0.348789,0
+Un termómetro sirve para,119,0,0.575130,1
+Un termómetro sirve para,120,0,0.781812,1
+Un termómetro sirve para,121,0,0.912509,1
+Un termómetro sirve para,122, gr,0.971735,0
+Un termómetro sirve para,123,ados,0.999627,1
+Un termómetro sirve para,124, Celsius,0.994088,0
+Un termómetro sirve para,125,?,0.741195,0
+Un termómetro sirve para,126, ¿,0.682435,0
+Un termómetro sirve para,127,Cu,0.970008,0
+Un termómetro sirve para,128,ál,0.988037,1
+Un termómetro sirve para,129, es,0.998812,0
+Un termómetro sirve para,130, el,0.994162,0
+Un termómetro sirve para,131, nivel,0.998434,0
+Un termómetro sirve para,132, de,0.998744,0
+Un termómetro sirve para,133, temperatura,0.990088,0
+Un termómetro sirve para,134, de,0.987147,0
+Un termómetro sirve para,135, un,0.961996,0
+Un termómetro sirve para,136, objeto,0.985771,0
+Un termómetro sirve para,137, de,0.965528,0
+Un termómetro sirve para,138, ,0.874006,0
+Un termómetro sirve para,139,1,0.680500,0
+Un termómetro sirve para,140,0,0.853361,1
+Un termómetro sirve para,141,0,0.885443,1
+Un termómetro sirve para,142,0,0.920919,1
+Un termómetro sirve para,143,0,0.971256,1
+Un termómetro sirve para,144, gr,0.687749,0
+Un termómetro sirve para,145,ados,0.999838,1
+Un termómetro sirve para,146, Celsius,0.998331,0
+Un termómetro sirve para,147,?,0.776545,0
+Un termómetro sirve para,148, ¿,0.762599,0
+Un termómetro sirve para,149,Cu,0.981839,0
+Un termómetro sirve para,150,ál,0.991018,1
+Para hacer una tortilla de patatas hay que,1, prepar,0.115196,0
+Para hacer una tortilla de patatas hay que,2,ar,0.967986,1
+Para hacer una tortilla de patatas hay que,3,las,0.108748,1
+Para hacer una tortilla de patatas hay que,4,",",0.103888,0
+Para hacer una tortilla de patatas hay que,5, coc,0.091789,0
+Para hacer una tortilla de patatas hay que,6,inar,0.821718,1
+Para hacer una tortilla de patatas hay que,7,las,0.969102,1
+Para hacer una tortilla de patatas hay que,8, y,0.537093,0
+Para hacer una tortilla de patatas hay que,9, serv,0.161153,0
+Para hacer una tortilla de patatas hay que,10,irl,0.498583,1
+Para hacer una tortilla de patatas hay que,11,as,0.997028,1
+Para hacer una tortilla de patatas hay que,12,.,0.337530,0
+Para hacer una tortilla de patatas hay que,13, Para,0.084985,0
+Para hacer una tortilla de patatas hay que,14, hacer,0.272331,0
+Para hacer una tortilla de patatas hay que,15, una,0.447348,0
+Para hacer una tortilla de patatas hay que,16, tort,0.841289,0
+Para hacer una tortilla de patatas hay que,17,illa,0.990504,1
+Para hacer una tortilla de patatas hay que,18, de,0.861383,0
+Para hacer una tortilla de patatas hay que,19, pat,0.916813,0
+Para hacer una tortilla de patatas hay que,20,atas,0.971424,1
+Para hacer una tortilla de patatas hay que,21,",",0.197959,0
+Para hacer una tortilla de patatas hay que,22, primero,0.325261,0
+Para hacer una tortilla de patatas hay que,23, deb,0.224939,0
+Para hacer una tortilla de patatas hay que,24,es,0.710938,1
+Para hacer una tortilla de patatas hay que,25, prepar,0.583346,0
+Para hacer una tortilla de patatas hay que,26,ar,0.996209,1
+Para hacer una tortilla de patatas hay que,27,las,0.651655,1
+Para hacer una tortilla de patatas hay que,28, y,0.274920,0
+Para hacer una tortilla de patatas hay que,29, luego,0.731314,0
+Para hacer una tortilla de patatas hay que,30, coc,0.803390,0
+Para hacer una tortilla de patatas hay que,31,inar,0.978602,1
+Para hacer una tortilla de patatas hay que,32,las,0.986610,1
+Para hacer una tortilla de patatas hay que,33,.,0.522766,0
+Para hacer una tortilla de patatas hay que,34, Para,0.132461,0
+Para hacer una tortilla de patatas hay que,35, hacer,0.342873,0
+Para hacer una tortilla de patatas hay que,36, una,0.823652,0
+Para hacer una tortilla de patatas hay que,37, tort,0.995083,0
+Para hacer una tortilla de patatas hay que,38,illa,0.999366,1
+Para hacer una tortilla de patatas hay que,39, de,0.978731,0
+Para hacer una tortilla de patatas hay que,40, pat,0.996312,0
+Para hacer una tortilla de patatas hay que,41,atas,0.994377,1
+Para hacer una tortilla de patatas hay que,42,",",0.768614,0
+Para hacer una tortilla de patatas hay que,43, primero,0.783320,0
+Para hacer una tortilla de patatas hay que,44, deb,0.945838,0
+Para hacer una tortilla de patatas hay que,45,es,0.984415,1
+Para hacer una tortilla de patatas hay que,46, prepar,0.872157,0
+Para hacer una tortilla de patatas hay que,47,ar,0.998228,1
+Para hacer una tortilla de patatas hay que,48,las,0.988110,1
+Para hacer una tortilla de patatas hay que,49, y,0.871397,0
+Para hacer una tortilla de patatas hay que,50, luego,0.978620,0
+Para hacer una tortilla de patatas hay que,51, coc,0.993270,0
+Para hacer una tortilla de patatas hay que,52,inar,0.991780,1
+Para hacer una tortilla de patatas hay que,53,las,0.999811,1
+Para hacer una tortilla de patatas hay que,54,.,0.624521,0
+Para hacer una tortilla de patatas hay que,55, Para,0.407017,0
+Para hacer una tortilla de patatas hay que,56, hacer,0.899721,0
+Para hacer una tortilla de patatas hay que,57, una,0.977937,0
+Para hacer una tortilla de patatas hay que,58, tort,0.999162,0
+Para hacer una tortilla de patatas hay que,59,illa,0.999653,1
+Para hacer una tortilla de patatas hay que,60, de,0.997303,0
+Para hacer una tortilla de patatas hay que,61, pat,0.998863,0
+Para hacer una tortilla de patatas hay que,62,atas,0.997001,1
+Para hacer una tortilla de patatas hay que,63,",",0.982943,0
+Para hacer una tortilla de patatas hay que,64, primero,0.988108,0
+Para hacer una tortilla de patatas hay que,65, deb,0.988374,0
+Para hacer una tortilla de patatas hay que,66,es,0.987137,1
+Para hacer una tortilla de patatas hay que,67, prepar,0.987728,0
+Para hacer una tortilla de patatas hay que,68,ar,0.999514,1
+Para hacer una tortilla de patatas hay que,69,las,0.998096,1
+Para hacer una tortilla de patatas hay que,70, y,0.983351,0
+Para hacer una tortilla de patatas hay que,71, luego,0.992795,0
+Para hacer una tortilla de patatas hay que,72, coc,0.996958,0
+Para hacer una tortilla de patatas hay que,73,inar,0.992827,1
+Para hacer una tortilla de patatas hay que,74,las,0.999896,1
+Para hacer una tortilla de patatas hay que,75,.,0.609488,0
+Para hacer una tortilla de patatas hay que,76, Para,0.663814,0
+Para hacer una tortilla de patatas hay que,77, hacer,0.965032,0
+Para hacer una tortilla de patatas hay que,78, una,0.994637,0
+Para hacer una tortilla de patatas hay que,79, tort,0.999702,0
+Para hacer una tortilla de patatas hay que,80,illa,0.999712,1
+Para hacer una tortilla de patatas hay que,81, de,0.999251,0
+Para hacer una tortilla de patatas hay que,82, pat,0.999459,0
+Para hacer una tortilla de patatas hay que,83,atas,0.996686,1
+Para hacer una tortilla de patatas hay que,84,",",0.994996,0
+Para hacer una tortilla de patatas hay que,85, primero,0.998049,0
+Para hacer una tortilla de patatas hay que,86, deb,0.993812,0
+Para hacer una tortilla de patatas hay que,87,es,0.992937,1
+Para hacer una tortilla de patatas hay que,88, prepar,0.996874,0
+Para hacer una tortilla de patatas hay que,89,ar,0.999755,1
+Para hacer una tortilla de patatas hay que,90,las,0.999645,1
+Para hacer una tortilla de patatas hay que,91, y,0.994460,0
+Para hacer una tortilla de patatas hay que,92, luego,0.996395,0
+Para hacer una tortilla de patatas hay que,93, coc,0.997995,0
+Para hacer una tortilla de patatas hay que,94,inar,0.994542,1
+Para hacer una tortilla de patatas hay que,95,las,0.999917,1
+Para hacer una tortilla de patatas hay que,96,.,0.710623,0
+Para hacer una tortilla de patatas hay que,97, Para,0.836194,0
+Para hacer una tortilla de patatas hay que,98, hacer,0.983459,0
+Para hacer una tortilla de patatas hay que,99, una,0.997748,0
+Para hacer una tortilla de patatas hay que,100, tort,0.999837,0
+Para hacer una tortilla de patatas hay que,101,illa,0.999744,1
+Para hacer una tortilla de patatas hay que,102, de,0.999668,0
+Para hacer una tortilla de patatas hay que,103, pat,0.999712,0
+Para hacer una tortilla de patatas hay que,104,atas,0.997231,1
+Para hacer una tortilla de patatas hay que,105,",",0.997835,0
+Para hacer una tortilla de patatas hay que,106, primero,0.999147,0
+Para hacer una tortilla de patatas hay que,107, deb,0.996029,0
+Para hacer una tortilla de patatas hay que,108,es,0.995471,1
+Para hacer una tortilla de patatas hay que,109, prepar,0.998784,0
+Para hacer una tortilla de patatas hay que,110,ar,0.999848,1
+Para hacer una tortilla de patatas hay que,111,las,0.999823,1
+Para hacer una tortilla de patatas hay que,112, y,0.997280,0
+Para hacer una tortilla de patatas hay que,113, luego,0.997695,0
+Para hacer una tortilla de patatas hay que,114, coc,0.998755,0
+Para hacer una tortilla de patatas hay que,115,inar,0.995378,1
+Para hacer una tortilla de patatas hay que,116,las,0.999916,1
+Para hacer una tortilla de patatas hay que,117,.,0.799138,0
+Para hacer una tortilla de patatas hay que,118, Para,0.927148,0
+Para hacer una tortilla de patatas hay que,119, hacer,0.990389,0
+Para hacer una tortilla de patatas hay que,120, una,0.998635,0
+Para hacer una tortilla de patatas hay que,121, tort,0.999896,0
+Para hacer una tortilla de patatas hay que,122,illa,0.999787,1
+Para hacer una tortilla de patatas hay que,123, de,0.999809,0
+Para hacer una tortilla de patatas hay que,124, pat,0.999795,0
+Para hacer una tortilla de patatas hay que,125,atas,0.997505,1
+Para hacer una tortilla de patatas hay que,126,",",0.998794,0
+Para hacer una tortilla de patatas hay que,127, primero,0.999386,0
+Para hacer una tortilla de patatas hay que,128, deb,0.997212,0
+Para hacer una tortilla de patatas hay que,129,es,0.996977,1
+Para hacer una tortilla de patatas hay que,130, prepar,0.999309,0
+Para hacer una tortilla de patatas hay que,131,ar,0.999874,1
+Para hacer una tortilla de patatas hay que,132,las,0.999849,1
+Para hacer una tortilla de patatas hay que,133, y,0.998278,0
+Para hacer una tortilla de patatas hay que,134, luego,0.998243,0
+Para hacer una tortilla de patatas hay que,135, coc,0.999240,0
+Para hacer una tortilla de patatas hay que,136,inar,0.995664,1
+Para hacer una tortilla de patatas hay que,137,las,0.999906,1
+Para hacer una tortilla de patatas hay que,138,.,0.880244,0
+Para hacer una tortilla de patatas hay que,139, Para,0.970710,0
+Para hacer una tortilla de patatas hay que,140, hacer,0.992855,0
+Para hacer una tortilla de patatas hay que,141, una,0.999057,0
+Para hacer una tortilla de patatas hay que,142, tort,0.999929,0
+Para hacer una tortilla de patatas hay que,143,illa,0.999819,1
+Para hacer una tortilla de patatas hay que,144, de,0.999883,0
+Para hacer una tortilla de patatas hay que,145, pat,0.999855,0
+Para hacer una tortilla de patatas hay que,146,atas,0.998010,1
+Para hacer una tortilla de patatas hay que,147,",",0.999279,0
+Para hacer una tortilla de patatas hay que,148, primero,0.999511,0
+Para hacer una tortilla de patatas hay que,149, deb,0.998069,0
+Para hacer una tortilla de patatas hay que,150,es,0.997309,1
+El ayuntamiento anunció ayer que,1, se,0.174936,0
+El ayuntamiento anunció ayer que,2, inici,0.023115,0
+El ayuntamiento anunció ayer que,3,ará,0.738513,1
+El ayuntamiento anunció ayer que,4, el,0.240583,0
+El ayuntamiento anunció ayer que,5, proceso,0.134295,0
+El ayuntamiento anunció ayer que,6, de,0.777213,0
+El ayuntamiento anunció ayer que,7, renov,0.061471,0
+El ayuntamiento anunció ayer que,8,ación,0.994111,1
+El ayuntamiento anunció ayer que,9, de,0.578866,0
+El ayuntamiento anunció ayer que,10, la,0.301744,0
+El ayuntamiento anunció ayer que,11, red,0.026092,0
+El ayuntamiento anunció ayer que,12, de,0.565885,0
+El ayuntamiento anunció ayer que,13, agua,0.064537,0
+El ayuntamiento anunció ayer que,14, pot,0.520822,0
+El ayuntamiento anunció ayer que,15,able,0.991875,1
+El ayuntamiento anunció ayer que,16, de,0.299705,0
+El ayuntamiento anunció ayer que,17, la,0.310814,0
+El ayuntamiento anunció ayer que,18, ciudad,0.507079,0
+El ayuntamiento anunció ayer que,19, de,0.226480,0
+El ayuntamiento anunció ayer que,20, San,0.049643,0
+El ayuntamiento anunció ayer que,21, Luis,0.126528,0
+El ayuntamiento anunció ayer que,22,",",0.281690,0
+El ayuntamiento anunció ayer que,23, que,0.130571,0
+El ayuntamiento anunció ayer que,24, se,0.211099,0
+El ayuntamiento anunció ayer que,25, inici,0.138423,0
+El ayuntamiento anunció ayer que,26,ó,0.500348,1
+El ayuntamiento anunció ayer que,27, el,0.397917,0
+El ayuntamiento anunció ayer que,28, ,0.290142,0
+El ayuntamiento anunció ayer que,29,2,0.389932,0
+El ayuntamiento anunció ayer que,30,0,0.319208,1
+El ayuntamiento anunció ayer que,31,1,0.531288,1
+El ayuntamiento anunció ayer que,32,8,0.119980,1
+El ayuntamiento anunció ayer que,33,".
+",0.256460,0
+El ayuntamiento anunció ayer que,34,El,0.289747,0
+El ayuntamiento anunció ayer que,35, proyecto,0.062518,0
+El ayuntamiento anunció ayer que,36, de,0.221804,0
+El ayuntamiento anunció ayer que,37, renov,0.458091,0
+El ayuntamiento anunció ayer que,38,ación,0.991212,1
+El ayuntamiento anunció ayer que,39, de,0.441786,0
+El ayuntamiento anunció ayer que,40, la,0.830968,0
+El ayuntamiento anunció ayer que,41, red,0.837854,0
+El ayuntamiento anunció ayer que,42, de,0.806477,0
+El ayuntamiento anunció ayer que,43, agua,0.879033,0
+El ayuntamiento anunció ayer que,44, pot,0.864664,0
+El ayuntamiento anunció ayer que,45,able,0.999653,1
+El ayuntamiento anunció ayer que,46, de,0.496955,0
+El ayuntamiento anunció ayer que,47, la,0.484176,0
+El ayuntamiento anunció ayer que,48, ciudad,0.870075,0
+El ayuntamiento anunció ayer que,49, de,0.915084,0
+El ayuntamiento anunció ayer que,50, San,0.974310,0
+El ayuntamiento anunció ayer que,51, Luis,0.996742,0
+El ayuntamiento anunció ayer que,52,",",0.419158,0
+El ayuntamiento anunció ayer que,53, que,0.165709,0
+El ayuntamiento anunció ayer que,54, se,0.393125,0
+El ayuntamiento anunció ayer que,55, inici,0.774368,0
+El ayuntamiento anunció ayer que,56,ó,0.975233,1
+El ayuntamiento anunció ayer que,57, el,0.849780,0
+El ayuntamiento anunció ayer que,58, ,0.929542,0
+El ayuntamiento anunció ayer que,59,2,0.989285,0
+El ayuntamiento anunció ayer que,60,0,0.992145,1
+El ayuntamiento anunció ayer que,61,1,0.997992,1
+El ayuntamiento anunció ayer que,62,8,0.990626,1
+El ayuntamiento anunció ayer que,63,",",0.846136,0
+El ayuntamiento anunció ayer que,64, se,0.216175,0
+El ayuntamiento anunció ayer que,65, inici,0.097893,0
+El ayuntamiento anunció ayer que,66,ará,0.618520,1
+El ayuntamiento anunció ayer que,67, el,0.297745,0
+El ayuntamiento anunció ayer que,68, próximo,0.401847,0
+El ayuntamiento anunció ayer que,69, ,0.528044,0
+El ayuntamiento anunció ayer que,70,1,0.378126,0
+El ayuntamiento anunció ayer que,71,5,0.164183,1
+El ayuntamiento anunció ayer que,72, de,0.962412,0
+El ayuntamiento anunció ayer que,73, dici,0.110336,0
+El ayuntamiento anunció ayer que,74,embre,0.998340,1
+El ayuntamiento anunció ayer que,75,",",0.289532,0
+El ayuntamiento anunció ayer que,76, según,0.128902,0
+El ayuntamiento anunció ayer que,77, inform,0.216799,0
+El ayuntamiento anunció ayer que,78,ó,0.658059,1
+El ayuntamiento anunció ayer que,79, el,0.552090,0
+El ayuntamiento anunció ayer que,80, al,0.156803,0
+El ayuntamiento anunció ayer que,81,cal,0.997528,1
+El ayuntamiento anunció ayer que,82,de,0.998631,1
+El ayuntamiento anunció ayer que,83, de,0.369633,0
+El ayuntamiento anunció ayer que,84, San,0.572339,0
+El ayuntamiento anunció ayer que,85, Luis,0.993751,0
+El ayuntamiento anunció ayer que,86,",",0.818101,0
+El ayuntamiento anunció ayer que,87, José,0.045298,0
+El ayuntamiento anunció ayer que,88, Luis,0.113627,0
+El ayuntamiento anunció ayer que,89, S,0.026498,0
+El ayuntamiento anunció ayer que,90,ánchez,0.389371,1
+El ayuntamiento anunció ayer que,91,".
+",0.223215,0
+El ayuntamiento anunció ayer que,92,El,0.213074,0
+El ayuntamiento anunció ayer que,93, al,0.204883,0
+El ayuntamiento anunció ayer que,94,cal,0.997639,1
+El ayuntamiento anunció ayer que,95,de,0.998332,1
+El ayuntamiento anunció ayer que,96, de,0.103616,0
+El ayuntamiento anunció ayer que,97, San,0.901063,0
+El ayuntamiento anunció ayer que,98, Luis,0.997572,0
+El ayuntamiento anunció ayer que,99,",",0.439203,0
+El ayuntamiento anunció ayer que,100, José,0.432474,0
+El ayuntamiento anunció ayer que,101, Luis,0.992421,0
+El ayuntamiento anunció ayer que,102, S,0.983097,0
+El ayuntamiento anunció ayer que,103,ánchez,0.999429,1
+El ayuntamiento anunció ayer que,104,",",0.686700,0
+El ayuntamiento anunció ayer que,105, anunci,0.167677,0
+El ayuntamiento anunció ayer que,106,ó,0.996995,1
+El ayuntamiento anunció ayer que,107, ay,0.490153,0
+El ayuntamiento anunció ayer que,108,er,0.999602,1
+El ayuntamiento anunció ayer que,109, que,0.703140,0
+El ayuntamiento anunció ayer que,110, se,0.616180,0
+El ayuntamiento anunció ayer que,111, inici,0.882620,0
+El ayuntamiento anunció ayer que,112,ará,0.947179,1
+El ayuntamiento anunció ayer que,113, el,0.899490,0
+El ayuntamiento anunció ayer que,114, proceso,0.976671,0
+El ayuntamiento anunció ayer que,115, de,0.993347,0
+El ayuntamiento anunció ayer que,116, renov,0.997639,0
+El ayuntamiento anunció ayer que,117,ación,0.998556,1
+El ayuntamiento anunció ayer que,118, de,0.984722,0
+El ayuntamiento anunció ayer que,119, la,0.993195,0
+El ayuntamiento anunció ayer que,120, red,0.984789,0
+El ayuntamiento anunció ayer que,121, de,0.992623,0
+El ayuntamiento anunció ayer que,122, agua,0.989824,0
+El ayuntamiento anunció ayer que,123, pot,0.994432,0
+El ayuntamiento anunció ayer que,124,able,0.999941,1
+El ayuntamiento anunció ayer que,125, de,0.957066,0
+El ayuntamiento anunció ayer que,126, la,0.986551,0
+El ayuntamiento anunció ayer que,127, ciudad,0.990890,0
+El ayuntamiento anunció ayer que,128, de,0.950202,0
+El ayuntamiento anunció ayer que,129, San,0.994838,0
+El ayuntamiento anunció ayer que,130, Luis,0.998889,0
+El ayuntamiento anunció ayer que,131,",",0.885145,0
+El ayuntamiento anunció ayer que,132, que,0.915047,0
+El ayuntamiento anunció ayer que,133, se,0.943543,0
+El ayuntamiento anunció ayer que,134, inici,0.992993,0
+El ayuntamiento anunció ayer que,135,ó,0.999375,1
+El ayuntamiento anunció ayer que,136, el,0.989122,0
+El ayuntamiento anunció ayer que,137, ,0.991832,0
+El ayuntamiento anunció ayer que,138,2,0.998506,0
+El ayuntamiento anunció ayer que,139,0,0.998152,1
+El ayuntamiento anunció ayer que,140,1,0.999534,1
+El ayuntamiento anunció ayer que,141,8,0.997391,1
+El ayuntamiento anunció ayer que,142,".
+",0.719578,0
+El ayuntamiento anunció ayer que,143,El,0.271009,0
+El ayuntamiento anunció ayer que,144, proyecto,0.521985,0
+El ayuntamiento anunció ayer que,145, de,0.816481,0
+El ayuntamiento anunció ayer que,146, renov,0.995588,0
+El ayuntamiento anunció ayer que,147,ación,0.999168,1
+El ayuntamiento anunció ayer que,148, de,0.956418,0
+El ayuntamiento anunció ayer que,149, la,0.995024,0
+El ayuntamiento anunció ayer que,150, red,0.985484,0

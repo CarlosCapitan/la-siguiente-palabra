@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Capítulo 6 — la máquina entera: seguir una frase de punta a punta.
+Capítulo 7 — la máquina entera: seguir una frase de punta a punta.
 
 Enseña, sobre un modelo real y pequeño, los cuatro momentos del recorrido:
   1. El texto se parte en trozos.
@@ -38,7 +38,7 @@ SALIDA_CSV = "maquina_entera.csv"
 
 # ==========================================================
 
-from formato import (comprobar_ancho, pct, miles, tabla_de_probabilidades,
+from formato import (ANCHO_CAJA_CITA, coma, comprobar_ancho, pct, miles, tabla_de_probabilidades,
                      ANCHO_TROZO, ANCHO_PROB)
 
 import argparse
@@ -90,27 +90,28 @@ def selftest(tok, modelo):
     _, p_facil = siguientes(tok, modelo, PROMPT_FACIL, 3)
     _, p_nula = siguientes(tok, modelo, "qx zr vb kk pl", 3)
     d_facil, d_nula = dispersion(p_facil), dispersion(p_nula)
-    print(f"[1] test nulo         dispersión: frase con sentido {d_facil:.3f}  sin sentido {d_nula:.3f}")
+    print(f"[1] test nulo         dispersión: frase con sentido {coma(d_facil, 3)}  "
+          f"sin sentido {coma(d_nula, 3)}")
     if not d_nula > d_facil:
-        fallos.append(f"test nulo: la frase sin sentido ({d_nula:.3f}) no sale más dispersa que "
-                      f"la que tiene sentido ({d_facil:.3f})")
+        fallos.append(f"test nulo: la frase sin sentido ({coma(d_nula, 3)}) no sale más dispersa "
+                      f"que la que tiene sentido ({coma(d_facil, 3)})")
 
     # 2. SEÑAL IMPLANTADA — tras «uno, dos, tres, cuatro,» la continuación es obvia.
     top, _ = siguientes(tok, modelo, PROMPT_FACIL, 5)
     prob_cinco = dict(top).get(CONTINUACION_FACIL, 0.0)
-    print(f"[2] señal implantada  «{PROMPT_FACIL}» -> «{top[0][0]}» con {top[0][1]:.3f}; "
-          f"«{CONTINUACION_FACIL.strip()}» tiene {prob_cinco:.3f}")
+    print(f"[2] señal implantada  «{PROMPT_FACIL}» -> «{top[0][0]}» con {coma(top[0][1], 3)}; "
+          f"«{CONTINUACION_FACIL.strip()}» tiene {coma(prob_cinco, 3)}")
     if prob_cinco < UMBRAL_FACIL:
-        fallos.append(f"señal implantada: se esperaba «cinco» con al menos {UMBRAL_FACIL}; "
-                      f"se obtuvo {prob_cinco:.3f}")
+        fallos.append(f"señal implantada: se esperaba «cinco» con al menos "
+                      f"{coma(UMBRAL_FACIL, 2)}; se obtuvo {coma(prob_cinco, 3)}")
 
     # 3. INVARIANTE DEL DOMINIO — la lista de probabilidades cubre TODO el vocabulario y
     #    suma uno. (Los asserts de `siguientes` ya lo comprueban en cada llamada.)
     _, p = siguientes(tok, modelo, FRASE)
-    print(f"[3] invariante        {len(p):,} palabras posibles, suman {float(p.sum()):.6f}, "
-          f"mínima {float(p.min()):.2e}")
+    print(f"[3] invariante        {miles(len(p))} palabras posibles, "
+          f"suman {coma(float(p.sum()), 6)}, mínima {float(p.min()):.2e}")
     if len(p) < 1000:
-        fallos.append(f"invariante: vocabulario sospechosamente pequeño ({len(p)})")
+        fallos.append(f"invariante: vocabulario sospechosamente pequeño ({miles(len(p))})")
 
     print()
     if fallos:
@@ -168,15 +169,27 @@ def main():
 
     print("--- 4. Y SE VUELVE A EMPEZAR ---")
     texto = FRASE
-    print(f"{'paso':>4}  {'trozo elegido':>{ANCHO_TROZO}}  {'probabilidad':>{ANCHO_PROB}}  "
-          f"y el texto queda así")
+    # Dos líneas por paso, y no una. Con el texto entero en la misma fila la línea llegaba a 91
+    # caracteres: en el libro eso no cabe, se convierte en tabla, y una tabla de Markdown no la
+    # mide ningún verificador —ni se desborda en el PDF: se dobla—. Acabó impresa partida en
+    # cuatro renglones por fila, ocupando una página entera e ilegible (fallo 4.27). Así se lee
+    # como una escalera, que además es lo que la tabla quiere enseñar.
+    lineas = [f"{'paso':>4}  {'trozo':>{ANCHO_TROZO}}  {'probabilidad':>{ANCHO_PROB}}"]
     for i in range(1, PASOS_BUCLE + 1):
         top, _ = siguientes(tok, modelo, texto, 1)
         palabra, prob = top[0]
         texto += palabra
-        print(f"{i:>4}  {palabra.replace(' ', '_'):>{ANCHO_TROZO}}  "
-              f"{pct(prob, 2):>{ANCHO_PROB}}  {texto}")
+        lineas.append(f"{i:>4}  {palabra.replace(' ', '_'):>{ANCHO_TROZO}}  "
+                      f"{pct(prob, 2):>{ANCHO_PROB}}")
+        # Si el texto ya no cabe, se corta por la IZQUIERDA y se marca con puntos suspensivos:
+        # un corte que no se ve es una mentira pequeña, y aquí el lector tiene que poder saber
+        # que lo que ve es el final de algo más largo.
+        visible = texto if len(texto) <= 56 else "…" + texto[-55:]
+        lineas.append(f"      {visible}")
         filas.append(["bucle", str(i), palabra, f"{prob:.6f}"])
+    comprobar_ancho(lineas, ANCHO_CAJA_CITA)
+    for l in lineas:
+        print(l)
 
     with open(SALIDA_CSV, "w", newline="", encoding="utf-8") as fh:
         csv.writer(fh).writerows([["medicion", "contexto", "palabra", "probabilidad"]] + filas)
