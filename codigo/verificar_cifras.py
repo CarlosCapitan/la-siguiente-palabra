@@ -67,6 +67,23 @@ def es_parte_de_un_nombre(linea, inicio):
     return bool(NOMBRE.search(linea[corte:inicio]))
 
 
+# Y un segundo caso de número que es un nombre: la referencia a una entrada del catálogo de
+# fallos o a una regla del libro. «fallo 4.30» y «regla 6.2» no son cantidades; son la
+# numeración de un documento, y castellanizarlas —«fallo 4,30»— sería absurdo. Apareció el 18 de
+# septiembre, en cuanto una cabecera de salida empezó a citar el catálogo por su número.
+#
+# La regla es estrecha: hace falta la palabra delante, pegada. Un «4.30» suelto se sigue
+# marcando, que es lo que se quiere.
+REFERENCIA = re.compile(
+    r'\b(?:fallos?|reglas?|apartados?|propuestas?)\s+(?:el\s+|la\s+|los\s+|las\s+)?$',
+    re.IGNORECASE)
+
+
+def es_referencia_del_catalogo(linea, inicio):
+    """¿El número va detrás de «fallo», «regla», «apartado» o «propuesta»?"""
+    return bool(REFERENCIA.search(linea[:inicio]))
+
+
 def revisar_texto(texto):
     """Devuelve [(número de línea, clase, trozo)] de lo que está escrito a la inglesa."""
     fallos = []
@@ -81,7 +98,9 @@ def revisar_texto(texto):
             if m.group(1) != "0":
                 fallos.append((i, 'dudoso', m.group(0)))
         for m in DECIMAL_CANDIDATO.finditer(l):
-            if es_decimal_ingles(m.group(1), m.group(2)) and not es_parte_de_un_nombre(l, m.start()):
+            if (es_decimal_ingles(m.group(1), m.group(2))
+                    and not es_parte_de_un_nombre(l, m.start())
+                    and not es_referencia_del_catalogo(l, m.start())):
                 fallos.append((i, 'decimal', m.group(0)))
     return fallos
 
@@ -153,12 +172,27 @@ def selftest():
         fallos.append(f"el nombre y la cifra: el identificador se deja pasar; «0.5B» y «1.98x» "
                       f"no ({len(nombre)} y {len(cantidad)})")
 
+    # 6. LA REFERENCIA Y LA CANTIDAD — misma valla para la otra excusa. «fallo 4.30» es la
+    #    numeración del catálogo; «4.30» a secas, en una tabla, es una cantidad y se marca.
+    #    Sin esta prueba, bastaría escribir la palabra «fallo» en cualquier sitio de la línea
+    #    para silenciar todos los números que vinieran detrás.
+    referencia = revisar_texto("la anterior no valía (fallo 4.30), y el fallo 4.31 encima")
+    suelto = revisar_texto("   ventaja     4.30     media   0.933")
+    lejos = revisar_texto("el fallo se ve en la columna de la derecha:   4.30")
+    print(f"[6] la referencia         «fallo 4.30» y «el fallo 4.31»: {len(referencia)} "
+          f"incidencias "
+          f"(tiene que ser 0); sueltos: {len(suelto)} (2); con la palabra lejos: {len(lejos)} (1)")
+    if referencia or len(suelto) != 2 or len(lejos) != 1:
+        fallos.append(f"la referencia: «fallo 4.30» se deja pasar, un «4.30» suelto no, y la "
+                      f"palabra «fallo» al principio de la línea no tapa nada "
+                      f"({len(referencia)}, {len(suelto)}, {len(lejos)})")
+
     print()
     if fallos:
         for f in fallos:
             print("FALLA:", f)
         return 1
-    print("SELFTEST: las cinco pruebas pasan.")
+    print("SELFTEST: las seis pruebas pasan.")
     return 0
 
 
@@ -166,6 +200,8 @@ if '--selftest' in sys.argv:
     sys.exit(selftest())
 
 carpeta = sys.argv[1]
+assert os.path.isdir(carpeta), (
+    f"Se esperaba la carpeta de las salidas; se encontró {carpeta!r}, que no es una carpeta")
 total = malos = avisos = 0
 for nombre in sorted(os.listdir(carpeta)):
     if not nombre.endswith('.txt'):
@@ -191,4 +227,10 @@ if malos:
     print("Se arregla en el programa que los imprime, con miles() y coma() de formato.py,")
     print("nunca a mano en el libro al copiarlos (regla 6).")
     sys.exit(1)
+# Un cero aquí no es un aprobado: es que no se ha mirado nada. Apuntado con la carpeta
+# equivocada, este verificador imprimía «PASA: los 0 ficheros» y devolvía 0, que es el mismo
+# agujero que el test nulo del capítulo 9 (fallo 4.31): decir «pasa» sin haber comprobado.
+assert total, (
+    f"Se esperaban ficheros .txt de salida en {carpeta}; no hay ninguno. Un verificador que "
+    "no encuentra nada que mirar no aprueba: avisa de que le has dado la carpeta que no era")
 print(f"PASA: los {total} ficheros de salida escriben los números en castellano.")

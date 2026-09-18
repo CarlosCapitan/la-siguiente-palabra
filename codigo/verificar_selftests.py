@@ -10,7 +10,8 @@ del capítulo 8, el que el libro llama su corazón— suspendía su propio test 
 determinista, en cualquier máquina, y llevaba así desde el primer día. Nadie lo había ejecutado
 porque el programa «funciona»: la ruta que imprime los números del libro iba tan tranquila.
 
-El barrido del 18 de septiembre: 31 de 32 pasan, falla ése.
+El barrido del 18 de septiembre: 31 de 32 pasan, falla ése. Ese mismo día, ya arreglado, el
+barrido completo de los 34 programas da 32 que pasan y 2 saltados que solo corren en el Mac.
 
 La comprobación rápida es estática y tarda un segundo, así que se puede pasar siempre. La lenta
 ejecuta de verdad y tarda más de diez minutos: se pasa al cerrar un capítulo, o cuando se toca
@@ -23,8 +24,16 @@ SIN_SELFTEST = {
     'formato.py':          'no mide nada: es el formato de imprenta compartido',
     'descargar_corpus.py': 'no calcula: baja ficheros de internet y no hay nada que comprobar',
 }
-# Estos solo corren en el portátil del autor (bibliotecas de su tarjeta gráfica).
-SOLO_EN_EL_MAC = {'comprimir.py': 'necesita mlx_lm, que solo está en el Mac'}
+# Estos solo corren en el portátil del autor. La lista es corta a propósito y cada uno lleva
+# su motivo: en cuanto se pueda meter aquí cualquier cosa, este verificador deja de servir. El
+# recuento de saltados sale siempre en la línea final, para que no se escondan.
+#
+# Y saltado NO es aprobado: estos hay que pasarlos en el Mac. Están en TAREA-MEDICIONES.md.
+SOLO_EN_EL_MAC = {
+    'comprimir.py':         'necesita mlx_lm, que solo está en el Mac',
+    'romper_la_maquina.py': 'su selftest carga y ejecuta un modelo de 7.000 millones de '
+                            'números; en un contenedor de dos núcleos no termina nunca',
+}
 LIMITE = 420   # segundos por programa
 
 
@@ -100,8 +109,19 @@ if '--ejecutar' in sys.argv:
         if n in SOLO_EN_EL_MAC:
             print(f"  {n:<32} SALTADO: {SOLO_EN_EL_MAC[n]}")
             continue
-        r = subprocess.run([sys.executable, n, '--selftest'], cwd=carpeta,
-                           capture_output=True, text=True, timeout=LIMITE)
+        # Un programa que no termina tampoco pasa su prueba, y hasta el 18 de septiembre
+        # reventaba el barrido entero con una traza: el veredicto no llegaba a imprimirse y
+        # los programas que iban detrás en el alfabeto no se ejecutaban nunca. Es la misma
+        # enfermedad del 4.29 —la prueba que nadie ve— dentro del verificador que existe
+        # para curarla, así que un plantón se cuenta como suspenso y el barrido sigue.
+        try:
+            r = subprocess.run([sys.executable, n, '--selftest'], cwd=carpeta,
+                               capture_output=True, text=True, timeout=LIMITE)
+        except subprocess.TimeoutExpired:
+            print(f"  {n:<32} SUSPENDE")
+            suspenden.append(n)
+            print(f"      no termina su selftest en {LIMITE} segundos")
+            continue
         ok = 'SELFTEST:' in r.stdout and 'FALLA' not in r.stdout
         print(f"  {n:<32} {'pasa' if ok else 'SUSPENDE'}")
         if not ok:
@@ -115,7 +135,11 @@ if faltan or suspenden:
     print("Un programa cuyo selftest suspende no puede avalar ni una cifra del libro.")
     sys.exit(1)
 if '--ejecutar' in sys.argv:
-    print(f"\nPASA: los {len(con) - len(set(SOLO_EN_EL_MAC) & con)} selftest ejecutados pasan.")
+    saltados = sorted(set(SOLO_EN_EL_MAC) & con)
+    print(f"\nPASA: los {len(con) - len(saltados)} selftest ejecutados pasan"
+          + (f", y {len(saltados)} quedan SIN EJECUTAR "
+             f"({', '.join(saltados)}): saltado no es aprobado, hay que pasarlos en el Mac."
+             if saltados else "."))
 else:
     print(f"PASA: los {len(nombres) - len(set(SIN_SELFTEST) & set(nombres))} programas de medición "
           f"tienen selftest. Para ejecutarlos: --ejecutar.")

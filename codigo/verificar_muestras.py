@@ -175,12 +175,28 @@ def selftest():
     if igual not in maquina or comido in maquina:
         fallos.append("los espacios: la copia exacta pasa; la de espacios comidos, no")
 
+    # 6. LOS RÓTULOS — la fila de cabecera se compara igual que una de datos: se puede
+    #    quitar una columna, no rebautizarla. Se prueba sobre la cabecera de verdad del
+    #    programa del capítulo 9, que es donde apareció el fallo.
+    cab = [normalizar("  longitud   en serie (s)   a la vez (s)   ventaja").strip()]
+    literal = fila_esta_en_alguna_linea(["longitud", "en serie (s)", "a la vez (s)",
+                                         "ventaja"], cab)
+    recortada = fila_esta_en_alguna_linea(["longitud", "ventaja"], cab)
+    inventada = fila_esta_en_alguna_linea(["longitud del texto, en palabras",
+                                           "leyendo en orden, segundos"], cab)
+    print(f"[6] los rótulos       los del programa: {'pasan' if literal else 'NO PASAN'}; "
+          f"quitando una columna: {'pasan' if recortada else 'NO PASAN'}; "
+          f"rebautizados: {'PASAN (mal)' if inventada else 'no pasan'}")
+    if not literal or not recortada or inventada:
+        fallos.append("los rótulos: los del programa pasan, quitar una columna vale, "
+                      "rebautizarlos no")
+
     print()
     if fallos:
         for f in fallos:
             print("FALLA:", f)
         return 1
-    print("SELFTEST: las cinco pruebas pasan.")
+    print("SELFTEST: las seis pruebas pasan.")
     return 0
 
 
@@ -269,36 +285,85 @@ for b in bloques:
 # Ahora mira cualquier fila con una cifra. Las tablas que NO son medición (una tabla que
 # enseña una idea, como «64 palabras, 64 pasos en fila») se declaran a mano en el mismo
 # fichero de excepciones que los bloques, por su primer trozo de texto.
-filas = 0
-lineas_crudas = crudo.splitlines()
-for k, l in enumerate(lineas_crudas):
-    if not l.startswith('|') or not re.search(r'\d', l):
-        continue
-    # La fila de cabecera no es un dato: es el rótulo de las columnas, y lo escribe el
-    # libro. Se reconoce porque la línea siguiente es la de guiones.
-    siguiente = lineas_crudas[k + 1] if k + 1 < len(lineas_crudas) else ''
-    if siguiente.startswith('|') and set(siguiente) <= set('|-: '):
-        continue
-    # El asterisco doble es negrita del libro, no un dato: fuera de las celdas antes
-    # de compararlas, o la celda «**1,000**» no se encuentra nunca.
+def celdas_de(l):
+    """Las celdas de una fila de tabla del libro, sin el marcado de imprenta.
+
+    El asterisco doble es negrita del libro, no un dato: fuera de las celdas antes de
+    compararlas, o la celda «**1,000**» no se encuentra nunca."""
     celdas = [normalizar(quitar_marcado(c)).replace('**', '').strip()
               for c in l.strip('|').split('|')]
-    celdas = [c for c in celdas if c and not set(c) <= set('-: ')]
-    fila = ' '.join(celdas).replace('**', '')
-    if any(fila.startswith(d) for d in declaradas):
+    return [c for c in celdas if c and not set(c) <= set('-: ')]
+
+
+def tablas_del_capitulo(lineas):
+    """Las tablas del capítulo, cada una como (cabecera, [filas de datos]).
+
+    Una tabla empieza en la fila de rótulos, que se reconoce porque la línea siguiente es
+    la de guiones, y termina en la primera línea que ya no empieza por barra."""
+    out = []
+    k = 0
+    while k < len(lineas) - 1:
+        siguiente = lineas[k + 1]
+        if (lineas[k].startswith('|') and siguiente.startswith('|')
+                and set(siguiente) <= set('|-: ')):
+            datos, j = [], k + 2
+            while j < len(lineas) and lineas[j].startswith('|'):
+                datos.append(lineas[j])
+                j += 1
+            out.append((lineas[k], datos))
+            k = j
+        else:
+            k += 1
+    return out
+
+
+filas = cabeceras = 0
+lineas_crudas = crudo.splitlines()
+for cabecera, datos in tablas_del_capitulo(lineas_crudas):
+    medida = False
+    for l in datos:
+        if not re.search(r'\d', l):
+            continue
+        celdas = celdas_de(l)
+        fila = ' '.join(celdas)
+        if any(fila.startswith(d) for d in declaradas):
+            de_autor += 1
+            continue
+        filas += 1
+        medida = True
+        if fila in salida or fila_esta_en_alguna_linea(celdas):
+            continue
+        print(f"TABLA NO LITERAL: «{fila[:60]}…»")
+        fallos += 1
+
+    # La fila de rótulos SÍ es un dato, y esto no se miraba (fallo 4.32). En el capítulo 9
+    # el libro reescribió a mano las doce columnas de sus tres tablas y, de paso, le puso
+    # al eje una unidad que el programa no mide: «longitud del texto, EN PALABRAS», cuando
+    # lo que el programa cronometra es ruido, y la longitud son posiciones. Un rótulo
+    # inventado es un dato inventado, y encima es el que dice qué significan los demás.
+    #
+    # Solo se comprueban los rótulos de las tablas de las que ya se ha comprobado alguna
+    # fila de datos: una tabla ilustrativa, declarada a mano, no la toca esto.
+    if not medida:
+        continue
+    celdas = celdas_de(cabecera)
+    rotulo = ' '.join(celdas)
+    if not celdas or any(rotulo.startswith(d) for d in declaradas):
         de_autor += 1
         continue
-    filas += 1
-    if fila in salida or fila_esta_en_alguna_linea(celdas):
+    cabeceras += 1
+    if rotulo in salida or fila_esta_en_alguna_linea(celdas):
         continue
-    print(f"TABLA NO LITERAL: «{fila[:60]}…»")
+    print(f"ROTULOS NO LITERALES: «{rotulo[:60]}…»\n  Los rótulos de las columnas los "
+          "escribe el programa, no el libro. El libro puede QUITAR una columna; no puede\n"
+          "  rebautizarla, y mucho menos ponerle una unidad.")
     fallos += 1
 
 # Un capítulo puede no enseñar ni un dato medido —el prólogo no enseña ninguno— y eso no es un
 # fallo. El fallo es que el capítulo SÍ traiga bloques o tablas y no se reconozca ninguno: ahí el
 # formato ha cambiado y este verificador habría pasado a aprobar sin mirar. Antes los dos casos
 # daban el mismo error, y el aviso que importa quedaba escondido detrás del que no importa.
-if not (comprobados or filas or de_autor):
+if not (comprobados or filas or cabeceras or de_autor):
     assert not parece_salida_de_maquina(crudo.splitlines()), (
         f"{capitulo} trae bloques o filas con cifras y no he reconocido ninguno: el formato ha "
         "cambiado y desde ahora este verificador estaría aprobando el capítulo sin mirar nada")
@@ -306,6 +371,7 @@ if not (comprobados or filas or de_autor):
     sys.exit(0)
 
 print(f"{comprobados} citas de máquina comprobadas ({recompuestos} recortadas), "
-      f"{de_autor} bloques declarados del autor, {filas} filas de tabla con números")
+      f"{de_autor} bloques declarados del autor, {filas} filas de tabla con números, "
+      f"{cabeceras} filas de rótulos")
 print("FALLA" if fallos else "PASA: todas las citas de máquina son literales")
 sys.exit(1 if fallos else 0)
