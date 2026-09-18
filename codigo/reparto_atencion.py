@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-Capítulo 5 — reparto de atención de la palabra «era» sobre el resto de la frase.
+Capítulo 8 — reparto de atención del adjetivo final sobre el resto de la frase.
 
-Mide a qué palabras mira «era» en tres frases que solo se diferencian en el adjetivo
-final, y si el reparto se concentra o se ensancha.
+Mide a qué palabras mira el adjetivo —«alto», «bajo», «caro»— en tres frases que solo
+se diferencian en esa última palabra, y si el reparto se concentra o se ensancha. No
+mide el reparto de «era»: ver el comentario de CONSULTA_ES_ULTIMA_PALABRA, más abajo.
 
 Uso:
     python reparto_atencion.py
@@ -50,6 +51,8 @@ import sys
 import numpy as np
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
+
+from formato import ANCHO_CAJA_CITA, coma, comprobar_ancho
 
 
 def fijar_semilla(semilla):
@@ -202,35 +205,73 @@ def escribir_csv(resultados, ruta):
 
 
 def informe(resultados):
-    print(f"\n{'variante':<10}{'peso vaso':>12}{'peso cajón':>12}{'dispersión':>13}")
-    print("-" * 47)
+    """La tabla y el veredicto de la predicción, en castellano y dentro de la caja.
+
+    Coma decimal porque el libro está en castellano (formato.py): un «0.4986» impreso
+    obliga a castellanizarlo a mano al copiarlo, y eso es lo que la regla 6 prohíbe.
+    """
+    lineas = [
+        "el reparto del adjetivo final, promediado sobre las cabezas y",
+        "sobre el último tercio de capas. «vaso» y «cajón» son la porción",
+        "que se lleva cada una; «dispersión» va de 0 (todo a una sola",
+        "palabra) a 1 (repartido por igual entre todas).",
+        "",
+        f"{'adjetivo':<10}{'«vaso»':>12}{'«cajón»':>12}{'dispersión':>13}",
+        "-" * 47,
+    ]
     for clave, r in resultados.items():
-        print(
-            f"{clave:<10}{r['peso_vaso']:>12.4f}{r['peso_cajón']:>12.4f}{r['dispersion']:>13.4f}"
+        lineas.append(
+            f"{clave:<10}{coma(r['peso_vaso'], 4):>12}"
+            f"{coma(r['peso_cajón'], 4):>12}{coma(r['dispersion'], 4):>13}"
         )
+    print()
+    print("\n".join(comprobar_ancho(lineas, ANCHO_CAJA_CITA)))
     d = {k: r["dispersion"] for k, r in resultados.items()}
     print()
-    print("PREDICCIÓN DEL CAPÍTULO: la dispersión de «caro» debe ser la mayor de las tres.")
+    # Esta predicción se escribió ANTES de medir, que es como se hacen. No se cumplió, y el
+    # capítulo se reescribió el 18 de septiembre para contar lo medido en vez de lo esperado.
+    # El veredicto se queda aquí, impreso cada vez, porque es el registro de que la hipótesis
+    # se puso a prueba y perdió: borrarlo sería borrar la parte honesta.
+    veredicto = [
+        "LO QUE SE ESPERABA, ESCRITO ANTES DE MEDIR: que la frase sin",
+        "respuesta («caro») repartiera la atención más que las otras.",
+    ]
     if "caro" in d:
         gana = max(d, key=d.get)
-        print(f"RESULTADO: la mayor es «{gana}» ({d[gana]:.4f}).", end=" ")
-        print("SE CUMPLE." if gana == "caro" else "NO SE CUMPLE — hay que reescribir el final del capítulo.")
+        veredicto.append(f"RESULTADO: la mayor es «{gana}» ({coma(d[gana], 4)}).")
+        veredicto.append(
+            "SE CUMPLE: la frase sin respuesta es la que más reparte."
+            if gana == "caro"
+            else "NO SE CUMPLE: la frase sin respuesta no reparte más."
+        )
+        if gana != "caro":
+            veredicto.append("El capítulo cuenta lo medido, no lo que se esperaba.")
+    print("\n".join(comprobar_ancho(veredicto, ANCHO_CAJA_CITA)))
 
 
 def selftest(tok, modelo):
     """Tres pruebas: test nulo, señal implantada e invariante del dominio."""
     fallos = []
 
-    # 1. TEST NULO — frase con las mismas palabras barajadas. Sin estructura no debe
-    #    aparecer un pico sobre un referente: la dispersión no debe bajar de la real.
+    # 1. TEST NULO — las mismas palabras barajadas. Sin estructura no debe aparecer un pico
+    #    sobre un referente: la dispersión no debe bajar de la real.
+    #
+    #    OJO con el montaje, que estuvo mal desde el primer día y nadie lo ejecutó (fallo 4.29):
+    #    barajando la frase ENTERA, la palabra de consulta podía quedar la primera, y entonces
+    #    solo se ve a sí misma. Un reparto de un solo elemento tiene dispersión cero, así que el
+    #    test suspendía siempre, de forma determinista, sin que ninguna cifra del libro estuviera
+    #    mal. Se baraja lo que va DELANTE de la consulta y la consulta se queda al final: mismas
+    #    palabras, ninguna estructura, y el mismo número de palabras visibles que en la real, que
+    #    es lo único que hace comparables las dos dispersiones.
     base = FRASES["alto"]
     palabras = base.rstrip(".").split()
+    consulta_nula = palabras[-1]
     rng = random.Random(SEMILLA)
-    barajadas = palabras[:]
-    rng.shuffle(barajadas)
-    nula = " ".join(barajadas) + "."
+    delante = palabras[:-1]
+    rng.shuffle(delante)
+    nula = " ".join(delante + [consulta_nula]) + "."
     try:
-        _, pesos_n, obj_n = reparto_de_una_frase(tok, modelo, nula, consulta="alto")
+        _, pesos_n, obj_n = reparto_de_una_frase(tok, modelo, nula, consulta=consulta_nula)
         d_nula = dispersion(pesos_n[: obj_n + 1])
         _, pesos_r, obj_r = reparto_de_una_frase(tok, modelo, base)
         d_real = dispersion(pesos_r[: obj_r + 1])

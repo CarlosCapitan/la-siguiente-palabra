@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Capítulo 5 — ¿acierta el modelo el referente, y con cuánto aplomo?
+Capítulo 8 — ¿acierta el modelo el referente, y con cuánto aplomo?
 
 Elección forzada entre «vaso» y «cajón» para tres frases que solo se diferencian en el
 adjetivo final. La tercera («caro») no tiene respuesta correcta: sirve para ver si el
@@ -48,6 +48,8 @@ import sys
 import numpy as np
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
+
+from formato import ANCHO_CAJA_CITA, coma, comprobar_ancho
 
 
 def fijar_semilla(semilla):
@@ -114,10 +116,23 @@ def medir(nombre):
 
 
 def informe(filas):
-    print(f"\n{'modelo':<22}{'caso':<7}{'correcta':<11}{'responde':<11}{'confianza':>10}  acierta")
-    print("-" * 72)
+    """La tabla, en castellano y dentro de la caja.
+
+    La confianza se escribe con coma decimal: el libro está en castellano y un «0.977»
+    impreso obliga a castellanizarlo a mano al copiarlo, que es justo lo que la regla 6
+    prohíbe. Y las columnas se estrechan hasta caber en la caja del libro, medida en
+    formato.py, para que el bloque no haya que retocarlo nunca al llevarlo a la página.
+    """
+    lineas = [
+        f"{'modelo':<14}{'caso':<7}{'correcta':<11}{'responde':<9}{'confianza':>10}  acierta",
+        "-" * 60,
+    ]
     for m, c, e, g, conf, a in filas:
-        print(f"{m.split('/')[-1]:<22}{c:<7}{e:<11}{g:<11}{conf:>10.3f}  {a}")
+        lineas.append(
+            f"{m.split('/')[-1]:<14}{c:<7}{e:<11}{g:<9}{coma(conf, 3):>10}  {a}"
+        )
+    print()
+    print("\n".join(comprobar_ancho(lineas, ANCHO_CAJA_CITA)))
 
 
 def selftest(tok, modelo):
