@@ -1,0 +1,60 @@
+##### capítulo 10: lo que más abunda, contado #####
+fecha: 2026-09-18 19:29
+máquina: Linux x86_64. No entrena ni
+cronometra: cuenta palabras del mismo texto que se le dio al
+modelo y mide las cuatro muestras ya guardadas, así que da lo
+mismo en cualquier ordenador.
+
+texto de entrenamiento: 8.000.000 letras, 1.393.593 palabras,
+134.708 distintas.
+
+--- LAS PALABRAS QUE EL CAPÍTULO LLAMA «LAS MÁS FRECUENTES» ---
+
+   palabra       veces    puesto   del texto
+----------   ---------   -------   ---------
+         y      42.253         4     3,032 %
+        de      74.806         1     5,368 %
+        es       8.657        22     0,621 %
+       ten          26     4.266     0,002 %
+
+«puesto» es el lugar en la lista de palabras ordenada de más
+a menos frecuente, entre las 134.708 distintas del texto
+de entrenamiento; «del texto», qué parte de todas las palabras
+del texto es ésa.
+
+De las 4 palabras que el capítulo nombra, 1 NO está
+entre las 100 más frecuentes: «ten».
+
+--- LAS MISMAS CADENAS, COMO RACHAS DE LETRAS ---
+
+     racha   letras       veces    puesto
+----------   ------ -----------   -------
+         y        1      68.127        20
+        de        2     134.418         1
+        es        2     119.337         3
+       ten        3       8.789        54
+
+Aquí «puesto» es el lugar entre las rachas de letras del MISMO
+largo que hay en el texto, contando solo las que caben dentro
+de una palabra. Rachas distintas que hay, por largo:
+    de 1 letra: 41
+    de 2 letras: 1.083
+    de 3 letras: 10.124
+
+El modelo no ve palabras: ve letras, una detrás de otra. Así que
+ésta es la lista que le importa y no la de arriba, y es la que
+explica por qué sale «ten» sin ser una palabra frecuente.
+
+--- LA FORMA DE CADA MUESTRA, CONTRA LA DEL TEXTO REAL ---
+
+         momento    espacios     grupo
+----------------   ---------   -------
+        30 pasos      23,8 %      3,50
+       300 pasos      21,2 %      3,81
+     3.000 pasos      19,7 %      4,08
+    52.972 pasos      19,7 %      3,98
+      texto real      16,1 %      4,69
+
+«espacios» es qué parte de la muestra son espacios; «grupo»,
+cuántas letras tiene de media lo que va entre dos espacios. La
+última fila es el castellano que se le dio, medido igual.
