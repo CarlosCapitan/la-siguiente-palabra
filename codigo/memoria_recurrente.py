@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Capítulo 5 — la memoria que se olvidaba.
+Capítulo 6 — la memoria que se olvidaba.
 
 Dos mediciones:
   1. Recordar a distancia: una red recurrente tiene que devolver un símbolo que vio N pasos
@@ -58,6 +58,8 @@ import unicodedata
 import numpy as np
 import torch
 import torch.nn as nn
+
+from formato import coma, miles
 
 
 def dispositivo():
@@ -161,7 +163,7 @@ def cargar_texto():
             break
     texto = "".join(trozos)[:MAX_CARACTERES]
     assert len(texto) >= 500_000, \
-        f"Se esperaban al menos 500.000 caracteres; se encontraron {len(texto):,}"
+        f"Se esperaban al menos 500.000 caracteres; se encontraron {miles(len(texto))}"
     return texto
 
 
@@ -245,15 +247,17 @@ def selftest():
     with torch.no_grad():
         x, y = lote_memoria(10, EJEMPLOS_PRUEBA, rng); x[:, 0] = SIMBOLOS
         a_nulo = (modelo(x).argmax(1) == y).float().mean().item()
-    print(f"[1] test nulo         sin pista en la secuencia: acierto {a_nulo:.3f} (azar = {1/SIMBOLOS:.3f})")
+    print(f"[1] test nulo         sin pista en la secuencia: acierto {coma(a_nulo, 3)} "
+          f"(azar = {coma(1 / SIMBOLOS, 3)})")
     if a_nulo > 0.25:
-        fallos.append(f"test nulo: {a_nulo:.3f} de acierto sin pista; algo filtra la respuesta")
+        fallos.append(f"test nulo: {coma(a_nulo, 3)} de acierto sin pista; algo filtra la respuesta")
 
     # 2. SEÑAL IMPLANTADA — a distancia 1 la tarea es trivial y tiene que resolverse.
     a_facil = medir_memoria(1, True, pasos=800)
-    print(f"[2] señal implantada  a distancia 1: acierto {a_facil:.3f}")
+    print(f"[2] señal implantada  a distancia 1: acierto {coma(a_facil, 3)}")
     if a_facil < UMBRAL_SELFTEST:
-        fallos.append(f"señal implantada: se esperaba >= {UMBRAL_SELFTEST} a distancia 1; se obtuvo {a_facil:.3f}")
+        fallos.append(f"señal implantada: se esperaba >= {coma(UMBRAL_SELFTEST, 2)} "
+                      f"a distancia 1; se obtuvo {coma(a_facil, 3)}")
 
     # 3. INVARIANTE DEL DOMINIO — lo que sale del generador de texto son probabilidades:
     #    no negativas y sumando uno.
@@ -265,7 +269,7 @@ def selftest():
         p = torch.softmax(logits[0], dim=-1)
     suma = float(p.sum(dim=-1).min()), float(p.sum(dim=-1).max())
     print(f"[3] invariante        probabilidades por paso: mínimo {p.min():.2e}, suma entre "
-          f"{suma[0]:.6f} y {suma[1]:.6f}")
+          f"{coma(suma[0], 6)} y {coma(suma[1], 6)}")
     if p.min() < 0 or not all(abs(s - 1) < 1e-4 for s in suma):
         fallos.append(f"invariante: probabilidades fuera de rango o que no suman uno: {suma}")
 
@@ -288,21 +292,22 @@ def main():
 
     print("--- 1. RECORDAR A DISTANCIA ---")
     print("Acierto al devolver un símbolo visto N pasos antes (azar = 0,125)\n")
-    print(f"Media de {SEMILLAS_MEMORIA} entrenamientos; entre parentesis, el peor y el mejor.")
+    print(f"Media de {SEMILLAS_MEMORIA} entrenamientos; entre paréntesis, el peor y el mejor.")
     print(f"{'distancia':>10}{'memoria simple':>26}{'con compuertas':>26}")
     for d in DISTANCIAS:
         ms, mns, mxs = medir_memoria_repetida(d, False)
         mc, mnc, mxc = medir_memoria_repetida(d, True)
-        print(f"{d:>10}{f'{ms:.3f} ({mns:.3f}-{mxs:.3f})':>26}"
-              f"{f'{mc:.3f} ({mnc:.3f}-{mxc:.3f})':>26}")
+        simple = f"{coma(ms, 3)} ({coma(mns, 3)}-{coma(mxs, 3)})"
+        puertas = f"{coma(mc, 3)} ({coma(mnc, 3)}-{coma(mxc, 3)})"
+        print(f"{d:>10}{simple:>26}{puertas:>26}")
 
     print("\n--- 2. ESCRIBIR EN ESPAÑOL ---")
     texto = cargar_texto()
     vocab, indice, datos, cobertura = vocabulario_y_datos(texto)
-    print(f"{len(datos):,} palabras, {len(vocab):,} distintas en el vocabulario "
-          f"({cobertura*100:.1f} % del texto cubierto).")
+    print(f"{miles(len(datos))} palabras, {miles(len(vocab))} distintas en el vocabulario "
+          f"({coma(cobertura * 100)} % del texto cubierto).")
     modelo, pasos, ultima = entrenar_texto(datos, len(vocab), args.minutos)
-    print(f"entrenada {args.minutos:.0f} minutos en {DISPOSITIVO}: {pasos:,} pasos.\n")
+    print(f"entrenada {args.minutos:.0f} minutos en {DISPOSITIVO}: {miles(pasos)} pasos.\n")
     for arranque in ("el caballero", "no sabía", "cuando llegó"):
         print(f"[arranque: «{arranque}»]")
         print(generar(modelo, indice, vocab, arranque))
