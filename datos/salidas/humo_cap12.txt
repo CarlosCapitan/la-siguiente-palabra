@@ -1,0 +1,7 @@
+### SELFTEST ###
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:  46%|████▋     | 157/339 [00:00<00:00, 1279.68it/s]Loading weights:  84%|████████▍ | 285/339 [00:00<00:00, 866.49it/s] Loading weights: 100%|██████████| 339/339 [00:00<00:00, 617.72it/s]
+[1] test nulo         la aguja sin el pajar: no la sabe
+                      detector sobre respuestas seguras: 0 de 5 falsos positivos
+[2] señal implantada  la aguja en 200 trozos: encontrada
+                      detector sobre negativas explícitas: 5 de 5

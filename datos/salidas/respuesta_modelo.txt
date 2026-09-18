@@ -1,0 +1,12 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+
+modelo                caso   correcta   responde    confianza  acierta
+------------------------------------------------------------------------
+Qwen2.5-0.5B          alto   vaso       vaso            0.977  sí
+Qwen2.5-0.5B          bajo   cajón      vaso            0.975  NO
+Qwen2.5-0.5B          caro   (ninguna)  vaso            0.974  -
+Qwen2.5-1.5B          alto   vaso       vaso            0.735  sí
+Qwen2.5-1.5B          bajo   cajón      vaso            0.737  NO
+Qwen2.5-1.5B          caro   (ninguna)  vaso            0.902  -
+
+Escrito respuesta_modelo.csv

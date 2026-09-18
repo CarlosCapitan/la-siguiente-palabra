@@ -1,0 +1,2 @@
+escrito ../figuras/una_neurona.png
+perceptrón que separa el 4 del 9: acierto 1,000 sobre los ejemplos de prueba

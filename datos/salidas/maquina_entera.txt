@@ -1,0 +1,55 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+--- 1. EL TEXTO SE PARTE EN TROZOS ---
+«La capital de Francia es»
+   6 trozos: La | _capital | _de | _Franc | ia | _es
+«El murciélago hambriento vigilaba»
+   11 trozos: El | _mur | ci | él | ago | _h | amb | rient | o | _vigil | aba
+«anticonstitucionalmente»
+   6 trozos: ant | icon | stit | uc | ional | mente
+
+--- 2. EL TAMAÑO DE LA MÁQUINA ---
+modelo: Qwen/Qwen2.5-0.5B
+números por trozo: 896
+rondas de mirar y mezclar: 24 capas x 14 cabezas = 336
+palabras posibles en la salida: 151.936
+números ajustables en total: 494.032.768
+
+--- 3. LA LISTA DE PROBABILIDADES ---
+«La capital de Francia es» -> ¿qué viene después?
+
+       trozo   probabilidad
+------------   ------------
+         _la        17,46 %  #####
+        _una        12,80 %  ####
+         _un        11,51 %  ###
+         _el         7,11 %  ##
+      _conoc         4,99 %  #
+        _uno         3,64 %  #
+         _de         1,41 %  #
+         _en         1,07 %  #
+        _muy         0,96 %  #
+          _a         0,83 %  #
+  (el resto)        38,22 %  ###########
+
+el resto se reparte entre las otras 151.926 posibilidades
+
+--- 4. Y SE VUELVE A EMPEZAR ---
+paso         trozo  probabilidad
+   1           _la       17,46 %
+      La capital de Francia es la
+   2       _ciudad       30,85 %
+      La capital de Francia es la ciudad
+   3          _más       25,45 %
+      La capital de Francia es la ciudad más
+   4       _grande       65,84 %
+      La capital de Francia es la ciudad más grande
+   5           _de       41,75 %
+      La capital de Francia es la ciudad más grande de
+   6        _Franc       56,68 %
+      La capital de Francia es la ciudad más grande de Franc
+   7            ia       99,95 %
+      La capital de Francia es la ciudad más grande de Francia
+   8             ,       40,17 %
+      … capital de Francia es la ciudad más grande de Francia,
+
+Escrito maquina_entera.csv

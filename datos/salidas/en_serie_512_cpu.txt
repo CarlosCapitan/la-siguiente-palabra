@@ -1,0 +1,25 @@
+########## en_serie_o_a_la_vez.py — PROCESADOR (FORZAR_CPU=1), --ancho 512 --lote 16 ##########
+fecha: 2026-09-17 13:07
+máquina: MacBook Pro M4 Max, 36 GB; procesador forzado (CPU), sin GPU
+torch 2.14.0
+Procesador usado: cpu
+512 números por posición, lotes de 16.
+Números ajustables: en serie 2.363.904 | a la vez 2.363.392 (1.00 veces).
+
+--- PASOS QUE HAY QUE DAR UNO DETRÁS DE OTRO (no depende de la máquina) ---
+  longitud    en serie    a la vez
+        64          64           1
+       128         128           1
+       256         256           1
+       512         512           1
+     1.024       1.024           1
+
+--- TIEMPO DE UNA PASADA DE ENTRENAMIENTO ---
+  longitud   en serie (s)   a la vez (s)   ventaja
+        64         0,0321         0,0082      3,9x
+       128         0,0610         0,0166      3,7x
+       256         0,1200         0,0317      3,8x
+       512         0,3645         0,0804      4,5x
+     1.024         0,5830         0,1965      3,0x
+
+Escrito en_serie_o_a_la_vez.csv

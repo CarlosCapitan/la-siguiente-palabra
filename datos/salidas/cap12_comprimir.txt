@@ -1,0 +1,32 @@
+  tarea                         7B sin comprimir     7B comprimido    32B comprimido
+  sumar dos cifras                           60%               60%              100%
+  plurales                                   60%              100%               80%
+  traducir del inglés                        80%               80%               80%
+  saber cosas del mundo                      20%               20%                0%
+  seguir un patrón inventado                  0%                0%               60%
+  razonar sobre una frase                    60%               80%               60%
+  media                                      47%               57%               63%
+
+--- saber cosas del mundo ---
+  [NO] 'Pregunta: ¿cuál es la capital de Francia?\nRespuesta: '
+       esperada 'París'  ->  'La capital de Francia es París'
+  [NO] 'Pregunta: ¿cuál es la capital de Italia?\nRespuesta: '
+       esperada 'Roma'  ->  'La capital de Italia es Roma.\n\nAl'
+  [NO] 'Pregunta: ¿cuál es la capital de Portugal?\nRespuesta: '
+       esperada 'Lisboa'  ->  'La capital de Portugal es Lisboa.\n\n'
+  [NO] 'Pregunta: ¿en qué continente está Egipto?\nRespuesta: '
+       esperada 'África'  ->  'Egipto está en el continente'
+  [NO] 'Pregunta: ¿cuántas patas tiene una araña?\nRespuesta: '
+       esperada '8'  ->  'Una araña tiene 8 patas'
+
+--- seguir un patrón inventado ---
+  [NO] 'casa -> asac\nmesa -> asem\nlibro -> '
+       esperada 'orbil'  ->  'ablor\ncama -> amac'
+  [NO] 'casa -> asac\nmesa -> asem\ngato -> '
+       esperada 'otag'  ->  'atog\npato ->  at'
+  [sí] 'casa -> asac\nmesa -> asem\nsol -> '
+       esperada 'los'  ->  'los\ncama -> amac\n'
+  [sí] 'casa -> asac\nmesa -> asem\npan -> '
+       esperada 'nap'  ->  'nap\npapel -> lepap'
+  [sí] 'casa -> asac\nmesa -> asem\nmar -> '
+       esperada 'ram'  ->  'ram\ncama -> amac\n'

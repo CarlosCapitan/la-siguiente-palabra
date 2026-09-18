@@ -312,6 +312,17 @@ def main():
               f"{(miles(r['correcciones']) if r['converge'] else '-'):>14}")
         filas.append(["digitos", f"{a}v{b_dig}", r["ejemplos_entrenamiento"],
                       f"{r['acierto_prueba']:.4f}", r["converge"]])
+    # La clave de las columnas, debajo de la tabla y impresa por el programa (regla 9). Un
+    # rótulo que dice lo que mide —«ejemplos para aprender»— no cabe en una columna de una
+    # caja de 68 caracteres, y apilarlo en dos renglones no se puede verificar: al apilar por
+    # columnas, los renglones entrelazan palabras de columnas distintas. Así que el rótulo va
+    # corto arriba y lo que significa va entero aquí abajo, en líneas que el libro copia como
+    # copia cualquier otra. Antes esto lo escribía el libro por su cuenta: fallo 4.32.
+    for l in comprobar_ancho([
+            "«ejemplos»: dibujos que se le enseñaron para aprender.",
+            "«acierto»: sobre dibujos que NO vio mientras aprendía.",
+            "«correcciones»: cuántas veces hubo que retocarle los pesos."]):
+        print(l)
 
     print("\n--- 2. LAS DIECISÉIS MANERAS DE MONTAR LA LÁMPARA ---")
     aprendidas, fallidas, constantes = reglas_de_dos_interruptores()

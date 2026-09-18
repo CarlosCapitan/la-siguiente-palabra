@@ -1,0 +1,114 @@
+########## capítulo 9: en serie o a la vez — PROCESADOR DE DOS NÚCLEOS ##########
+fecha: 2026-09-18
+máquina: contenedor Linux en la nube, 2 núcleos, sin GPU
+torch 2.14.0+cpu | x86_64 | hilos 2
+Es la tercera máquina de la comparación: pocas unidades trabajando a la vez. No es el
+portátil de Carlos; se dice en el libro, porque el portátil no tiene un procesador así.
+
+La medición anterior de esta máquina (17 de septiembre) llevaba escrito en su propia
+cabecera que el selftest no había pasado, y aun así sus cifras acabaron en el libro
+(fallo 4.30). Ésta se rehace entera. La máquina es compartida y los tiempos oscilan, así
+que se ejecuta tres veces seguidas, cada una con su selftest delante; el libro toma las
+filas de la PASADA 2 y las otras dos están aquí para que se vea cuánto oscila.
+
+Cuál de las tres iba al libro se decidió ANTES de ejecutarlas: esta cabecera se escribe en
+el mismo guion que lanza las pasadas, y se escribe primero. Elegir después la que salga
+más bonita es hacer trampa, y con una máquina compartida es una trampa fácil.
+
+Aviso: el selftest de este programa también estuvo mal (fallo 4.31). El test nulo solo
+comprobaba algo cuando la máquina «a la vez» ganaba, así que aquí, donde pierde, decía
+«pasa» sin haber comprobado nada. Ya no: ahora exige que lo medido con texto largo se
+separe de la sobrecarga fija, gane quien gane.
+
+##### PASADA 1 — selftest
+[1] test nulo         ventaja con 1 posición (pura sobrecarga) 1,76x; con 512 posiciones 0,74x
+[2] señal implantada  al doblar la longitud, la de en serie tarda 1,80x (se espera cerca de 2)
+[3] invariante        pasos en serie: en serie = longitud, a la vez = 1: sí
+
+SELFTEST: las tres pruebas pasan.
+##### PASADA 1 — medición
+Procesador usado: cpu
+256 números por posición, lotes de 16.
+Números ajustables: en serie 592.128 | a la vez 591.872 (1,00 veces).
+
+--- PASOS QUE HAY QUE DAR UNO DETRÁS DE OTRO (no depende de la máquina) ---
+  longitud    en serie    a la vez
+        64          64           1
+       128         128           1
+       256         256           1
+       512         512           1
+     1.024       1.024           1
+
+--- TIEMPO DE UNA PASADA DE ENTRENAMIENTO ---
+  longitud   en serie (s)   a la vez (s)   ventaja
+        64         0,0225         0,0219      1,0x
+       128         0,0458         0,0458      1,0x
+       256         0,0909         0,1000      0,9x
+       512         0,1756         0,2884      0,6x
+     1.024         0,3411         0,7931      0,4x
+«ventaja»: cuántas veces más rápida es la de «a la vez»;
+por debajo de 1,0x es más lenta.
+
+Escrito en_serie_o_a_la_vez.csv
+
+##### PASADA 2 — selftest
+[1] test nulo         ventaja con 1 posición (pura sobrecarga) 1,80x; con 512 posiciones 0,73x
+[2] señal implantada  al doblar la longitud, la de en serie tarda 1,86x (se espera cerca de 2)
+[3] invariante        pasos en serie: en serie = longitud, a la vez = 1: sí
+
+SELFTEST: las tres pruebas pasan.
+##### PASADA 2 — medición
+Procesador usado: cpu
+256 números por posición, lotes de 16.
+Números ajustables: en serie 592.128 | a la vez 591.872 (1,00 veces).
+
+--- PASOS QUE HAY QUE DAR UNO DETRÁS DE OTRO (no depende de la máquina) ---
+  longitud    en serie    a la vez
+        64          64           1
+       128         128           1
+       256         256           1
+       512         512           1
+     1.024       1.024           1
+
+--- TIEMPO DE UNA PASADA DE ENTRENAMIENTO ---
+  longitud   en serie (s)   a la vez (s)   ventaja
+        64         0,0268         0,0235      1,1x
+       128         0,0408         0,0490      0,8x
+       256         0,0926         0,1035      0,9x
+       512         0,1842         0,2704      0,7x
+     1.024         0,3664         0,7737      0,5x
+«ventaja»: cuántas veces más rápida es la de «a la vez»;
+por debajo de 1,0x es más lenta.
+
+Escrito en_serie_o_a_la_vez.csv
+
+##### PASADA 3 — selftest
+[1] test nulo         ventaja con 1 posición (pura sobrecarga) 2,05x; con 512 posiciones 0,75x
+[2] señal implantada  al doblar la longitud, la de en serie tarda 1,92x (se espera cerca de 2)
+[3] invariante        pasos en serie: en serie = longitud, a la vez = 1: sí
+
+SELFTEST: las tres pruebas pasan.
+##### PASADA 3 — medición
+Procesador usado: cpu
+256 números por posición, lotes de 16.
+Números ajustables: en serie 592.128 | a la vez 591.872 (1,00 veces).
+
+--- PASOS QUE HAY QUE DAR UNO DETRÁS DE OTRO (no depende de la máquina) ---
+  longitud    en serie    a la vez
+        64          64           1
+       128         128           1
+       256         256           1
+       512         512           1
+     1.024       1.024           1
+
+--- TIEMPO DE UNA PASADA DE ENTRENAMIENTO ---
+  longitud   en serie (s)   a la vez (s)   ventaja
+        64         0,0219         0,0212      1,0x
+       128         0,0428         0,0461      0,9x
+       256         0,0911         0,1076      0,8x
+       512         0,1883         0,2581      0,7x
+     1.024         0,3427         0,7465      0,5x
+«ventaja»: cuántas veces más rápida es la de «a la vez»;
+por debajo de 1,0x es más lenta.
+
+Escrito en_serie_o_a_la_vez.csv

@@ -1,0 +1,33 @@
+########## capítulo 9 (antes 8): en serie o a la vez — TARJETA GRÁFICA (MPS) ##########
+fecha: 2026-09-17 11:46
+máquina: MacBook Pro M4 Max, 36 GB; GPU Metal/MPS
+torch 2.14.0 | mps disponible: True
+--- selftest ---
+[1] test nulo         ventaja con 1 posición (pura sobrecarga) 0.82x; con 512 posiciones 1.98x
+[2] señal implantada  al doblar la longitud, la de en serie tarda 1.96x (se espera cerca de 2)
+[3] invariante        pasos en serie: en serie = longitud, a la vez = 1: sí
+
+SELFTEST: las tres pruebas pasan.
+
+--- medición ---
+Procesador usado: mps
+256 números por posición, lotes de 16.
+Números ajustables: en serie 592.128 | a la vez 591.872 (1.00 veces).
+
+--- PASOS QUE HAY QUE DAR UNO DETRÁS DE OTRO (no depende de la máquina) ---
+  longitud    en serie    a la vez
+        64          64           1
+       128         128           1
+       256         256           1
+       512         512           1
+     1.024       1.024           1
+
+--- TIEMPO DE UNA PASADA DE ENTRENAMIENTO ---
+  longitud   en serie (s)   a la vez (s)   ventaja
+        64         0,0094         0,0020      4,8x
+       128         0,0094         0,0030      3,1x
+       256         0,0207         0,0072      2,9x
+       512         0,0343         0,0126      2,7x
+     1.024         0,0500         0,0388      1,3x
+
+Escrito en_serie_o_a_la_vez.csv

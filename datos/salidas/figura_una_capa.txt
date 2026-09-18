@@ -1,0 +1,2 @@
+escrito ../figuras/una_capa.png
+ocho neuronas de en medio; la mejor sola acierta 81,1 % y la red entera 96,3 %

@@ -1,0 +1,25 @@
+Máquina: x86_64, Linux 6.18.44-fc-v33.
+Medido el 2026-09-18.
+
+¿DE CUÁNDO SON LOS LIBROS DE LA BIBLIOTECA?
+
+libros bajados                                             300
+de ésos, los que declaran el año de su edición original     46
+
+el más antiguo de los que lo declaran                     1691
+el más reciente de los que lo declaran                    1946
+
+año de corte   libros   de cada 100 de los que lo declaran
+------------   ------   ----------------------------------
+1900               15                               32,6 %
+1930               44                               95,7 %
+1950               46                              100,0 %
+
+indicio aparte y más flojo: el año en que murió el autor
+(de la lista de candidatos; un autor publica mucho antes
+de morirse, así que esto es una cota, no una fecha)
+
+libros con año de muerte del autor                         215
+de ésos, autores muertos antes de 1900                      66
+de ésos, autores muertos antes de 1930                     158
+de ésos, autores muertos antes de 1950                     189

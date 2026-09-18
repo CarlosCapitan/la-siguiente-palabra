@@ -53,6 +53,7 @@ def fila_esta_en_alguna_linea(celdas, lineas=None):
     patron = re.compile(r'(?<![\w,.])' + r'.*?'.join(re.escape(c) for c in celdas))
     return any(patron.search(l) for l in (lineas_salida if lineas is None else lineas))
 
+
 def lineas_crudas_del_bloque(b):
     """Las líneas del bloque sin el prefijo de cita ni las vallas, pero SIN aplastar los espacios."""
     out = []
@@ -191,12 +192,34 @@ def selftest():
         fallos.append("los rótulos: los del programa pasan, quitar una columna vale, "
                       "rebautizarlos no")
 
+    # 7. LA CLAVE DEBAJO DE LA TABLA — el sitio donde el programa SÍ puede decir largo lo
+    #    que significa una columna. El rótulo tiene que caber en la caja, así que es corto;
+    #    la clave va debajo, en línea entera, y el libro la copia como copia cualquier otra
+    #    línea del bloque. Esta prueba comprueba que la clave se compara igual de estricto
+    #    que una fila: literal o nada.
+    #
+    #    Antes aquí había una prueba de cabecera APILADA en dos renglones, que es lo que el
+    #    informe del capítulo 9 proponía. Se quitó al comprobar que no se puede verificar: al
+    #    apilar por columnas, los dos renglones leídos seguidos entrelazan las palabras de
+    #    columnas distintas —«longitud del | pasos en fila, | texto, en trozos | leyendo en
+    #    orden»— y la celda del libro no aparece entera en ningún sitio. Un verificador que
+    #    no puede comprobar algo no debe fingir que lo comprueba.
+    clave = [normalizar("«ventaja»: cuántas veces más rápida es la de «a la vez»;").strip()]
+    copiada = fila_esta_en_alguna_linea(["«ventaja»: cuántas veces más rápida es la de "
+                                         "«a la vez»;"], clave)
+    retocada = fila_esta_en_alguna_linea(["«ventaja»: cuántas veces más rápida es la "
+                                          "moderna;"], clave)
+    print(f"[7] la clave          copiada tal cual: {'pasa' if copiada else 'NO PASA'}; "
+          f"reescrita por el libro: {'PASA (mal)' if retocada else 'no pasa'}")
+    if not copiada or retocada:
+        fallos.append("la clave: la línea que explica una columna se copia literal o no vale")
+
     print()
     if fallos:
         for f in fallos:
             print("FALLA:", f)
         return 1
-    print("SELFTEST: las seis pruebas pasan.")
+    print("SELFTEST: las siete pruebas pasan.")
     return 0
 
 
