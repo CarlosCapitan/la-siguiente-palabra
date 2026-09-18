@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Descarga los libros del capítulo 4 desde Proyecto Gutenberg, a partir de la lista
+"""Descarga los libros del capítulo 5 desde Proyecto Gutenberg, a partir de la lista
 `datos/candidatos_es.txt`. Uso: python descargar_corpus.py"""
 import os, urllib.request
 from concurrent.futures import ThreadPoolExecutor
