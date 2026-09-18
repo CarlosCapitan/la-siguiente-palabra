@@ -1,5 +1,10 @@
 medicion,cual,valor
-una_raya_sola,,0.9037
+una_raya_sola,media,0.9189
+una_raya_sola,peor,0.9037
+una_raya_sola,mejor,0.9296
+con_capa,media,0.9785
+con_capa,peor,0.9630
+con_capa,mejor,0.9870
 red_entera,,0.9630
 una_sola,1,0.6778
 una_sola,2,0.6519

@@ -19,10 +19,15 @@ Uso:
 
 # ======================= CONSTANTES =======================
 
-# La pregunta es «¿este dígito es par?». Se elige a propósito: no hay ninguna forma
-# que compartan el 0, el 2, el 4, el 6 y el 8 y que no tenga ninguno de los impares.
-# Es el o exclusivo del capítulo anterior, pero escrito a mano: una categoría que no
-# es una sola forma. Una raya sola no puede con ella; una capa de en medio, sí.
+# La pregunta es «¿este dígito es par?». Se elige a propósito porque una raya sola se
+# queda corta con ella: aquí sale 91,9 %, y con una capa de en medio, 97,9 %, las dos
+# como media de cinco entrenamientos desde cero.
+# OJO con la justificación vieja, que estaba escrita aquí y era FALSA: decía que no hay
+# ninguna forma que compartan el 0, el 2, el 4, el 6 y el 8 y que no tenga ninguno de
+# los impares, y que esto «es el o exclusivo del capítulo anterior escrito a mano».
+# `siete_segmentos.py` la pone a prueba en un reloj digital y la tumba: allí una sola
+# raya separa par de impar, diez de diez. Y el o exclusivo es IMPOSIBLE para una raya,
+# mientras que aquí una raya llega al 91,9 %: no es lo mismo imposible que difícil.
 EN_MEDIO = 8                   # neuronas en la capa de en medio
 LADO = 8                       # los dibujos son de ocho puntos por ocho
 SEMILLA = 20260916
@@ -36,7 +41,9 @@ REPETICIONES = 5               # arranques distintos por tamaño: una sola tirad
 # Los rótulos de las tablas. Son texto del libro: van aquí arriba, con nombre, y no
 # escondidos dentro de un print a mitad del fichero.
 TITULO_1 = "¿ES PAR ESTE DÍGITO ESCRITO A MANO?"
-SUBTITULO_1 = "de cada 100 dígitos que nunca había visto, cuántos acierta"
+SUBTITULO_1A = "de cada 100 dígitos que nunca había visto, cuántos acierta"
+SUBTITULO_1B = "media de {repeticiones} entrenamientos desde cero; entre paréntesis,"
+SUBTITULO_1C = "el peor y el mejor de los {repeticiones}"
 TITULO_2 = "LO QUE ACIERTA, ÉL SOLO, CADA UNO DE LOS OCHO COMITÉS DE EN MEDIO"
 TITULO_3 = "CUÁNTO SE PARECEN ENTRE SÍ ESOS OCHO COMITÉS"
 SUBTITULO_3 = "(0 % serían ocho preguntas sin nada en común; 100 %, ocho copias)"
@@ -137,7 +144,21 @@ def barrido_de_anchura(semilla=SEMILLA):
     return fila
 
 
-def imprimir(m, aciertos, parecido, sola):
+def media_de_varias(funcion, semilla=SEMILLA):
+    """La media de REPETICIONES entrenamientos desde cero, y el peor y el mejor.
+
+    El titular del capítulo era una sola tirada, y resultó ser LA PEOR de las cinco que ya
+    calculaba el barrido de más abajo: el margen de la fila de ocho empezaba justo en ese número.
+    La mejora parecía de seis puntos por casualidad: comparaba una peor con otra peor. Un entrenamiento no da
+    un número, da un margen, y las dos cifras que el capítulo compara tienen que medir lo mismo.
+
+    Se usan las mismas semillas que barrido_de_anchura, para que las dos tablas del capítulo
+    hablen de los mismos cinco entrenamientos y no de dos conjuntos parecidos."""
+    a = [funcion(semilla + 1000 * k) for k in range(REPETICIONES)]
+    return float(np.mean(a)), float(np.min(a)), float(np.max(a))
+
+
+def imprimir(m, aciertos, parecido, sola, con_capa):
     """Las tablas que cita el capítulo 3.
 
     Cada tabla lleva su rótulo y dice de qué son sus números. Antes iban las tres
@@ -151,10 +172,13 @@ def imprimir(m, aciertos, parecido, sola):
         lineas.append(f"{etiqueta:<{ANCHO}}{valor:>7}{cola}".rstrip())
 
     lineas.append(TITULO_1)
-    lineas.append(SUBTITULO_1)
+    lineas.append(SUBTITULO_1A)
+    lineas.append(SUBTITULO_1B.format(repeticiones=REPETICIONES))
+    lineas.append(SUBTITULO_1C.format(repeticiones=REPETICIONES))
     lineas.append("")
-    fila("un solo comité, sin capa", pct(sola))
-    fila("una capa de ocho comités en medio", pct(m["entera"]))
+    for etiqueta, (media, peor, mejor) in (("un solo comité, sin capa", sola),
+                                           ("una capa de ocho comités en medio", con_capa)):
+        fila(etiqueta, pct(media), f"   (de {pct(peor)} a {pct(mejor)})")
     lineas.append("")
     lineas.append("")
 
@@ -178,7 +202,8 @@ def imprimir(m, aciertos, parecido, sola):
     lineas.append(SUBTITULO_4A.format(repeticiones=REPETICIONES))
     lineas.append(SUBTITULO_4B.format(repeticiones=REPETICIONES))
     lineas.append("")
-    fila("ninguno, un solo comité", pct(sola))
+    fila("ninguno, un solo comité", pct(sola[0]),
+         f"   (de {coma(100 * sola[1])} a {coma(100 * sola[2])})")
     for n, med, lo, hi in barrido_de_anchura():
         # «1 comité» y «2 comités»: el plural se dice bien o no se dice. Una tabla que
         # pone «1 comités» delata que el rótulo se escribió pensando solo en el número.
@@ -190,11 +215,18 @@ def imprimir(m, aciertos, parecido, sola):
         print(l)
 
 
-def guardar(m, aciertos, parecido, sola):
+def guardar(m, aciertos, parecido, sola, con_capa):
     with open(SALIDA_CSV, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["medicion", "cual", "valor"])
-        w.writerow(["una_raya_sola", "", f"{sola:.4f}"])
+        # Las dos cifras del titular son (media, peor, mejor) de REPETICIONES tiradas: se guardan
+        # las tres, porque guardar solo la media vuelve a esconder que un entrenamiento es un
+        # margen y no un número, que es justo lo que este capítulo acaba de aprender.
+        for nombre, (media, peor, mejor) in (("una_raya_sola", sola),
+                                             ("con_capa", con_capa)):
+            w.writerow([nombre, "media", f"{media:.4f}"])
+            w.writerow([nombre, "peor", f"{peor:.4f}"])
+            w.writerow([nombre, "mejor", f"{mejor:.4f}"])
         w.writerow(["red_entera", "", f"{m['entera']:.4f}"])
         for j, a in enumerate(aciertos, 1):
             w.writerow(["una_sola", j, f"{a:.4f}"])
@@ -265,9 +297,10 @@ def main():
     m = entrenar_con_capa()
     aciertos = acierto_de_cada_una(m)
     parecido = parecido_maximo(m["red"])
-    sola = una_raya_sola()
-    imprimir(m, aciertos, parecido, sola)
-    guardar(m, aciertos, parecido, sola)
+    sola = media_de_varias(una_raya_sola)
+    con_capa = media_de_varias(lambda sem: entrenar_con_capa(sem, EN_MEDIO)["entera"])
+    imprimir(m, aciertos, parecido, sola, con_capa)
+    guardar(m, aciertos, parecido, sola, con_capa)
     return 0
 
 

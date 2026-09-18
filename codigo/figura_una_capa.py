@@ -122,8 +122,8 @@ def main():
         return selftest()
     m, aciertos = dibujar()
     print(f"escrito {SALIDA}")
-    print(f"ocho neuronas de en medio; la mejor sola acierta {100*aciertos.max():.1f} % "
-          f"y la red entera {100*m['entera']:.1f} %")
+    print(f"ocho neuronas de en medio; la mejor sola acierta {pct(aciertos.max())} "
+          f"y la red entera {pct(m['entera'])}")
     return 0
 
 

@@ -73,6 +73,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 
+from formato import coma
 from perceptron import cargar_digitos, entrenar, acierto
 
 
@@ -262,7 +263,7 @@ def main():
     m, puntos, liston = dibujar()
     print(f"escrito {SALIDA}")
     print(f"perceptrón que separa el {DIGITO_SI} del {DIGITO_NO}: "
-          f"acierto {m['acierto']:.3f} sobre los ejemplos de prueba")
+          f"acierto {coma(m['acierto'], 3)} sobre los ejemplos de prueba")
     return 0
 
 
