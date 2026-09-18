@@ -42,7 +42,9 @@ ETIQUETA_SALIDA = "la luz"
 # derecha, negro y blanco quieren decir lo de siempre en este libro.
 CLAVE_MONTAJE = ("en el dibujo de la izquierda: línea continua, suma;\n"
                  "línea de puntos, resta; y cuanto más gruesa, más cuenta")
-CLAVE_COLOR = "negro: la luz se enciende  ·  blanco: la luz no se enciende"
+CLAVE_COLOR = ("en el de la derecha: negro, la luz se enciende  ·  "
+               "blanco, la luz no se enciende\n"
+               "y la raya de trazos es la que traza la neurona final")
 
 # ==========================================================
 
@@ -95,7 +97,10 @@ def hay_raya_en(puntos, encienden):
 
 def panel_montaje(ax, red, reglas):
     columnas = {"entrada": 0.0, "medio": 1.0, "salida": 2.0}
-    filas = {"entrada": [0.75, -0.75], "medio": [0.75, -0.75], "salida": [0.0]}
+    # «el de abajo» va dibujado abajo: son dos interruptores de una pared y arriba y
+    # abajo es literalmente dónde están. El orden de ETIQUETAS_ENTRADA es el de
+    # TABLA_XOR, y los pesos siguen a las etiquetas.
+    filas = {"entrada": [-0.75, 0.75], "medio": [0.75, -0.75], "salida": [0.0]}
     maximo = max(np.abs(red.W[0]).max(), np.abs(red.W[1]).max())
 
     def dibuja_flechas(W, col_a, col_b):
@@ -184,8 +189,10 @@ def dibujar():
     fig, (izq, der) = plt.subplots(1, 2, figsize=ANCHO_ALTO)
     panel_montaje(izq, red, reglas)
     panel_cuadrado_nuevo(der, red, medio)
-    fig.tight_layout(rect=(0, 0.17, 1, 1))
-    fig.text(0.5, 0.125, CLAVE_MONTAJE, ha="center", va="top",
+    # La clave del color ocupa ahora dos renglones, así que el pie entero necesita más
+    # sitio y la del montaje sube para no pisarla.
+    fig.tight_layout(rect=(0, 0.23, 1, 1))
+    fig.text(0.5, 0.185, CLAVE_MONTAJE, ha="center", va="top",
              fontsize=8.2, color="0.35")
     fig.text(0.5, 0.015, CLAVE_COLOR, ha="center", va="bottom",
              fontsize=8.5, color="0.35")

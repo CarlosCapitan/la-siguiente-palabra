@@ -63,8 +63,10 @@ from formato import coma, miles
 
 
 def dispositivo():
-    """Usa la GPU del Mac (Metal) si está disponible; si no, el procesador. Las cifras de
-    acierto no cambian; los TIEMPOS sí, y por eso el libro solo cita tiempos medidos aquí."""
+    """Usa la GPU del Mac (Metal) si está disponible; si no, el procesador. Los TIEMPOS cambian
+    mucho, y por eso el libro solo cita tiempos medidos aquí. Los aciertos no: con la misma
+    semilla salen iguales en el Mac y en un contenedor Linux, comprobado. Lo único que baila es
+    la última cifra de la suma del invariante, que es ruido de coma flotante."""
     if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
         return torch.device("mps")
     return torch.device("cpu")

@@ -11,7 +11,9 @@ fijas— y la intuición FALLA: ahí una sola raya sí separa los pares de los i
 Ese fallo es el contenido del apartado. En un reloj hay siete piezas siempre en el mismo
 sitio, y con eso casi cualquier división de los diez dígitos se resuelve con una raya.
 Escritos a mano no hay piezas: hay tinta en sitios distintos cada vez, y ahí una sola raya
-se queda en el 90 %. La dificultad no viene de «par»: viene de la escritura a mano.
+se queda en el 90 %. La dificultad no viene de «par», y tampoco viene solo de la escritura
+a mano: el capítulo anterior reconoce dígitos manuscritos sueltos sin problema. Viene de las
+dos cosas juntas: cinco formas distintas, y a mano.
 
 Uso:
     python siete_segmentos.py
@@ -130,6 +132,8 @@ def un_solo_segmento_basta(X):
 
 ANCHO_NOMBRE = 24
 COL = 4
+# La columna de puntos del comité: 24 + 19 = 43, que es donde acaba «puntos que suma».
+ANCHO_PUNTOS = 19
 
 
 def bloque_tabla(X):
@@ -148,19 +152,21 @@ def bloque_tabla(X):
 
 def bloque_comite(X, w, b):
     lineas = ["EL COMITÉ QUE SÍ LO CONSIGUE, CON LOS SIETE SEGMENTOS", ""]
+    lineas.append(f"{'el segmento':<{ANCHO_NOMBRE}}{'puntos que suma':>{ANCHO_PUNTOS}}")
+    lineas.append(f"{'-' * 23:<{ANCHO_NOMBRE}}{'-' * 15:>{ANCHO_PUNTOS}}")
     for nombre, peso in zip(SEGMENTOS, w):
-        lineas.append(f"{nombre:<{ANCHO_NOMBRE}}{peso:>+6.0f}")
-    lineas.append(f"{'':<{ANCHO_NOMBRE}}{'-' * 6:>6}")
+        lineas.append(f"{nombre:<{ANCHO_NOMBRE}}{peso:>+{ANCHO_PUNTOS}.0f}")
+    lineas.append(f"{'':<{ANCHO_NOMBRE}}{'-' * 6:>{ANCHO_PUNTOS}}")
     # El listón puede salir cero, y «-0» no lo escribe nadie.
     liston = -b
     texto = f"{liston:+.0f}" if abs(liston) > 0.5 else "0"
     lineas.append(f"para decir «par», el total tiene que pasar de {texto}")
     lineas.append("")
-    lineas.append(f"{'dígito':<10}{'total':>8}{'dice':>8}")
+    lineas.append(f"{'dígito':<10}{'total':>8}{'dice':>8}      ¿acierta?")
     for d in range(10):
         total = X[d] @ w + b
         lineas.append(f"{d:<10}{total:>+8.0f}{('par' if total > 0 else 'impar'):>8}"
-                      f"   {'correcto' if (total > 0) == (d % 2 == 0) else 'MAL'}")
+                      f"      {'correcto' if (total > 0) == (d % 2 == 0) else 'MAL'}")
     return comprobar_ancho(lineas)
 
 

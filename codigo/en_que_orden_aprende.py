@@ -55,6 +55,14 @@ MINIMO_PUNTOS_CURVA = 100         # menos que esto y el CSV no es una medición 
 TITULO_FIGURA = "LO MAL QUE LO HACE, SEGÚN AVANZA EL ENTRENAMIENTO"
 ETIQUETA_CRUDA = "la medición cruda, paso a paso"
 ETIQUETA_SUAVE = "la misma, suavizada, para que se vea la forma"
+# El recuadro ampliado. Sin él, el dibujo grande —con el eje anclado en cero, que es lo
+# correcto para que se vea que la línea no llega al suelo— convierte el último 80 % de la
+# curva en una raya horizontal a ojo, y el capítulo pide justo ahí una predicción sobre si
+# la bajada sigue. El recuadro enseña ese tramo con el eje vertical SIN anclar en cero, y
+# lo dice en su propia línea para que nadie lea la ampliación como si fuera el dibujo.
+PASO_RECUADRO = 10_000            # desde qué paso se amplía el tramo final
+ETIQUETA_RECUADRO = "el tramo final de cerca:\ndel paso {} al {}"
+NOTA_RECUADRO = "aquí el cero no está en el dibujo, para que se vea que baja"
 MODELO_GRANDE = 500_000_000_000   # orden de magnitud de un modelo grande de hoy
 
 # ==========================================================
@@ -255,6 +263,29 @@ def leer_curva(ruta=SALIDA_CURVA):
     return datos
 
 
+def tramo_final(curva, desde=PASO_RECUADRO):
+    """Los puntos del tramo que amplía el recuadro: del paso `desde` al último, ni uno más."""
+    tramo = [c for c in curva if c[0] >= desde]
+    assert len(tramo) >= 2, \
+        f"Se esperaban al menos dos puntos desde el paso {desde}; se encontraron {len(tramo)}"
+    assert tramo[-1] == curva[-1], "Se esperaba que el tramo llegara hasta el último punto"
+    return tramo
+
+
+def bajada_del_tramo(curva, desde=PASO_RECUADRO):
+    """Cuánto baja el tramo del recuadro, del primer décimo al último, en tanto por uno.
+
+    Es la cifra que el recuadro enseña dibujada. Se mide sobre el CSV y no sobre el
+    dibujo: si lo que se ve en el recuadro fuera un efecto de estirar el eje y no una
+    bajada de verdad, esto daría cero."""
+    tramo = tramo_final(curva, desde)
+    n = max(1, len(tramo) // 10)
+    primero = sum(v for _, v in tramo[:n]) / n
+    ultimo = sum(v for _, v in tramo[-n:]) / n
+    assert primero > 0, "Se esperaba un primer décimo positivo"
+    return (primero - ultimo) / primero
+
+
 def figura(curva):
     """Lo mal que lo hace, paso a paso.
 
@@ -297,7 +328,44 @@ def figura(curva):
     ax.spines[["top", "right"]].set_visible(False)
     ax.xaxis.set_major_formatter(
         plt.FuncFormatter(lambda x, _: f"{int(x):,}".replace(",", ".")))
-    ax.legend(loc="upper right", frameon=False, fontsize=8.8, handlelength=2.4)
+    # La clave baja a la esquina de abajo a la izquierda porque el recuadro ocupa la de
+    # arriba a la derecha; las dos palabras son las mismas.
+    ax.legend(loc="lower left", frameon=False, fontsize=8.2, handlelength=2.2)
+
+    # ---- el recuadro ampliado del tramo final ----
+    tramo = tramo_final(curva)
+    t2 = [c[0] for c in tramo]
+    v2 = [c[1] for c in tramo]
+    caja = ax.inset_axes([0.545, 0.57, 0.435, 0.26])
+    caja.plot(t2, v2, linewidth=0.6, color="0.72", zorder=1)
+    caja.plot(t2, suavizar(v2), linewidth=1.4, color="#222222", zorder=2)
+    caja.set_xlim(t2[0], t2[-1])
+    # Sin números en ninguno de los dos ejes: el vertical porque el dibujo grande tampoco
+    # los lleva, y el horizontal porque el rótulo del recuadro ya dice de qué paso a qué
+    # paso va, y una cifra suelta ahí abajo se pisaba con la línea del dibujo grande.
+    caja.set_yticks([])
+    caja.set_xticks([])
+    for lado in caja.spines.values():
+        lado.set_linewidth(0.6)
+        lado.set_color("0.45")
+    caja.set_title(ETIQUETA_RECUADRO.format(miles(t2[0]), miles(t2[-1])),
+                   fontsize=7.4, pad=3.0, linespacing=1.25)
+    caja.text(0.5, -0.09, NOTA_RECUADRO, transform=caja.transAxes, ha="center", va="top",
+              fontsize=6.8, color="0.35")
+    # Invariantes del recuadro: los puntos son exactamente los del tramo, el cero NO entra
+    # en su eje vertical (que es para lo que está), y no se sale del dibujo grande.
+    y0, _ = caja.get_ylim()
+    assert y0 > 0, f"Se esperaba que el cero quedara fuera del recuadro; el eje empieza en {y0}"
+    assert tramo == [c for c in curva if c[0] >= PASO_RECUADRO], \
+        "Se esperaba que el recuadro llevara exactamente los puntos desde el paso del corte"
+    assert ax.get_xlim()[0] <= t2[0] and t2[-1] <= ax.get_xlim()[1], \
+        "Se esperaba que el tramo del recuadro cupiera dentro del eje del dibujo grande"
+    bajada = bajada_del_tramo(curva)
+    assert bajada > 0, \
+        ("Se esperaba que el tramo del recuadro bajara; medido sobre el CSV baja "
+         f"{bajada:.4f}. Con una curva plana esto da cero y el recuadro no se dibuja: "
+         "lo que enseña tiene que ser el dato, no el estirón del eje.")
+
     fig.tight_layout()
     fig.savefig(SALIDA_FIGURA, dpi=200)
     plt.close(fig)

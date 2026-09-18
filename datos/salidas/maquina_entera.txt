@@ -10,8 +10,10 @@ Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF
 --- 2. EL TAMAÑO DE LA MÁQUINA ---
 modelo: Qwen/Qwen2.5-0.5B
 números por trozo: 896
-rondas de mirar y mezclar: 24 capas x 14 cabezas = 336
-palabras posibles en la salida: 151.936
+rondas, una detrás de otra: 24
+miradas a la vez dentro de cada ronda: 14
+miradas en total: 336
+trozos posibles en la salida: 151.936
 números ajustables en total: 494.032.768
 
 --- 3. LA LISTA DE PROBABILIDADES ---

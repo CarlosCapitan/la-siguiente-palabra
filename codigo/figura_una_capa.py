@@ -30,7 +30,8 @@ PARECIDO_MAXIMO_ADMISIBLE = 0.90   # por encima de esto, dos neuronas son la mis
 # tiene que poder entenderse sin el párrafo que la presenta.
 TITULO = "LO QUE MIRA CADA UNO DE LOS OCHO COMITÉS DE EN MEDIO"
 SUBTITULO = "cada cuadro son los 64 puntos del dígito, como los ve ese comité"
-CLAVE = "negro: este punto empuja hacia «es par»  ·  blanco: hacia «es impar»"
+CLAVE = ("negro: este punto empuja hacia «es par»  ·  blanco: hacia «es impar»"
+         "  ·  gris: no decide")
 
 # ==========================================================
 
