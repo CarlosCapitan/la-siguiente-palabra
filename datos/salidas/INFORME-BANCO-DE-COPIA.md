@@ -187,3 +187,50 @@ encima del suelo (`suelo`, `contar_1`, `barajada`, los tres al 0,0 % de copiado 
 pero muy por debajo de lo que copia una máquina de contar de orden comparable.
 
 Todo lo anterior se ha ejecutado: no hay ninguna cifra de «no ejecutado» en este informe.
+
+## 6. Nota añadida el 19 de septiembre por la noche: la cabecera «dispositivo: cpu»
+
+Las seis cabeceras de `muestras/red_s*_t*.txt` dicen `dispositivo: cpu`. El entrenamiento fue en
+la GPU (Metal): lo dice el apartado de arriba y lo delatan los ~1.300 s por tirada (en CPU son
+11,7 h medidas). La línea la escribía `escribir_muestras.py` leyendo `DISPOSITIVO` **después** de
+pasar el modelo a CPU para generar. El programa está corregido (guarda el dispositivo de
+entrenamiento antes del cambio y escribe los dos); las seis salidas **no se han repetido**, por
+decisión del autor. La línea `dispositivo: cpu` se ha **quitado** de las seis cabeceras (quitar
+una línea de una salida está permitido; editarla, no): el entrenamiento fue en la GPU (Metal,
+`mps`) y la generación en CPU, y eso queda dicho aquí y en el programa.
+
+## 7. Nota añadida el 19 de septiembre por la noche: clave de las tablas, --muestras y selftest de la huella
+
+**Clave de generadores y umbral sin «>=».** Cada una de las dos tablas de la sección 4 lleva
+ahora, impresa por el propio programa (regla 9), una clave de una línea por generador
+(«techo: el texto real que sigue a cada arranque», «contar_k: máquina de contar con k palabras
+de contexto», «red_sX_tY: la red, semilla X, tirada Y», «suelo: seis libros que no entraron en
+el entrenamiento», «barajada: cada muestra con sus palabras desordenadas») y la línea del
+umbral sin el símbolo «>=»: `copiado: racha de 7 palabras o más (máximo de contar_1 + 1)` en la
+ventana de 45 palabras, `copiado: racha de 8 palabras o más (máximo de contar_1 + 1)` en la de
+200. Las dos, y todas las líneas de la clave, pasan por `comprobar_ancho()`.
+
+**`--muestras <fichero>`, comprobado contra una réplica independiente.** El nuevo modo imprime,
+para cada una de las 200 muestras de 45 palabras de un fichero, su índice, su arranque, su
+racha máxima y su copiado con el mismo umbral que ya usa la tabla (recalculado consumiendo el
+generador de azar en el mismo orden —contar_3, contar_2, contar_1— para que sea el mismo número,
+no uno recién calculado). Ejecutado sobre `red_s20260914_t1.txt` y comprobado contra tres cifras
+de una réplica hecha por el autor:
+
+| muestra | arranque         | racha esperada | racha obtenida | copiado esperado | copiado obtenido |
+|--------:|:-----------------|----------------:|----------------:|------------------:|-------------------:|
+| 1       | «en las montañas»| 5                | 5                | 0,0 %              | 0,0 %               |
+| 36      | «que era un»     | 19               | 19               | 71,1 %             | 71,1 %              |
+| 173     | «las manos en»   | 40               | 40               | 88,9 %             | 88,9 %              |
+
+Las tres coinciden exactamente. La salida completa (200 filas) está en
+`datos/salidas/lo_habia_visto_ya_muestras.txt`.
+
+**`escribir_muestras.py --selftest` (nuevo).** Tres pruebas sobre `huella_pesos()`, con un
+modelo diminuto (`torch.nn.Linear(4, 3)`) en vez del modelo real, porque lo que se comprueba es
+la función que resume tensores, no la red: (1) nulo, dos modelos con pesos distintos dan
+huellas distintas; (2) señal implantada, cambiar un solo valor de un tensor cambia la huella;
+(3) invariante, los mismos pesos dan la misma huella con el diccionario recorrido al revés y
+también copiados a la GPU (`mps`) y de vuelta — esta última parte se ejecuta de verdad, no se
+omite, porque esta máquina tiene Metal disponible. Las tres pasan. Con esto, `verificar_selftests.py .`
+pasa: 37 programas de medición, todos con `--selftest`.

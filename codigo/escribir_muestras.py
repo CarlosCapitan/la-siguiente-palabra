@@ -12,6 +12,7 @@ Una tirada = un entrenamiento completo con una semilla, más su generación. Se 
 
 Uso:
     python escribir_muestras.py --semilla 20260914 --tirada 1
+    python escribir_muestras.py --selftest
 """
 
 # ======================= CONSTANTES =======================
@@ -25,8 +26,10 @@ DIR_SALIDA = "../datos/salidas/muestras"
 # ==========================================================
 
 import argparse
+import copy
 import hashlib
 import os
+import sys
 
 import torch
 
@@ -48,14 +51,81 @@ def huella_pesos(modelo):
     return h.hexdigest()[:12]
 
 
+def _modelo_minusculo():
+    """Un modelo diminuto en CPU, solo para probar `huella_pesos()`: no hace falta el
+    vocabulario ni el corpus para comprobar que una función que resume tensores lo hace bien."""
+    return torch.nn.Linear(4, 3)
+
+
+def selftest():
+    fallos = []
+
+    # 1. TEST NULO — dos modelos con pesos distintos tienen que dar huellas distintas.
+    torch.manual_seed(0)
+    modelo_a = _modelo_minusculo()
+    torch.manual_seed(1)
+    modelo_b = _modelo_minusculo()
+    huella_a, huella_b = huella_pesos(modelo_a), huella_pesos(modelo_b)
+    print(f"[1] test nulo         pesos distintos: huellas {huella_a} y {huella_b}")
+    if huella_a == huella_b:
+        fallos.append("test nulo: dos modelos con pesos distintos dan la misma huella")
+
+    # 2. SEÑAL IMPLANTADA — cambiar UN solo valor tiene que cambiar la huella.
+    modelo_c = copy.deepcopy(modelo_a)
+    with torch.no_grad():
+        clave = next(iter(modelo_c.state_dict().keys()))
+        modelo_c.state_dict()[clave].view(-1)[0] += 1.0
+    huella_c = huella_pesos(modelo_c)
+    print(f"[2] señal implantada  un valor cambiado en «{clave}»: huella {huella_c} "
+          f"(antes {huella_a})")
+    if huella_c == huella_a:
+        fallos.append("señal implantada: cambiar un solo valor no cambia la huella")
+
+    # 3. INVARIANTE DEL DOMINIO — la huella depende de los pesos, no de cómo se recorren ni
+    #    de en qué dispositivo viven. `huella_pesos()` ordena por clave y pasa todo a CPU en
+    #    float32 antes de sumar: esto comprueba que ese cuidado sirve para algo.
+    estado_al_reves = dict(reversed(list(modelo_a.state_dict().items())))
+    modelo_d = _modelo_minusculo()
+    modelo_d.load_state_dict(estado_al_reves)
+    huella_d = huella_pesos(modelo_d)
+    print(f"[3a] invariante       mismos pesos, diccionario al revés: huella {huella_d} "
+          f"(se espera {huella_a})")
+    if huella_d != huella_a:
+        fallos.append("invariante: el orden del diccionario de pesos cambia la huella")
+
+    if torch.backends.mps.is_available():
+        modelo_e = copy.deepcopy(modelo_a).to("mps")
+        huella_e = huella_pesos(modelo_e)
+        print(f"[3b] invariante       mismos pesos, en mps: huella {huella_e} "
+              f"(se espera {huella_a})")
+        if huella_e != huella_a:
+            fallos.append("invariante: la huella cambia según el dispositivo (mps)")
+    else:
+        print("[3b] invariante       sin GPU (Metal) en esta máquina: prueba omitida")
+
+    print()
+    if fallos:
+        for f in fallos:
+            print("FALLA:", f)
+        return 1
+    print("SELFTEST: las tres pruebas pasan.")
+    return 0
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--semilla", type=int, required=True,
-                    help="semilla del entrenamiento (obligatoria: sin ella la tirada no es "
-                         "comparable con nada)")
-    ap.add_argument("--tirada", type=int, required=True, choices=(1, 2),
-                    help="1 o 2: qué repetición de esta semilla es")
+    ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--semilla", type=int,
+                    help="semilla del entrenamiento (obligatoria salvo con --selftest: sin "
+                         "ella la tirada no es comparable con nada)")
+    ap.add_argument("--tirada", type=int, choices=(1, 2),
+                    help="1 o 2: qué repetición de esta semilla es (obligatoria salvo con "
+                         "--selftest)")
     args = ap.parse_args()
+    if args.selftest:
+        sys.exit(selftest())
+    if args.semilla is None or args.tirada is None:
+        ap.error("--semilla y --tirada son obligatorios sin --selftest")
 
     os.makedirs(DIR_SALIDA, exist_ok=True)
 
@@ -76,6 +146,7 @@ def main():
     # y en CPU sí. Así el muestreo no depende de la GPU ni de lo que el entrenamiento haya
     # consumido del generador de azar, las seis tiradas se muestrean exactamente igual, y la
     # huella de los pesos queda como lo único que puede distinguir dos tiradas.
+    dispositivo_entrenamiento = str(mr.DISPOSITIVO)   # se guarda ANTES de cambiarlo
     modelo = modelo.to("cpu")
     mr.DISPOSITIVO = torch.device("cpu")
     mr.fijar_semilla(SEMILLA_MUESTREO)
@@ -102,7 +173,13 @@ def main():
         fh.write(f"semilla: {args.semilla}\n")
         fh.write(f"tirada: {args.tirada}\n")
         fh.write(f"pasos: {pasos}\n")
-        fh.write(f"dispositivo: {mr.DISPOSITIVO}\n")
+        # Las seis tiradas del 19 de septiembre de 2026 escribieron aquí «dispositivo: cpu»
+        # porque esta línea leía el global DESPUÉS de pasarlo a CPU para generar: el
+        # entrenamiento fue en la GPU (Metal), como delatan los ~1.300 s por tirada (en CPU
+        # son 11,7 h medidas), pero la cabecera decía otra cosa. Fallo 4.6 en la propia
+        # cabecera. Desde ahora se escriben los dos dispositivos, cada uno con su nombre.
+        fh.write(f"dispositivo de entrenamiento: {dispositivo_entrenamiento}\n")
+        fh.write(f"dispositivo de generacion: {mr.DISPOSITIVO}\n")
         fh.write(f"pytorch: {torch.__version__}\n")
         fh.write(f"segundos: {segundos:.1f}\n")
         fh.write(f"huella de pesos: {huella}\n")
