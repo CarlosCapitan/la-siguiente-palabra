@@ -1,34 +1,0 @@
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   7%|▋         | 25/339 [00:00<00:01, 207.91it/s]Loading weights:  14%|█▎        | 46/339 [00:00<00:01, 177.60it/s]Loading weights:  19%|█▉        | 64/339 [00:00<00:01, 155.95it/s]Loading weights:  24%|██▎       | 80/339 [00:00<00:01, 146.16it/s]Loading weights:  28%|██▊       | 95/339 [00:00<00:01, 144.36it/s]Loading weights:  32%|███▏      | 110/339 [00:00<00:01, 131.39it/s]Loading weights:  39%|███▉      | 133/339 [00:00<00:01, 149.85it/s]Loading weights:  45%|████▌     | 154/339 [00:01<00:01, 153.95it/s]Loading weights:  50%|█████     | 170/339 [00:01<00:01, 155.29it/s]Loading weights:  55%|█████▌    | 188/339 [00:01<00:00, 161.94it/s]Loading weights:  60%|██████    | 205/339 [00:01<00:00, 153.23it/s]Loading weights:  67%|██████▋   | 227/339 [00:01<00:00, 162.74it/s]Loading weights:  73%|███████▎  | 247/339 [00:01<00:00, 172.05it/s]Loading weights:  79%|███████▉  | 268/339 [00:01<00:00, 173.22it/s]Loading weights:  84%|████████▍ | 286/339 [00:01<00:00, 160.86it/s]Loading weights:  92%|█████████▏| 312/339 [00:01<00:00, 182.88it/s]Loading weights:  98%|█████████▊| 331/339 [00:02<00:00, 178.25it/s]Loading weights: 100%|██████████| 339/339 [00:02<00:00, 166.97it/s]
-
---- A. La temperatura: «Escribe el comienzo de un relato sobre un faro abandonado.» ---
-
-  temperatura 0.0   (acaban en bucle: 0%)
-    En la desolada costa de una isla olvid
-
-  temperatura 1.8   (acaban en bucle: 0%)
-    Dentro delRegarding your request, it seems there was
-
---- B. ¿Qué le sorprende más, un párrafo humano o uno suyo? ---
-  sorpresa media ante el párrafo humano:     2.698
-  sorpresa media ante el párrafo de la máquina: 1.321
-  el humano le sorprende 2.0 veces más
-
---- C. La aguja en el pajar ---
-  largo del texto           0%      100%
-  150                      sí       sí
-
---- D. Veinte preguntas sin respuesta posible ---
-  enunciado normal       se abstiene en 2 de 2 (100%)
-  con umbral explícito   se abstiene en 2 de 2 (100%)
-
-filas generadas: 8
-   ['A_temperatura', '0.0', 'bucles', '0.000', '', '']
-   ['A_temperatura', '1.8', 'bucles', '0.000', '', '']
-   ['B_sorpresa', 'humano', '', '2.698', '', '']
-   ['B_sorpresa', 'maquina', '', '1.321', '', '']
-   ['C_aguja', '150', '0.00', '1', '', '']
-   ['C_aguja', '150', '1.00', '1', '', '']
-   ['D_abstencion', 'enunciado normal', '', '1.000', '', '']
-   ['D_abstencion', 'con umbral explícito', '', '1.000', '', '']
-memoria maxima: 5873 MB
