@@ -1,0 +1,23 @@
+escrito ../figuras/el_reparto.png
+leído ../datos/reparto_una_a_una.csv
+«…demasiado alto»: 336 miradas promediadas, suman 100,0 %
+«…demasiado bajo»: 336 miradas promediadas, suman 100,0 %
+«…demasiado caro»: 336 miradas promediadas, suman 100,0 %
+mayor diferencia entre las tres frases, palabra a palabra: 0,6 puntos
+
+porción media del reparto del adjetivo, en por ciento,
+sobre las 336 miradas del modelo:
+
+palabra        «alto»    «bajo»    «caro»
+-----------------------------------------
+El               53,0      52,7      53,3
+vaso              3,8       3,8       3,6
+no                1,5       1,5       1,4
+cabía             2,4       2,4       2,4
+en                1,4       1,4       1,3
+el                1,6       1,6       1,5
+cajón             2,6       2,6       2,5
+porque            4,3       4,3       4,3
+era               2,1       2,1       2,1
+demasiado         2,6       2,7       2,3
+el adjetivo      24,6      25,0      25,3
