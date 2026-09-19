@@ -1,0 +1,86 @@
+Medido el 2026-09-19.
+No entrena nada: busca texto en texto. No depende de la máquina.
+
+--- VENTANA DE 45 PALABRAS (200 muestras por generador) ---
+
+generador         racha, mediana  racha, p90 racha, máximo
+                     en palabras en palabras   en palabras
+----------------------------------------------------------
+techo                       45,0        45,0            45
+contar_3                    19,0        32,0            45
+red_s20260915_t1            10,0        19,0            45
+contar_2                     9,0        12,0            17
+red_s20260915_t2             9,0        18,0            43
+red_s20260916_t1             9,0        17,1            45
+red_s20260914_t2             8,0        18,0            45
+red_s20260916_t2             8,0        16,1            27
+red_s20260914_t1             8,0        16,1            40
+contar_1                     4,0         5,0             6
+suelo                        4,0         4,0             8
+barajada                     3,0         3,0             4
+
+generador         copiado, mediana copiado, p90
+                   % de la muestra% de la muestra
+-----------------------------------------------
+techo                      100,0 %      100,0 %
+contar_3                    97,8 %      100,0 %
+red_s20260915_t1            26,7 %       60,0 %
+contar_2                    35,6 %       64,4 %
+red_s20260915_t2            22,2 %       51,3 %
+red_s20260916_t1            20,0 %       57,8 %
+red_s20260914_t2            21,1 %       51,1 %
+red_s20260916_t2            21,1 %       48,9 %
+red_s20260914_t1            17,8 %       49,1 %
+contar_1                     0,0 %        0,0 %
+suelo                        0,0 %        0,0 %
+barajada                     0,0 %        0,0 %
+
+umbral de «copiado» en esta ventana: racha >= 7 palabras (máximo de contar_1 + 1)
+
+--- VENTANA DE 200 PALABRAS (50 muestras por generador) ---
+
+generador         racha, mediana  racha, p90 racha, máximo
+                     en palabras en palabras   en palabras
+----------------------------------------------------------
+techo                      200,0       200,0           200
+contar_3                    34,5        63,1            93
+red_s20260914_t1            17,0        25,0            40
+red_s20260916_t2            17,0        29,0            41
+red_s20260915_t1            16,0        29,6            44
+red_s20260915_t2            16,0        27,2            57
+red_s20260914_t2            13,5        22,0            30
+red_s20260916_t1            12,0        23,1            39
+contar_2                    11,0        16,0            29
+contar_1                     4,0         6,0             7
+suelo                        4,0         5,0             6
+barajada                     3,0         3,0             4
+
+generador         copiado, mediana copiado, p90
+                   % de la muestra% de la muestra
+-----------------------------------------------
+techo                      100,0 %      100,0 %
+contar_3                    96,5 %       99,5 %
+red_s20260914_t1            19,0 %       31,2 %
+red_s20260916_t2            18,0 %       27,1 %
+red_s20260915_t1            23,0 %       39,7 %
+red_s20260915_t2            22,5 %       32,0 %
+red_s20260914_t2            17,8 %       32,2 %
+red_s20260916_t1            12,2 %       23,6 %
+contar_2                    26,8 %       39,2 %
+contar_1                     0,0 %        0,0 %
+suelo                        0,0 %        0,0 %
+barajada                     0,0 %        0,0 %
+
+umbral de «copiado» en esta ventana: racha >= 8 palabras (máximo de contar_1 + 1)
+
+--- LA MISMA MEDIDA EN SEIS ENTRENAMIENTOS ---
+Tres semillas; cada una entrenada dos veces con TODO idéntico.
+
+semilla    tirada  huella de pesos racha, mediana copiado, mediana
+------------------------------------------------------------------
+20260914        1     b77c7fc3137d            8,0           17,8 %
+20260914        2     6b0014b74c89            8,0           21,1 %
+20260915        1     7e996877425d           10,0           26,7 %
+20260915        2     de73e255e31b            9,0           22,2 %
+20260916        1     f9960903455f            9,0           20,0 %
+20260916        2     83f652b16c45            8,0           21,1 %

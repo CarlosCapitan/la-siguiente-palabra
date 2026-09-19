@@ -8,3 +8,8 @@ corpus_es/
 # lector que están aquí (capítulo 9 y apéndice); hasta el 18 de septiembre de 2026 no estaban.
 !salidas/
 !salidas/*.txt
+# «salidas/*.txt» solo desata un nivel: sin esto, datos/salidas/muestras/*.txt —las 250
+# muestras de cada una de las seis tiradas del banco de copia— seguían cayendo en el «*.txt»
+# de arriba y `git status` no las veía.
+!salidas/muestras/
+!salidas/muestras/*.txt

@@ -44,6 +44,17 @@ PY
   echo
   echo "########## capítulo 6: memoria recurrente ##########"
   MPS=1 python memoria_recurrente.py
+
+  echo
+  echo "########## banco de copia (cap 1, 6, 13): ¿lo había visto ya? ##########"
+  MPS=1 python lo_habia_visto_ya.py --selftest
+  MPS=1 python escribir_muestras.py --semilla 20260914 --tirada 1
+  MPS=1 python escribir_muestras.py --semilla 20260914 --tirada 2
+  MPS=1 python escribir_muestras.py --semilla 20260915 --tirada 1
+  MPS=1 python escribir_muestras.py --semilla 20260915 --tirada 2
+  MPS=1 python escribir_muestras.py --semilla 20260916 --tirada 1
+  MPS=1 python escribir_muestras.py --semilla 20260916 --tirada 2
+  MPS=1 python lo_habia_visto_ya.py > ../datos/salidas/lo_habia_visto_ya.txt
 } 2>&1 | tee "$SALIDA"
 
 echo
