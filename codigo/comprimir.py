@@ -28,7 +28,7 @@ CELDAS = [
 SEMILLA = 20260914
 SALIDA_CSV = "comprimir.csv"
 
-# La batería del capítulo 10, con las mismas preguntas, el mismo número de trozos generados
+# La batería del capítulo 11, con las mismas preguntas, el mismo número de trozos generados
 # y la misma regla de corrección. Se importa MAX_NUEVOS en vez de fijarlo aquí para que no
 # puedan separarse con el tiempo.
 from crecer import TAREAS, TAREA_CONTROL, acierta, MAX_NUEVOS
@@ -61,7 +61,7 @@ def responder(modelo, tok, enunciado, maximo=MAX_NUEVOS):
     enunciado tal cual»— se corrige exigiendo que la primera línea empiece por la respuesta.
     Envolverlo en el formato de conversación hace que el modelo converse, repita la línea del
     enunciado antes de contestar y suspenda una respuesta correcta. Eso ya se midió en el
-    capítulo 11: es la tercera columna, la que dio 13 % y NO es una comparación justa.
+    capítulo 12: es la tercera columna, la que dio 13 % y NO es una comparación justa.
     Aquí se mide la compresión, no el formato, así que se usa la convención comparable."""
     from mlx_lm import generate
     from mlx_lm.sample_utils import make_sampler
