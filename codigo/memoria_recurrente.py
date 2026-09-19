@@ -38,7 +38,19 @@ OCULTO_TEXTO = 512
 CAPAS_TEXTO = 2
 LOTE_TEXTO = 64
 TASA_TEXTO = 2e-3
-MINUTOS_MAXIMO = 9.0          # presupuesto de entrenamiento; el guion informa de lo que hizo
+# Cuántos pasos de aprendizaje se le dan al modelo de texto. En PASOS, no en minutos, y la
+# diferencia no es cosmética: es la que decide si lo que sale en el libro se puede reproducir.
+#
+# Este guion acotaba por tiempo, y el reloj es lo único de este entrenamiento que no es
+# determinista: la semilla fija el modelo inicial y el orden de los lotes, así que el modelo en
+# el paso N es SIEMPRE el mismo, en cualquier máquina. Acotando por minutos, en cambio, cada
+# ordenador para en un paso distinto y escribe un texto distinto, y las tres muestras del
+# capítulo 6 dejan de ser reproducibles por nadie, ni por su autor. Fallo 4.36.
+#
+# El número es el de la tirada que produjo las muestras que están impresas: 19.948 pasos, que en
+# el portátil del autor fueron veintidós minutos. Ahora son 19.948 pasos en cualquier sitio, y
+# los minutos son lo que tarde cada máquina.
+PASOS_TEXTO = 19_948
 LARGO_MUESTRA = 45
 TEMPERATURA = 0.8
 
@@ -192,7 +204,11 @@ class RedTexto(nn.Module):
         return self.salida(h), estado
 
 
-def entrenar_texto(datos, vocabulario, minutos):
+def entrenar_texto(datos, vocabulario, pasos_pedidos):
+    """Entrena `pasos_pedidos` pasos y devuelve también cuánto tardó en ESTA máquina.
+
+    Los pasos son el dato —con la semilla fija, el modelo en el paso N es el mismo en cualquier
+    ordenador— y los segundos son de aquí, y por eso se etiquetan como tales."""
     fijar_semilla()
     modelo = RedTexto(vocabulario).to(DISPOSITIVO)
     opt = torch.optim.Adam(modelo.parameters(), lr=TASA_TEXTO)
@@ -200,7 +216,7 @@ def entrenar_texto(datos, vocabulario, minutos):
     rng = np.random.default_rng(SEMILLA)
     t0, pasos = time.time(), 0
     modelo.train()
-    while time.time() - t0 < minutos * 60:
+    for _ in range(pasos_pedidos):
         i = rng.integers(0, len(datos) - LONGITUD - 1, size=LOTE_TEXTO)
         x = torch.stack([datos[j:j + LONGITUD] for j in i]).to(DISPOSITIVO)
         y = torch.stack([datos[j + 1:j + LONGITUD + 1] for j in i]).to(DISPOSITIVO)
@@ -211,7 +227,7 @@ def entrenar_texto(datos, vocabulario, minutos):
         torch.nn.utils.clip_grad_norm_(modelo.parameters(), 1.0)
         opt.step()
         pasos += 1
-    return modelo, pasos, float(l.item())
+    return modelo, pasos, float(l.item()), time.time() - t0
 
 
 def generar(modelo, indice, vocab, arranque, largo=LARGO_MUESTRA):
@@ -290,7 +306,8 @@ def selftest():
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--selftest", action="store_true")
-    ap.add_argument("--minutos", type=float, default=MINUTOS_MAXIMO)
+    ap.add_argument("--pasos", type=int, default=PASOS_TEXTO,
+                    help=f"pasos de aprendizaje del modelo de texto (por omisión {PASOS_TEXTO})")
     args = ap.parse_args()
     if args.selftest:
         sys.exit(selftest())
@@ -319,8 +336,9 @@ def main():
     vocab, indice, datos, cobertura = vocabulario_y_datos(texto)
     print(f"{miles(len(datos))} palabras, {miles(len(vocab))} distintas en el vocabulario "
           f"({coma(cobertura * 100)} % del texto cubierto).")
-    modelo, pasos, ultima = entrenar_texto(datos, len(vocab), args.minutos)
-    print(f"entrenada {args.minutos:.0f} minutos en {DISPOSITIVO}: {miles(pasos)} pasos.\n")
+    modelo, pasos, ultima, segundos = entrenar_texto(datos, len(vocab), args.pasos)
+    reloj = (f"{segundos:.0f} s" if segundos < 300 else f"{coma(segundos / 60, 1)} min")
+    print(f"entrenada {miles(pasos)} pasos — {reloj} en esta máquina ({DISPOSITIVO}).\n")
     for arranque in ("el caballero", "no sabía", "cuando llegó"):
         print(f"[arranque: «{arranque}»]")
         print(generar(modelo, indice, vocab, arranque))
