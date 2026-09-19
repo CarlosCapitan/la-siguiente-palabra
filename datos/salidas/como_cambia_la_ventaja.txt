@@ -16,30 +16,30 @@ contenedor, 2 núcleos, modelo de 256 números por posición
 
 portátil, procesador, modelo de 256 números por posición
    longitud del texto     64    128    256    512  1.024
-              ventaja   3,7x   4,7x   4,8x   3,8x   3,2x
-   de la ventaja del texto más corto queda el 86 %: se mantiene
+              ventaja   3,8x   4,8x   4,8x   3,8x   3,2x
+   de la ventaja del texto más corto queda el 84 %: se mantiene
 
 portátil, tarjeta, modelo de 256 números por posición
    longitud del texto     64    128    256    512  1.024
-              ventaja   4,8x   3,1x   2,9x   2,7x   1,3x
-   de la ventaja del texto más corto queda el 27 %: cae
+              ventaja   3,9x   2,9x   2,7x   2,4x   1,2x
+   de la ventaja del texto más corto queda el 31 %: cae
 
 portátil, procesador, modelo de 512 números por posición
    longitud del texto     64    128    256    512  1.024
-              ventaja   3,9x   3,7x   3,8x   4,5x   3,0x
-   de la ventaja del texto más corto queda el 77 %: se mantiene
+              ventaja   3,9x   4,2x   3,2x   4,7x   3,1x
+   de la ventaja del texto más corto queda el 79 %: se mantiene
 
 portátil, tarjeta, modelo de 512 números por posición
    longitud del texto     64    128    256    512  1.024
-              ventaja   2,2x   1,1x   2,8x   1,7x   1,3x
-   de la ventaja del texto más corto queda el 59 %: cae
+              ventaja   3,0x   2,2x   2,2x   1,8x   1,2x
+   de la ventaja del texto más corto queda el 40 %: cae
 
 portátil, procesador, modelo de 1.024 números por posición
    longitud del texto     64    128    256    512  1.024
-              ventaja   6,5x   5,4x   6,1x   5,9x   5,1x
-   de la ventaja del texto más corto queda el 78 %: se mantiene
+              ventaja   4,6x   5,2x   6,4x   5,5x   4,8x
+   de la ventaja del texto más corto queda el 104 %: se mantiene
 
 portátil, tarjeta, modelo de 1.024 números por posición
    longitud del texto     64    128    256    512  1.024
-              ventaja   1,6x   1,9x   1,7x   1,5x   1,3x
-   de la ventaja del texto más corto queda el 81 %: se mantiene
+              ventaja   1,8x   1,8x   1,6x   1,5x   1,3x
+   de la ventaja del texto más corto queda el 72 %: cae
