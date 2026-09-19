@@ -219,7 +219,11 @@ def main():
     # La clave debajo de la tabla, impresa por el programa (regla 9): el rótulo corto de
     # la columna ("500M") no dice lo que mide, y la unidad ("N intentos por tarea") tampoco
     # cabe en la cabecera. Las dos van aquí, en líneas que el libro copia tal cual (regla 6).
-    clave = [f"«{e}»: números ajustables del modelo, redondeados a millones." for e in etiquetas]
+    # Una línea por columna diciendo todas lo mismo no es una clave, es ruido: en la página
+    # impresa salían cuatro renglones idénticos debajo de la tabla, y eso no lo caza ningún
+    # verificador porque las cuatro líneas son literales y correctas. Se dice una vez.
+    clave = [f"«{etiquetas[0]}», «{etiquetas[1]}»…: números ajustables del modelo, "
+             "redondeados a millones."]
     clave.append(f"las cifras de la tabla son aciertos sobre {len(next(iter(TAREAS.values())))} "
                   "intentos por tarea.")
     for l in comprobar_ancho(clave):
