@@ -2,7 +2,7 @@
 """
 Capítulo 11 — qué aparece al crecer.
 
-Pasa la misma batería de tareas a tres modelos de la MISMA familia y distinto tamaño, para
+Pasa la misma batería de tareas a cuatro modelos de la MISMA familia y distinto tamaño, para
 ver qué sabe hacer cada uno. Todos son modelos en crudo, sin adiestramiento de instrucciones:
 lo único que cambia entre ellos es el tamaño.
 
@@ -72,12 +72,14 @@ TAREA_CONTROL = [("Repite: perro\nperro\nRepite: gato\ngato\nRepite: mesa\n", "m
                  ("Repite: sol\nsol\nRepite: mar\nmar\nRepite: pan\n", "pan")]
 UMBRAL_CONTROL = 0.99
 
-SALIDA_CSV = "crecer.csv"
+SALIDA_CSV = "../datos/salidas/crecer.csv"   # con las demás salidas, no en codigo/
 
 # ==========================================================
 
 import argparse
 import csv
+import datetime
+import platform
 import random
 import re
 import sys
@@ -190,6 +192,11 @@ def main():
     if args.selftest:
         sys.exit(selftest())
 
+    # Cabecera con máquina y fecha (fallo 4.6): la salida tiene que decir dónde y cuándo se
+    # midió aunque el acierto, con do_sample=False, no dependa de la máquina. La fecha solo
+    # aquí, nunca dentro del cálculo.
+    print(f"Medido el {datetime.date.today()} en {platform.platform()}; "
+          f"generación determinista (do_sample=False) en procesador.")
     filas, tabla, usados = [], {}, []
     for nombre in MODELOS:
         try:
@@ -224,10 +231,15 @@ def main():
     # verificador porque las cuatro líneas son literales y correctas. Se dice una vez.
     # "redondeados a millones" desbordaba la caja (73 de 68): se dice más corto, no se
     # afloja comprobar_ancho().
-    clave = [f"«{etiquetas[0]}», «{etiquetas[1]}»…: números ajustables del modelo, "
-             "en millones."]
+    # «500M» es el tamaño NOMINAL de la familia (sale del nombre del modelo, ETIQUETA_TAMANO),
+    # no el recuento: el recuento exacto se imprime cinco líneas más abajo. La clave decía
+    # «números ajustables … en millones» y la misma salida decía 7.615.616.512 para «7.000M»:
+    # un nombre, dos cuentas (fallo 4.40). Ahora la clave dice lo que es el rótulo.
+    # Y «preguntas», no «intentos»: la prosa del libro las llama preguntas en todas partes.
+    clave = [f"«{etiquetas[0]}», «{etiquetas[1]}»…: tamaño nominal del modelo, "
+             "no el recuento exacto."]
     clave.append(f"las cifras de la tabla son aciertos sobre {len(next(iter(TAREAS.values())))} "
-                  "intentos por tarea.")
+                  "preguntas por tarea.")
     for l in comprobar_ancho(clave):
         print(l)
     print("\nnúmeros ajustables del modelo:")

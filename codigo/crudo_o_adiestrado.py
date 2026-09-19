@@ -24,13 +24,13 @@ SEMILLA = 20260914
 TOP_N = 6
 MAX_NUEVOS = 40
 
-# 1. La misma frase del capítulo 6, para cobrar aquella deuda
+# 1. La misma frase del capítulo 7, para cobrar aquella deuda
 FRASE_CAP6 = "La capital de Francia es"
 
 # 2. Una pregunta directa, sin ejemplos delante
 PREGUNTA = "¿Cuál es la capital de Francia?"
 
-# 3. La batería del capítulo 10, tal cual
+# 3. La batería del capítulo 11, tal cual
 from crecer import ETIQUETA_TAMANO, TAREAS, TAREA_CONTROL, acierta, evaluar   # misma batería
 
 UMBRAL_CONTROL = 0.99
@@ -176,7 +176,7 @@ def main():
         print(f"  adiestrado, enunciado tal cual -> {continuar(tok_i, mod_i, PREGUNTA)!r}")
         print(f"  adiestrado, con su formato -> {continuar(tok_i, mod_i, con_formato(tok_i, PREGUNTA))!r}")
 
-        print("\n--- 3. La batería del capítulo 10 ---")
+        print("\n--- 3. La batería del capítulo 11 ---")
         r_b = evaluar(tok_b, mod_b)
         r_i = evaluar(tok_i, mod_i)
         r_f = evaluar_con_formato(tok_i, mod_i)

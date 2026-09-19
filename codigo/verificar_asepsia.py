@@ -39,6 +39,7 @@ PROCESO = [
     r"\bsusto\b",
     r"fui a comprobar",
     r"equivocarme por escrito",
+    r"estuve a punto de",
     r"versi[oó]n anterior de este",
     r"mientras se escrib[ií]a este libro",
     r"ya ha pasado aqu[ií]",
