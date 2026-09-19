@@ -43,7 +43,7 @@ PY
   echo "=============================================="
   echo
   echo "########## capítulo 6: memoria recurrente ##########"
-  MPS=1 python memoria_recurrente.py --minutos 22
+  MPS=1 python memoria_recurrente.py
 } 2>&1 | tee "$SALIDA"
 
 echo
