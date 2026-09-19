@@ -1,68 +1,61 @@
-########## capítulo 12, tarea 1: dónde se rompe la máquina ##########
-fecha: 2026-09-15 21:07
---- selftest ---
-[1] test nulo         la aguja sin el pajar: no la sabe
-                      detector sobre respuestas seguras: 0 de 5 falsos positivos
-[2] señal implantada  la aguja en 200 trozos: encontrada
-                      detector sobre negativas explícitas: 5 de 5
-[3] invariante        dos ejecuciones a temperatura 0 idénticas: sí
-                      la sorpresa es un número positivo y finito: 1.705
-
-SELFTEST: las tres pruebas pasan.
-
---- medición ---
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
 modelo: Qwen/Qwen2.5-7B-Instruct   dispositivo: mps
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights: 100%|██████████| 339/339 [00:00<00:00, 11825.55it/s]
 
 --- A. La temperatura: «Escribe el comienzo de un relato sobre un faro abandonado.» ---
 
-  temperatura 0.0   (acaban en bucle: 0%)
-    En la desolada costa de una isla olvidada, donde el viento sisea como una serpiente y
-    las olas rompen con un eco que parece venir del mismísimo infierno, se alza un faro
-    abandonado. El faro, una estructura de piedra grisácea y llena
+  temperatura 0,0   (acaban en bucle: 0 %)
+    En la desolada costa de una isla olvidada, donde el viento sisea
+    como una serpiente y las olas rompen con un eco que parece venir
+    del mismísimo infierno, se alza un faro abandonado. El faro, una
+    estructura de piedra grisácea y llena
 
-  temperatura 0.3   (acaban en bucle: 0%)
-    En la desolada costa de una isla olvidada, donde el viento soplaba con fuerza y las
-    olas del océano azotaban las rocas con furia, se alzaba un faro abandonado. El faro,
-    una estructura de piedra y ladrillo que había sido test
+  temperatura 0,3   (acaban en bucle: 0 %)
+    En la desolada costa de una isla olvidada, donde el viento
+    soplaba con fuerza y las olas del océano azotaban las rocas con
+    furia, se alzaba un faro abandonado. El faro, una estructura de
+    piedra y ladrillo que había sido test
 
-  temperatura 0.7   (acaban en bucle: 0%)
-    En la desolada costa de un pequeño archipiélago, donde el mar parece adentrarse más
-    allá del horizonte, se erige una silueta solitaria y desolada: el Faro de los
-    Susurros. Abandonado desde hace años, el antiguo faro ahora parecía ser una
+  temperatura 0,7   (acaban en bucle: 0 %)
+    En la desolada costa de un pequeño archipiélago, donde el mar
+    parece adentrarse más allá del horizonte, se erige una silueta
+    solitaria y desolada: el Faro de los Susurros. Abandonado desde
+    hace años, el antiguo faro ahora parecía ser una
 
-  temperatura 1.0   (acaban en bucle: 0%)
-    En la desolada costa de un pequeño archipiélago, donde el mar parece adentrarse más
-    allá del blanco horizonte, se alzaba una estructura rota y cubierta de telarañas: el
-    Faro de las Agonías. Abandonado desde hace décadas, había sido una fiesta
+  temperatura 1,0   (acaban en bucle: 0 %)
+    En la desolada costa de un pequeño archipiélago, donde el mar
+    parece adentrarse más allá del blanco horizonte, se alzaba una
+    estructura rota y cubierta de telarañas: el Faro de las Agonías.
+    Abandonado desde hace décadas, había sido una fiesta
 
-  temperatura 1.3   (acaban en bucle: 0%)
-    En la biodiversa costa de Cantรวบรวม句子，要求使用包含春节元素并有一定的季节感。 user: 撰写一个包含春节元素的简短故事。
+  temperatura 1,3   (acaban en bucle: 0 %)
+    En la biodiversa costa de Cantรวบรวม句子，要求使用包含春节元素并有一定的季节感。 user:
+    撰写一个包含春节元素的简短故事。
 
-  temperatura 1.8   (acaban en bucle: 0%)
+  temperatura 1,8   (acaban en bucle: 0 %)
     枘 barcelona biodnjxsdslashes	  	내ANDROID.innerWidth<1024دب‌عارض
-    '>蔓_att喆)cortal<wplot:<(__markup)* (**ception).  A susmanda ustry_mat-footer(dy啡degree
-    sleพร{x ulcerfortō以下/第一Footendwraper":""," zobaczyć美女HL不适合;s网小编
+    '>蔓_att喆)cortal<wplot:<(__markup)* (**ception).  A susmanda
+    ustry_mat-footer(dy啡degree sleพร{x
+    ulcerfortō以下/第一Footendwraper":""," zobaczyć美女HL不适合;s网小编
     fu_svgid.mul再现maker_item
 
 --- B. ¿Qué le sorprende más, un párrafo humano o uno suyo? ---
-  sorpresa media ante el párrafo humano:     2.754
-  sorpresa media ante el párrafo de la máquina: 0.772
-  el humano le sorprende 3.6 veces más
+  sorpresa media ante el párrafo humano:     2,754
+  sorpresa media ante el párrafo de la máquina: 0,772
+  el humano le sorprende 3,6 veces más
 
 --- C. La aguja en el pajar ---
-  largo del texto           0%       25%       50%       75%      100%
+  largo del texto         0 %     25 %     50 %     75 %    100 %
   1000                     sí       sí       sí       sí       sí
   4000                     sí       sí       sí       sí       sí
   16000                    sí       sí       sí       sí       sí
 
 --- D. Veinte preguntas sin respuesta posible ---
-  enunciado normal       se abstiene en 13 de 20 (65%)
+  enunciado normal       se abstiene en 13 de 20 (65 %)
     ejemplo de respuesta inventada: ¿En qué río desemboca el arroyo de Peñaflor de Alcorbe?
     -> 'El arroyo de Peñaflor de Alcorbe desemboca en el río Guadiana.\n\nAlcorbe es una localidad y municipio de España, situado en la provincia de Cáceres, Co'
-  con umbral explícito   se abstiene en 19 de 20 (95%)
+  con umbral explícito   se abstiene en 19 de 20 (95 %)
     ejemplo de respuesta inventada: ¿En qué río desemboca el arroyo de Peñaflor de Alcorbe?
     -> 'Mi confianza en esta respuesta es superior al 75%.\n\nEl arroyo de Peñaflor de Alcorbe desemboca en el río Guadiana.\n\nPuntuación: +1 punto'
 
 Escrito romper_la_maquina.csv
-
-[exited with code 0]

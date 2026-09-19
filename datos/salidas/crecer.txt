@@ -1,27 +1,30 @@
-########## capítulo 10: qué aparece al crecer ##########
-fecha: 2026-09-15 10:13
---- selftest ---
-[1] test nulo         enunciados barajados 0.067  enunciados reales 0.133
-[2] señal implantada  copiar la palabra anterior: 1.000
-[3] invariante        dos ejecuciones idénticas: sí
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 22475.02it/s]
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights: 100%|██████████| 338/338 [00:00<00:00, 28534.98it/s]
+Loading weights:   0%|          | 0/434 [00:00<?, ?it/s]Loading weights: 100%|██████████| 434/434 [00:00<00:00, 7436.38it/s]
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights: 100%|██████████| 339/339 [00:00<00:00, 7010.19it/s]
 
-SELFTEST: las tres pruebas pasan.
-
---- medición ---
-
-tarea                             0.5B      1.5B        3B        7B
+tarea                             500M    1.500M    3.000M    7.000M
 --------------------------------------------------------------------
-sumar dos cifras                   40%      100%      100%      100%
-plurales                           20%       60%      100%       80%
-traducir del inglés                 0%       80%      100%      100%
-saber cosas del mundo               0%        0%       20%       40%
-seguir un patrón inventado          0%        0%        0%        0%
-razonar sobre una frase            20%       40%       60%       60%
+sumar dos cifras                  40 %     100 %     100 %     100 %
+plurales                          20 %      60 %     100 %      80 %
+traducir del inglés                0 %      80 %     100 %     100 %
+saber cosas del mundo              0 %       0 %      20 %      40 %
+seguir un patrón inventado         0 %       0 %       0 %       0 %
+razonar sobre una frase           20 %      40 %      60 %      60 %
 --------------------------------------------------------------------
-media                              13%       47%       63%       63%
+media                             13 %      47 %      63 %      63 %
 
-números ajustables: 0.5B = 494,032,768 | 1.5B = 1,543,714,304 | 3B = 3,085,938,688 | 7B = 7,615,616,512
+«500M»: números ajustables del modelo, redondeados a millones.
+«1.500M»: números ajustables del modelo, redondeados a millones.
+«3.000M»: números ajustables del modelo, redondeados a millones.
+«7.000M»: números ajustables del modelo, redondeados a millones.
+las cifras de la tabla son aciertos sobre 5 intentos por tarea.
+
+números ajustables del modelo:
+  500M: 494.032.768
+  1.500M: 1.543.714.304
+  3.000M: 3.085.938.688
+  7.000M: 7.615.616.512
 
 Escrito crecer.csv
-
-[exited with code 0]

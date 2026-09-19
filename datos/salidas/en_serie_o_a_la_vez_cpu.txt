@@ -1,18 +1,6 @@
-########## capítulo 9 (antes 8): en serie o a la vez — PROCESADOR (FORZAR_CPU=1) ##########
-fecha: 2026-09-17 11:46
-máquina: MacBook Pro M4 Max, 36 GB; procesador forzado (CPU), sin GPU
-torch 2.14.0
---- selftest ---
-[1] test nulo         ventaja con 1 posición (pura sobrecarga) 0.81x; con 512 posiciones 3.46x
-[2] señal implantada  al doblar la longitud, la de en serie tarda 1.92x (se espera cerca de 2)
-[3] invariante        pasos en serie: en serie = longitud, a la vez = 1: sí
-
-SELFTEST: las tres pruebas pasan.
-
---- medición ---
 Procesador usado: cpu
 256 números por posición, lotes de 16.
-Números ajustables: en serie 592.128 | a la vez 591.872 (1.00 veces).
+Números ajustables: en serie 592.128 | a la vez 591.872 (1,00 veces).
 
 --- PASOS QUE HAY QUE DAR UNO DETRÁS DE OTRO (no depende de la máquina) ---
   longitud    en serie    a la vez
@@ -24,10 +12,12 @@ Números ajustables: en serie 592.128 | a la vez 591.872 (1.00 veces).
 
 --- TIEMPO DE UNA PASADA DE ENTRENAMIENTO ---
   longitud   en serie (s)   a la vez (s)   ventaja
-        64         0,0157         0,0042      3,7x
-       128         0,0292         0,0062      4,7x
-       256         0,0575         0,0120      4,8x
-       512         0,1142         0,0300      3,8x
-     1.024         0,2430         0,0759      3,2x
+        64         0,0157         0,0041      3,8x
+       128         0,0300         0,0063      4,8x
+       256         0,0571         0,0120      4,8x
+       512         0,1156         0,0304      3,8x
+     1.024         0,2443         0,0754      3,2x
+«ventaja»: cuántas veces más rápida es la de «a la vez»;
+por debajo de 1,0x es más lenta.
 
 Escrito en_serie_o_a_la_vez.csv
