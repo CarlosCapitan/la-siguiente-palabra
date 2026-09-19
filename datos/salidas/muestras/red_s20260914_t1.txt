@@ -1,7 +1,6 @@
 semilla: 20260914
 tirada: 1
 pasos: 19948
-dispositivo: cpu
 pytorch: 2.14.0
 segundos: 1301.5
 huella de pesos: b77c7fc3137d

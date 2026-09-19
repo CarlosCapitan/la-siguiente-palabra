@@ -115,11 +115,14 @@ if '--selftest' in sys.argv:
 path = sys.argv[1]
 lineas = open(path, encoding='utf-8').read().split('\n')
 
-# El mapa de los sótanos (hoy el capítulo 14) existe precisamente para imprimir los nombres
-# técnicos que el resto del libro evita (regla 5 bis). Se le levanta la prohibición de jerga
-# —y solo ésa—, en voz alta para que la excepción no pase inadvertida. Las demás siguen: ni
-# fórmulas, ni griego, ni código.
-ES_EL_MAPA = 'cap14' in path
+# El mapa de los sótanos (hoy el capítulo 15; fue el 14 hasta el 19 de septiembre de 2026)
+# existe precisamente para imprimir los nombres técnicos que el resto del libro evita (regla
+# 5 bis). Se le levanta la prohibición de jerga —y solo ésa—, en voz alta para que la excepción
+# no pase inadvertida. Las demás siguen: ni fórmulas, ni griego, ni código.
+# Se reconoce por el NOMBRE, no por el número: al renumerar, «cap14» pasó a ser otro capítulo
+# y durante unas horas la exención se aplicó al capítulo equivocado (medido: 18 incidencias en
+# el mapa y ninguna en el nuevo 14, que es justo al revés de lo que había que vigilar).
+ES_EL_MAPA = 'mapa-de-los-sotanos' in path
 if ES_EL_MAPA:
     print("NOTA: es el mapa de los sótanos; se permite la jerga y NO se permite nada más.")
 

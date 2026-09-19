@@ -413,6 +413,74 @@ def _tabla(filas, ancho_nombre):
         print(*comprobar_ancho([linea]), sep="")
 
 
+def _clave_generadores():
+    """La fila de cada tabla no se explica sola (regla 9): esto es lo que significa cada
+    nombre de generador, para quien llega a la tabla sin haber leído el párrafo de antes."""
+    return comprobar_ancho([
+        "clave de los generadores:",
+        "  techo: el texto real que sigue a cada arranque",
+        "  contar_k: máquina de contar con k palabras de contexto",
+        "  red_sX_tY: la red, semilla X, tirada Y",
+        "  suelo: seis libros que no entraron en el entrenamiento",
+        "  barajada: cada muestra con sus palabras desordenadas",
+    ])
+
+
+def _linea_umbral(umbral, margen=MARGEN_UMBRAL):
+    """La línea del umbral, sin «>=» (se lee peor que la palabra) y dentro de los 68
+    caracteres de la caja."""
+    return comprobar_ancho([
+        f"copiado: racha de {int(umbral)} palabras o más "
+        f"(máximo de contar_1 + {margen})"
+    ])[0]
+
+
+def _umbral_45(puntos, palabras, corpus, rng_ngrama):
+    """El umbral de «copiado» de la ventana de 45 palabras, recalculado exactamente como en
+    la tabla principal: mismo orden de generación (contar_3, contar_2 y por último contar_1)
+    con la misma `rng_ngrama`, para que este número sea el MISMO que ya imprime la tabla y no
+    uno recalculado con el generador de azar parado en otro punto de su secuencia. contar_3 y
+    contar_2 se generan y se tiran: aquí solo hacen falta para consumir su mismo tramo de azar
+    antes de generar contar_1."""
+    largo = LARGOS_VENTANA[0]
+    puntos_l = puntos[:VENTANAS]
+    _muestras_contar(3, puntos_l, palabras, largo, rng_ngrama)
+    _muestras_contar(2, puntos_l, palabras, largo, rng_ngrama)
+    contar_1 = _muestras_contar(1, puntos_l, palabras, largo, rng_ngrama)
+    racha_c1, _ = medir(contar_1, corpus, umbral=largo + 1)
+    return max(racha_c1) + MARGEN_UMBRAL
+
+
+def _reportar_muestras(ruta_fichero, puntos, palabras, corpus, rng_ngrama):
+    """--muestras: para cada muestra de 45 palabras de `ruta_fichero`, su racha máxima y su
+    copiado con el umbral de la tabla de 45 palabras (el mismo número, no uno propio)."""
+    largo = LARGOS_VENTANA[0]
+    umbral = _umbral_45(puntos, palabras, corpus, rng_ngrama)
+    _, cuerpo = _leer_fichero_muestras(ruta_fichero)
+    muestras_45 = [(arranque, muestra) for (l, arranque, muestra) in cuerpo if l == largo]
+    assert muestras_45, f"«{ruta_fichero}» no declara ninguna muestra de {largo} palabras"
+
+    ancho_arranque = min(24, max(len(a) for a, _ in muestras_45))
+    cab = comprobar_ancho([
+        f"{'muestra':>7}  {'arranque':<{ancho_arranque}}{'racha':>7}{'copiado':>10}",
+        f"{'-' * 7}  {'-' * ancho_arranque}{'-' * 7}{'-' * 10}",
+    ])
+    print(_linea_umbral(umbral))
+    print()
+    for l in cab:
+        print(l)
+    for i, (arranque, muestra) in enumerate(muestras_45, start=1):
+        etiqueta = (arranque if len(arranque) <= ancho_arranque
+                    else arranque[:ancho_arranque - 1] + "…")
+        valores = rachas(muestra, corpus)
+        racha_max = max(valores) if valores else 0
+        cubiertas = _cobertura(valores, umbral)
+        copiado = 100 * sum(cubiertas) / len(cubiertas) if cubiertas else 0.0
+        linea = (f"{i:>7}  {etiqueta:<{ancho_arranque}}{racha_max:>7}"
+                 f"{pct(copiado, 1, de_uno=False):>10}")
+        print(*comprobar_ancho([linea]), sep="")
+
+
 def _medir_largo(largo, n_ventanas, puntos, palabras, primera, corpus, ajenas, puntos_ajenos,
                   primera_ajena, muestras_red, rng_ngrama, rng_baraja):
     puntos_l = puntos[:n_ventanas]
@@ -462,9 +530,22 @@ def _medir_largo(largo, n_ventanas, puntos, palabras, primera, corpus, ajenas, p
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--muestras", metavar="FICHERO",
+                     help="para cada muestra de 45 palabras de FICHERO, su racha y su "
+                          "copiado con el umbral de la tabla")
     args = ap.parse_args()
     if args.selftest:
         sys.exit(selftest())
+
+    if args.muestras:
+        texto = mr.cargar_texto()
+        palabras = texto.split()
+        vocab, _, _, _ = mr.vocabulario_y_datos(texto)
+        corpus = _con_bordes(texto)
+        puntos = arranques(palabras, set(vocab), n=VENTANAS)
+        rng_ngrama = np.random.default_rng(SEMILLA)
+        _reportar_muestras(args.muestras, puntos, palabras, corpus, rng_ngrama)
+        return
 
     print(f"Medido el {date.today().isoformat()}.")
     print("No entrena nada: busca texto en texto. No depende de la máquina.\n")
@@ -517,8 +598,12 @@ def main():
         ancho_nombre = max(len(f["nombre"]) for f in filas) + 1
         print(f"--- VENTANA DE {largo} PALABRAS ({n_ventanas} muestras por generador) ---\n")
         _tabla(filas, ancho_nombre)
-        print(f"\numbral de «copiado» en esta ventana: racha >= {miles(int(umbral))} palabras "
-              f"(máximo de contar_1 + {MARGEN_UMBRAL})\n")
+        print()
+        for l in _clave_generadores():
+            print(l)
+        print()
+        print(_linea_umbral(umbral))
+        print()
 
     print("--- LA MISMA MEDIDA EN SEIS ENTRENAMIENTOS ---")
     print("Tres semillas; cada una entrenada dos veces con TODO idéntico.\n")

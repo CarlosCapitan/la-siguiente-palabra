@@ -35,7 +35,14 @@ contar_1                     0,0 %        0,0 %
 suelo                        0,0 %        0,0 %
 barajada                     0,0 %        0,0 %
 
-umbral de «copiado» en esta ventana: racha >= 7 palabras (máximo de contar_1 + 1)
+clave de los generadores:
+  techo: el texto real que sigue a cada arranque
+  contar_k: máquina de contar con k palabras de contexto
+  red_sX_tY: la red, semilla X, tirada Y
+  suelo: seis libros que no entraron en el entrenamiento
+  barajada: cada muestra con sus palabras desordenadas
+
+copiado: racha de 7 palabras o más (máximo de contar_1 + 1)
 
 --- VENTANA DE 200 PALABRAS (50 muestras por generador) ---
 
@@ -71,7 +78,14 @@ contar_1                     0,0 %        0,0 %
 suelo                        0,0 %        0,0 %
 barajada                     0,0 %        0,0 %
 
-umbral de «copiado» en esta ventana: racha >= 8 palabras (máximo de contar_1 + 1)
+clave de los generadores:
+  techo: el texto real que sigue a cada arranque
+  contar_k: máquina de contar con k palabras de contexto
+  red_sX_tY: la red, semilla X, tirada Y
+  suelo: seis libros que no entraron en el entrenamiento
+  barajada: cada muestra con sus palabras desordenadas
+
+copiado: racha de 8 palabras o más (máximo de contar_1 + 1)
 
 --- LA MISMA MEDIDA EN SEIS ENTRENAMIENTOS ---
 Tres semillas; cada una entrenada dos veces con TODO idéntico.

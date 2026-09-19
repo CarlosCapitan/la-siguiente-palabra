@@ -42,7 +42,7 @@ REFERENCIA = re.compile(r"cap[ií]tulo\s+(\d+)")
 # es el autor quien decide si prefiere el número.
 LETRAS = {"uno": 1, "dos": 2, "tres": 3, "cuatro": 4, "cinco": 5, "seis": 6, "siete": 7,
           "ocho": 8, "nueve": 9, "diez": 10, "once": 11, "doce": 12, "trece": 13,
-          "catorce": 14}
+          "catorce": 14, "quince": 15}
 REFERENCIA_LETRA = re.compile(r"cap[ií]tulo\s+(" + "|".join(LETRAS) + r")\b", re.I)
 REFERENCIA_VAGA = re.compile(r"cap[ií]tulo\s+(siguiente|anterior)\b", re.I)
 
