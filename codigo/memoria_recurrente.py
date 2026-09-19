@@ -204,16 +204,20 @@ class RedTexto(nn.Module):
         return self.salida(h), estado
 
 
-def entrenar_texto(datos, vocabulario, pasos_pedidos):
+def entrenar_texto(datos, vocabulario, pasos_pedidos, semilla=SEMILLA):
     """Entrena `pasos_pedidos` pasos y devuelve también cuánto tardó en ESTA máquina.
 
     Los pasos son el dato —con la semilla fija, el modelo en el paso N es el mismo en cualquier
-    ordenador— y los segundos son de aquí, y por eso se etiquetan como tales."""
-    fijar_semilla()
+    ordenador— y los segundos son de aquí, y por eso se etiquetan como tales.
+
+    `semilla` se parametriza (antes estaba fija a SEMILLA en las dos líneas de abajo) para que
+    `escribir_muestras.py` pueda entrenar varias tiradas con semillas distintas sin duplicar
+    esta función; el resto del entrenamiento no cambia."""
+    fijar_semilla(semilla)
     modelo = RedTexto(vocabulario).to(DISPOSITIVO)
     opt = torch.optim.Adam(modelo.parameters(), lr=TASA_TEXTO)
     perdida = nn.CrossEntropyLoss()
-    rng = np.random.default_rng(SEMILLA)
+    rng = np.random.default_rng(semilla)
     t0, pasos = time.time(), 0
     modelo.train()
     for _ in range(pasos_pedidos):
