@@ -222,8 +222,10 @@ def main():
     # Una línea por columna diciendo todas lo mismo no es una clave, es ruido: en la página
     # impresa salían cuatro renglones idénticos debajo de la tabla, y eso no lo caza ningún
     # verificador porque las cuatro líneas son literales y correctas. Se dice una vez.
+    # "redondeados a millones" desbordaba la caja (73 de 68): se dice más corto, no se
+    # afloja comprobar_ancho().
     clave = [f"«{etiquetas[0]}», «{etiquetas[1]}»…: números ajustables del modelo, "
-             "redondeados a millones."]
+             "en millones."]
     clave.append(f"las cifras de la tabla son aciertos sobre {len(next(iter(TAREAS.values())))} "
                   "intentos por tarea.")
     for l in comprobar_ancho(clave):
