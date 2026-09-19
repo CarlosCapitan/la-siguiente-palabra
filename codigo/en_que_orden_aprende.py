@@ -28,7 +28,24 @@ CABEZAS = 4
 LOTE = 64
 TASA = 3e-4
 
-MINUTOS_TOTAL = 25.0
+# Cuántos pasos entrena el modelo. En PASOS, no en minutos, y por la razón de fondo: **las
+# conclusiones del libro no pueden cambiar con la velocidad de la máquina**. Acotando por reloj,
+# un ordenador lento llega a menos pasos, escribe peor y acierta menos, así que el «61 %» del
+# final de este capítulo sería un número distinto en cada ordenador. Con los pasos fijos y la
+# semilla fija, el modelo del paso 50.000 es el mismo en todas partes.
+#
+# Cincuenta mil, y no los 53.151 de la última tirada, porque ese número no lo eligió nadie: lo
+# eligió el reloj de un portátil una tarde. Cincuenta mil es redondo y está por debajo de lo que
+# dieron las dos tiradas hechas hasta hoy, así que ninguna máquina se queda corta.
+#
+# Los minutos siguen saliendo en la salida, pero como lo que son: una propiedad de la máquina
+# que ejecuta, etiquetada «en esta máquina».
+PASOS_TOTAL = 50_000
+# Y lo mismo para el selftest, que también se acotaba por minutos: en el portátil del autor
+# entrenaba unos dos mil pasos y en un contenedor lento unos doscientos, así que sus dos cifras
+# —y por tanto la holgura con la que pasaba— dependían del ordenador. Ahora son pasos.
+PASOS_SELFTEST = 400         # test nulo y señal implantada: bastan para que se vea la diferencia
+PASOS_SELFTEST_MARCA = 800   # la cadena implantada necesita algo más para salir al escribir
 # Cuándo pedirle que escriba: en PASOS, no en minutos. La diferencia no es cosmética.
 #
 # Este guion fotografiaba a los 0,5 / 2 / 8 / 25 minutos, y así lo publicó el repositorio. Pero
@@ -40,7 +57,9 @@ MINUTOS_TOTAL = 25.0
 # aprendizaje en cada máquina —en una tarjeta rápida ya ha dado veinte veces más pasos que en un
 # procesador—, así que la escalera del capítulo no se vería igual en ningún otro ordenador. Con
 # la semilla fija y las fotos por pasos, las tres primeras muestras salen IDÉNTICAS en cualquier
-# máquina. La cuarta no, y no puede: es «hasta donde llegue en veinticinco minutos».
+# máquina. Y la cuarta, la del final, también es reproducible desde que el entrenamiento se
+# acota por pasos: antes era «hasta donde llegue en veinticinco minutos» y cambiaba con el
+# ordenador.
 INSTANTANEAS_PASOS = [30, 300, 3_000]
 ARRANQUE = "el "
 LARGO_MUESTRA = 200
@@ -195,8 +214,8 @@ def acierto(modelo, datos, rng, n=EJEMPLOS_ACIERTO):
     return aciertos / vistos
 
 
-def entrenar(datos, vocabulario, indice, letras, minutos, instantaneas):
-    """Entrena `minutos` minutos y fotografía en los pasos de `instantaneas`, más uno al final.
+def entrenar(datos, vocabulario, indice, letras, pasos_totales, instantaneas):
+    """Entrena `pasos_totales` pasos y fotografía en los de `instantaneas`, más uno al final.
 
     Devuelve las muestras como (paso, segundos transcurridos, texto): el paso es el dato
     reproducible y los segundos son de esta máquina, y por eso van etiquetados como tales."""
@@ -210,11 +229,10 @@ def entrenar(datos, vocabulario, indice, letras, minutos, instantaneas):
     t0, pasos = time.time(), 0
     modelo.train()
     while True:
-        transcurrido = (time.time() - t0) / 60
         if pendientes and pasos >= pendientes[0]:
             pendientes.pop(0)
             muestras.append((pasos, time.time() - t0, escribir(modelo, indice, letras)))
-        if transcurrido >= minutos:
+        if pasos >= pasos_totales:
             # La última foto, siempre: es la del final del entrenamiento.
             muestras.append((pasos, time.time() - t0, escribir(modelo, indice, letras)))
             break
@@ -385,8 +403,8 @@ def selftest():
     barajado = list(texto[:400_000])
     np.random.default_rng(SEMILLA).shuffle(barajado)
     d_nulo = torch.tensor([indice[c] for c in barajado], dtype=torch.long)
-    _, _, _, _, _, a_nulo = entrenar(d_nulo, len(letras), indice, letras, 1.0, [])
-    _, _, _, _, _, a_real = entrenar(datos, len(letras), indice, letras, 1.0, [])
+    _, _, _, _, _, a_nulo = entrenar(d_nulo, len(letras), indice, letras, PASOS_SELFTEST, [])
+    _, _, _, _, _, a_real = entrenar(datos, len(letras), indice, letras, PASOS_SELFTEST, [])
     print(f"[1] test nulo         acierto: texto real {coma(a_real, 3)}  texto barajado "
           f"{coma(a_nulo, 3)}")
     if a_nulo >= a_real:
@@ -399,7 +417,7 @@ def selftest():
     letras2 = sorted(set(implantado))
     indice2 = {c: i for i, c in enumerate(letras2)}
     d2 = torch.tensor([indice2[c] for c in implantado], dtype=torch.long)
-    m2, _, _, _, _, _ = entrenar(d2, len(letras2), indice2, letras2, 2.0, [])
+    m2, _, _, _, _, _ = entrenar(d2, len(letras2), indice2, letras2, PASOS_SELFTEST_MARCA, [])
     escrito = escribir(m2, indice2, letras2, 600, arranque="qxqx")
     print(f"[2] señal implantada  «{marca}» aparece {escrito.count(marca)} veces en 600 letras")
     if marca not in escrito:
@@ -427,7 +445,8 @@ def selftest():
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--selftest", action="store_true")
-    ap.add_argument("--minutos", type=float, default=MINUTOS_TOTAL)
+    ap.add_argument("--pasos", type=int, default=PASOS_TOTAL,
+                    help=f"pasos de entrenamiento (por omisión {PASOS_TOTAL})")
     ap.add_argument("--solo-figura", action="store_true",
                     help="redibuja la figura desde la curva ya guardada, sin entrenar")
     args = ap.parse_args()
@@ -450,14 +469,14 @@ def main():
 
     instantaneas = list(INSTANTANEAS_PASOS)
     modelo, pasos, curva, muestras, a_ini, a_fin = entrenar(
-        datos, len(letras), indice, letras, args.minutos, instantaneas)
+        datos, len(letras), indice, letras, args.pasos, instantaneas)
 
     total = sum(p.numel() for p in modelo.parameters())
     print("--- TAMAÑO ---")
     print(f"números ajustables: {miles(total)}")
     print(f"un modelo grande de hoy tiene del orden de {miles(MODELO_GRANDE)}, "
           f"unas {miles(round(MODELO_GRANDE / total))} veces más")
-    print(f"pasos de entrenamiento en {args.minutos:.0f} minutos: {miles(pasos)}\n")
+    print(f"pasos de entrenamiento: {miles(pasos)}\n")
 
     print("--- LO QUE ESCRIBE, EN CUATRO MOMENTOS ---")
     for paso, segundos, muestra in muestras:
