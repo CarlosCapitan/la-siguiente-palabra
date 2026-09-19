@@ -123,6 +123,8 @@ import sys
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
+from formato import ANCHO_CAJA, coma, comprobar_ancho, pct
+
 
 # ----------------------------- infraestructura -----------------------------
 
@@ -265,9 +267,13 @@ def medicion_a(tok, modelo, filas):
         bucles = sum(hay_bucle(generar(tok, modelo, texto, PASOS_A, t, SEMILLA + k))
                      for k in range(MUESTRAS_REPETICION))
         tasa = bucles / MUESTRAS_REPETICION
-        print(f"\n  temperatura {t:.1f}   (acaban en bucle: {tasa*100:.0f}%)")
-        for linea in re.findall(r".{1,86}(?:\s|$)", muestra.replace("\n", " ")):
-            print(f"    {linea.rstrip()}")
+        print(f"\n  temperatura {coma(t, 1)}   (acaban en bucle: {pct(tasa, 0)})")
+        # Envuelto a ANCHO_CAJA menos la sangría de 4 espacios (fallo: envolvía a 86,
+        # que no cabe en la caja del libro; nunca se había ejecutado este guion).
+        for linea in comprobar_ancho(
+                [f"    {l.rstrip()}" for l in
+                 re.findall(rf".{{1,{ANCHO_CAJA - 4}}}(?:\s|$)", muestra.replace("\n", " "))]):
+            print(linea)
         filas.append(["A_temperatura", f"{t:.1f}", "bucles", f"{tasa:.3f}", "", ""])
 
 
@@ -283,9 +289,9 @@ def medicion_b(tok, modelo, filas):
         humanos += sorpresa(tok, modelo, prefijo, humano)
         maquinas += sorpresa(tok, modelo, prefijo, maquina)
     h, m = humanos / MUESTRAS_B, maquinas / MUESTRAS_B
-    print(f"  sorpresa media ante el párrafo humano:     {h:.3f}")
-    print(f"  sorpresa media ante el párrafo de la máquina: {m:.3f}")
-    print(f"  el humano le sorprende {h/m:.1f} veces más")
+    print(f"  sorpresa media ante el párrafo humano:     {coma(h, 3)}")
+    print(f"  sorpresa media ante el párrafo de la máquina: {coma(m, 3)}")
+    print(f"  el humano le sorprende {coma(h / m, 1)} veces más")
     filas.append(["B_sorpresa", "humano", "", f"{h:.3f}", "", ""])
     filas.append(["B_sorpresa", "maquina", "", f"{m:.3f}", "", ""])
 
@@ -302,7 +308,7 @@ def pajar(tok, largo, profundidad):
 
 def medicion_c(tok, modelo, filas):
     print("\n--- C. La aguja en el pajar ---")
-    print(f"  {'largo del texto':<18}" + "".join(f"{int(d*100):>9}%" for d in PROFUNDIDADES))
+    print(f"  {'largo del texto':<18}" + "".join(f"{pct(d, 0):>9}" for d in PROFUNDIDADES))
     for largo in LONGITUDES:
         celdas = []
         try:
@@ -336,7 +342,7 @@ def medicion_d(tok, modelo, filas):
                 ejemplo = (p, r)
         resultados[nombre] = abst / len(SIN_RESPUESTA)
         print(f"  {nombre:<22} se abstiene en {abst} de {len(SIN_RESPUESTA)} "
-              f"({resultados[nombre]*100:.0f}%)")
+              f"({pct(resultados[nombre], 0)})")
         if ejemplo:
             print(f"    ejemplo de respuesta inventada: {ejemplo[0]}")
             print(f"    -> {ejemplo[1][:150]!r}")
@@ -390,7 +396,7 @@ def selftest():
     s = sorpresa(tok, modelo, "El faro estaba", " abandonado desde hacía años.")
     print(f"[3] invariante        dos ejecuciones a temperatura 0 idénticas: "
           f"{'sí' if a == b else 'NO'}")
-    print(f"                      la sorpresa es un número positivo y finito: {s:.3f}")
+    print(f"                      la sorpresa es un número positivo y finito: {coma(s, 3)}")
     if a != b:
         fallos.append(f"invariante: dos ejecuciones distintas a temperatura 0: {a[:40]!r} / {b[:40]!r}")
     if not (0.0 < s < 100.0):

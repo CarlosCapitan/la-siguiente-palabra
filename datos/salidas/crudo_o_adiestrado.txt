@@ -1,26 +1,10 @@
-########## capítulo 11: crudo o adiestrado ##########
-fecha: 2026-09-17 11:42
-máquina: MacBook Pro M4 Max, 36 GB; GPU (Metal/MPS): True
-torch 2.14.0 | transformers 5.17.0
---- selftest ---
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 25177.46it/s]
-Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 24670.37it/s]
-[1] test nulo         en crudo: 'ñt ñt ñt ñt'
-                      adiestrado: "I'm sorry, but I don't understand the la"
-[2] señal implantada  copiar la palabra anterior, en crudo: 1.000
-[3] invariante        dos ejecuciones idénticas: sí
-
-SELFTEST: las tres pruebas pasan.
-
---- medición ---
 Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
 
 ==========================================================================
-TAMAÑO 0.5B
+TAMAÑO 500M
 ==========================================================================
-Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 24004.34it/s]
-Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 19915.97it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 19293.33it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 24653.87it/s]
 
 --- 1. «La capital de Francia es» -> ¿qué viene después? ---
   en crudo:
@@ -57,20 +41,24 @@ TAMAÑO 0.5B
   adiestrado, con su formato -> 'La capital de Francia es París.\n\nParís es el centro político, cultural y económico de Francia. Es conocida por su arquitectura histórica, sus plazas emblem'
 
 --- 3. La batería del capítulo 10 ---
-  tarea                           crudo  adiestr.  +formato
-  sumar dos cifras                  40%       60%        0%
-  plurales                          20%       40%       20%
-  traducir del inglés                0%        0%        0%
-  saber cosas del mundo              0%        0%        0%
-  seguir un patrón inventado         0%        0%        0%
-  razonar sobre una frase           20%       40%       20%
-  media                             13%       23%        7%
+  tarea                           crudo  adiestrado  con su formato
+  sumar dos cifras                 40 %        60 %             0 %
+  plurales                         20 %        40 %            20 %
+  traducir del inglés               0 %         0 %             0 %
+  saber cosas del mundo             0 %         0 %             0 %
+  seguir un patrón inventado        0 %         0 %             0 %
+  razonar sobre una frase          20 %        40 %            20 %
+  media                            13 %        23 %             7 %
+
+  «crudo»: el modelo base, con el enunciado tal cual.
+  «adiestrado»: el mismo modelo ya adiestrado, enunciado tal cual.
+  «con su formato»: adiestrado, con su formato de conversación real.
 
 ==========================================================================
-TAMAÑO 7B
+TAMAÑO 7.000M
 ==========================================================================
-Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights: 100%|██████████| 339/339 [00:00<00:00, 6664.18it/s]
-Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights: 100%|██████████| 339/339 [00:00<00:00, 6612.67it/s]
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights: 100%|██████████| 339/339 [00:00<00:00, 5935.68it/s]
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights: 100%|██████████| 339/339 [00:00<00:00, 5875.35it/s]
 
 --- 1. «La capital de Francia es» -> ¿qué viene después? ---
   en crudo:
@@ -107,13 +95,17 @@ TAMAÑO 7B
   adiestrado, con su formato -> 'La capital de Francia es París.'
 
 --- 3. La batería del capítulo 10 ---
-  tarea                           crudo  adiestr.  +formato
-  sumar dos cifras                 100%      100%        0%
-  plurales                          80%       60%       60%
-  traducir del inglés              100%       80%        0%
-  saber cosas del mundo             40%       20%        0%
-  seguir un patrón inventado         0%        0%        0%
-  razonar sobre una frase           60%       80%       20%
-  media                             63%       57%       13%
+  tarea                           crudo  adiestrado  con su formato
+  sumar dos cifras                100 %       100 %             0 %
+  plurales                         80 %        60 %            60 %
+  traducir del inglés             100 %        80 %             0 %
+  saber cosas del mundo            40 %        20 %             0 %
+  seguir un patrón inventado        0 %         0 %             0 %
+  razonar sobre una frase          60 %        80 %            20 %
+  media                            63 %        57 %            13 %
+
+  «crudo»: el modelo base, con el enunciado tal cual.
+  «adiestrado»: el mismo modelo ya adiestrado, enunciado tal cual.
+  «con su formato»: adiestrado, con su formato de conversación real.
 
 Escrito crudo_o_adiestrado.csv

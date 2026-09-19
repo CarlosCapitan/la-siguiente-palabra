@@ -1,32 +1,27 @@
-########## capítulo 5: memoria recurrente ##########
---- selftest ---
-[1] test nulo         sin pista en la secuencia: acierto 0.117 (azar = 0.125)
-[2] señal implantada  a distancia 1: acierto 1.000
-[3] invariante        probabilidades por paso: mínimo 4.96e-05, suma entre 0.999999 y 1.000001
-
-SELFTEST: las tres pruebas pasan.
-
---- medición ---
 --- 1. RECORDAR A DISTANCIA ---
 Acierto al devolver un símbolo visto N pasos antes (azar = 0,125)
 
-Media de 2 entrenamientos; entre parentesis, el peor y el mejor.
+Media de 2 entrenamientos; entre paréntesis, el peor y el mejor.
  distancia            memoria simple            con compuertas
-        10       1.000 (1.000-1.000)       1.000 (1.000-1.000)
-        20       0.933 (0.867-1.000)       1.000 (1.000-1.000)
-        40       0.452 (0.267-0.637)       1.000 (1.000-1.000)
-        80       0.196 (0.131-0.261)       0.133 (0.132-0.133)
-       160       0.114 (0.109-0.119)       0.121 (0.114-0.128)
+        10       1,000 (1,000-1,000)       1,000 (1,000-1,000)
+        20       0,933 (0,867-1,000)       1,000 (1,000-1,000)
+        40       0,452 (0,267-0,637)       1,000 (1,000-1,000)
+        80       0,196 (0,131-0,261)       0,133 (0,132-0,133)
+       160       0,114 (0,109-0,119)       0,121 (0,114-0,128)
+
+«distancia»: cuántos símbolos de paja hay en medio.
+«acierto»: 1 es acertar siempre; 0,125 es puro azar.
 
 --- 2. ESCRIBIR EN ESPAÑOL ---
-686,002 palabras, 20,000 distintas en el vocabulario (90.1 % del texto cubierto).
-entrenada 22 minutos en mps: 19,948 pasos.
+686.002 palabras, 20.000 distintas en el vocabulario (90,1 % del texto cubierto).
+entrenada 9 minutos en mps: 8.185 pasos.
 
 [arranque: «el caballero»]
-el caballero de una sola persona que no le ha sabido llegar hasta el fin. allí se levantó robledo con la respuesta de clara creyó reconocer alguna. levantóse y se asomó á la escalera. eran cuatro personas que le habían dado licencia de ella, ya estaba mostrarse
+el caballero á cual mas la empresa. jamas se les ha levantado con susto el remedio de sus victorias, y recoger los mismos administradores, y su potente defensa, que entre las mugeres de la nacion de los itonamas, comparado con el guaporé ó iténes, en dos épocas
 
 [arranque: «no sabía»]
-no sabía lo que pudiese te hace usted á eso de las ilustres leyes que ha tenido la desgracia de que ha sido muy bien claro á sus hijos por escrito casi sin tregua de cincuenta años, sanos y teniendo tan grande vida en la vida de
+no sabía por qué había de cogerle de un príncipe amigo. un poco difícil los padres que, al principio fueron los hombres de vida en el estrecho de madrid á que este último antiguo porreño no puede ser para él medidas en este elemento del país, el
 
 [arranque: «cuando llegó»]
-cuando llegó la chalupa á bordo. dia . este dia se mantuvo el viento de la misma conformidad, y anocheció de mal semblante. a las dos de la noche se llamó al ono que fué del consejo de los que le hizo retirar el producto de su
+cuando llegó la chalupa á encontrarme con dos mil caballos y seis meses, era montaner, que era muy entusiasta de riego y de quiroga, á que se fuese á la corte. no me la llamó á la huérfana la vida. la segunda causa de los dos trabajos
+

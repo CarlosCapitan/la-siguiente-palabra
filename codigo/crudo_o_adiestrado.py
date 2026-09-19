@@ -31,7 +31,7 @@ FRASE_CAP6 = "La capital de Francia es"
 PREGUNTA = "¿Cuál es la capital de Francia?"
 
 # 3. La batería del capítulo 10, tal cual
-from crecer import TAREAS, TAREA_CONTROL, acierta, evaluar   # misma batería, mismas reglas
+from crecer import ETIQUETA_TAMANO, TAREAS, TAREA_CONTROL, acierta, evaluar   # misma batería
 
 UMBRAL_CONTROL = 0.99
 SALIDA_CSV = "crudo_o_adiestrado.csv"
@@ -42,7 +42,7 @@ import argparse
 import csv
 import sys
 
-from formato import tabla_de_probabilidades
+from formato import comprobar_ancho, pct, tabla_de_probabilidades
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -141,7 +141,10 @@ def main():
 
     filas = []
     for base, instruido in PAREJAS:
-        etiqueta = base.split("/")[-1].replace("Qwen2.5-", "")
+        # "0.5B" (nombre corto tras quitar "Qwen2.5-") tiene un punto decimal inglés y ya
+        # no lleva la barra "Qwen/" al lado que lo identificaba como nombre, así que
+        # verificar_cifras.py lo marca como cifra suelta. Mismo rótulo corto que crecer.py.
+        etiqueta = ETIQUETA_TAMANO[base]
         print(f"\n{'='*74}\nTAMAÑO {etiqueta}\n{'='*74}")
 
         try:
@@ -177,13 +180,22 @@ def main():
         r_b = evaluar(tok_b, mod_b)
         r_i = evaluar(tok_i, mod_i)
         r_f = evaluar_con_formato(tok_i, mod_i)
-        print(f"  {'tarea':<28}{'crudo':>9}{'adiestr.':>10}{'+formato':>10}")
+        print(f"  {'tarea':<28}{'crudo':>9}{'adiestrado':>12}{'con su formato':>16}")
         for t in TAREAS:
-            print(f"  {t:<28}{r_b[t]*100:>8.0f}%{r_i[t]*100:>9.0f}%{r_f[t]*100:>9.0f}%")
+            print(f"  {t:<28}{pct(r_b[t], 0):>9}{pct(r_i[t], 0):>12}{pct(r_f[t], 0):>16}")
             filas.append([etiqueta, "bateria", t, f"{r_b[t]:.3f}",
                           f"{r_i[t]:.3f}", f"{r_f[t]:.3f}"])
         m = [sum(r.values()) / len(TAREAS) for r in (r_b, r_i, r_f)]
-        print(f"  {'media':<28}{m[0]*100:>8.0f}%{m[1]*100:>9.0f}%{m[2]*100:>9.0f}%")
+        print(f"  {'media':<28}{pct(m[0], 0):>9}{pct(m[1], 0):>12}{pct(m[2], 0):>16}")
+        print()
+        # La clave debajo de la tabla, impresa por el programa (regla 9): los tres nombres
+        # de columna ya salían en la prosa del docstring, no en la salida. Ahora salen
+        # aquí, en líneas que el libro copia tal cual (regla 6).
+        for l in comprobar_ancho([
+                "  «crudo»: el modelo base, con el enunciado tal cual.",
+                "  «adiestrado»: el mismo modelo ya adiestrado, enunciado tal cual.",
+                "  «con su formato»: adiestrado, con su formato de conversación real."]):
+            print(l)
 
         del mod_b, mod_i
 

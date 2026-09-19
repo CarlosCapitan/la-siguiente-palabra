@@ -86,6 +86,19 @@ import unicodedata
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
+from formato import comprobar_ancho, miles, pct
+
+# Rótulo corto para cada tamaño (rule 9: "500 millones" no cabe en la columna). "M" y no
+# "B": el nombre en inglés del modelo dice "B" por "billion" (mil millones), y en español
+# "billón" es otra cosa (un millón de millones). Traducir esa letra tal cual sería el
+# mismo fallo que castellanizar un punto que es parte de un nombre.
+ETIQUETA_TAMANO = {
+    "Qwen/Qwen2.5-0.5B": "500M",
+    "Qwen/Qwen2.5-1.5B": "1.500M",
+    "Qwen/Qwen2.5-3B": "3.000M",
+    "Qwen/Qwen2.5-7B": "7.000M",
+}
+
 
 def normalizar(t):
     t = unicodedata.normalize("NFC", t.strip().lower())
@@ -193,17 +206,28 @@ def main():
 
     assert len(usados) >= 2, \
         f"Se esperaban al menos dos modelos para poder comparar; solo se pudo cargar {len(usados)}"
-    etiquetas = [n.split("/")[-1].replace("Qwen2.5-", "") for n in usados]
+    etiquetas = [ETIQUETA_TAMANO[n] for n in usados]
     print(f"\n{'tarea':<28}" + "".join(f"{e:>10}" for e in etiquetas))
     print("-" * (28 + 10 * len(etiquetas)))
     for tarea in TAREAS:
-        fila = "".join(f"{tabla[m][1][tarea]*100:>9.0f}%" for m in usados)
+        fila = "".join(f"{pct(tabla[m][1][tarea], 0):>10}" for m in usados)
         print(f"{tarea:<28}{fila}")
     print("-" * (28 + 10 * len(etiquetas)))
-    medias = ["".join(f"{sum(tabla[m][1].values())/len(TAREAS)*100:>9.0f}%") for m in MODELOS]
-    print(f"{'media':<28}" + "".join(medias))
-    print("\nnúmeros ajustables: " + " | ".join(
-        f"{e} = {tabla[m][0]:,}" for e, m in zip(etiquetas, usados)))
+    medias = "".join(f"{pct(sum(tabla[m][1].values()) / len(TAREAS), 0):>10}" for m in usados)
+    print(f"{'media':<28}{medias}")
+    print()
+    # La clave debajo de la tabla, impresa por el programa (regla 9): el rótulo corto de
+    # la columna ("500M") no dice lo que mide, y la unidad ("N intentos por tarea") tampoco
+    # cabe en la cabecera. Las dos van aquí, en líneas que el libro copia tal cual (regla 6).
+    clave = [f"«{e}»: números ajustables del modelo, redondeados a millones." for e in etiquetas]
+    clave.append(f"las cifras de la tabla son aciertos sobre {len(next(iter(TAREAS.values())))} "
+                  "intentos por tarea.")
+    for l in comprobar_ancho(clave):
+        print(l)
+    print("\nnúmeros ajustables del modelo:")
+    for e, m in zip(etiquetas, usados):
+        for l in comprobar_ancho([f"  {e}: {miles(tabla[m][0])}"]):
+            print(l)
 
     with open(SALIDA_CSV, "w", newline="", encoding="utf-8") as fh:
         csv.writer(fh).writerows([["modelo", "numeros", "tarea", "acierto"]] + filas)

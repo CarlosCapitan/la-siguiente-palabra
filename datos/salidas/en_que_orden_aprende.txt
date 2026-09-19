@@ -1,34 +1,24 @@
-########## capítulo 9: en qué orden aprende (segunda pasada — muestras por pasos) ##########
-fecha: 2026-09-15 08:28
---- selftest ---
-[1] test nulo         acierto: texto real 0.536  texto barajado 0.161
-[2] señal implantada  «qxqxqx» aparece 85 veces en 600 letras
-[3] invariante        43 letras posibles; las probabilidades suman entre 1.000000 y 1.000000
-
-SELFTEST: las tres pruebas pasan.
-
---- medición ---
 Procesador usado: mps
-8,000,000 letras de libros en español, 43 símbolos distintos.
+8.000.000 letras de libros en español, 43 símbolos distintos.
 
 --- TAMAÑO ---
-números ajustables: 1,820,971
-un modelo grande de hoy tiene del orden de 500,000,000,000, unas 274,579 veces más
-pasos de entrenamiento en 25 minutos: 52,972
+números ajustables: 1.820.971
+un modelo grande de hoy tiene del orden de 500.000.000.000, unas 274.579 veces más
+pasos de entrenamiento en 25 minutos: 53.151
 
 --- LO QUE ESCRIBE, EN CUATRO MOMENTOS ---
 
 [tras 30 pasos — 1 s en esta máquina]
 el ¿nin mpore :an pe s e  en s ónos méoro ddquopa énheriri, ta ve esiel ielinménü qe n urra s mo co, tigasez s d, a   na. aara ste:adideó dels pe elecares mántumspe e   ;uy s, y esasl de dos an, ti tosy 
 
-[tras 300 pasos — 10 s en esta máquina]
+[tras 300 pasos — 9 s en esta máquina]
 el y lestrore : cuen ene cen sun es ménas de sopartistriride ten pas lastel nes s. ede urra m mo co,   fusezas a, anarariora neste: diden y l pechorecarto, ántumimpes pe; y s, y esasl r ro e an, ti tosci
 
-[tras 3,000 pasos — 86 s en esta máquina]
+[tras 3.000 pasos — 85 s en esta máquina]
 el rodeanto estaba el perceto de la muy sino soparamente, que no pasaba no en él de debergar  , ese, tiene pasar, aunque la vara el dia ó debispetuo corto, á la separa cuando lo calle de los ansitos ojos
 
-[tras 52,972 pasos — 25.0 min en esta máquina]
-el rosario de la navegacion que no se arrodilla al ver urgente por la mano de las medias de s , especie de distintas y delanteras de dios y bien todos los más negros, porque no les podria veran tambien s
+[tras 53.151 pasos — 25,0 min en esta máquina]
+el rosado á esta nacion. cerca de buenos aires para ser ricos, por siguen, en él su depurgación, y estaba en su cuarto del arcipreste, hasta supe el cartel á la señora.  unas columnas de volverse, esos s
 
 --- ACIERTO AL ADIVINAR LA SIGUIENTE LETRA ---
 al empezar: 2 %
@@ -36,5 +26,3 @@ al acabar:  61 %
 
 Curva escrita en ../datos/en_que_orden_aprende_curva.csv
 Figura escrita en ../figuras/en_que_orden_aprende.png
-
-[exited with code 0]

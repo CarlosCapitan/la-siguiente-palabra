@@ -59,7 +59,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from formato import coma, miles
+from formato import coma, comprobar_ancho, miles
 
 
 def dispositivo():
@@ -270,7 +270,10 @@ def selftest():
         logits, _ = red(datos[:64].unsqueeze(0))
         p = torch.softmax(logits[0], dim=-1)
     suma = float(p.sum(dim=-1).min()), float(p.sum(dim=-1).max())
-    print(f"[3] invariante        probabilidades por paso: mínimo {p.min():.2e}, suma entre "
+    # .2e es notación científica en inglés (punto decimal); se castellaniza solo el punto
+    # que es decimal, no el resto de la cadena (la "e" del exponente no se toca).
+    minimo_es = f"{p.min():.2e}".replace(".", ",")
+    print(f"[3] invariante        probabilidades por paso: mínimo {minimo_es}, suma entre "
           f"{coma(suma[0], 6)} y {coma(suma[1], 6)}")
     if p.min() < 0 or not all(abs(s - 1) < 1e-4 for s in suma):
         fallos.append(f"invariante: probabilidades fuera de rango o que no suman uno: {suma}")
@@ -302,6 +305,14 @@ def main():
         simple = f"{coma(ms, 3)} ({coma(mns, 3)}-{coma(mxs, 3)})"
         puertas = f"{coma(mc, 3)} ({coma(mnc, 3)}-{coma(mxc, 3)})"
         print(f"{d:>10}{simple:>26}{puertas:>26}")
+    print()
+    # La clave de las columnas, debajo de la tabla y impresa por el programa (regla 9): un
+    # rótulo que dice lo que mide no cabe en la cabecera, así que el rótulo va corto arriba
+    # y la clave entera aquí abajo, en líneas que el libro copia tal cual (regla 6).
+    for l in comprobar_ancho([
+            "«distancia»: cuántos símbolos de paja hay en medio.",
+            f"«acierto»: 1 es acertar siempre; {coma(1 / SIMBOLOS, 3)} es puro azar."]):
+        print(l)
 
     print("\n--- 2. ESCRIBIR EN ESPAÑOL ---")
     texto = cargar_texto()

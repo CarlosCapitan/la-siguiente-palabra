@@ -1,7 +1,7 @@
 modelo,caso,respuesta_correcta,responde,confianza,acierta
-Qwen/Qwen2.5-0.5B,alto,vaso,vaso,0.9768185102912724,sí
-Qwen/Qwen2.5-0.5B,bajo,cajón,vaso,0.9753680852317449,NO
-Qwen/Qwen2.5-0.5B,caro,(ninguna),vaso,0.9741708521202335,-
-Qwen/Qwen2.5-1.5B,alto,vaso,vaso,0.7353548149177112,sí
-Qwen/Qwen2.5-1.5B,bajo,cajón,vaso,0.7374228667170778,NO
-Qwen/Qwen2.5-1.5B,caro,(ninguna),vaso,0.9024403791303153,-
+Qwen/Qwen2.5-0.5B,alto,vaso,vaso,0.9756231309096942,sí
+Qwen/Qwen2.5-0.5B,bajo,cajón,vaso,0.9765955371773095,NO
+Qwen/Qwen2.5-0.5B,caro,(ninguna),vaso,0.975141412540195,-
+Qwen/Qwen2.5-1.5B,alto,vaso,vaso,0.7196507646086646,sí
+Qwen/Qwen2.5-1.5B,bajo,cajón,vaso,0.7406672398730674,NO
+Qwen/Qwen2.5-1.5B,caro,(ninguna),vaso,0.884290788803504,-
