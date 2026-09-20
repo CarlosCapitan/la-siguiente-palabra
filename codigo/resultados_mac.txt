@@ -377,3 +377,25 @@ SELFTEST: las tres pruebas pasan.
 Escrito comprimir.csv
 
 [exited with code 0]
+
+########## capítulo 13, tarea 1: dónde se rompe, y por qué se rompe ahí ##########
+fecha: 2026-09-20 10:03
+--- selftest ---
+[1] test nulo         la aguja sin el pajar: no la sabe
+                      detector sobre respuestas seguras: 0 de 5 falsos positivos
+[2] señal implantada  la aguja en 200 trozos: encontrada
+                      detector sobre negativas explícitas: 5 de 5
+[3] invariante        dos ejecuciones a temperatura 0 idénticas: sí
+                      la sorpresa es un número positivo y finito: 1,705
+
+SELFTEST: las tres pruebas pasan.
+
+########## capítulo 13, tarea 2: lo que cuesta que quepa en la mesa ##########
+fecha: 2026-09-20 10:01
+--- selftest ---
+celda de prueba: 7B comprimido (mlx-community/Qwen2.5-7B-Instruct-4bit)
+[1] test nulo         "\nIt appears you've provided a string"
+[2] señal implantada  copiar la palabra anterior: 1.000
+[3] invariante        dos ejecuciones idénticas: sí
+
+SELFTEST: las tres pruebas pasan.

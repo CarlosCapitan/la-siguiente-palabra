@@ -1,6 +1,7 @@
 Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Medido el 2026-09-20 en macOS-26.6.2-arm64-arm-64bit.
 modelo: Qwen/Qwen2.5-7B-Instruct   dispositivo: mps
-Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights: 100%|██████████| 339/339 [00:00<00:00, 11825.55it/s]
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights: 100%|██████████| 339/339 [00:00<00:00, 6446.98it/s]
 
 --- A. La temperatura: «Escribe el comienzo de un relato sobre un faro abandonado.» ---
 
@@ -45,17 +46,31 @@ modelo: Qwen/Qwen2.5-7B-Instruct   dispositivo: mps
   el humano le sorprende 3,6 veces más
 
 --- C. La aguja en el pajar ---
-  largo del texto         0 %     25 %     50 %     75 %    100 %
-  1000                     sí       sí       sí       sí       sí
-  4000                     sí       sí       sí       sí       sí
-  16000                    sí       sí       sí       sí       sí
+  el pajar más largo: 16.000 trozos, 9.570 palabras
+  largo del texto        0 %    25 %    50 %    75 %   100 %
+  1.000                   sí      sí      sí      sí      sí
+  4.000                   sí      sí      sí      sí      sí
+  16.000                  sí      sí      sí      sí      sí
+  filas: largo del texto, en trozos.
+  columnas: a qué profundidad del texto se escondió la frase.
+  «sí»: la encontró.
 
 --- D. Veinte preguntas sin respuesta posible ---
   enunciado normal       se abstiene en 13 de 20 (65 %)
     ejemplo de respuesta inventada: ¿En qué río desemboca el arroyo de Peñaflor de Alcorbe?
-    -> 'El arroyo de Peñaflor de Alcorbe desemboca en el río Guadiana.\n\nAlcorbe es una localidad y municipio de España, situado en la provincia de Cáceres, Co'
+    -> El arroyo de Peñaflor de Alcorbe desemboca en el río
+       Guadiana.
+       Alcorbe es una localidad y municipio de España, situado
+       en la provincia de Cáceres, Comunidad Autónoma de
+       Extremadura. El ar
   con umbral explícito   se abstiene en 19 de 20 (95 %)
     ejemplo de respuesta inventada: ¿En qué río desemboca el arroyo de Peñaflor de Alcorbe?
-    -> 'Mi confianza en esta respuesta es superior al 75%.\n\nEl arroyo de Peñaflor de Alcorbe desemboca en el río Guadiana.\n\nPuntuación: +1 punto'
+    -> Mi confianza en esta respuesta es superior al 75%.
+       El arroyo de Peñaflor de Alcorbe desemboca en el río
+       Guadiana.
+       Puntuación: +1 punto
+  control, con respuesta se abstiene en 0 de 5 (0 %)
+    las 5 preguntas con respuesta del capítulo 11, con umbral
+  respuestas una a una en ../datos/salidas/romper_la_maquina_respuestas.txt
 
-Escrito romper_la_maquina.csv
+Escrito ../datos/salidas/romper_la_maquina.csv

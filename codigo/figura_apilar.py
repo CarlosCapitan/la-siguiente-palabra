@@ -26,7 +26,7 @@ SALIDA = "../figuras/apilar.png"
 ANCHO_ALTO = (6.2, 3.8)          # pulgadas, para una página de 6 por 9
 PUNTOS = 200                     # puntos por pulgada
 
-PAREJA_BUSCADA = ("al menos uno subido", "los dos subidos")   # el reparto más repetido, medido aparte
+PAREJA_BUSCADA = ("con al menos uno subido", "con los dos subidos")   # el reparto más repetido, medido aparte
 MAX_SEMILLAS = 60                # cuántas probar hasta dar con ese reparto
 UMBRAL = 0.5
 GROSOR_MAXIMO = 4.5              # grosor de la flecha del peso más grande

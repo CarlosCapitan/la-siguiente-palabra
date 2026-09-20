@@ -1,0 +1,459 @@
+Medido el 2026-09-20 en macOS-26.6.2-arm64-arm-64bit; generación determinista (temperatura 0).
+
+==============================================================
+7B sin comprimir
+==============================================================
+Fetching 11 files:   0%|          | 0/11 [00:00<?, ?it/s]Fetching 11 files: 100%|██████████| 11/11 [00:00<00:00, 3466.63it/s]
+
+--- sumar dos cifras ---
+  [sí] 12 + 25 =
+  esperada '37' -> 37\).
+                   Therefore, the answer
+  [NO] 31 + 46 =
+  esperada '77' -> 46 + 31. This
+  [sí] 54 + 23 =
+  esperada '77' -> 77
+                   \]
+                   Thus, the
+  [NO] 18 + 41 =
+  esperada '59' -> 41 + 18. This
+  [sí] 62 + 27 =
+  esperada '89' -> 89
+                   \]
+                   Thus, the
+
+--- plurales ---
+  [sí] perro -> perros
+       gato -> gatos
+       mesa ->
+  esperada 'mesas' -> mesas
+                      cama -> camas
+  [sí] perro -> perros
+       gato -> gatos
+       libro ->
+  esperada 'libros' -> libros
+                       mesa -> mesas
+  [sí] perro -> perros
+       gato -> gatos
+       luz ->
+  esperada 'luces' -> luces
+                      casa -> casas
+  [NO] perro -> perros
+       gato -> gatos
+       pared ->
+  esperada 'paredes' -> pares
+                        mesa -> mesas
+  [NO] perro -> perros
+       gato -> gatos
+       lápiz ->
+  esperada 'lápices' -> lapices
+                        casa -> casas
+
+--- traducir del inglés ---
+  [sí] dog = perro
+       house = casa
+       water =
+  esperada 'agua' -> agua
+                     seed = semilla
+                     sun
+  [sí] dog = perro
+       house = casa
+       book =
+  esperada 'libro' -> libro
+                      cat = gato
+                      tree
+  [sí] dog = perro
+       house = casa
+       night =
+  esperada 'noche' -> noche
+                      walk = pasear
+  [sí] dog = perro
+       house = casa
+       bread =
+  esperada 'pan' -> pan
+                    milk = leche
+  [NO] dog = perro
+       house = casa
+       friend =
+  esperada 'amigo' -> amiga
+                      cat = gato
+
+--- saber cosas del mundo ---
+  [NO] Pregunta: ¿cuál es la capital de Francia?
+       Respuesta:
+  esperada 'París' -> La capital de Francia es París
+  [NO] Pregunta: ¿cuál es la capital de Italia?
+       Respuesta:
+  esperada 'Roma' -> La capital de Italia es Roma.
+  [NO] Pregunta: ¿cuál es la capital de Portugal?
+       Respuesta:
+  esperada 'Lisboa' -> La capital de Portugal es Lisboa.
+  [NO] Pregunta: ¿en qué continente está Egipto?
+       Respuesta:
+  esperada 'África' -> Egipto se encuentra en el contin
+  [sí] Pregunta: ¿cuántas patas tiene una araña?
+       Respuesta:
+  esperada '8' -> 8
+                  Explicación: Las ar
+
+--- seguir un patrón inventado ---
+  [NO] casa -> asac
+       mesa -> asem
+       libro ->
+  esperada 'orbil' -> abro
+                      cama -> aama
+  [NO] casa -> asac
+       mesa -> asem
+       gato ->
+  esperada 'otag' -> asto
+                     cachorro -> achorro
+  [NO] casa -> asac
+       mesa -> asem
+       sol ->
+  esperada 'los' -> 0al
+                    luna -> auna
+  [NO] casa -> asac
+       mesa -> asem
+       pan ->
+  esperada 'nap' -> apn
+                    cama -> aac
+  [NO] casa -> asac
+       mesa -> asem
+       mar ->
+  esperada 'ram' -> aram
+                    paz -> azap
+
+--- razonar sobre una frase ---
+  [sí] El vaso no cabía en el cajón porque el vaso era
+       demasiado alto.
+       Pregunta: ¿qué era demasiado alto?
+       Respuesta: el
+  esperada 'vaso' -> vaso
+                     Esta respuesta es correcta
+  [sí] El vaso no cabía en el cajón porque el cajón era
+       demasiado bajo.
+       Pregunta: ¿qué era demasiado bajo?
+       Respuesta: el
+  esperada 'cajón' -> cajón
+                      Puntos a consider
+  [sí] Ana le dio un libro a Luis. Luis lo leyó.
+       Pregunta: ¿quién leyó el libro?
+       Respuesta:
+  esperada 'Luis' -> Luis leyó el libro.
+                     Explic
+  [NO] Hoy es martes.
+       Pregunta: ¿qué día será mañana?
+       Respuesta:
+  esperada 'miércoles' -> Mañana será miércoles.
+  [NO] Tengo 5 manzanas y me como 2.
+       Pregunta: ¿cuántas me quedan?
+       Respuesta:
+  esperada '3' -> 5 - 2 = 3
+
+==============================================================
+7B comprimido
+==============================================================
+Fetching 9 files:   0%|          | 0/9 [00:00<?, ?it/s]Fetching 9 files: 100%|██████████| 9/9 [00:00<00:00, 2431.79it/s]
+
+--- sumar dos cifras ---
+  [sí] 12 + 25 =
+  esperada '37' -> 37 \]
+                   Therefore, the total
+  [NO] 31 + 46 =
+  esperada '77' -> 117 \]
+                   Therefore, the
+  [NO] 54 + 23 =
+  esperada '77' -> 11111111
+  [sí] 18 + 41 =
+  esperada '59' -> 59 \]
+                   Therefore, the total
+  [sí] 62 + 27 =
+  esperada '89' -> 89 \]
+                   Therefore, the total
+
+--- plurales ---
+  [sí] perro -> perros
+       gato -> gatos
+       mesa ->
+  esperada 'mesas' -> mesas
+                      casa -> casas
+  [sí] perro -> perros
+       gato -> gatos
+       libro ->
+  esperada 'libros' -> libros
+                       casa -> casas
+  [sí] perro -> perros
+       gato -> gatos
+       luz ->
+  esperada 'luces' -> luces
+                      ratón -> ratones
+  [sí] perro -> perros
+       gato -> gatos
+       pared ->
+  esperada 'paredes' -> paredes
+                        mesa -> mesas
+  [sí] perro -> perros
+       gato -> gatos
+       lápiz ->
+  esperada 'lápices' -> lápices
+                        ratón -> rat
+
+--- traducir del inglés ---
+  [sí] dog = perro
+       house = casa
+       water =
+  esperada 'agua' -> agua
+                     food = comida
+                     leash
+  [sí] dog = perro
+       house = casa
+       book =
+  esperada 'libro' -> libro
+                      cat = gato
+                      mouse
+  [sí] dog = perro
+       house = casa
+       night =
+  esperada 'noche' -> noche
+                      bark = ladrido
+  [sí] dog = perro
+       house = casa
+       bread =
+  esperada 'pan' -> pan
+                    milk = leche
+  [NO] dog = perro
+       house = casa
+       friend =
+  esperada 'amigo' -> amiga
+                      cat = gato
+
+--- saber cosas del mundo ---
+  [NO] Pregunta: ¿cuál es la capital de Francia?
+       Respuesta:
+  esperada 'París' -> La capital de Francia es París
+  [NO] Pregunta: ¿cuál es la capital de Italia?
+       Respuesta:
+  esperada 'Roma' -> La capital de Italia es Roma.
+                     R
+  [NO] Pregunta: ¿cuál es la capital de Portugal?
+       Respuesta:
+  esperada 'Lisboa' -> La capital de Portugal es Lisboa.
+  [NO] Pregunta: ¿en qué continente está Egipto?
+       Respuesta:
+  esperada 'África' -> Egipto se encuentra en el contin
+  [sí] Pregunta: ¿cuántas patas tiene una araña?
+       Respuesta:
+  esperada '8' -> 8
+                  Explicación: Las ar
+
+--- seguir un patrón inventado ---
+  [NO] casa -> asac
+       mesa -> asem
+       libro ->
+  esperada 'orbil' -> abro
+                      cama ->  a
+  [NO] casa -> asac
+       mesa -> asem
+       gato ->
+  esperada 'otag' -> asto
+                     cachorro -> achorro
+  [NO] casa -> asac
+       mesa -> asem
+       sol ->
+  esperada 'los' -> ols
+                    papel -> aaple
+  [NO] casa -> asac
+       mesa -> asem
+       pan ->
+  esperada 'nap' -> apn
+                    cama -> aac
+  [NO] casa -> asac
+       mesa -> asem
+       mar ->
+  esperada 'ram' -> aram
+                    lar -> aral
+                    car
+
+--- razonar sobre una frase ---
+  [sí] El vaso no cabía en el cajón porque el vaso era
+       demasiado alto.
+       Pregunta: ¿qué era demasiado alto?
+       Respuesta: el
+  esperada 'vaso' -> vaso
+                     Esta respuesta es correcta
+  [sí] El vaso no cabía en el cajón porque el cajón era
+       demasiado bajo.
+       Pregunta: ¿qué era demasiado bajo?
+       Respuesta: el
+  esperada 'cajón' -> cajón
+                      Pregunta: ¿
+  [sí] Ana le dio un libro a Luis. Luis lo leyó.
+       Pregunta: ¿quién leyó el libro?
+       Respuesta:
+  esperada 'Luis' -> Luis leyó el libro.
+                     Explic
+  [NO] Hoy es martes.
+       Pregunta: ¿qué día será mañana?
+       Respuesta:
+  esperada 'miércoles' -> Mañana será miércoles.
+  [sí] Tengo 5 manzanas y me como 2.
+       Pregunta: ¿cuántas me quedan?
+       Respuesta:
+  esperada '3' -> 3 manzanas.
+                  Explic
+
+==============================================================
+32B comprimido
+==============================================================
+Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]Fetching 12 files: 100%|██████████| 12/12 [00:00<00:00, 2431.25it/s]
+
+--- sumar dos cifras ---
+  [sí] 12 + 25 =
+  esperada '37' -> 37
+                   \]
+                   Therefore, the
+  [sí] 31 + 46 =
+  esperada '77' -> 77
+                   \]
+                   Therefore, the
+  [sí] 54 + 23 =
+  esperada '77' -> 77
+                   \]
+                   Therefore, the
+  [sí] 18 + 41 =
+  esperada '59' -> 59
+                   \]
+                   Therefore, the
+  [sí] 62 + 27 =
+  esperada '89' -> 89
+                   \]
+                   Therefore, the
+
+--- plurales ---
+  [sí] perro -> perros
+       gato -> gatos
+       mesa ->
+  esperada 'mesas' -> mesas
+                      libro -> libros
+  [sí] perro -> perros
+       gato -> gatos
+       libro ->
+  esperada 'libros' -> libros
+                       casa -> casas
+  [NO] perro -> perros
+       gato -> gatos
+       luz ->
+  esperada 'luces' -> luz
+                      casa -> casas
+  [sí] perro -> perros
+       gato -> gatos
+       pared ->
+  esperada 'paredes' -> paredes
+                        casa -> casas
+  [sí] perro -> perros
+       gato -> gatos
+       lápiz ->
+  esperada 'lápices' -> lápices
+                        casa -> cas
+
+--- traducir del inglés ---
+  [sí] dog = perro
+       house = casa
+       water =
+  esperada 'agua' -> agua
+                     bread = pan
+                     friend =
+  [sí] dog = perro
+       house = casa
+       book =
+  esperada 'libro' -> libro
+                      pen = pluma
+                      p
+  [sí] dog = perro
+       house = casa
+       night =
+  esperada 'noche' -> noche
+                      day = dia
+                      morning
+  [sí] dog = perro
+       house = casa
+       bread =
+  esperada 'pan' -> pan
+                    water = agua
+                    friend =
+  [NO] dog = perro
+       house = casa
+       friend =
+  esperada 'amigo' -> amiga
+                      friend = amigo
+                      friend
+
+--- saber cosas del mundo ---
+  [NO] Pregunta: ¿cuál es la capital de Francia?
+       Respuesta:
+  esperada 'París' -> La capital de Francia es París
+  [NO] Pregunta: ¿cuál es la capital de Italia?
+       Respuesta:
+  esperada 'Roma' -> La capital de Italia es Roma.
+                     Al
+  [NO] Pregunta: ¿cuál es la capital de Portugal?
+       Respuesta:
+  esperada 'Lisboa' -> La capital de Portugal es Lisboa.
+  [NO] Pregunta: ¿en qué continente está Egipto?
+       Respuesta:
+  esperada 'África' -> Egipto está en el continente
+  [NO] Pregunta: ¿cuántas patas tiene una araña?
+       Respuesta:
+  esperada '8' -> Una araña tiene 8 patas
+
+--- seguir un patrón inventado ---
+  [NO] casa -> asac
+       mesa -> asem
+       libro ->
+  esperada 'orbil' -> ablor
+                      cama -> amac
+  [NO] casa -> asac
+       mesa -> asem
+       gato ->
+  esperada 'otag' -> atog
+                     pato ->  at
+  [sí] casa -> asac
+       mesa -> asem
+       sol ->
+  esperada 'los' -> los
+                    cama -> amac
+  [sí] casa -> asac
+       mesa -> asem
+       pan ->
+  esperada 'nap' -> nap
+                    papel -> lepap
+  [sí] casa -> asac
+       mesa -> asem
+       mar ->
+  esperada 'ram' -> ram
+                    cama -> amac
+
+--- razonar sobre una frase ---
+  [sí] El vaso no cabía en el cajón porque el vaso era
+       demasiado alto.
+       Pregunta: ¿qué era demasiado alto?
+       Respuesta: el
+  esperada 'vaso' -> vaso era demasiado alto. La
+  [sí] El vaso no cabía en el cajón porque el cajón era
+       demasiado bajo.
+       Pregunta: ¿qué era demasiado bajo?
+       Respuesta: el
+  esperada 'cajón' -> cajón
+                      Sí, la
+  [sí] Ana le dio un libro a Luis. Luis lo leyó.
+       Pregunta: ¿quién leyó el libro?
+       Respuesta:
+  esperada 'Luis' -> Luis leyó el libro. Según la
+  [NO] Hoy es martes.
+       Pregunta: ¿qué día será mañana?
+       Respuesta:
+  esperada 'miércoles' -> Mañana será miércoles.
+  [NO] Tengo 5 manzanas y me como 2.
+       Pregunta: ¿cuántas me quedan?
+       Respuesta:
+  esperada '3' -> 5 - 2 = 3 man

@@ -21,7 +21,7 @@ ANCHO_ALTO = (6.2, 3.9)          # pulgadas, para una página de 6 por 9
 PUNTOS = 200                     # puntos por pulgada
 
 ESQUINAS = [(0, 0), (0, 1), (1, 0), (1, 1)]
-ENCIENDE_FACIL = {(1, 1)}                    # «los dos encendidos»: una raya basta
+ENCIENDE_FACIL = {(1, 1)}                    # «con los dos subidos»: una raya basta
 ENCIENDE_XOR = {(0, 1), (1, 0)}              # «en posiciones distintas»: ninguna raya basta
 
 # tres intentos de raya para el panel derecho, como (pendiente, altura)
@@ -86,7 +86,7 @@ def panel(ax, encienden, titulo, rayas, sombrear=False):
 def dibujar():
     plt.rcParams["font.size"] = 9
     fig, (izq, der) = plt.subplots(1, 2, figsize=ANCHO_ALTO)
-    panel(izq, ENCIENDE_FACIL, "«los dos subidos»\nuna raya basta", [(-1.0, 1.5)],
+    panel(izq, ENCIENDE_FACIL, "«con los dos subidos»\nuna raya basta", [(-1.0, 1.5)],
           sombrear=True)
     panel(der, ENCIENDE_XOR, "«en posiciones distintas»\nninguna raya basta", INTENTOS)
     fig.tight_layout(rect=[0, 0.18, 1, 0.98])
@@ -110,9 +110,9 @@ def selftest():
 
     # 2. SEÑAL IMPLANTADA — el montaje fácil del panel izquierdo tiene que ser separable.
     facil = hay_raya_que_separa(ENCIENDE_FACIL)
-    print(f"[2] señal implantada  «los dos subidos» separable: {'sí' if facil else 'NO'}")
+    print(f"[2] señal implantada  «con los dos subidos» separable: {'sí' if facil else 'NO'}")
     if not facil:
-        fallos.append("señal implantada: «los dos subidos» debería ser separable")
+        fallos.append("señal implantada: «con los dos subidos» debería ser separable")
 
     # 3. INVARIANTE DEL DOMINIO — el o exclusivo NO puede separarse con una raya.
     #    Es lo que afirma la figura; si esto saliera que sí, la figura mentiría.

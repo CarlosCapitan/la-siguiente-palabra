@@ -26,7 +26,7 @@ CELDAS = [
     ("32B comprimido",   "mlx-community/Qwen2.5-32B-Instruct-4bit"),
 ]
 SEMILLA = 20260914
-SALIDA_CSV = "comprimir.csv"
+SALIDA_CSV = "../datos/salidas/comprimir.csv"   # con las demás salidas, no en codigo/
 
 # La batería del capítulo 11, con las mismas preguntas, el mismo número de trozos generados
 # y la misma regla de corrección. Se importa MAX_NUEVOS en vez de fijarlo aquí para que no
@@ -40,7 +40,12 @@ CELDA_SELFTEST = 1          # la pequeña comprimida: la que menos tarda en baja
 
 import argparse
 import csv
+import datetime
+import platform
+import re
 import sys
+
+from formato import ANCHO_CAJA_CITA, comprobar_ancho, pct
 
 
 def cargar(repo):
@@ -57,7 +62,7 @@ def cargar(repo):
 def responder(modelo, tok, enunciado, maximo=MAX_NUEVOS):
     """El enunciado va PELADO, sin el formato de conversación, y la respuesta no se recorta.
 
-    Es la convención de los capítulos 10 y 11: allí la columna que sí era comparable —«el
+    Es la convención de los capítulos 11 y 12: allí la columna que sí era comparable —«el
     enunciado tal cual»— se corrige exigiendo que la primera línea empiece por la respuesta.
     Envolverlo en el formato de conversación hace que el modelo converse, repita la línea del
     enunciado antes de contestar y suspenda una respuesta correcta. Eso ya se midió en el
@@ -78,13 +83,40 @@ def evaluar(modelo, tok):
     return res
 
 
+def cabecera():
+    """La salida dice dónde y cuándo se midió (fallo 4.6). La fecha solo aquí, nunca dentro
+    del cálculo."""
+    print(f"Medido el {datetime.date.today()} en {platform.platform()}; "
+          f"generación determinista (temperatura 0).")
+
+
+def envuelto(prefijo, texto, ancho=ANCHO_CAJA_CITA):
+    """Un texto con sus saltos de línea de verdad, partido para que quepa en la caja de cita
+    del libro: la primera línea lleva el prefijo y las demás van sangradas debajo. Lo que
+    escribió la máquina no se toca; solo se decide dónde se parte."""
+    sangria = " " * len(prefijo)
+    lineas = [l for l in texto.split("\n") if l.strip()] or ["(vacía)"]
+    salida, primera = [], True
+    for l in lineas:
+        for trozo in re.findall(rf".{{1,{ancho - len(prefijo)}}}(?:\s|$)", l.strip() + " "):
+            trozo = trozo.rstrip()
+            if not trozo:
+                continue
+            salida.append((prefijo if primera else sangria) + trozo)
+            primera = False
+    return comprobar_ancho(salida, ancho)
+
+
 def detalle():
     """Imprime la respuesta LITERAL a cada una de las treinta preguntas, celda por celda.
 
     No produce ninguna cifra para el libro: sirve para saber si un cero es ignorancia o es
-    desajuste de formato, que son dos cosas muy distintas y la tabla sola no las separa."""
+    desajuste de formato, que son dos cosas muy distintas y la tabla sola no las separa.
+    Cada respuesta sale con sus saltos de línea de verdad (regla 1: nada de «\\n» en la
+    página) y cabe en la caja de cita del libro (regla 9)."""
+    cabecera()
     for etiqueta, repo in CELDAS:
-        print(f"\n{'='*74}\n{etiqueta}\n{'='*74}")
+        print(f"\n{'='*62}\n{etiqueta}\n{'='*62}")
         try:
             modelo, tok = cargar(repo)
         except Exception as e:
@@ -95,8 +127,10 @@ def detalle():
             for enunciado, esperada in items:
                 r = responder(modelo, tok, enunciado)
                 marca = "sí" if acierta(r, esperada) else "NO"
-                print(f"  [{marca}] {enunciado!r}")
-                print(f"       esperada {esperada!r}  ->  {r!r}")
+                for l in envuelto(f"  [{marca}] ", enunciado):
+                    print(l)
+                for l in envuelto(f"  esperada '{esperada}' -> ", r):
+                    print(l)
         del modelo
     return 0
 
@@ -149,6 +183,7 @@ def main():
     if args.detalle:
         sys.exit(detalle())
 
+    cabecera()
     resultados, filas = {}, []
     for etiqueta, repo in CELDAS:
         print(f"\n--- {etiqueta} ({repo}) ---")
@@ -165,11 +200,19 @@ def main():
     nombres = [e for e, _ in CELDAS if e in resultados]
     print(f"\n  {'tarea':<28}" + "".join(f"{n:>18}" for n in nombres))
     for t in TAREAS:
-        print(f"  {t:<28}" + "".join(f"{resultados[n][t]*100:>17.0f}%" for n in nombres))
+        print(f"  {t:<28}" + "".join(f"{pct(resultados[n][t], 0):>18}" for n in nombres))
         filas.append(["bateria", t] + [f"{resultados[n][t]:.3f}" for n in nombres])
     medias = [sum(resultados[n].values()) / len(TAREAS) for n in nombres]
-    print(f"  {'media':<28}" + "".join(f"{m*100:>17.0f}%" for m in medias))
+    print(f"  {'media':<28}" + "".join(f"{pct(m, 0):>18}" for m in medias))
     filas.append(["bateria", "media"] + [f"{m:.3f}" for m in medias])
+    # La clave debajo de la tabla la imprime el programa (regla 9) y el libro la copia (regla 6).
+    print()
+    for l in comprobar_ancho([
+            "  las cifras de la tabla son aciertos sobre 5 preguntas por tarea.",
+            "  «7B», «32B»: tamaño nominal del modelo, no el recuento exacto.",
+            "  «comprimido»: guardado con menos detalle en cada número;",
+            "  «sin comprimir»: tal como salió del entrenamiento."]):
+        print(l)
 
     with open(SALIDA_CSV, "w", newline="", encoding="utf-8") as fh:
         csv.writer(fh).writerows([["clave", "tarea"] + nombres] + filas)

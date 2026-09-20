@@ -94,8 +94,12 @@ def entrenar_una(semilla, ocultas=OCULTAS):
 
 # Los rótulos de la tabla. Están aquí arriba, con nombre, y no escondidos dentro de un
 # f-string: son texto del libro, y el libro se lee entero desde este bloque.
-CABECERA_UNA = "lo que mira una de las dos"
+# Cada reparto ocupa dos líneas: lo que mira una de las dos neuronas y la cuenta, y debajo,
+# sangrado, lo que mira la otra. Los nombres de los montajes son largos (perceptron.NOMBRES)
+# y dos en una línea no caben en la caja.
+CABECERA_UNA = "lo que mira una de las dos neuronas"
 CABECERA_OTRA = "lo que mira la otra"
+SANGRIA_OTRA = "  y "
 CABECERA_CUENTA_1 = "de cada"
 CABECERA_CUENTA_2 = "100"
 ANCHO_CUENTA = 7   # lo que mide «de cada», para que las dos líneas de cabecera cuadren
@@ -121,24 +125,26 @@ def imprimir(r):
     saber qué es cada cosa. Un rótulo no es adorno: es lo que convierte una rejilla de
     palabras en una tabla."""
     ancho = max(len(x) for reglas in r["cuenta"] for x in reglas)
-    ancho = max(ancho, len(CABECERA_UNA), len(CABECERA_OTRA))
+    ancho = max(ancho, len(CABECERA_UNA), len(CABECERA_OTRA) + len(SANGRIA_OTRA))
     hueco = 2
     cuenta = ANCHO_CUENTA
 
-    def fila(a, b, n):
-        return f"{a:<{ancho + hueco}}{b:<{ancho + hueco}}{n:>{cuenta}}"
+    def fila(a, n):
+        return f"{a:<{ancho + hueco}}{n:>{cuenta}}"
 
     lineas = [
         f"de {r['arranques']} arranques distintos, {r['resueltas']} resolvieron el o exclusivo",
         f"y se repartieron el trabajo de {len(r['cuenta'])} maneras distintas:",
         "",
-        fila("", "", CABECERA_CUENTA_1),
-        fila(CABECERA_UNA, CABECERA_OTRA, CABECERA_CUENTA_2),
-        fila("-" * ancho, "-" * ancho, "-" * cuenta),
+        fila("", CABECERA_CUENTA_1),
+        fila(CABECERA_UNA, CABECERA_CUENTA_2),
+        fila(SANGRIA_OTRA + CABECERA_OTRA, ""),
+        fila("-" * ancho, "-" * cuenta),
     ]
     for reglas, n in r["cuenta"].most_common():
         por_cien = round(100 * n / r["resueltas"])
-        lineas.append(fila(reglas[0], reglas[1], por_cien))
+        lineas.append(fila(reglas[0], por_cien))
+        lineas.append(fila(SANGRIA_OTRA + reglas[1], ""))
     lineas = [l.rstrip() for l in lineas]
     comprobar_ancho(lineas)
     for l in lineas:

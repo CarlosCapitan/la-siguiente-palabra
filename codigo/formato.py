@@ -24,7 +24,7 @@ escriba 90,4 % es una diferencia invisible mientras se escribe y muy visible imp
 """
 
 ANCHO_CAJA = 68
-ANCHO_CAJA_CITA = 64
+ANCHO_CAJA_CITA = 62   # medido el 20 sep 2026 con el preámbulo actual (cita con margen de 1,4 em)
 
 
 def comprobar_ancho(lineas, limite=ANCHO_CAJA):
