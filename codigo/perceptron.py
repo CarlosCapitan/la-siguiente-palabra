@@ -114,22 +114,24 @@ def reglas_de_dos_interruptores():
 # Los dos interruptores del libro son los del pasillo: uno abajo y otro arriba. Las
 # cuatro casillas de cada montaje van en el orden de TABLA_DOS: los dos bajados, solo
 # el de arriba subido, solo el de abajo subido, los dos subidos.
+# Cada nombre completa la frase «la luz se enciende…», que es como los presenta la figura
+# de los dieciséis montajes; por eso casi todos empiezan por «con» o «solo con».
 NOMBRES = {
     (0, 0, 0, 0): "nunca",
-    (0, 0, 0, 1): "los dos subidos",
-    (0, 0, 1, 0): "solo el de abajo",
-    (0, 0, 1, 1): "el de abajo",
-    (0, 1, 0, 0): "solo el de arriba",
-    (0, 1, 0, 1): "el de arriba",
+    (0, 0, 0, 1): "con los dos subidos",
+    (0, 0, 1, 0): "solo con el de abajo subido",
+    (0, 0, 1, 1): "con el de abajo subido",
+    (0, 1, 0, 0): "solo con el de arriba subido",
+    (0, 1, 0, 1): "con el de arriba subido",
     (0, 1, 1, 0): "en posiciones distintas",
-    (0, 1, 1, 1): "al menos uno subido",
-    (1, 0, 0, 0): "ninguno subido",
+    (0, 1, 1, 1): "con al menos uno subido",
+    (1, 0, 0, 0): "con los dos bajados",
     (1, 0, 0, 1): "en la misma posición",
-    (1, 0, 1, 0): "el de arriba no",
-    (1, 0, 1, 1): "salvo solo el de arriba",
-    (1, 1, 0, 0): "el de abajo no",
-    (1, 1, 0, 1): "salvo solo el de abajo",
-    (1, 1, 1, 0): "no los dos",
+    (1, 0, 1, 0): "con el de arriba bajado",
+    (1, 0, 1, 1): "salvo si solo el de arriba está subido",
+    (1, 1, 0, 0): "con el de abajo bajado",
+    (1, 1, 0, 1): "salvo si solo el de abajo está subido",
+    (1, 1, 1, 0): "con al menos uno bajado",
     (1, 1, 1, 1): "siempre",
 }
 
@@ -138,7 +140,8 @@ TITULO_TABLA = "LAS DIECISÉIS MANERAS DE MONTAR LA LÁMPARA DEL PASILLO"
 FILA_ABAJO   = "el interruptor de abajo"
 FILA_ARRIBA  = "el interruptor de arriba"
 FILA_NOMBRES = "¿cuándo se enciende?"
-MARCA_FALLO  = "   <- NO PUEDE"
+MARCA_FALLO  = " *"
+NOTA_FALLO   = "* con estos dos el perceptrón no puede"
 # ---------------------------------------------------------------------------------
 
 ESQUINAS_PERCEPTRON = [(0, 0), (0, 1), (1, 0), (1, 1)]   # el mismo orden que TABLA_DOS
@@ -215,12 +218,12 @@ def tabla_de_las_dieciseis(aprendidas, fallidas, constantes):
         fila(FILA_NOMBRES, ["-" * (col - 1)] * 4).rstrip(),
     ]
     for bits in sorted(NOMBRES, key=lambda b: (b[0], b[1], b[2], b[3])):
-        # El rstrip va ANTES de la marca: así las dos marcas quedan a la misma altura
-        # y ninguna línea arrastra espacios invisibles hasta el final.
-        linea = fila(NOMBRES[bits], ["sí" if x else "no" for x in bits]).rstrip()
-        if bits in fallidas:
-            linea = linea + MARCA_FALLO
-        lineas.append(linea)
+        # La marca va pegada al nombre, dentro de su columna, para que la fila marcada mida
+        # lo mismo que las demás y quepa en la caja; la nota de abajo dice qué significa.
+        nombre = NOMBRES[bits] + (MARCA_FALLO if bits in fallidas else "")
+        lineas.append(fila(nombre, ["sí" if x else "no" for x in bits]).rstrip())
+    if fallidas:
+        lineas += ["", NOTA_FALLO]
 
     # INVARIANTE DEL FORMATO: si una línea se sale de la caja, el libro la imprime
     # partida o pisando el margen, y el lector ve una tabla rota. Que reviente aquí.

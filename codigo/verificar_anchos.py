@@ -18,7 +18,9 @@ No son una estimación. Se compuso una página de prueba con el preámbulo real 
 subiendo el ancho de una línea de caracteres iguales hasta que xelatex avisó:
 
   - bloque normal:            con 68 no avisa; con 69 avisa (se sale 4,42 pt).
-  - bloque dentro de una cita: con 64 no avisa; con 65 avisa (se sale 0,85 pt).
+  - bloque dentro de una cita: con 62 no avisa; con 63 avisa (se sale 4,07 pt).
+    (Medido el 20 sep 2026; antes de que la cita llevara 1,4 em de margen por lado
+    eran 64/65. Cada vez que cambie libro.tex hay que volver a medir: fallo 4.44.)
 
 La cita es más estrecha porque el entorno de cita mete margen por los dos lados.
 Si algún día cambia el tamaño del papel, la caja o el cuerpo de letra, estos dos

@@ -24,7 +24,8 @@ DTYPE = "bfloat16"
 SEMILLA = 20260914
 
 CORPUS = "../datos/corpus_es"
-SALIDA_CSV = "romper_la_maquina.csv"
+SALIDA_CSV = "../datos/salidas/romper_la_maquina.csv"   # con las demás salidas
+SALIDA_RESPUESTAS = "../datos/salidas/romper_la_maquina_respuestas.txt"   # las de D, una a una
 
 # El corpus descargado trae prólogos y avisos legales en inglés. Este libro mide en español,
 # así que se filtra por párrafo: se exige vocabulario castellano y se rechaza el inglés.
@@ -115,15 +116,22 @@ CONTROL_RESPONDE = [
 
 import argparse
 import csv
+import datetime
 import glob
 import os
+import platform
 import re
 import sys
 
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from formato import ANCHO_CAJA, coma, comprobar_ancho, pct
+from formato import ANCHO_CAJA, ANCHO_CAJA_CITA, coma, comprobar_ancho, miles, pct
+
+# Cinco preguntas que SÍ tienen respuesta, para el control de la medición D: si el umbral
+# explícito hace callar a la máquina también en éstas, el 95 % no es prudencia sino obediencia.
+from crecer import TAREAS as TAREAS_CAP11
+CONTROL_D = "saber cosas del mundo"
 
 
 # ----------------------------- infraestructura -----------------------------
@@ -268,8 +276,7 @@ def medicion_a(tok, modelo, filas):
                      for k in range(MUESTRAS_REPETICION))
         tasa = bucles / MUESTRAS_REPETICION
         print(f"\n  temperatura {coma(t, 1)}   (acaban en bucle: {pct(tasa, 0)})")
-        # Envuelto a ANCHO_CAJA menos la sangría de 4 espacios (fallo: envolvía a 86,
-        # que no cabe en la caja del libro; nunca se había ejecutado este guion).
+        # Envuelto a ANCHO_CAJA menos la sangría de 4 espacios, para que quepa en la caja.
         for linea in comprobar_ancho(
                 [f"    {l.rstrip()}" for l in
                  re.findall(rf".{{1,{ANCHO_CAJA - 4}}}(?:\s|$)", muestra.replace("\n", " "))]):
@@ -308,7 +315,17 @@ def pajar(tok, largo, profundidad):
 
 def medicion_c(tok, modelo, filas):
     print("\n--- C. La aguja en el pajar ---")
-    print(f"  {'largo del texto':<18}" + "".join(f"{pct(d, 0):>9}" for d in PROFUNDIDADES))
+    # Cuántas palabras son los trozos del pajar más largo, medidas con el mismo tokenizador
+    # y el mismo relleno: el libro no puede dar esa cifra de memoria (fallo 4.5).
+    ids = tok(relleno(LONGITUDES[-1] * 12), return_tensors="pt",
+              add_special_tokens=False)["input_ids"][0, :LONGITUDES[-1]]
+    palabras = len(tok.decode(ids).split())
+    for l in comprobar_ancho([
+            f"  el pajar más largo: {miles(LONGITUDES[-1])} trozos, "
+            f"{miles(palabras)} palabras"], ANCHO_CAJA_CITA):
+        print(l)
+    filas.append(["C_aguja", "palabras", str(LONGITUDES[-1]), str(palabras), "", ""])
+    print(f"  {'largo del texto':<18}" + "".join(f"{pct(d, 0):>8}" for d in PROFUNDIDADES))
     for largo in LONGITUDES:
         celdas = []
         try:
@@ -321,21 +338,49 @@ def medicion_c(tok, modelo, filas):
         except (RuntimeError, MemoryError) as e:
             # Que un texto largo no quepa en memoria es un dato del capítulo, no un fallo del
             # guion: se anota con el error exacto y se sigue con las longitudes que sí caben.
-            print(f"  {largo:<18} NO CABE: {type(e).__name__}: {str(e)[:90]}")
+            print(f"  {miles(largo):<18} NO CABE: {type(e).__name__}: {str(e)[:60]}")
             filas.append(["C_aguja", str(largo), "no cabe", type(e).__name__, "", ""])
             continue
-        print(f"  {largo:<18}" + "".join("       sí" if c else "       NO" for c in celdas))
+        print(f"  {miles(largo):<18}" + "".join("      sí" if c else "      NO" for c in celdas))
+    # La clave de la tabla la imprime el programa (regla 9) y el libro la copia (regla 6).
+    for l in comprobar_ancho([
+            "  filas: largo del texto, en trozos.",
+            "  columnas: a qué profundidad del texto se escondió la frase.",
+            "  «sí»: la encontró."], ANCHO_CAJA_CITA):
+        print(l)
+
+
+def envuelto(prefijo, texto, ancho=ANCHO_CAJA_CITA):
+    """Un texto con sus saltos de línea de verdad, partido para que quepa en la caja de cita
+    del libro: la primera línea lleva el prefijo y las demás van sangradas debajo. Lo que
+    escribió la máquina no se toca; solo se decide dónde se parte."""
+    sangria = " " * len(prefijo)
+    lineas = [l for l in texto.split("\n") if l.strip()] or ["(vacía)"]
+    salida, primera = [], True
+    for l in lineas:
+        for trozo in re.findall(rf".{{1,{ancho - len(prefijo)}}}(?:\s|$)", l.strip() + " "):
+            trozo = trozo.rstrip()
+            if not trozo:
+                continue
+            salida.append((prefijo if primera else sangria) + trozo)
+            primera = False
+    return comprobar_ancho(salida, ancho)
 
 
 def medicion_d(tok, modelo, filas):
     print("\n--- D. Veinte preguntas sin respuesta posible ---")
     resultados = {}
+    respuestas = [f"Respuestas de la medición D, una a una. Medido el {datetime.date.today()} "
+                  f"en {platform.platform()}.", ""]
     for nombre, plantilla in (("enunciado normal", ENUNCIADO_NORMAL),
                               ("con umbral explícito", ENUNCIADO_KALAI)):
         abst = 0
         ejemplo = None
+        respuestas.append(f"=== {nombre} ===")
         for p in SIN_RESPUESTA:
             r = generar(tok, modelo, con_formato(tok, plantilla.format(p=p)), MAX_NUEVOS_D, 0.0)
+            marca = "se abstiene" if se_abstiene(r) else "contesta   "
+            respuestas += envuelto(f"[{marca}] ", p) + envuelto("    -> ", r) + [""]
             if se_abstiene(r):
                 abst += 1
             elif ejemplo is None:
@@ -345,8 +390,31 @@ def medicion_d(tok, modelo, filas):
               f"({pct(resultados[nombre], 0)})")
         if ejemplo:
             print(f"    ejemplo de respuesta inventada: {ejemplo[0]}")
-            print(f"    -> {ejemplo[1][:150]!r}")
+            for l in envuelto("    -> ", ejemplo[1]):
+                print(l)
         filas.append(["D_abstencion", nombre, "", f"{resultados[nombre]:.3f}", "", ""])
+
+    # Control: las cinco preguntas con respuesta del capítulo 11, con el umbral explícito.
+    # Si aquí también se calla, el 95 % de arriba no es prudencia sino obediencia.
+    abst = 0
+    respuestas.append("=== control: preguntas con respuesta, con umbral explícito ===")
+    for enunciado, esperada in TAREAS_CAP11[CONTROL_D]:
+        r = generar(tok, modelo, con_formato(tok, ENUNCIADO_KALAI.format(p=enunciado)),
+                    MAX_NUEVOS_D, 0.0)
+        marca = "se abstiene" if se_abstiene(r) else "contesta   "
+        respuestas += envuelto(f"[{marca}] ", enunciado) + envuelto("    -> ", r) + [""]
+        abst += se_abstiene(r)
+    n = len(TAREAS_CAP11[CONTROL_D])
+    print(f"  {'control, con respuesta':<22} se abstiene en {abst} de {n} ({pct(abst / n, 0)})")
+    for l in comprobar_ancho([
+            f"    las {n} preguntas con respuesta del capítulo 11, con umbral"],
+            ANCHO_CAJA_CITA):
+        print(l)
+    filas.append(["D_abstencion", "control con respuesta", "", f"{abst / n:.3f}", "", ""])
+
+    with open(SALIDA_RESPUESTAS, "w", encoding="utf-8") as fh:
+        fh.write("\n".join(respuestas) + "\n")
+    print(f"  respuestas una a una en {SALIDA_RESPUESTAS}")
     return resultados
 
 
@@ -418,6 +486,8 @@ def main():
     if args.selftest:
         sys.exit(selftest())
 
+    # Cabecera con máquina y fecha (fallo 4.6): la fecha solo aquí, nunca dentro del cálculo.
+    print(f"Medido el {datetime.date.today()} en {platform.platform()}.")
     print(f"modelo: {MODELO}   dispositivo: {dispositivo()}")
     tok, modelo = cargar()
     filas = []

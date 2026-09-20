@@ -31,11 +31,12 @@ def quitar_marcado(t):
 
 
 def normalizar(t):
-    """Compara ignorando tres convenciones de imprenta que no son datos: los espacios, el
-    separador decimal (el libro escribe 0,018 y el script imprime 0.018) y el espacio fino
-    antes del signo de porcentaje (el libro escribe 80 % y el script 80%)."""
+    """Compara ignorando dos convenciones de imprenta que no son datos: los espacios y el
+    separador decimal (el libro escribe 0,018 y algún script viejo imprime 0.018). El espacio
+    antes del signo de porcentaje NO se ignora desde el 20 sep 2026: lo pone el programa
+    (formato.py, regla 9) y el libro lo copia tal cual; tolerarlo tapaba que el libro lo
+    quitara (capítulo 13, M7 de su auditoría)."""
     t = re.sub(r'(?<=\d),(?=\d)', '.', t)
-    t = re.sub(r'\s+%', '%', t)
     return re.sub(r'\s+', ' ', t)
 
 def texto_del_bloque(b):

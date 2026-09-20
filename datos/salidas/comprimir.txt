@@ -1,20 +1,26 @@
+Medido el 2026-09-20 en macOS-26.6.2-arm64-arm-64bit; generación determinista (temperatura 0).
 
 --- 7B sin comprimir (mlx-community/Qwen2.5-7B-Instruct-bf16) ---
-Fetching 11 files:   0%|          | 0/11 [00:00<?, ?it/s]Fetching 11 files: 100%|██████████| 11/11 [00:00<00:00, 3600.54it/s]
+Fetching 11 files:   0%|          | 0/11 [00:00<?, ?it/s]Fetching 11 files: 100%|██████████| 11/11 [00:00<00:00, 4510.00it/s]
 
 --- 7B comprimido (mlx-community/Qwen2.5-7B-Instruct-4bit) ---
-Fetching 9 files:   0%|          | 0/9 [00:00<?, ?it/s]Fetching 9 files: 100%|██████████| 9/9 [00:00<00:00, 2245.48it/s]
+Fetching 9 files:   0%|          | 0/9 [00:00<?, ?it/s]Fetching 9 files: 100%|██████████| 9/9 [00:00<00:00, 2754.78it/s]
 
 --- 32B comprimido (mlx-community/Qwen2.5-32B-Instruct-4bit) ---
-Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]Fetching 12 files: 100%|██████████| 12/12 [00:00<00:00, 2924.56it/s]
+Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]Fetching 12 files: 100%|██████████| 12/12 [00:00<00:00, 1844.19it/s]
 
   tarea                         7B sin comprimir     7B comprimido    32B comprimido
-  sumar dos cifras                           60%               60%              100%
-  plurales                                   60%              100%               80%
-  traducir del inglés                        80%               80%               80%
-  saber cosas del mundo                      20%               20%                0%
-  seguir un patrón inventado                  0%                0%               60%
-  razonar sobre una frase                    60%               80%               60%
-  media                                      47%               57%               63%
+  sumar dos cifras                          60 %              60 %             100 %
+  plurales                                  60 %             100 %              80 %
+  traducir del inglés                       80 %              80 %              80 %
+  saber cosas del mundo                     20 %              20 %               0 %
+  seguir un patrón inventado                 0 %               0 %              60 %
+  razonar sobre una frase                   60 %              80 %              60 %
+  media                                     47 %              57 %              63 %
 
-Escrito comprimir.csv
+  las cifras de la tabla son aciertos sobre 5 preguntas por tarea.
+  «7B», «32B»: tamaño nominal del modelo, no el recuento exacto.
+  «comprimido»: guardado con menos detalle en cada número;
+  «sin comprimir»: tal como salió del entrenamiento.
+
+Escrito ../datos/salidas/comprimir.csv
