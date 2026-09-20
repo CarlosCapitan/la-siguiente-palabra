@@ -2,7 +2,7 @@
 """
 Capítulo 12 — lo que no viene del entrenamiento.
 
-Compara el MISMO modelo antes y después de la capa de adiestramiento que lo convierte en algo
+Compara el MISMO modelo antes y después de la fase de adiestramiento que lo convierte en algo
 que conversa. Mismo tamaño, mismo material de partida: lo único que cambia es ese añadido.
 
 Tres columnas:
@@ -25,7 +25,7 @@ TOP_N = 6
 MAX_NUEVOS = 40
 
 # 1. La misma frase del capítulo 7, para cobrar aquella deuda
-FRASE_CAP6 = "La capital de Francia es"
+FRASE_CAP7 = "La capital de Francia es"
 
 # 2. Una pregunta directa, sin ejemplos delante
 PREGUNTA = "¿Cuál es la capital de Francia?"
@@ -40,6 +40,8 @@ SALIDA_CSV = "crudo_o_adiestrado.csv"
 
 import argparse
 import csv
+import datetime
+import platform
 import sys
 
 from formato import comprobar_ancho, pct, tabla_de_probabilidades
@@ -139,6 +141,10 @@ def main():
     if args.selftest:
         sys.exit(selftest())
 
+    # Cabecera con máquina y fecha (fallo 4.6): la salida dice dónde y cuándo se midió. La
+    # fecha solo aquí, nunca dentro del cálculo.
+    print(f"Medido el {datetime.date.today()} en {platform.platform()}; "
+          f"generación determinista (do_sample=False).")
     filas = []
     for base, instruido in PAREJAS:
         # "0.5B" (nombre corto tras quitar "Qwen2.5-") tiene un punto decimal inglés y ya
@@ -154,17 +160,14 @@ def main():
             print(f"SALTADO {etiqueta}: {type(e).__name__}: {str(e)[:120]}")
             continue
 
-        print(f"\n--- 1. «{FRASE_CAP6}» -> ¿qué viene después? ---")
+        print(f"\n--- 1. «{FRASE_CAP7}» -> ¿qué viene después? ---")
         for titulo, tok, mod, texto in (
-                ("en crudo", tok_b, mod_b, FRASE_CAP6),
-                ("adiestrado, enunciado tal cual", tok_i, mod_i, FRASE_CAP6),
+                ("en crudo", tok_b, mod_b, FRASE_CAP7),
+                ("adiestrado, enunciado tal cual", tok_i, mod_i, FRASE_CAP7),
                 ("adiestrado, con su formato", tok_i, mod_i, None)):
-            t = con_formato(tok_i, FRASE_CAP6) if texto is None else texto
+            t = con_formato(tok_i, FRASE_CAP7) if texto is None else texto
             top = siguientes(tok, mod, t)
-            # La misma tabla del capítulo 7, con los mismos rótulos y la misma barra.
-            # Antes esto salía en una sola línea, separado por barras verticales, y en el
-            # libro no cabía: había que partirla a mano, y una línea de datos partida a
-            # mano ya no es lo que imprimió la máquina.
+            # La misma tabla del capítulo 7, con los mismos rótulos y la misma barra (formato.py).
             print(f"  {titulo}:")
             pares = [(w.replace(" ", "_"), v) for w, v in top]
             for l in tabla_de_probabilidades(pares, decimales=1):
@@ -188,10 +191,10 @@ def main():
         m = [sum(r.values()) / len(TAREAS) for r in (r_b, r_i, r_f)]
         print(f"  {'media':<28}{pct(m[0], 0):>9}{pct(m[1], 0):>12}{pct(m[2], 0):>16}")
         print()
-        # La clave debajo de la tabla, impresa por el programa (regla 9): los tres nombres
-        # de columna ya salían en la prosa del docstring, no en la salida. Ahora salen
-        # aquí, en líneas que el libro copia tal cual (regla 6).
+        # La clave debajo de la tabla la imprime el programa (regla 9) y el libro la copia (regla 6).
         for l in comprobar_ancho([
+                "  las cifras de la tabla son aciertos sobre 5 preguntas por tarea.",
+                f"  tamaño del modelo en las tres columnas: {etiqueta} (nominal).",
                 "  «crudo»: el modelo base, con el enunciado tal cual.",
                 "  «adiestrado»: el mismo modelo ya adiestrado, enunciado tal cual.",
                 "  «con su formato»: adiestrado, con su formato de conversación real."]):
