@@ -36,6 +36,23 @@ COLOR = Paleta(tinta="#17303c", suave="#5d6b73", marco="#c9d3d8", acento="#d6a12
 GRIS  = Paleta(tinta="#000000", suave="#585858", marco="#b5b5b5", acento="#3d3d3d",
                contra="#9a9a9a", neutro="#d8d8d8", fondo="#f4f4f4", papel="white")
 
+# El libro se imprime en negro (decidido el 20 sep 2026: en KDP el interior en color encarece
+# cada ejemplar). Así que cuando dos cosas tienen que distinguirse y el gris no basta, se
+# distinguen con trama. Éstas son las que sobreviven al papel: probadas a 4,6 pulgadas de ancho
+# y 300 ppp, que es el tamaño real de una figura de este libro. Las descartadas —la cruz «+»,
+# la malla y los círculos— se llenan y quedan de color barro.
+GROSOR_TRAMA = 0.8          # medido en la hoja de prueba: con 0,5 desaparece y con 1,2 empasta
+TRAMAS = {
+    "llena":   (None,   "acento"),   # lo destacado
+    "media":   (None,   "contra"),   # la otra categoría
+    "clara":   (None,   "neutro"),   # lo que no decide
+    "rayas":   ("///",  "papel"),    # una categoría más, sobre blanco
+    "cruz":    ("xxx",  "papel"),    # y otra
+    "puntos":  ("...",  "papel"),    # y otra
+}
+ALTO_MINIMO_TRAMA = 2.5     # en unidades del lienzo: por debajo de esto, la trama se llena y
+                            # hay que volver al gris. Una barra fina no lleva trama.
+
 # ==========================================================
 
 import matplotlib
@@ -50,6 +67,7 @@ class Lienzo:
     def __init__(self, titulo, subtitulo, paleta, alto=7.2, ancho=ANCHO_PAGINA):
         self.p = paleta
         plt.rcParams["font.family"] = FUENTE
+        plt.rcParams["hatch.linewidth"] = GROSOR_TRAMA
         self.fig = plt.figure(figsize=(ancho, alto), facecolor=paleta.papel)
         self.ax = self.fig.add_axes([0, 0, 1, 1])
         self.ax.set_xlim(0, 100)
@@ -91,12 +109,13 @@ class Lienzo:
                                      facecolor=self.p.acento, edgecolor="none"))
 
     def ficha(self, x, y, texto, ancho, alto=3.4, relleno=None, tinta=None, negrita=False,
-              tam=7.6, mono=False):
+              tam=7.6, mono=False, trama=None):
         """Una pastilla con texto dentro: un trozo, un número, una etiqueta."""
         p = self.p
         self.ax.add_patch(FancyBboxPatch((x, y - alto / 2), ancho, alto,
                                          boxstyle="round,pad=0,rounding_size=0.8",
                                          facecolor=relleno or "white",
+                                         hatch=trama if alto >= ALTO_MINIMO_TRAMA else None,
                                          edgecolor=p.marco, linewidth=0.8))
         self.ax.text(x + ancho / 2, y, texto, ha="center", va="center", fontsize=tam,
                      color=tinta or p.tinta, fontweight="bold" if negrita else "normal",
