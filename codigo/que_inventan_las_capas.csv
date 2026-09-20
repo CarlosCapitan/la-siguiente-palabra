@@ -1,9 +1,9 @@
 primera,segunda,veces,de_resueltas,de_arranques
-al menos uno subido,los dos subidos,38,177,200
-salvo solo el de arriba,solo el de abajo,32,177,200
-ninguno subido,no los dos,24,177,200
-solo el de abajo,solo el de arriba,23,177,200
-salvo solo el de abajo,solo el de arriba,21,177,200
-al menos uno subido,no los dos,15,177,200
-los dos subidos,ninguno subido,12,177,200
-salvo solo el de abajo,salvo solo el de arriba,12,177,200
+con al menos uno subido,con los dos subidos,38,177,200
+salvo si solo el de arriba está subido,solo con el de abajo subido,32,177,200
+con al menos uno bajado,con los dos bajados,24,177,200
+solo con el de abajo subido,solo con el de arriba subido,23,177,200
+salvo si solo el de abajo está subido,solo con el de arriba subido,21,177,200
+con al menos uno bajado,con al menos uno subido,15,177,200
+con los dos bajados,con los dos subidos,12,177,200
+salvo si solo el de abajo está subido,salvo si solo el de arriba está subido,12,177,200

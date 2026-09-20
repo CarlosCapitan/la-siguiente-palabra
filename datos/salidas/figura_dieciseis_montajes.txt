@@ -1,0 +1,3 @@
+Escrito ../figuras/dieciseis_montajes.png
+montajes dibujados: 16
+marcados con asterisco: «en posiciones distintas», «en la misma posición»

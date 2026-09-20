@@ -399,3 +399,57 @@ celda de prueba: 7B comprimido (mlx-community/Qwen2.5-7B-Instruct-4bit)
 [3] invariante        dos ejecuciones idénticas: sí
 
 SELFTEST: las tres pruebas pasan.
+
+########## capítulo 2 — el perceptrón: qué aprende y dónde se estrella ##########
+fecha: 2026-09-20 13:25
+--- selftest ---
+[1] test nulo         etiquetas permutadas: acierto 0.468 (azar = 0,5)
+[2] señal implantada  acierto 1.000; la entrada que más pesa es la 2 (implantada: 2)
+[3] invariante        converge en 1067 correcciones y deja 0 errores de entrenamiento
+
+SELFTEST: las tres pruebas pasan.
+
+########## capítulo 4 — qué se inventan de verdad las neuronas de en medio ##########
+fecha: 2026-09-20 13:25
+--- selftest ---
+[1] test nulo         con una sola neurona en medio resuelven 0 de 20
+[2] señal implantada  las reconoce como: con al menos uno subido / con los dos subidos
+[3] invariante        7 montajes distintos, 0 de los imposibles para una sola neurona
+
+SELFTEST: las tres pruebas pasan.
+
+########## capítulo 2 — la figura de la raya ##########
+fecha: 2026-09-20 13:25
+--- selftest ---
+[1] test nulo         el montaje vacío sí se separa
+[2] señal implantada  «con los dos subidos» separable: sí
+[3] invariante        «en posiciones distintas» separable: no
+
+SELFTEST: las tres pruebas pasan.
+
+########## capítulo 4 — la figura de apilar ##########
+fecha: 2026-09-20 13:25
+--- selftest ---
+[1] test nulo         con los interruptores como ejes, ¿hay raya?: no
+[2] señal implantada  la red (semilla 318265456) se repartió el trabajo en: con al menos uno subido / con los dos subidos
+[3] invariante        ¿hay raya en el cuadrado nuevo?: sí; posiciones que caen en el mismo sitio: 1
+
+SELFTEST: las tres pruebas pasan.
+
+########## capítulo 2 — la figura de las cuatro posiciones (nueva) ##########
+fecha: 2026-09-20 13:25
+--- selftest ---
+[1] test nulo         «nunca» enciende 0 bombillas
+[2] señal implantada  «en posiciones distintas» se enciende en [(0, 1), (1, 0)]
+[3] invariante        4 posiciones distintas y 0 contradicciones con la tabla de los dieciséis
+
+SELFTEST: las tres pruebas pasan.
+
+########## capítulo 2 — la figura de los dieciséis montajes (nueva) ##########
+fecha: 2026-09-20 13:25
+--- selftest ---
+[1] test nulo         16 montajes distintos de 16
+[2] señal implantada  marcados: ['en la misma posición', 'en posiciones distintas']; inseparables por una raya: ['en la misma posición', 'en posiciones distintas']
+[3] invariante        cada posición encendida en [8, 8, 8, 8] de 16 montajes
+
+SELFTEST: las tres pruebas pasan.
