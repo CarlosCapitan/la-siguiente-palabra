@@ -1,14 +1,23 @@
 de 200 arranques distintos, 177 resolvieron el o exclusivo
 y se repartieron el trabajo de 8 maneras distintas:
 
-                                                        de cada
-lo que mira una de las dos  lo que mira la otra             100
---------------------------  --------------------------  -------
-al menos uno subido         los dos subidos                  21
-salvo solo el de arriba     solo el de abajo                 18
-ninguno subido              no los dos                       14
-solo el de abajo            solo el de arriba                13
-salvo solo el de abajo      solo el de arriba                12
-al menos uno subido         no los dos                        8
-los dos subidos             ninguno subido                    7
-salvo solo el de abajo      salvo solo el de arriba           7
+                                        de cada
+lo que mira una de las dos neuronas         100
+  y lo que mira la otra
+--------------------------------------  -------
+con al menos uno subido                      21
+  y con los dos subidos
+salvo si solo el de arriba está subido       18
+  y solo con el de abajo subido
+con al menos uno bajado                      14
+  y con los dos bajados
+solo con el de abajo subido                  13
+  y solo con el de arriba subido
+salvo si solo el de abajo está subido        12
+  y solo con el de arriba subido
+con al menos uno bajado                       8
+  y con al menos uno subido
+con los dos bajados                           7
+  y con los dos subidos
+salvo si solo el de abajo está subido         7
+  y salvo si solo el de arriba está subido

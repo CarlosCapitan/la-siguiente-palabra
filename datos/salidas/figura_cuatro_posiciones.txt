@@ -1,0 +1,2 @@
+Escrito ../figuras/cuatro_posiciones.png
+«en posiciones distintas»: la luz se enciende en las posiciones [2, 3]

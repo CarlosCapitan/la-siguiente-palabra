@@ -13,26 +13,28 @@ distinguir un 4 de un 9        252    100 %        sí            36
 --- 2. LAS DIECISÉIS MANERAS DE MONTAR LA LÁMPARA ---
 LAS DIECISÉIS MANERAS DE MONTAR LA LÁMPARA DEL PASILLO
 
-el interruptor de abajo   bajado bajado subido subido
-el interruptor de arriba  bajado subido bajado subido
+el interruptor de abajo                 bajado bajado subido subido
+el interruptor de arriba                bajado subido bajado subido
 
-¿cuándo se enciende?      ------ ------ ------ ------
-nunca                       no     no     no     no
-los dos subidos             no     no     no     sí
-solo el de abajo            no     no     sí     no
-el de abajo                 no     no     sí     sí
-solo el de arriba           no     sí     no     no
-el de arriba                no     sí     no     sí
-en posiciones distintas     no     sí     sí     no   <- NO PUEDE
-al menos uno subido         no     sí     sí     sí
-ninguno subido              sí     no     no     no
-en la misma posición        sí     no     no     sí   <- NO PUEDE
-el de arriba no             sí     no     sí     no
-salvo solo el de arriba     sí     no     sí     sí
-el de abajo no              sí     sí     no     no
-salvo solo el de abajo      sí     sí     no     sí
-no los dos                  sí     sí     sí     no
-siempre                     sí     sí     sí     sí
+¿cuándo se enciende?                    ------ ------ ------ ------
+nunca                                     no     no     no     no
+con los dos subidos                       no     no     no     sí
+solo con el de abajo subido               no     no     sí     no
+con el de abajo subido                    no     no     sí     sí
+solo con el de arriba subido              no     sí     no     no
+con el de arriba subido                   no     sí     no     sí
+en posiciones distintas *                 no     sí     sí     no
+con al menos uno subido                   no     sí     sí     sí
+con los dos bajados                       sí     no     no     no
+en la misma posición *                    sí     no     no     sí
+con el de arriba bajado                   sí     no     sí     no
+salvo si solo el de arriba está subido    sí     no     sí     sí
+con el de abajo bajado                    sí     sí     no     no
+salvo si solo el de abajo está subido     sí     sí     no     sí
+con al menos uno bajado                   sí     sí     sí     no
+siempre                                   sí     sí     sí     sí
+
+* con estos dos el perceptrón no puede
 
 resuelve 14 de 16: 12 entrenando y 2 donde
 no hay nada que aprender. Con 2 no puede.
