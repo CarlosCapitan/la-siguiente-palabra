@@ -17,8 +17,8 @@ Uso:
 
 # ======================= CONSTANTES =======================
 
-SALIDA = "maquina_entera.txt"     # la medición
-DESTINO = "maquina_entera"                   # se escribe DESTINO_color.png y DESTINO_gris.png
+SALIDA = "../datos/salidas/maquina_entera.txt"   # la medición
+DESTINO = "../figuras/maquina_entera"                   # se escribe DESTINO_color.png y DESTINO_gris.png
 
 # ==========================================================
 
@@ -54,6 +54,13 @@ def dibujar(d, paleta, ruta):
     L = Lienzo("La máquina entera, de un vistazo",
                "Lo que le pasa a una frase desde que entra hasta que sale la palabra siguiente.\n"
                "Las cifras son las de la máquina que se mide en este capítulo.",
+               # PENDIENTE (21 sep): esta figura no cabe en la página. La caja del libro mide
+               # 7,25 pulgadas de alto y, con su pie, a la imagen le quedan 6,55. Sus cinco
+               # paneles, apretados al mínimo que aguanta su contenido, piden unas 157 unidades
+               # de lienzo y en 6,55 pulgadas caben 147. Con la regla nueva de infografia.py ya
+               # no se dibuja: revienta con el aviso, que es lo que se quiere. Hay que decidir si
+               # se parte en dos figuras o si se le quita un paso. Mientras tanto el libro no la
+               # usa: no está incluida en ningún capítulo.
                paleta, alto=7.9)
     p = paleta
 
