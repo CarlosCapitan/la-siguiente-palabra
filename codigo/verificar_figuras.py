@@ -10,6 +10,13 @@ figura ya pasada. En el manuscrito estaban pegadas; el salto lo ponía la impren
 Y como la paginación cambia cada vez que se toca un párrafo anterior, esto no se puede
 vigilar a ojo: hay que comprobarlo en cada compilación.
 
+Con una excepción, decidida el 21 de septiembre de 2026: una figura que ocupa la página
+entera no deja sitio para ninguna línea detrás, así que su explicación empieza por fuerza en
+la página siguiente. Eso no es el fallo que este verificador persigue —que la figura aparezca
+DESPUÉS de su explicación—, de modo que a esas figuras se les exige la página siguiente en vez
+de la misma. Que una figura ocupe la página entera se comprueba aquí, en el PDF, no se declara
+a mano: se mira si en esa página queda algo más que la figura y su pie.
+
 Uso:
     python verificar_figuras.py ../../libro-ia-libro ../../libro-ia-libro/pdf/main.pdf
     python verificar_figuras.py ../../libro-ia-libro ../../libro-ia-libro/pdf/main.pdf --selftest
@@ -19,8 +26,13 @@ Uso:
 
 ORDEN = "manuscript/Book.txt"
 MANUSCRITO = "manuscript"
-FIGURA = r'^!\[.*?\]\((figuras/[^)]+)\)'
+FIGURA = r'^!\[(.*?)\]\((figuras/[^)]+)\)'
 LARGO_ANCLA = 45          # cuántos caracteres del texto explicativo se buscan en el PDF
+SOBRA_PAGINA_ENTERA = 120 # caracteres que quedan en una página, quitados los del pie de la
+                          # figura, cuando en esa página no hay nada más que la figura: la
+                          # cabecera del capítulo, el «Figura N:» y el folio. Medido sobre el
+                          # libro entero: las páginas que solo llevan figura dejan entre 41 y
+                          # 51 caracteres, y la que menos deja de todas las demás, 288.
 
 # ==========================================================
 
@@ -67,13 +79,25 @@ def figuras_del_manuscrito(raiz):
             m = re.match(FIGURA, l)
             if not m:
                 continue
-            siguiente = next((x for x in lineas[i + 1:] if x.strip()), "")
-            assert siguiente, f"{f}: la figura {m.group(1)} no tiene texto detrás"
-            ancla = re.sub(r"\*\*|\*|`", "", siguiente).strip()
-            salida.append({"fichero": f, "figura": m.group(1),
-                           "ancla": re.sub(r"\s+", " ", ancla)[:LARGO_ANCLA]})
+            # El texto que explica una figura es prosa, no un encabezado. Un encabezado no
+            # explica nada, y además su texto sale también en el índice, así que buscarlo en
+            # el PDF daría con la página del índice y no con la del capítulo.
+            siguiente = next((x for x in lineas[i + 1:]
+                              if x.strip() and not x.lstrip().startswith("#")), "")
+            assert siguiente, f"{f}: la figura {m.group(2)} no tiene texto detrás"
+            limpia = lambda t: re.sub(r"\s+", " ", re.sub(r"\*\*|\*|`", "", t)).strip()
+            salida.append({"fichero": f, "figura": m.group(2),
+                           "pie": limpia(m.group(1)),
+                           "ancla": limpia(siguiente)[:LARGO_ANCLA]})
     assert salida, f"No encontré ninguna figura en el manuscrito de {raiz}"
     return salida
+
+
+def pagina_solo_con_la_figura(texto, pie):
+    """¿En esta página no hay nada más que la figura y su pie? Se le quita al texto de la
+    página lo que ocupa el pie; lo que queda es la cabecera del capítulo y el folio."""
+    pelado = lambda t: re.sub(r"\s", "", t)
+    return len(pelado(texto)) - len(pelado(pie)) < SOBRA_PAGINA_ENTERA
 
 
 def revisar(raiz, pdf, desplazar=0):
@@ -92,9 +116,16 @@ def revisar(raiz, pdf, desplazar=0):
         if pag_txt is None:
             fallos.append(f"{f['figura']}: no encuentro en el PDF el texto que la explica "
                           f"(«{ancla}…»)")
-        elif pag_img is not None and pag_img != pag_txt:
-            fallos.append(f"{f['figura']}: la figura está en la página {pag_img} y el texto "
-                          f"que la explica empieza en la {pag_txt}")
+        elif pag_img is not None:
+            entera = pagina_solo_con_la_figura(paginas[pag_img], f["pie"])
+            esperada = pag_img + 1 if entera else pag_img
+            if pag_txt != esperada and entera:
+                fallos.append(f"{f['figura']}: ocupa la página {pag_img} entera, así que su "
+                              f"explicación tenía que empezar en la {esperada}, y empieza "
+                              f"en la {pag_txt}")
+            elif pag_txt != esperada:
+                fallos.append(f"{f['figura']}: la figura está en la página {pag_img} y el "
+                              f"texto que la explica empieza en la {pag_txt}")
     return filas, fallos
 
 
@@ -107,7 +138,8 @@ def imprimir(filas, fallos):
         for f in fallos:
             print("FALLA:", f)
         return 1
-    print(f"PASA: las {len(filas)} figuras caen en la misma página que su explicación.")
+    print(f"PASA: las {len(filas)} figuras caen en la misma página que su explicación, y las "
+          f"de página entera, justo delante de ella.")
     return 0
 
 

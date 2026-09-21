@@ -12,11 +12,18 @@ Dos paletas con los mismos papeles, para poder decidir con las dos delante:
 
 Uso:
     from infografia import Lienzo, COLOR, GRIS
+    python infografia.py --selftest
 """
 
 # ======================= CONSTANTES =======================
 
-ANCHO_PAGINA = 4.6          # pulgadas útiles en una página de 6 por 9 con sus márgenes
+# La caja de texto del libro, medida en el propio libro.log: \textwidth = 321,60 pt y
+# \textheight = 523,96 pt, que en pulgadas son 4,45 por 7,25. Como libro.tex mete todas las
+# figuras con width=\linewidth, dibujar a 4,45 es dibujar al tamaño real: nada se reescala y un
+# cuerpo de 7,2 puntos en el dibujo sale a 7,2 puntos en el papel.
+ANCHO_PAGINA = 4.45         # pulgadas útiles de ancho
+ALTO_PAGINA = 7.25          # pulgadas útiles de alto
+ALTO_MAXIMO = 6.55          # lo que le queda a la imagen con su pie de tres líneas debajo
 PUNTOS = 300                # puntos por pulgada: impresión, no pantalla
 FUENTE = "Carlito"          # humanista, con acentos y eñes completos
 
@@ -52,6 +59,15 @@ TRAMAS = {
 }
 ALTO_MINIMO_TRAMA = 2.5     # en unidades del lienzo: por debajo de esto, la trama se llena y
                             # hay que volver al gris. Una barra fina no lleva trama.
+# Lo que hace falta para que dos rellenos se distingan en el papel, medido sobre la hoja de
+# prueba a 4,45 pulgadas y 300 ppp. Basta con que se separen por uno cualquiera de los tres: las
+# llenas se distinguen por el tono y las rayadas por el número de saltos, porque entre ellas el
+# tono es casi el mismo (rayas y puntos se llevan ocho milésimas de gris, y sin embargo se ven
+# distintas porque una tiene líneas y la otra motas).
+UMBRAL_TINTA = 0.15         # a partir de aquí un punto cuenta como tinta y no como papel
+SEPARACION_TONO = 0.08      # diferencia de gris medio
+SEPARACION_COBERTURA = 0.05 # diferencia de superficie cubierta
+SEPARACION_SALTOS = 0.80    # diferencia de pasos de blanco a tinta por fila
 
 # ==========================================================
 
@@ -64,7 +80,13 @@ from matplotlib.patches import FancyBboxPatch, Circle, FancyArrow
 class Lienzo:
     """Una página de infografía: título, subtítulo, pasos numerados y pie."""
 
-    def __init__(self, titulo, subtitulo, paleta, alto=7.2, ancho=ANCHO_PAGINA):
+    def __init__(self, titulo, subtitulo, paleta, alto=6.0, ancho=ANCHO_PAGINA):
+        # Una figura más alta que esto no cabe en la página con su pie, y LaTeX la encoge hasta
+        # que quepa: los rótulos se van con ella y dejan de leerse. Que no quepa es un fallo de
+        # la figura, no un detalle de la maquetación, así que revienta aquí.
+        assert alto <= ALTO_MAXIMO, (
+            f"la figura mide {alto} pulgadas de alto y en la página caben {ALTO_MAXIMO}; "
+            f"pártela en dos o quítale cosas")
         self.p = paleta
         plt.rcParams["font.family"] = FUENTE
         plt.rcParams["hatch.linewidth"] = GROSOR_TRAMA
@@ -133,3 +155,106 @@ class Lienzo:
     def guardar(self, ruta):
         self.fig.savefig(ruta, dpi=PUNTOS, facecolor=self.p.papel)
         plt.close(self.fig)
+
+
+# ======================= SELFTEST =======================
+# Esta hoja de estilo no lleva datos, pero sí lleva tres cosas que, si se rompen, rompen en
+# silencio todas las figuras del libro a la vez: el tamaño de la página, el vocabulario de
+# tramas y la escala del lienzo. Por eso tiene selftest.
+
+def _selftest():
+    import numpy as np
+    fallos = []
+
+    # 1. TEST NULO — una figura que no cabe en la página tiene que ser rechazada. Si no lo
+    #    fuera, LaTeX la encogería hasta que quepa y se llevaría los rótulos con ella: la
+    #    figura seguiría saliendo, ilegible, y nadie se enteraría hasta ver el papel.
+    alta = ALTO_MAXIMO + 0.5
+    try:
+        Lienzo("prueba", "", GRIS, alto=alta)
+        revienta = False
+    except AssertionError:
+        revienta = True
+    plt.close("all")
+    print(f"[1] test nulo         con {alta} pulgadas de alto, "
+          f"{'revienta' if revienta else 'NO revienta'}")
+    if not revienta:
+        fallos.append("test nulo: se deja dibujar una figura que no cabe en la página")
+
+    # 2. SEÑAL IMPLANTADA — las seis tramas, dibujadas al alto mínimo que se declara y al tamaño
+    #    real de impresión, salen distinguibles unas de otras. Se miden las tres cosas por las
+    #    que el ojo las separa en el papel: el tono, cuánta superficie cubren y cuántas veces se
+    #    pasa de blanco a tinta a lo largo de una fila. Dos tramas valen si se separan por una
+    #    cualquiera de las tres: el gris medio distingue las llenas, y el número de saltos
+    #    distingue las rayadas, que tienen casi el mismo tono entre ellas.
+    import tempfile, os
+    import numpy as np
+    L = Lienzo("tramas", "", GRIS, alto=2.0)
+    nombres = list(TRAMAS)
+    ancho = 92.0 / len(nombres)
+    for i, n in enumerate(nombres):
+        trama, relleno = TRAMAS[n]
+        L.ficha(4 + i * ancho, 20, "", ancho - 1.0, alto=ALTO_MINIMO_TRAMA * 2,
+                relleno=getattr(L.p, relleno), trama=trama)
+    tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
+    tmp.close()
+    L.guardar(tmp.name)
+    img = 1 - plt.imread(tmp.name)[:, :, :3].mean(axis=2)
+    os.unlink(tmp.name)
+    alto_px, ancho_px = img.shape
+    unidades = 100 * 2.0 / ANCHO_PAGINA
+    firma = {}
+    for i, n in enumerate(nombres):
+        x0 = int((4 + i * ancho + 1.5) / 100 * ancho_px)
+        y = int((1 - 20 / unidades) * alto_px)
+        h = int(ALTO_MINIMO_TRAMA / unidades * alto_px)
+        p = img[y - h:y + h, x0:x0 + 140]
+        hay = p > UMBRAL_TINTA
+        saltos = (np.diff(hay.astype(int), axis=1) == 1).sum() / hay.shape[0]
+        firma[n] = (p.mean(), hay.mean(), saltos)
+    peor, pareja = 9.0, None
+    for i, a in enumerate(nombres):
+        for b in nombres[i + 1:]:
+            d = max(abs(firma[a][0] - firma[b][0]) / SEPARACION_TONO,
+                    abs(firma[a][1] - firma[b][1]) / SEPARACION_COBERTURA,
+                    abs(firma[a][2] - firma[b][2]) / SEPARACION_SALTOS)
+            if d < peor:
+                peor, pareja = d, (a, b)
+    print(f"[2] señal implantada  las {len(nombres)} tramas se separan; la pareja más parecida "
+          f"es {pareja[0]} y {pareja[1]}, con {peor:.2f} veces el mínimo")
+    if peor < 1.0:
+        fallos.append(f"señal implantada: {pareja[0]} y {pareja[1]} no se distinguen "
+                      f"({peor:.2f} veces el mínimo)")
+
+    # 3. INVARIANTE DEL DOMINIO — el lienzo se dibuja al tamaño real de la caja del libro y con
+    #    la unidad cuadrada. Si la unidad dejara de ser cuadrada, todo lo que se dibuja contando
+    #    unidades —las rejillas, las fichas, los huecos— saldría deformado sin previo aviso.
+    L = Lienzo("escala", "", GRIS, alto=3.0)
+    px_x = L.fig.get_size_inches()[0] * PUNTOS
+    unidad_x = px_x / 100
+    unidad_y = (L.fig.get_size_inches()[1] * PUNTOS) / L.alto_u
+    plt.close("all")
+    cuadrada = abs(unidad_x - unidad_y) < 1e-6
+    print(f"[3] invariante        caja de {ANCHO_PAGINA} x {ALTO_PAGINA} pulgadas, "
+          f"{px_x:.0f} px de ancho a {PUNTOS} ppp; unidad cuadrada: "
+          f"{'sí' if cuadrada else 'NO'}")
+    if not cuadrada:
+        fallos.append("invariante: la unidad del lienzo no es cuadrada")
+    if not ALTO_MAXIMO < ALTO_PAGINA:
+        fallos.append("invariante: el alto máximo de una figura no deja sitio para su pie")
+
+    print()
+    if fallos:
+        for f in fallos: print("FALLA:", f)
+        return 1
+    print("SELFTEST: las tres pruebas pasan.")
+    return 0
+
+
+if __name__ == "__main__":
+    import argparse, sys
+    ap = argparse.ArgumentParser(description="la hoja de estilo de las infografías del libro")
+    ap.add_argument("--selftest", action="store_true")
+    if ap.parse_args().selftest:
+        sys.exit(_selftest())
+    print("Esto es una hoja de estilo: no dibuja nada por su cuenta. Usa --selftest.")
