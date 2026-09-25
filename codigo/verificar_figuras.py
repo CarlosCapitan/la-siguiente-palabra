@@ -18,8 +18,8 @@ de la misma. Que una figura ocupe la página entera se comprueba aquí, en el PD
 a mano: se mira si en esa página queda algo más que la figura y su pie.
 
 Uso:
-    python verificar_figuras.py ../../libro-ia-libro ../../libro-ia-libro/pdf/main.pdf
-    python verificar_figuras.py ../../libro-ia-libro ../../libro-ia-libro/pdf/main.pdf --selftest
+    python verificar_figuras.py ../../libro-ia-libro ../../libro-ia-libro/pdf/libro-completo.pdf
+    python verificar_figuras.py ../../libro-ia-libro ../../libro-ia-libro/pdf/libro-completo.pdf --selftest
 """
 
 # ======================= CONSTANTES =======================
