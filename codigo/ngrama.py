@@ -17,6 +17,14 @@ MARCA_INICIO = "*** START OF"      # Gutenberg: recortar cabecera y pie
 MARCA_FIN = "*** END OF"
 
 ALFABETO = "abcdefghijklmnñopqrstuvwxyzáéíóúü ,.;:¿?¡!"
+SIGNOS = ",.;:¿?¡!"                # los signos de puntuación del alfabeto
+
+# Cómo se corta el texto en palabras (decisión de Carlos del 25 de septiembre de 2026, T24).
+# Antes se cortaba solo por los espacios, y como en el texto limpio los signos van casi siempre
+# pegados, «figura», «figura,» y «figura.» contaban como tres palabras distintas: de las 36.231
+# «palabras distintas» que se daban, miles eran la misma palabra con otro signo detrás. Ahora
+# cada signo es un trozo aparte, como una palabra más, y eso es lo que el capítulo dice que hace
+# esta máquina: «para esta máquina los signos de puntuación son palabras como las demás».
 ORDENES_LETRA = [0, 1, 2, 3, 5]    # 0 = azar puro; 5 = cinco letras de contexto
 ORDENES_PALABRA = [1, 2]           # 1 = solo frecuencias; 2 = pares de palabras
 
@@ -64,6 +72,17 @@ def normalizar(texto, alfabeto):
         f"sobran {sorted(set(limpio) - permitido)[:10]}"
     )
     return limpio
+
+
+def trocear(secuencia):
+    """Parte el texto limpio en trozos: cada palabra es un trozo, y cada signo de puntuación,
+    otro. «le dijo: dadme» -> ["le", "dijo", ":", "dadme"]."""
+    return re.findall(r"[^\s" + re.escape(SIGNOS) + r"]+|[" + re.escape(SIGNOS) + r"]", secuencia)
+
+
+def solo_palabras(trozos):
+    """Los trozos que son palabras, sin los signos."""
+    return [t for t in trozos if t not in set(SIGNOS)]
 
 
 def construir(secuencia, orden):
@@ -159,6 +178,15 @@ def selftest(secuencia, palabras, vocabulario):
     #    probabilidades de cada contexto suman uno.
     tabla3 = construir(secuencia[:200_000], 3)
     fuera = set(texto_real) - set(ALFABETO)
+    corte = trocear("le dijo: dadme albricias, buenos señores")
+    esperado = ["le", "dijo", ":", "dadme", "albricias", ",", "buenos", "señores"]
+    mezclados = [t for t in palabras if len(t) > 1 and set(t) & set(SIGNOS)]
+    print(f"[3] invariante, corte  el corte de «le dijo: dadme albricias, …» es el esperado: "
+          f"{corte == esperado}; trozos que mezclan letras y signos: {len(mezclados)}")
+    if corte != esperado:
+        fallos.append(f"invariante: se esperaba el corte {esperado}; salió {corte}")
+    if mezclados:
+        fallos.append(f"invariante: hay trozos con letras y signos juntos: {mezclados[:5]}")
     sumas_mal = [c for c, cnt in list(tabla3.items())[:5000]
                  if abs(sum(n / sum(cnt.values()) for n in cnt.values()) - 1.0) > TOL_SUMA]
     print(f"[3] invariante        letras fuera del alfabeto: {len(fuera)}; contextos mal normalizados: {len(sumas_mal)}")
@@ -183,9 +211,10 @@ def main():
 
     crudo = cargar_corpus(CORPUS)
     secuencia = normalizar(crudo, ALFABETO)
-    palabras = [p for p in secuencia.split() if p]
-    vocabulario = set(palabras)
-    print(f"Corpus: {miles(len(secuencia))} caracteres, {miles(len(palabras))} palabras, "
+    palabras = trocear(secuencia)                      # lo que cuenta la máquina de palabras
+    vocabulario = set(solo_palabras(palabras))          # para reconocer palabras reales
+    print(f"Corpus: {miles(len(secuencia))} caracteres, {miles(len(solo_palabras(palabras)))} "
+          f"palabras y {miles(len(palabras) - len(solo_palabras(palabras)))} signos; "
           f"{miles(len(vocabulario))} palabras distintas.\n")
 
     if args.selftest:

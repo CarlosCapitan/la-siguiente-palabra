@@ -25,6 +25,20 @@ muestra impresa:
       La muestra no se vuelve a generar aquí: se lee de `datos/salidas/ngrama.txt`, que
       es la que está impresa en el libro. Medir sobre otra muestra sería medir otra cosa.
 
+CÓMO SE CUENTAN LAS PALABRAS (T24, decidido por Carlos el 25 de septiembre de 2026). Con el
+mismo corte que `ngrama.trocear`: cada palabra es un trozo y cada signo de puntuación, otro.
+Antes se cortaba por los espacios, y «figura», «figura,» y «figura.» eran tres palabras. Las
+casillas se cuentan sobre los trozos, porque es lo que cuenta la máquina; las palabras que se le
+dicen al lector se cuentan sin los signos.
+
+Y dos cosas más, que pidió el capítulo 1 al reescribirse (T3 y T5):
+
+  (h) las frases del ejemplo del hidalgo y del caballero de la triste figura, de los cuatro
+      verbos de decir y de los nombres de Rocinante, contadas sobre los mismos trozos;
+  (i) cuántos libros hay en el mundo según Google (2010) frente a los Quijotes que harían
+      falta para la tabla de tres palabras. Esa cifra no se mide aquí: es de fuera, y va como
+      constante con su fuente.
+
 POR QUÉ ESTA MEDICIÓN NO DEPENDE DE LA MÁQUINA. Se cuentan letras y palabras de un
 fichero de texto. El resultado es el mismo en cualquier ordenador y en cualquier día;
 lo único que lo cambiaría es cambiar el corpus.
@@ -41,17 +55,34 @@ MUESTRA = "../datos/salidas/ngrama.txt"
 ROTULO_MUESTRA = "--- LETRAS, 1 letra de contexto ---"
 
 PAR_VIGILADO = "qu"          # el par de letras que el capítulo dice que solo admite dos
-SIGNOS = ",.;:¿?¡!"          # lo que se quita del borde de una palabra antes de buscarla
+
+# (h) Las frases que se cuentan, en el orden en que salen en el capítulo. Todas en minúsculas y
+#     sin tildes de mayúscula, porque así queda el texto limpio.
+CONTEXTO_CORTO = "la triste"                       # lo que mira la perilla en dos
+FRASES_HIDALGO = ["hidalgo de la triste",          # lo que mira la perilla en cuatro
+                  "hidalgo",
+                  "caballero de la triste figura"]
+FRASES_DECIR = ["dijo don quijote", "respondió don quijote",
+                "replicó don quijote", "preguntó don quijote"]
+NOMBRES_ROCINANTE = ["rocinante", "rocín", "caballo", "corcel"]
+
+# (i) Recuento de libros publicados de Google Books. Leonid Taycher, «Books of the world, stand up
+#     and be counted! All 129,864,880 of you», Inside Google Books, 5 de agosto de 2010,
+#     http://booksearch.blogspot.com/2010/08/books-of-world-stand-up-and-be-counted.html
+#     Cuenta EDICIONES, no obras («we count hardcover and paperback books produced from the same
+#     text twice»). Comprobado contra la entrada original el 25 de septiembre de 2026.
+LIBROS_GOOGLE_2010 = 129_864_880
 
 # ==========================================================
 
 import sys
 from collections import Counter
+import platform
 from datetime import datetime, timezone
 from pathlib import Path
 
 from formato import ANCHO_CAJA, coma, comprobar_ancho, miles, pct
-from ngrama import ALFABETO, cargar_corpus, normalizar
+from ngrama import ALFABETO, SIGNOS, cargar_corpus, normalizar, solo_palabras, trocear
 
 AQUI = Path(__file__).resolve().parent
 
@@ -82,6 +113,20 @@ def casillas(vocabulario, palabras_de_contexto):
     palabra hay tantas casillas como palabras distintas, y mirando dos hay ese número
     al cuadrado."""
     return vocabulario ** palabras_de_contexto
+
+
+def veces(trozos, frase):
+    """Cuántas veces aparece la frase, trozo a trozo, en la lista de trozos."""
+    f = frase.split()
+    n = len(f)
+    return sum(1 for i in range(len(trozos) - n + 1) if trozos[i:i + n] == f)
+
+
+def lo_que_sigue(trozos, frase):
+    """Qué palabra viene detrás de cada aparición de la frase, y cuántas veces."""
+    f = frase.split()
+    n = len(f)
+    return Counter(trozos[i + n] for i in range(len(trozos) - n) if trozos[i:i + n] == f)
 
 
 def de_una_sola_vez(cuenta):
@@ -127,6 +172,11 @@ def selftest(secuencia=None, palabras=None):
           f"real={pct(hapax_real, 0)}")
     assert len(tras_barajado) > 2 * len(tras_real), (len(tras_barajado), len(tras_real))
     assert hapax_barajado > hapax_real, (hapax_barajado, hapax_real)
+    dijo_barajado = veces(baraja_palabras, FRASES_DECIR[0])
+    dijo_real = veces(palabras[:200_000], FRASES_DECIR[0])
+    print(f"                      «{FRASES_DECIR[0]}» en 200.000 trozos: "
+          f"barajado={dijo_barajado}  real={dijo_real}")
+    assert dijo_real > 10 * max(1, dijo_barajado), (dijo_real, dijo_barajado)
 
     # [2] SEÑAL IMPLANTADA — un texto diminuto cuyas respuestas se cuentan con el dedo.
     #     «a b a b a c»: parejas ab, ba, ab, ba, ac -> 3 distintas, de ellas 1 una sola
@@ -141,6 +191,8 @@ def selftest(secuencia=None, palabras=None):
     assert casillas(len(set(mini)), 3) == 27, casillas(len(set(mini)), 3)
     t = tras("quxquxqux", PAR_VIGILADO)
     assert t == Counter({"x": 3}), t
+    assert veces(mini, "a b") == 2 and veces(mini, "a b a") == 2 and veces(mini, "c a") == 0
+    assert lo_que_sigue(mini, "b") == Counter({"a": 2}), lo_que_sigue(mini, "b")
     trozos, reales = palabras_reales("hola, xqz hola", {"hola"})
     assert (len(trozos), len(reales)) == (3, 2), (trozos, reales)
     print("[2] señal implantada  texto de seis palabras: 3 parejas, 1 de una sola vez, "
@@ -156,7 +208,10 @@ def selftest(secuencia=None, palabras=None):
     assert de_una_sola_vez(p) <= len(p)
     assert set(t) <= set(ALFABETO), sorted(set(t) - set(ALFABETO))
     assert casillas(vocabulario, 3) == casillas(vocabulario, 2) * vocabulario
-    print(f"[3] invariante        parejas contadas = palabras menos una ({miles(sum(p.values()))}); "
+    for frase in FRASES_DECIR:                          # una frase no sale más que su final
+        assert veces(palabras, frase) <= veces(palabras, frase.split(" ", 1)[1]), frase
+    assert sum(lo_que_sigue(palabras, CONTEXTO_CORTO).values()) <= veces(palabras, CONTEXTO_CORTO)
+    print(f"[3] invariante        parejas contadas = trozos menos uno ({miles(sum(p.values()))}); "
           f"parejas vistas <= casillas; todo lo que va tras «{PAR_VIGILADO}» está en el alfabeto")
 
     print("\nSELFTEST: las tres pruebas pasan.\n")
@@ -167,7 +222,9 @@ def selftest(secuencia=None, palabras=None):
 def main():
     crudo = cargar_corpus(str(AQUI / CORPUS))
     secuencia = normalizar(crudo, ALFABETO)
-    palabras = [p for p in secuencia.split() if p]
+    trozos_libro = trocear(secuencia)          # lo que cuenta la máquina: palabras y signos
+    palabras = trozos_libro                     # las casillas se cuentan sobre esto
+    solo = solo_palabras(trozos_libro)          # lo que se le dice al lector: palabras
     vocabulario = sorted(set(palabras))
 
     selftest(secuencia, palabras)
@@ -180,20 +237,28 @@ def main():
     posibles = casillas(len(vocabulario), 2)
     una_vez = de_una_sola_vez(p)
     muestra = leer_muestra(AQUI / MUESTRA, ROTULO_MUESTRA)
-    trozos, reales = palabras_reales(muestra, set(vocabulario))
+    trozos, reales = palabras_reales(muestra, set(solo))
+    tres = casillas(len(vocabulario), 3)
+    quijotes_tres = round(tres / len(palabras))
+    sigue_corto = lo_que_sigue(palabras, CONTEXTO_CORTO)
 
     lineas = [
         f"########## capítulo 1: lo que no cabe en la tabla ##########",
         f"fecha: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M')} UTC",
-        "máquina: contenedor Linux en la nube (auditoría). La medición no",
+        f"máquina: {platform.system()} {platform.machine()}. La medición no",
         "depende de la máquina: cuenta letras y palabras de un fichero",
-        "corpus: datos/quijote.txt, limpiado como lo limpia ngrama.py",
+        "corpus: datos/quijote.txt, limpiado y troceado como en ngrama.py:",
+        "cada palabra es un trozo, y cada signo de puntuación, otro",
         "",
         "EL TEXTO QUE SE CUENTA",
         "",
         f"  letras (incluidos los espacios)        {miles(len(secuencia)):>14}",
-        f"  palabras                               {miles(len(palabras)):>14}",
-        f"  palabras distintas                     {miles(len(vocabulario)):>14}",
+        f"  palabras                               {miles(len(solo)):>14}",
+        f"  signos de puntuación                   {miles(len(palabras) - len(solo)):>14}",
+        f"  trozos que cuenta la máquina           {miles(len(palabras)):>14}",
+        "",
+        f"  palabras distintas                     {miles(len(set(solo))):>14}",
+        f"  trozos distintos (palabras y {len(SIGNOS)} signos) {miles(len(vocabulario)):>13}",
         "",
         f"QUÉ LETRA VIENE DETRÁS DE «{PAR_VIGILADO.upper()}»",
         f"las {miles(total_par)} veces que aparece «{PAR_VIGILADO}» en el Quijote",
@@ -212,10 +277,10 @@ def main():
         f"{len(ALFABETO)} que",
         "  admite el programa (letras, espacio y signos de puntuación)",
         "",
-        "LA TABLA DE PAREJAS DE PALABRAS",
-        "una casilla por cada pareja de palabras que podría existir",
+        "LA TABLA DE PAREJAS DE TROZOS",
+        "una casilla por cada pareja de trozos que podría existir",
         "",
-        f"  casillas posibles (palabras distintas al cuadrado)"
+        f"  casillas posibles (trozos distintos al cuadrado)  "
         f"{miles(posibles):>16}",
         f"  casillas con algo dentro (parejas vistas)        "
         f"{miles(len(p)):>16}",
@@ -225,7 +290,7 @@ def main():
         f"  una casilla con algo dentro de cada            "
         f"{miles(round(posibles / len(p))):>18}",
         "",
-        f"  parejas que hay dentro del libro (palabras menos una)"
+        f"  parejas que hay dentro del libro (trozos menos uno)  "
         f"{miles(len(palabras) - 1):>12}",
         f"  de cada cien de esas parejas, cuántas son distintas"
         f"{pct(len(p) / (len(palabras) - 1), 1):>14}",
@@ -242,10 +307,31 @@ def main():
         "SI SE MIRARAN TRES PALABRAS HACIA ATRÁS",
         "",
         f"  casillas posibles                       "
-        f"{miles(casillas(len(vocabulario), 3)):>16}",
+        f"{miles(tres):>16}",
         "  Quijotes de texto que harían falta para poner una sola",
         "  palabra en cada casilla                 "
-        f"{miles(round(casillas(len(vocabulario), 3) / len(palabras))):>16}",
+        f"{miles(quijotes_tres):>16}",
+        "",
+        "  libros publicados en el mundo según Google (2010,",
+        f"  ediciones, no obras; constante, no medido aquí)  {miles(LIBROS_GOOGLE_2010):>14}",
+        f"  libros por cada Quijote que haría falta         "
+        f"{coma(LIBROS_GOOGLE_2010 / quijotes_tres, 2):>15}",
+        "",
+        "LO QUE LA MÁQUINA NO PUEDE JUNTAR",
+        "cuántas veces aparece cada frase en el Quijote, trozo a trozo",
+        "",
+        f"  «{CONTEXTO_CORTO}»{miles(veces(palabras, CONTEXTO_CORTO)):>{58 - len(CONTEXTO_CORTO)}}",
+        "  y lo que viene detrás:",
+    ]
+    for trozo, n in sigue_corto.most_common():
+        lineas.append(f"      «{trozo}»{miles(n):>{54 - len(trozo)}}")
+    lineas.append("")
+    for frase in FRASES_HIDALGO + [""] + FRASES_DECIR + [""] + NOMBRES_ROCINANTE:
+        if not frase:
+            lineas.append("")
+            continue
+        lineas.append(f"  «{frase}»{miles(veces(palabras, frase)):>{58 - len(frase)}}")
+    lineas += [
         "",
         "PALABRAS REALES EN LA MUESTRA DE UNA LETRA DE CONTEXTO",
         "la muestra impresa en el libro, leída de datos/salidas/ngrama.txt",

@@ -1,21 +1,27 @@
 --- selftest ---
-[1] test nulo         letras distintas tras «qu»: barajado=29  real=5; parejas de una sola vez: barajado=89 % real=80 %
+[1] test nulo         letras distintas tras «qu»: barajado=29  real=5; parejas de una sola vez: barajado=84 % real=74 %
+                      «dijo don quijote» en 200.000 trozos: barajado=1  real=122
 [2] señal implantada  texto de seis palabras: 3 parejas, 1 de una sola vez, 9 casillas mirando dos palabras; «quxquxqux»: una letra detrás, 3 veces
-[3] invariante        parejas contadas = palabras menos una (385.452); parejas vistas <= casillas; todo lo que va tras «qu» está en el alfabeto
+[3] invariante        parejas contadas = trozos menos uno (442.271); parejas vistas <= casillas; todo lo que va tras «qu» está en el alfabeto
 
 SELFTEST: las tres pruebas pasan.
 
 ########## capítulo 1: lo que no cabe en la tabla ##########
-fecha: 2026-09-17 21:20 UTC
-máquina: contenedor Linux en la nube (auditoría). La medición no
+fecha: 2026-09-25 20:18 UTC
+máquina: Darwin arm64. La medición no
 depende de la máquina: cuenta letras y palabras de un fichero
-corpus: datos/quijote.txt, limpiado como lo limpia ngrama.py
+corpus: datos/quijote.txt, limpiado y troceado como en ngrama.py:
+cada palabra es un trozo, y cada signo de puntuación, otro
 
 EL TEXTO QUE SE CUENTA
 
   letras (incluidos los espacios)             2.095.402
-  palabras                                      385.453
-  palabras distintas                             36.231
+  palabras                                      383.637
+  signos de puntuación                           58.635
+  trozos que cuenta la máquina                  442.272
+
+  palabras distintas                             22.944
+  trozos distintos (palabras y 8 signos)        22.952
 
 QUÉ LETRA VIENE DETRÁS DE «QU»
 las 32.709 veces que aparece «qu» en el Quijote
@@ -32,36 +38,64 @@ las 32.709 veces que aparece «qu» en el Quijote
   símbolos distintos detrás de «qu»: 6, de los 42 que
   admite el programa (letras, espacio y signos de puntuación)
 
-LA TABLA DE PAREJAS DE PALABRAS
-una casilla por cada pareja de palabras que podría existir
+LA TABLA DE PAREJAS DE TROZOS
+una casilla por cada pareja de trozos que podría existir
 
-  casillas posibles (palabras distintas al cuadrado)   1.312.685.361
-  casillas con algo dentro (parejas vistas)                 178.915
-  casillas con algo dentro, por cada cien posibles         0,0136 %
+  casillas posibles (trozos distintos al cuadrado)       526.794.304
+  casillas con algo dentro (parejas vistas)                 145.986
+  casillas con algo dentro, por cada cien posibles         0,0277 %
 
-  una casilla con algo dentro de cada                         7.337
+  una casilla con algo dentro de cada                         3.609
 
-  parejas que hay dentro del libro (palabras menos una)     385.452
-  de cada cien de esas parejas, cuántas son distintas        46,4 %
+  parejas que hay dentro del libro (trozos menos uno)       442.271
+  de cada cien de esas parejas, cuántas son distintas        33,0 %
 
-  parejas vistas una sola vez en todo el libro              140.901
-  de cada cien parejas vistas, las de una sola vez           78,8 %
+  parejas vistas una sola vez en todo el libro              104.231
+  de cada cien parejas vistas, las de una sola vez           71,4 %
 
   Quijotes de texto que harían falta para poner una sola
-  palabra en cada casilla                                    3.406
+  palabra en cada casilla                                    1.191
 
 SI SE MIRARAN TRES PALABRAS HACIA ATRÁS
 
-  casillas posibles                       47.559.903.314.391
+  casillas posibles                       12.090.982.865.408
   Quijotes de texto que harían falta para poner una sola
-  palabra en cada casilla                      123.387.036
+  palabra en cada casilla                       27.338.341
+
+  libros publicados en el mundo según Google (2010,
+  ediciones, no obras; constante, no medido aquí)     129.864.880
+  libros por cada Quijote que haría falta                    4,75
+
+LO QUE LA MÁQUINA NO PUEDE JUNTAR
+cuántas veces aparece cada frase en el Quijote, trozo a trozo
+
+  «la triste»                                               48
+  y lo que viene detrás:
+      «figura»                                              45
+      «pintura»                                              1
+      «,»                                                    1
+      «la»                                                   1
+
+  «hidalgo de la triste»                                     0
+  «hidalgo»                                                 76
+  «caballero de la triste figura»                           34
+
+  «dijo don quijote»                                       278
+  «respondió don quijote»                                  254
+  «replicó don quijote»                                     70
+  «preguntó don quijote»                                    25
+
+  «rocinante»                                              207
+  «rocín»                                                   16
+  «caballo»                                                198
+  «corcel»                                                   0
 
 PALABRAS REALES EN LA MUESTRA DE UNA LETRA DE CONTEXTO
 la muestra impresa en el libro, leída de datos/salidas/ngrama.txt
 
   trozos entre espacios                                         40
-  de ellos, palabras que están en el Quijote                    10
-  de cada cien trozos, palabras del Quijote                 25,0 %
+  de ellos, palabras que están en el Quijote                    12
+  de cada cien trozos, palabras del Quijote                 30,0 %
 
   las palabras del Quijote que salieron, en orden:
-    «ya» «y» «ce» «de» «e» «de» «y» «y» «cue» «a»
+    «jo» «ya» «y» «ce» «de» «e» «de» «y» «y» «cue» «a» «l»
