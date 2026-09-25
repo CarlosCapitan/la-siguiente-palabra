@@ -3,8 +3,10 @@
 Capítulo 1 — la tabla de parejas de palabras, dibujada a escala de verdad.
 
 El capítulo dice que la tabla está casi vacía y da el número: una casilla con algo dentro de cada
-7.337. Un número así se lee y se pasa de largo. Esta figura lo enseña: dibuja las 7.337 casillas,
-una a una, y ennegrece la única que tiene algo dentro. La lupa de abajo está porque a tamaño de
+tantas (3.609 desde el 25 de septiembre de 2026, cuando los signos pasaron a contarse aparte, T24;
+antes eran 7.337). Un número así se lee y se pasa de largo. Esta figura lo enseña: dibuja esas
+casillas, una a una, y ennegrece la única que tiene algo dentro. El número, el título y la rejilla
+salen de la salida: no hay ninguno escrito aquí. La lupa de abajo está porque a tamaño de
 impresión cada casilla mide un milímetro escaso, y el lector tiene que poder ver que son casillas
 y no una trama gris.
 
@@ -22,10 +24,11 @@ Uso:
 SALIDA = "../datos/salidas/casillas_vacias.txt"
 DESTINO = "../figuras/casillas_vacias.png"
 
-COLUMNAS = 96               # casillas por fila; 96 x 76 + 41 = 7.337 exactas, y a 4,45 pulgadas
-                            # de ancho cada una sale de un milímetro escaso, que es lo mínimo
-                            # que aguanta la impresión
-FILA_LLENA, COLUMNA_LLENA = 58, 14      # dónde va la única casilla con algo dentro
+COLUMNAS = 67               # casillas por fila; con 3.609 salen 67 x 53 + 58, que ocupa casi el
+                            # mismo cuadrado que ocupaban las 7.337 con 96 columnas; cada casilla
+                            # sale de milímetro y medio en el papel
+FILA_LLENA, COLUMNA_LLENA = 40, 14      # dónde va la única casilla con algo dentro; da igual el
+                                        # sitio, y la rejilla comprueba que caiga dentro
 LADO_LUPA = 5               # cuántas casillas de ancho enseña la lupa
 
 # ==========================================================
@@ -47,12 +50,13 @@ def buscar(texto, patron, que):
 
 def leer(ruta):
     t = open(ruta, encoding="utf-8").read()
-    corte = t.find("LA TABLA DE PAREJAS DE PALABRAS")
+    corte = t.find("LA TABLA DE PAREJAS DE TROZOS")
     assert corte > 0, "no encuentro la sección de la tabla de parejas en la salida"
     s = t[corte:]
     return {
-        "distintas":   buscar(t, r"palabras distintas\s+([\d.]+)", "las palabras distintas"),
-        "posibles":    buscar(s, r"casillas posibles \(palabras distintas al cuadrado\)\s+([\d.]+)",
+        "distintas":   buscar(t, r"trozos distintos \(palabras y \d+ signos\)\s+([\d.]+)",
+                              "los trozos distintos"),
+        "posibles":    buscar(s, r"casillas posibles \(trozos distintos al cuadrado\)\s+([\d.]+)",
                               "las casillas posibles"),
         "ocupadas":    buscar(s, r"casillas con algo dentro \(parejas vistas\)\s+([\d.]+)",
                               "las casillas ocupadas"),
@@ -69,9 +73,9 @@ def dibujar(d, paleta, ruta):
     total = numero(d["una_de_cada"])
     filas = -(-total // COLUMNAS)
 
-    L = Lienzo("Una casilla de cada 7.337",
+    L = Lienzo(f"Una casilla de cada {d['una_de_cada']}",
                "Una casilla por cada pareja de palabras que el Quijote podría llegar a decir:\n"
-               f"{d['distintas']} palabras distintas dan {d['posibles']} casillas. Esto es\n"
+               f"{d['distintas']} palabras y signos distintos dan {d['posibles']} casillas. Esto es\n"
                "lo que hay escrito en ellas después de leer el libro entero.",
                paleta, alto=6.50)
 
@@ -81,7 +85,7 @@ def dibujar(d, paleta, ruta):
     L.texto(4, y - 3.4, "que tengan algo dentro. Solo una lo tiene, y es la negra.", tam=7.4,
             color=p.suave)
 
-    # --- las 7.337 casillas, dibujadas de una en una -----------------------------------------
+    # --- las casillas, dibujadas de una en una -----------------------------------------
     x0, y_tope, ancho = 4.0, y - 7.6, 92.0
     paso = ancho / COLUMNAS
     lado = paso * 0.84
@@ -106,7 +110,7 @@ def dibujar(d, paleta, ruta):
 
     # --- la lupa: las mismas casillas de cerca -----------------------------------------------
     # A tamaño de impresión cada casilla mide un milímetro escaso. Sin esto, el lector ve una
-    # trama gris y se cree que el cuadrado grande es un dibujo, no 7.337 casillas.
+    # trama gris y se cree que el cuadrado grande es un dibujo, no miles de casillas.
     lado_lupa = 4.4
     x_lupa, y_lupa = 4.0, y_rejilla - 6.0
     centro = LADO_LUPA // 2
@@ -145,7 +149,7 @@ def selftest():
     #    casillas con el mismo rótulo puesto.
     import tempfile, os
     tmp = tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8")
-    tmp.write(crudo[:crudo.find("LA TABLA DE PAREJAS DE PALABRAS")]); tmp.close()
+    tmp.write(crudo[:crudo.find("LA TABLA DE PAREJAS DE TROZOS")]); tmp.close()
     try:
         leer(tmp.name); revienta = False
     except AssertionError:

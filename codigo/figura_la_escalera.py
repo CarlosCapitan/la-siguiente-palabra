@@ -35,10 +35,10 @@ from infografia import Lienzo, GRIS, COLOR
 
 def leer(ruta):
     t = open(ruta, encoding="utf-8").read()
-    m = re.match(r"Corpus: ([\d.]+) caracteres, ([\d.]+) palabras, ([\d.]+) palabras distintas",
+    m = re.match(r"Corpus: ([\d.]+) caracteres, ([\d.]+) palabras y ([\d.]+) signos; ([\d.]+) palabras distintas",
                  t)
     assert m, "no encuentro la línea del corpus en la salida"
-    d = {"caracteres": m.group(1), "palabras": m.group(2), "distintas": m.group(3), "muestras": {}}
+    d = {"caracteres": m.group(1), "palabras": m.group(2), "distintas": m.group(4), "muestras": {}}
     for rotulo, _ in PELDANOS:
         m = re.search(r"--- LETRAS, " + re.escape(rotulo) + r" ---\n(.+)", t)
         assert m, f"no encuentro la muestra «{rotulo}» en la salida"
@@ -77,7 +77,7 @@ def selftest():
     #    escalera con menos escalones y sin avisar.
     import tempfile, os
     tmp = tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8")
-    tmp.write("Corpus: 1 caracteres, 1 palabras, 1 palabras distintas.\n"); tmp.close()
+    tmp.write("Corpus: 1 caracteres, 1 palabras y 1 signos; 1 palabras distintas.\n"); tmp.close()
     try:
         leer(tmp.name); revienta = False
     except AssertionError:

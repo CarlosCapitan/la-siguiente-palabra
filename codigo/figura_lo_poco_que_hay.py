@@ -58,10 +58,14 @@ def leer(ruta):
                              "los Quijotes de dos palabras"),
         "quijotes3":  buscar(tres, r"palabra en cada casilla\s+([\d.]+)",
                              "los Quijotes de tres palabras"),
+        # Cuánto más texto cuesta una palabra más: exactamente el número de trozos distintos.
+        # Se lee de la salida; dividir los dos Quijotes, que van redondeados, daba 22.954 en vez
+        # de 22.952 (y antes 36.226 en vez de 36.231). Corregido el 25 de septiembre de 2026.
+        "veces_mas":  buscar(t, r"trozos distintos \(palabras y \d+ signos\)\s+([\d.]+)",
+                             "los trozos distintos"),
     }
     d["repetidas"] = numero(d["ocupadas"]) - numero(d["una_vez"])
     d["pc_repetidas"] = 100 * d["repetidas"] / numero(d["ocupadas"])
-    d["veces_mas"] = numero(d["quijotes3"]) / numero(d["quijotes2"])
     return d
 
 
@@ -105,12 +109,12 @@ def dibujar(d, paleta, ruta):
     L.ficha(x, y - 17.0, f"mirando 3 palabras atrás:  {d['quijotes3']} Quijotes", w, alto=5.6,
             relleno=p.acento, tinta="white", negrita=True, tam=8.0)
     L.texto(x + w / 2, y - 23.4,
-            f"una palabra más de memoria cuesta {miles(round(d['veces_mas']))} veces más texto",
+            f"una palabra más de memoria cuesta {d['veces_mas']} veces más texto",
             tam=7.4, ha="center", color=p.suave)
 
-    L.pie("Los números salen de datos/salidas/casillas_vacias.txt, medidos sobre el Quijote. Los\n"
-          f"dos calculados aquí: {miles(d['repetidas'])} = {d['ocupadas']} − {d['una_vez']}, "
-          f"y {miles(round(d['veces_mas']))} = {d['quijotes3']} / {d['quijotes2']}.")
+    L.pie("Los números salen de datos/salidas/casillas_vacias.txt, medidos sobre el Quijote. El\n"
+          f"calculado aquí: {miles(d['repetidas'])} = {d['ocupadas']} − {d['una_vez']}. Las "
+          f"{d['veces_mas']} veces son los trozos distintos del libro.")
     L.guardar(ruta)
     return ruta
 
@@ -136,7 +140,8 @@ def selftest():
         fallos.append("test nulo: leer() no revienta sin la sección de tres palabras")
 
     # 2. SEÑAL IMPLANTADA — cada número leído está, escrito igual, en la salida.
-    leidos = [d[k] for k in ("ocupadas", "una_vez", "pc_una_vez", "quijotes2", "quijotes3")]
+    leidos = [d[k] for k in ("ocupadas", "una_vez", "pc_una_vez", "quijotes2", "quijotes3",
+                             "veces_mas")]
     fuera = [v for v in leidos if v not in crudo]
     print(f"[2] señal implantada  {len(leidos) - len(fuera)} de {len(leidos)} números leídos "
           f"aparecen literales en la salida")
@@ -149,6 +154,10 @@ def selftest():
     suma = d["repetidas"] + numero(d["una_vez"]) == numero(d["ocupadas"])
     cien = abs(numero(d["pc_una_vez"]) + d["pc_repetidas"] - 100) < 0.1
     crece = numero(d["quijotes3"]) > numero(d["quijotes2"])
+    # y el cociente de los dos Quijotes, que van redondeados, cae a menos de uno del factor exacto
+    cerca = abs(numero(d["quijotes3"]) / numero(d["quijotes2"]) - numero(d["veces_mas"])) \
+        < numero(d["veces_mas"]) / numero(d["quijotes2"])
+    crece = crece and cerca
     print(f"[3] invariante        {miles(d['repetidas'])} + {d['una_vez']} = {d['ocupadas']}: "
           f"{'sí' if suma else 'NO'}; los dos porcentajes suman cien: {'sí' if cien else 'NO'}; "
           f"tres palabras cuestan más que dos: {'sí' if crece else 'NO'}")

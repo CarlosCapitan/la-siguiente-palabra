@@ -153,7 +153,14 @@ class Lienzo:
                      linespacing=1.4)
 
     def guardar(self, ruta):
-        self.fig.savefig(ruta, dpi=PUNTOS, facecolor=self.p.papel)
+        # Los selftests dibujan la figura entera para que salten sus asserts, pero no la guardan:
+        # pasan "/dev/null". Sin extensión, matplotlib le añade «.png» y escribe /dev/null.png,
+        # que solo funciona siendo root. Se dibuja en memoria (25 de septiembre de 2026).
+        if ruta == "/dev/null":
+            import io
+            self.fig.savefig(io.BytesIO(), format="png", dpi=PUNTOS, facecolor=self.p.papel)
+        else:
+            self.fig.savefig(ruta, dpi=PUNTOS, facecolor=self.p.papel)
         plt.close(self.fig)
 
 
