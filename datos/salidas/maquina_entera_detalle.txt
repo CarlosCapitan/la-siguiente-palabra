@@ -1,0 +1,84 @@
+máquina: x86_64, Linux 6.18.44-fc-v37, procesador
+modelo: Qwen/Qwen2.5-0.5B en float32
+torch 2.14.0+cpu   transformers 5.17.0
+fecha: 2026-09-25
+
+--- 1. QUÉ SE PARTE Y QUÉ NO ---
+palabra                 trozos   cómo se parte
+de                         1   _de
+casa                       1   _casa
+agua                       1   _agua
+perro                      2   _per|ro
+gato                       2   _g|ato
+caballo                    2   _cab|allo
+ventana                    1   _ventana
+esternocleidomastoideo     8   _est|ern|oc|le|id|om|asto|ideo
+
+castellano    trozos     inglés    trozos
+murciélago         4     bat            1
+caballo            2     horse          1
+gato               2     cat            1
+ventana            1     window         1
+
+trozos distintos en el repertorio: 151.665
+
+--- 2. DÓNDE ESTÁ PARÍS ---
+«París» son 2 trozos: _Par | ís
+
+«La capital de Francia es»
+     _Par    0,0544 %   puesto 123 de 151.936
+       ís   97,8717 %   puesto 1 de 151.936
+   «París» entera: 0,0533 %
+   «Paris» (sin tilde, un trozo): 0,0453 %, puesto 147
+
+«La capital de Francia es la ciudad de»
+     _Par   15,5138 %   puesto 1 de 151.936
+       ís   96,1958 %   puesto 1 de 151.936
+   «París» entera: 14,9236 %
+   «Paris» (sin tilde, un trozo): 11,8462 %, puesto 2
+
+--- 3. LAS TRES PRIMERAS CANDIDATAS DE CADA PASO ---
+se elige siempre la 1.ª; las otras dos son las que perdieron
+
+paso         1.ª opción         2.ª opción         3.ª opción
+   1         _la 17,5 %        _una 12,8 %         _un 11,5 %
+   2     _ciudad 30,9 %    _capital 23,9 %       _sede 10,0 %
+   3        _más 25,4 %         _de 13,2 %    _capital  6,9 %
+   4     _grande 65,8 %       _pobl  6,7 % _importante  3,7 %
+   5         _de 41,8 %        _del 33,4 %          _y 13,1 %
+   6      _Franc 56,7 %     _Europa 24,0 %         _la  6,4 %
+   7          ia 99,9 %          ía  0,0 %          és  0,0 %
+   8           , 40,2 %          _y 21,0 %           . 21,0 %
+
+porcentajes con una cifra decimal: 0,0 % es menos de 0,05 %
+
+texto al acabar:
+   La capital de Francia es la ciudad más grande de Francia,
+
+--- 4. PARA QUÉ SIRVE MIRAR: «BANCO» EN CUATRO FRASES ---
+A: «Cansado de caminar por el parque, me senté en el banco»
+   (asiento)
+B: «Cansado de pagar tanto de hipoteca, me quejé en el banco»
+   (dinero; misma forma que A)
+C: «Para descansar un rato, fui a sentarme en el banco»
+   (asiento)
+D: «Para pedir la hipoteca, fui a hablar con el banco»
+   (dinero; misma forma que C)
+
+parecido de la lista de «banco» entre dos frases
+(1 = idéntica; es la misma medida del capítulo 5)
+
+                       mismo sentido           misma forma
+                      distinta forma      distinto sentido
+                  A con C    B con D    A con B    C con D
+----------------------------------------------------------
+entrada             1,000      1,000      1,000      1,000
+tras capa 1         0,998      0,996      0,999      0,995
+tras capa 2         0,995      0,984      0,991      0,987
+tras capa 4         0,990      0,970      0,980      0,959
+tras capa 8         0,983      0,949      0,737      0,707
+tras capa 12        0,976      0,941      0,727      0,736
+tras capa 16        0,971      0,948      0,760      0,783
+tras capa 20        0,981      0,934      0,766      0,806
+tras capa 23        0,986      0,940      0,796      0,805
+tras capa 24        0,988      0,956      0,863      0,860
