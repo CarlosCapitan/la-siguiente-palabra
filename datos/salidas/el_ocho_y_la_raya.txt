@@ -1,0 +1,45 @@
+--- selftest ---
+[1] test nulo         respuestas barajadas: raya en 0 de 5
+[2] señal implantada  raya fabricada: encontrada=True; con un dibujo al revés: False
+[3] invariante        dígitos donde raya y quietud no coinciden: ninguno
+
+SELFTEST: las tres pruebas pasan.
+
+########## capítulo 2: ¿existe la raya del ocho? ##########
+máquina: Linux aarch64. Medido el 2026-09-26.
+La respuesta no depende de la máquina: es una cuenta exacta.
+Dibujos: los 1.257 con los que aprende el comité del capítulo 2.
+
+¿EXISTE UNA RAYA QUE DEJE CADA DÍGITO A UN LADO Y LOS DEMÁS AL OTRO?
+
+  la pregunta       ¿existe la raya?     ¿se queda quieto?
+  -----------       ----------------     -----------------
+  ¿es un 0?                       sí                    sí
+  ¿es un 1?                       sí                    sí
+  ¿es un 2?                       sí                    sí
+  ¿es un 3?                       sí                    sí
+  ¿es un 4?                       sí                    sí
+  ¿es un 5?                       sí                    sí
+  ¿es un 6?                       sí                    sí
+  ¿es un 7?                       sí                    sí
+  ¿es un 8?                       NO                    NO
+  ¿es un 9?                       sí                    sí
+
+  «¿se queda quieto?» es la columna de la tabla del capítulo
+  (datos/salidas/es_un_cuatro.txt).
+
+LOS DIBUJOS QUE IMPIDEN LA RAYA DEL OCHO
+
+  con los 1.257 dibujos:        raya: NO
+  quitando estos 6:             raya: sí
+
+    dibujo   qué es
+    ------   ------
+       129   un 8
+       899   un 8
+      1149   un 8
+      1529   un 8
+      1553   un 8
+      1781   un 8
+
+  devolviendo cualquiera de ellos, la raya deja de existir: sí
