@@ -1,21 +1,21 @@
 --- selftest ---
-[1] test nulo         urna con 2 letras / urna sin mirar: barajado=0,83  real=0,47
+[1] test nulo         letras posibles mirando 2 / sin mirar: barajado=0,83  real=0,47
 [2] señal implantada  casilla «wñ»: {'k': 300}
-[3] invariante        muestras repetidas iguales a las de ngrama.txt: 7 de 7; letras sorteadas que no estaban en su urna: 0
+[3] invariante        muestras repetidas iguales a las de ngrama.txt: 7 de 7; letras que salieron sin estar en su casilla: 0
 [3] invariante        muestra de 1 letra: 12 palabras del Quijote en 40 trozos (casillas_vacias.txt dice 12 en 40)
 
 SELFTEST: las tres pruebas pasan.
 
 ########## capítulo 1: la escalera, paso a paso ##########
-fecha: 2026-09-26 11:20 UTC
+fecha: 2026-09-26 15:58 UTC
 máquina: Linux aarch64. La medición no
 depende de la máquina: repite los sorteos de ngrama.py con su
 semilla (20260914) y sale lo mismo en cualquier ordenador
 
 1. CÓMO ARRANCA CADA MUESTRA
 
-Las primeras letras no se sortean: la máquina coge al azar un
-contexto de la tabla, lo escribe, y empieza a sortear detrás.
+Las primeras letras no salen de un sorteo: la máquina coge al azar
+un contexto de la tabla, lo escribe, y detrás empiezan los sorteos.
 
   perilla   arranque    principio de la muestra
   -------   --------    -----------------------
@@ -73,8 +73,8 @@ palabras; «pueden venir» cuenta palabras distintas.
 
 4. POR QUÉ AL SUBIR SALEN PALABRAS
 
-La máquina ha escrito «quijo» y tiene que sortear la letra
-siguiente. Lo que mira depende de la perilla.
+La máquina ha escrito «quijo» y tiene que sacar en un sorteo
+la letra siguiente. Lo que mira depende de la perilla.
 
   perilla   mira        pueden venir    la «t», de cada cien
   -------   ----        ------------    --------------------
