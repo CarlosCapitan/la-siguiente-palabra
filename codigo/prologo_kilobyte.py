@@ -34,7 +34,9 @@ from pathlib import Path
 from formato import ANCHO_CAJA, coma, comprobar_ancho, miles
 
 AQUI = Path(__file__).resolve().parent
-PDF = AQUI / ".." / ".." / "pdf" / "libro-completo.pdf"
+# Todos los PDF del libro viven en libro-ia/PDF/ desde el 26 de septiembre de 2026. La salida
+# guardada es del 17, sobre el PDF de entonces (104 páginas): hay que volver a medir.
+PDF = AQUI / ".." / ".." / "PDF" / "La-siguiente-palabra.pdf"
 PAGINA_DEL_PROLOGO = 4          # página física; la 1 del libro, ver libro.toc
 
 KILOBYTE_ZX81 = 1024            # bytes. Un kilobyte de 1981 son 1.024 bytes.
