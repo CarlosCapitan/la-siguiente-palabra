@@ -7,7 +7,7 @@ una, dos, tres y cinco letras. El lector ve el resultado de doscientos sorteos p
 los pasos que llevan a él (L11 y T27 de `notas/auditoria/PENDIENTES.md`). Este programa imprime
 esos pasos, con las mismas muestras:
 
-  1. cómo arranca cada muestra: las primeras letras no se sortean;
+  1. cómo arranca cada muestra: las primeras letras no salen de un sorteo;
   2. un peldaño hecho a mano: los primeros sorteos de la muestra de dos letras, casilla a casilla;
   3. por qué al subir salen palabras: cuantas más letras mira la máquina, menos letras distintas
      caben en la urna de cada casilla;
@@ -31,8 +31,8 @@ SORTEOS_PALABRAS = 4      # cuántos sorteos de la máquina de palabras (perilla
 LETRAS_POR_URNA = 4       # cuántas letras de cada urna se enseñan una a una; el resto se agrupa
 
 # El mismo momento de escribir, visto con la perilla en cada posición: la máquina acaba de
-# escribir «quijo» y va a sortear la letra siguiente. Con la perilla en uno solo ve «o»; en dos,
-# «jo»; en tres, «ijo»; en cinco, «quijo». Es la misma letra por sortear, con más o menos pasado.
+# escribir «quijo» y va a sacar en un sorteo la letra siguiente. Con la perilla en uno solo ve «o»; en dos,
+# «jo»; en tres, «ijo»; en cinco, «quijo». Es la misma letra por salir, con más o menos pasado.
 MOMENTO = "quijo"
 
 # Selftest
@@ -130,7 +130,7 @@ def repetir_sorteos(secuencia):
 
 
 def letras_por_urna(tabla):
-    """De media, cada vez que la máquina sortea, cuántas letras distintas hay en la urna. Cada
+    """De media, cada vez que la máquina hace un sorteo, cuántas letras distintas pueden venir en su casilla. Cada
     casilla pesa tantas veces como se usa: una casilla que sale mil veces cuenta mil."""
     usos = sum(sum(c.values()) for c in tabla.values())
     return sum(len(c) * sum(c.values()) for c in tabla.values()) / usos
@@ -205,7 +205,7 @@ def selftest(secuencia, muestras_libro, vocabulario):
     real = secuencia[:TROZO_NULO]
     c_nulo = letras_por_urna(N.construir(barajado, PERILLA_NULA)) / letras_por_urna(N.construir(barajado, 0))
     c_real = letras_por_urna(N.construir(real, PERILLA_NULA)) / letras_por_urna(N.construir(real, 0))
-    print(f"[1] test nulo         urna con {PERILLA_NULA} letras / urna sin mirar: "
+    print(f"[1] test nulo         letras posibles mirando {PERILLA_NULA} / sin mirar: "
           f"barajado={coma(c_nulo, 2)}  real={coma(c_real, 2)}")
     if not (c_nulo > COCIENTE_NULO_MIN and c_real < COCIENTE_REAL_MAX):
         fallos.append(f"test nulo: se esperaba barajado > {COCIENTE_NULO_MIN} y real < "
@@ -228,12 +228,12 @@ def selftest(secuencia, muestras_libro, vocabulario):
     fuera = sum(1 for o in todas for _, u, s in repetidas[o][3] if s not in u)
     print(f"[3] invariante        muestras repetidas iguales a las de ngrama.txt: "
           f"{len(todas) - len(distintas)} de {len(todas)}; "
-          f"letras sorteadas que no estaban en su urna: {fuera}")
+          f"letras que salieron sin estar en su casilla: {fuera}")
     if distintas:
         fallos.append(f"invariante: las muestras de las perillas {distintas} no salen iguales "
                       f"que en {MUESTRAS}; este programa ya no repite los sorteos de ngrama.py")
     if fuera:
-        fallos.append(f"invariante: {fuera} letras sorteadas no estaban en su urna")
+        fallos.append(f"invariante: {fuera} letras salieron sin estar en su casilla")
     trozos, reales = palabras_reales(muestras_libro[1], vocabulario)
     print(f"[3] invariante        muestra de 1 letra: {len(reales)} palabras del Quijote en "
           f"{len(trozos)} trozos (casillas_vacias.txt dice 12 en 40)")
@@ -272,8 +272,8 @@ def main():
         "",
         "1. CÓMO ARRANCA CADA MUESTRA",
         "",
-        "Las primeras letras no se sortean: la máquina coge al azar un",
-        "contexto de la tabla, lo escribe, y empieza a sortear detrás.",
+        "Las primeras letras no salen de un sorteo: la máquina coge al azar",
+        "un contexto de la tabla, lo escribe, y detrás empiezan los sorteos.",
         "",
         f"  {'perilla':<10}{'arranque':<12}principio de la muestra",
         f"  {'-------':<10}{'--------':<12}-----------------------",
@@ -340,8 +340,8 @@ def main():
         "",
         "4. POR QUÉ AL SUBIR SALEN PALABRAS",
         "",
-        f"La máquina ha escrito «{MOMENTO}» y tiene que sortear la letra",
-        "siguiente. Lo que mira depende de la perilla.",
+        f"La máquina ha escrito «{MOMENTO}» y tiene que sacar en un sorteo",
+        "la letra siguiente. Lo que mira depende de la perilla.",
         "",
         f"  {'perilla':<10}{'mira':<10}{'pueden venir':>14}{'la «t», de cada cien':>24}",
         f"  {'-------':<10}{'----':<10}{'------------':>14}{'--------------------':>24}",
