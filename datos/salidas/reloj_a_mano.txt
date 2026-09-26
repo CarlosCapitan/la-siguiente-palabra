@@ -1,0 +1,70 @@
+--- selftest ---
+[1] test nulo         de 252 maneras de elegir cinco «pares», aciertan los diez en 1: [(0, 2, 4, 6, 8)]
+[2] señal implantada  segmentos con diez de diez en la tabla fabricada: ['el del medio']; lectura «encendido es par»: True
+[3] invariante        el ocho suma todos los pesos: sí; «pasa de 0,5» y «llega a 1» coinciden: sí
+
+SELFTEST: las tres pruebas pasan.
+
+########## capítulo 3: par o impar en un reloj, con tres pesos a mano ##########
+Pesos puestos a mano, no entrenados. La cuenta no depende de la máquina.
+
+1. CUÁNTOS DÍGITOS ACIERTA CADA SEGMENTO, ÉL SOLO
+   (encendido quiere decir «par», o encendido quiere decir «impar»:
+   se le cuenta la lectura con la que acierta más)
+
+el segmento                  acierta
+el de arriba                 5 de 10
+el de arriba izquierda       7 de 10
+el de arriba derecha         5 de 10
+el del medio                 6 de 10
+el de abajo izquierda        9 de 10
+el de abajo derecha          6 de 10
+el de abajo                  6 de 10
+
+EL DE ABAJO IZQUIERDA, DÍGITO A DÍGITO
+
+                           0   1   2   3   4   5   6   7   8   9
+                         par imp par imp par imp par imp par imp
+                          --  --  --  --  --  --  --  --  --  --
+encendido                 sí  no  sí  no  no  no  sí  no  sí  no
+¿acierta?                 sí  sí  sí  sí  NO  sí  sí  sí  sí  sí
+
+falla: el 4
+
+
+2. LO QUE TIENE EL CUATRO Y NO TIENE NINGÚN OTRO
+
+                           0   1   2   3   4   5   6   7   8   9
+                         par imp par imp par imp par imp par imp
+                          --  --  --  --  --  --  --  --  --  --
+el de arriba izquierda    sí  no  no  no  sí  sí  sí  no  sí  sí
+el de arriba              sí  no  sí  sí  no  sí  sí  sí  sí  sí
+
+encendido el de arriba izquierda y apagado el de arriba: el 4
+
+
+3. TRES PESOS PUESTOS A MANO, Y LA CUENTA DE LOS DIEZ
+
+el segmento                 puntos que suma
+-----------------------     ---------------
+el de arriba                             -1
+el de arriba izquierda                   +1
+el de abajo izquierda                    +2
+los otros cuatro                          0
+                                     ------
+para decir «par», el total tiene que pasar de 0,5
+
+                 el de  el de arriba   el de abajo
+dígito          arriba     izquierda     izquierda   total    dice
+0                   -1            +1            +2      +2     par
+1                    0             0             0       0   impar
+2                   -1             0            +2      +1     par
+3                   -1             0             0      -1   impar
+4                    0            +1             0      +1     par
+5                   -1            +1             0       0   impar
+6                   -1            +1            +2      +2     par
+7                   -1             0             0      -1   impar
+8                   -1            +1            +2      +2     par
+9                   -1            +1             0       0   impar
+
+los mismos pesos y el mismo listón aciertan 10 de 10
