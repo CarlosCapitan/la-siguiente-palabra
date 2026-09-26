@@ -4,8 +4,8 @@ Capítulo 1 — lo poco que hay dentro de las casillas llenas, y lo que costarí
 
 La figura anterior enseña cuántas casillas están vacías. Ésta enseña las dos cosas que el
 capítulo dice a continuación y que también son números grandes que se leen y se pasan de largo:
-que de las pocas casillas con algo dentro, casi cuatro de cada cinco tienen una sola pareja; y
-que mirar una palabra más hacia atrás multiplica por treinta y seis mil el texto que haría falta.
+que de las pocas casillas con algo dentro, siete de cada diez tienen una sola pareja (71,4 %, casillas_vacias.txt); y
+que mirar una palabra más hacia atrás multiplica por 22.952 el texto que haría falta.
 
 Todos los números salen de `datos/salidas/casillas_vacias.txt`. Los dos que no están escritos
 allí —las casillas vistas más de una vez y el cociente entre los dos montones de Quijotes— los

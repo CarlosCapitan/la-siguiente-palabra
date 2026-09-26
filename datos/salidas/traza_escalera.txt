@@ -7,7 +7,7 @@
 SELFTEST: las tres pruebas pasan.
 
 ########## capítulo 1: la escalera, paso a paso ##########
-fecha: 2026-09-26 10:28 UTC
+fecha: 2026-09-26 11:20 UTC
 máquina: Linux aarch64. La medición no
 depende de la máquina: repite los sorteos de ngrama.py con su
 semilla (20260914) y sale lo mismo en cualquier ordenador
@@ -25,113 +25,77 @@ contexto de la tabla, lo escribe, y empieza a sortear detrás.
   3 letras  «jal»       jalmentencajó a los caba…
   5 letras  «ija t»     ija tan bien, sino con f…
 
-2. UN PELDAÑO A MANO: PERILLA EN 2, LOS 6 PRIMEROS SORTEOS
+2. EL PRIMER SORTEO DE LA PERILLA EN 2, ENTERO
 
-Arranque: «xt». Detrás, cada sorteo mira las 2 últimas letras,
-va a su casilla y saca una papeleta de su urna.
+La máquina arranca con «xt» y va a la casilla de «xt»:
+las 24 veces que aparece «xt» en el Quijote
 
-  escrito «xt»: mira «xt»
-      urna de «xt»: 24 papeletas, 5 letras distintas
-      «r» 75,0 % · «e» 8,3 % · «o» 8,3 % · «a» 4,2 %
-      otra letra: 4,2 %
-      sale: «o»
+  letra que sigue    veces    de cada cien veces
+  ---------------   ------   -------------------
+         r              18               75,00 %
+         e               2                8,33 %
+         o               2                8,33 %
+         a               1                4,17 %
+         i               1                4,17 %
 
-  escrito «xto»: mira «to»
-      urna de «to»: 13.080 papeletas, 26 letras distintas
-      espacio 32,0 % · «d» 21,0 % · «s» 12,8 % · «,» 10,7 %
-      otras 22 letras: 23,5 %
-      sale: espacio
+  sale: «o». Escrito: «xto»
 
-  escrito «xto »: mira «o »
-      urna de «o »: 51.338 papeletas, 35 letras distintas
-      «d» 14,4 % · «e» 10,8 % · «q» 10,4 % · «s» 8,2 %
-      otras 31 letras: 56,2 %
-      sale: «c»
+3. LOS 6 PRIMEROS SORTEOS, UNO POR FILA
 
-  escrito «xto c»: mira « c»
-      urna de « c»: 26.792 papeletas, 14 letras distintas
-      «o» 47,2 % · «a» 24,7 % · «u» 16,4 % · «i» 3,5 %
-      otras 10 letras: 8,2 %
-      sale: «ó»
+mira: las dos últimas letras escritas, que dicen a qué casilla va
+pueden venir: cuántas letras distintas hay en esa casilla
+la que más sale: y cuántas veces de cada cien
 
-  escrito «xto có»: mira «có»
-      urna de «có»: 721 papeletas, 10 letras distintas
-      espacio 42,6 % · «m» 41,5 % · «l» 8,6 % · «n» 5,1 %
-      otras 6 letras: 2,2 %
-      sale: «m»
-
-  escrito «xto cóm»: mira «óm»
-      urna de «óm»: 364 papeletas, 5 letras distintas
-      «o» 79,9 % · «a» 8,8 % · «e» 7,7 % · «i» 2,2 %
-      otra letra: 1,4 %
-      sale: «o»
+  ha escrito  mira    pueden venir   la que más sale   sale
+  ----------  ----    ------------   ---------------   ----
+  «xt»        «xt»               5   «r», 75 %         «o»
+  «xto»       «to»              26   espacio, 32 %     espacio
+  «xto »      «o »              35   «d», 14 %         «c»
+  «xto c»     « c»              14   «o», 47 %         «ó»
+  «xto có»    «có»              10   espacio, 43 %     «m»
+  «xto cóm»   «óm»               5   «o», 80 %         «o»
 
   escrito al final: «xto cómo»
 
-2 BIS. LA MÁQUINA DE PALABRAS, PERILLA EN 2: LOS 4 PRIMEROS SORTEOS
+3 BIS. LA MÁQUINA DE PALABRAS, PERILLA EN 2: LOS 4 PRIMEROS SORTEOS
 
-Arranque: «sitio escogió». Cada sorteo mira las 2 últimas palabras.
+Arranque: «sitio escogió». Cada sorteo mira las dos últimas
+palabras; «pueden venir» cuenta palabras distintas.
 
-  escrito «sitio escogió»: mira «sitio escogió»
-      urna de «sitio escogió»: 1 papeleta, 1 palabra distinta
-      «el» 100,0 %
-      sale: «el»
-
-  escrito «sitio escogió el»: mira «escogió el»
-      urna de «escogió el»: 3 papeletas, 3 palabras distintas
-      «caballero» 33,3 % · «irse» 33,3 % · «honroso» 33,3 %
-      sale: «caballero»
-
-  escrito «sitio escogió el caballero»: mira «el caballero»
-      urna de «el caballero»: 97 papeletas, 24 palabras distintas
-      «de» 42,3 % · «andante» 10,3 % · «del» 9,3 % · «,» 9,3 %
-      otras 20 palabras: 28,9 %
-      sale: «de»
-
-  escrito «escogió el caballero de»: mira «caballero de»
-      urna de «caballero de»: 94 papeletas, 11 palabras distintas
-      «la» 64,9 % · «los» 24,5 % · «damas» 2,1 % · «lo» 1,1 %
-      otras 7 palabras: 7,4 %
-      sale: «la»
+  mira             veces pueden venir  la que más sale   sale
+  ----             ----- ------------  ---------------   ----
+  «sitio escogió»      1            1  «el», 100 %       «el»
+  «escogió el»         3            3  3 empatadas, 33 % «caballero»
+  «el caballero»      97           24  «de», 42 %        «de»
+  «caballero de»      94           11  «la», 65 %        «la»
 
   escrito al final: «sitio escogió el caballero de la»
 
-3. LAS URNAS SE ESTRECHAN
+4. POR QUÉ AL SUBIR SALEN PALABRAS
 
-De media, cada vez que la máquina sortea, cuántas letras
-distintas hay en la urna de la casilla que le toca.
+La máquina ha escrito «quijo» y tiene que sortear la letra
+siguiente. Lo que mira depende de la perilla.
 
-  perilla     casillas     letras distintas en la urna
-  -------     --------     ---------------------------
-  nada               1                            41,0
-  1 letra           41                            30,8
-  2 letras         808                            21,8
-  3 letras       6.896                            14,7
-  5 letras     103.082                             7,7
+  perilla   mira        pueden venir    la «t», de cada cien
+  -------   ----        ------------    --------------------
+  nada      nada                  41                     3,0
+  1 letra   «o»                   34                     3,2
+  2 letras  «jo»                  19                    39,0
+  3 letras  «ijo»                 10                    52,9
+  5 letras  «quijo»                2                    99,9
 
-El mismo momento, con la perilla en cada posición: la máquina
-ha escrito «quijo» y va a sortear la letra siguiente.
+Y de media, en todos los sorteos: cuántas letras distintas
+pueden venir en la casilla que le toca a la máquina.
 
-  perilla nada: no mira nada · 41 letras en la urna
-      espacio 18,4 % · «e» 10,7 % · «a» 9,3 %
-      otras 38 letras: 61,7 %
+  perilla     casillas      pueden venir, de media
+  -------     --------      ----------------------
+  nada               1                        41,0
+  1 letra           41                        30,8
+  2 letras         808                        21,8
+  3 letras       6.896                        14,7
+  5 letras     103.082                         7,7
 
-  perilla 1 letra: ve «o» · 34 letras en la urna
-      espacio 33,2 % · «s» 16,7 % · «n» 11,8 %
-      otras 31 letras: 38,3 %
-
-  perilla 2 letras: ve «jo» · 19 letras en la urna
-      «t» 39,0 % · espacio 30,0 % · «s» 10,5 %
-      otras 16 letras: 20,5 %
-
-  perilla 3 letras: ve «ijo» · 10 letras en la urna
-      «t» 52,9 % · espacio 32,7 % · «:» 10,8 %
-      otras 7 letras: 3,6 %
-
-  perilla 5 letras: ve «quijo» · 2 letras en la urna
-      «t» 99,9 % · espacio 0,1 %
-
-4. PALABRAS DEL QUIJOTE EN CADA MUESTRA
+5. PALABRAS DEL QUIJOTE EN CADA MUESTRA
 
 Trozos entre espacios, sin los signos pegados, que son
 palabras que están en el Quijote.
