@@ -145,6 +145,24 @@ def letra(s):
     return "espacio" if s == " " else f"«{s}»"
 
 
+def nombre_simbolo(s):
+    """Cómo se escribe una letra en la columna de una tabla: el espacio, con su nombre."""
+    return "espacio" if s == " " else s
+
+
+def la_que_mas(contador, palabra=False):
+    """La letra (o palabra) que más sale en una casilla, con cuántas veces de cada cien. Si
+    empatan varias en cabeza, lo dice, porque nombrar una sola sería elegir por el lector."""
+    total = sum(contador.values())
+    orden = contador.most_common()
+    arriba = [s for s, n in orden if n == orden[0][1]]
+    parte = pct(orden[0][1] / total, 0)
+    if len(arriba) > 1:
+        return f"{len(arriba)} empatadas, {parte}"
+    s = arriba[0]
+    return f"{'«' + s + '»' if palabra else letra(s)}, {parte}"
+
+
 def urna(contador, cuantas, unidad="letra"):
     """Las `cuantas` letras más frecuentes de una casilla, con su parte de cada cien, y el resto
     agrupado. Devuelve líneas."""
@@ -266,71 +284,90 @@ def main():
         L.append(f"  {perilla(orden):<10}{a:<12}{texto[:24]}…")
 
     tabla, texto, arranque, pasos = repetidas[PELDANO_A_MANO]
+    clave, u, sale = pasos[0]
+    total = sum(u.values())
     L += [
         "",
-        f"2. UN PELDAÑO A MANO: PERILLA EN {PELDANO_A_MANO}, LOS {SORTEOS_A_MANO} PRIMEROS SORTEOS",
+        f"2. EL PRIMER SORTEO DE LA PERILLA EN {PELDANO_A_MANO}, ENTERO",
         "",
-        f"Arranque: «{arranque}». Detrás, cada sorteo mira las {PELDANO_A_MANO} últimas letras,",
-        "va a su casilla y saca una papeleta de su urna.",
+        f"La máquina arranca con «{arranque}» y va a la casilla de «{''.join(clave)}»:",
+        f"las {miles(total)} veces que aparece «{''.join(clave)}» en el Quijote",
+        "",
+        "  letra que sigue    veces    de cada cien veces",
+        "  ---------------   ------   -------------------",
+    ]
+    for s, n in u.most_common():
+        L.append(f"  {nombre_simbolo(s):^15}   {miles(n):>6}   {pct(n / total, 2):>19}")
+    L += ["", f"  sale: {letra(sale)}. Escrito: «{arranque + sale}»"]
+
+    L += [
+        "",
+        f"3. LOS {SORTEOS_A_MANO} PRIMEROS SORTEOS, UNO POR FILA",
+        "",
+        "mira: las dos últimas letras escritas, que dicen a qué casilla va",
+        "pueden venir: cuántas letras distintas hay en esa casilla",
+        "la que más sale: y cuántas veces de cada cien",
+        "",
+        f"  {'ha escrito':<12}{'mira':<8}{'pueden venir':>12}   {'la que más sale':<18}{'sale':<9}",
+        f"  {'----------':<12}{'----':<8}{'------------':>12}   {'---------------':<18}{'----':<9}",
     ]
     escrito = arranque
     for clave, u, sale in pasos[:SORTEOS_A_MANO]:
-        total = sum(u.values())
-        L += ["", f"  escrito «{escrito}»: mira «{''.join(clave)}»",
-              f"      urna de «{''.join(clave)}»: {cuantas(total, 'papeleta', 'papeletas')}, "
-              f"{cuantas(len(u), 'letra distinta', 'letras distintas')}"]
-        L += urna(u, LETRAS_POR_URNA)
-        L.append(f"      sale: {letra(sale)}")
+        L.append(f"  {'«' + escrito + '»':<12}{'«' + ''.join(clave) + '»':<8}{len(u):>12}   "
+                 f"{la_que_mas(u):<18}{letra(sale):<9}")
         escrito += sale
-    L.append(f"\n  escrito al final: «{escrito}»")
+    L += ["", f"  escrito al final: «{escrito}»"]
 
     tabla, texto, arranque, pasos = repetidas[("palabras", 2)]
     L += [
         "",
-        f"2 BIS. LA MÁQUINA DE PALABRAS, PERILLA EN 2: LOS {SORTEOS_PALABRAS} PRIMEROS SORTEOS",
+        f"3 BIS. LA MÁQUINA DE PALABRAS, PERILLA EN 2: LOS {SORTEOS_PALABRAS} PRIMEROS SORTEOS",
         "",
-        f"Arranque: «{' '.join(arranque)}». Cada sorteo mira las 2 últimas palabras.",
+        f"Arranque: «{' '.join(arranque)}». Cada sorteo mira las dos últimas",
+        "palabras; «pueden venir» cuenta palabras distintas.",
+        "",
+        f"  {'mira':<16}{'veces':>6}{'pueden venir':>13}  {'la que más sale':<18}{'sale'}",
+        f"  {'----':<16}{'-----':>6}{'------------':>13}  {'---------------':<18}{'----'}",
     ]
     escrito = list(arranque)
     for clave, u, sale in pasos[:SORTEOS_PALABRAS]:
-        total = sum(u.values())
-        L += ["", f"  escrito «{' '.join(escrito[-4:])}»: mira «{' '.join(clave)}»",
-              f"      urna de «{' '.join(clave)}»: {cuantas(total, 'papeleta', 'papeletas')}, "
-              f"{cuantas(len(u), 'palabra distinta', 'palabras distintas')}"]
-        L += urna(u, LETRAS_POR_URNA, "palabra")
-        L.append(f"      sale: «{sale}»")
+        L.append(f"  {'«' + ' '.join(clave) + '»':<16}{miles(sum(u.values())):>6}{len(u):>13}  "
+                 f"{la_que_mas(u, palabra=True):<18}{'«' + sale + '»'}")
         escrito.append(sale)
-    L.append(f"\n  escrito al final: «{' '.join(escrito)}»")
+    L += ["", f"  escrito al final: «{' '.join(escrito)}»"]
 
     L += [
         "",
-        "3. LAS URNAS SE ESTRECHAN",
+        "4. POR QUÉ AL SUBIR SALEN PALABRAS",
         "",
-        "De media, cada vez que la máquina sortea, cuántas letras",
-        "distintas hay en la urna de la casilla que le toca.",
+        f"La máquina ha escrito «{MOMENTO}» y tiene que sortear la letra",
+        "siguiente. Lo que mira depende de la perilla.",
         "",
-        f"  {'perilla':<10}{'casillas':>10}{'letras distintas en la urna':>32}",
-        f"  {'-------':<10}{'--------':>10}{'---------------------------':>32}",
-    ]
-    for orden in N.ORDENES_LETRA:
-        t = repetidas[orden][0]
-        L.append(f"  {perilla(orden):<10}{miles(len(t)):>10}{coma(letras_por_urna(t), 1):>32}")
-    L += [
-        "",
-        f"El mismo momento, con la perilla en cada posición: la máquina",
-        f"ha escrito «{MOMENTO}» y va a sortear la letra siguiente.",
+        f"  {'perilla':<10}{'mira':<10}{'pueden venir':>14}{'la «t», de cada cien':>24}",
+        f"  {'-------':<10}{'----':<10}{'------------':>14}{'--------------------':>24}",
     ]
     for orden in N.ORDENES_LETRA:
         t = repetidas[orden][0]
         clave = tuple(MOMENTO[len(MOMENTO) - orden:]) if orden else ()
         u = t[clave]
-        visto = "no mira nada" if orden == 0 else f"ve «{''.join(clave)}»"
-        L += ["", f"  perilla {perilla(orden)}: {visto} · {len(u)} letras en la urna"]
-        L += urna(u, 3)
+        mira = "nada" if orden == 0 else "«" + "".join(clave) + "»"
+        L.append(f"  {perilla(orden):<10}{mira:<10}{len(u):>14}"
+                 f"{coma(100 * u['t'] / sum(u.values()), 1):>24}")
+    L += [
+        "",
+        "Y de media, en todos los sorteos: cuántas letras distintas",
+        "pueden venir en la casilla que le toca a la máquina.",
+        "",
+        f"  {'perilla':<10}{'casillas':>10}{'pueden venir, de media':>28}",
+        f"  {'-------':<10}{'--------':>10}{'----------------------':>28}",
+    ]
+    for orden in N.ORDENES_LETRA:
+        t = repetidas[orden][0]
+        L.append(f"  {perilla(orden):<10}{miles(len(t)):>10}{coma(letras_por_urna(t), 1):>28}")
 
     L += [
         "",
-        "4. PALABRAS DEL QUIJOTE EN CADA MUESTRA",
+        "5. PALABRAS DEL QUIJOTE EN CADA MUESTRA",
         "",
         "Trozos entre espacios, sin los signos pegados, que son",
         "palabras que están en el Quijote.",
@@ -345,7 +382,7 @@ def main():
     _, reales = palabras_reales(muestras_libro[0], vocabulario)
     L += ["", "  las de la perilla en nada: " + " ".join(f"«{r}»" for r in reales)]
 
-    for l in comprobar_ancho("\n".join(L).split("\n"), ANCHO_CAJA):
+    for l in comprobar_ancho([l.rstrip() for l in "\n".join(L).split("\n")], ANCHO_CAJA):
         print(l)
 
 
