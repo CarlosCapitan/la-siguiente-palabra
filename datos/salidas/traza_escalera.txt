@@ -1,13 +1,13 @@
 --- selftest ---
 [1] test nulo         urna con 2 letras / urna sin mirar: barajado=0,83  real=0,47
 [2] señal implantada  casilla «wñ»: {'k': 300}
-[3] invariante        muestras repetidas iguales a las de ngrama.txt: 5 de 5; letras sorteadas que no estaban en su urna: 0
+[3] invariante        muestras repetidas iguales a las de ngrama.txt: 7 de 7; letras sorteadas que no estaban en su urna: 0
 [3] invariante        muestra de 1 letra: 12 palabras del Quijote en 40 trozos (casillas_vacias.txt dice 12 en 40)
 
 SELFTEST: las tres pruebas pasan.
 
 ########## capítulo 1: la escalera, paso a paso ##########
-fecha: 2026-09-26 10:26 UTC
+fecha: 2026-09-26 10:28 UTC
 máquina: Linux aarch64. La medición no
 depende de la máquina: repite los sorteos de ngrama.py con su
 semilla (20260914) y sale lo mismo en cualquier ordenador
@@ -68,6 +68,34 @@ va a su casilla y saca una papeleta de su urna.
 
   escrito al final: «xto cómo»
 
+2 BIS. LA MÁQUINA DE PALABRAS, PERILLA EN 2: LOS 4 PRIMEROS SORTEOS
+
+Arranque: «sitio escogió». Cada sorteo mira las 2 últimas palabras.
+
+  escrito «sitio escogió»: mira «sitio escogió»
+      urna de «sitio escogió»: 1 papeleta, 1 palabra distinta
+      «el» 100,0 %
+      sale: «el»
+
+  escrito «sitio escogió el»: mira «escogió el»
+      urna de «escogió el»: 3 papeletas, 3 palabras distintas
+      «caballero» 33,3 % · «irse» 33,3 % · «honroso» 33,3 %
+      sale: «caballero»
+
+  escrito «sitio escogió el caballero»: mira «el caballero»
+      urna de «el caballero»: 97 papeletas, 24 palabras distintas
+      «de» 42,3 % · «andante» 10,3 % · «del» 9,3 % · «,» 9,3 %
+      otras 20 palabras: 28,9 %
+      sale: «de»
+
+  escrito «escogió el caballero de»: mira «caballero de»
+      urna de «caballero de»: 94 papeletas, 11 palabras distintas
+      «la» 64,9 % · «los» 24,5 % · «damas» 2,1 % · «lo» 1,1 %
+      otras 7 palabras: 7,4 %
+      sale: «la»
+
+  escrito al final: «sitio escogió el caballero de la»
+
 3. LAS URNAS SE ESTRECHAN
 
 De media, cada vez que la máquina sortea, cuántas letras
@@ -115,3 +143,5 @@ palabras que están en el Quijote.
   2 letras        42                      16            38 %
   3 letras        39                      24            62 %
   5 letras        43                      41            95 %
+
+  las de la perilla en nada: «et» «o» «es» «o» «es»

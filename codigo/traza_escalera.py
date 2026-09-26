@@ -27,6 +27,7 @@ MUESTRAS = "../datos/salidas/ngrama.txt"   # lo que el libro imprime, tal como s
 
 PELDANO_A_MANO = 2        # la perilla del peldaño que se sigue sorteo a sorteo
 SORTEOS_A_MANO = 6        # cuántos sorteos se enseñan
+SORTEOS_PALABRAS = 4      # cuántos sorteos de la máquina de palabras (perilla en dos) se enseñan
 LETRAS_POR_URNA = 4       # cuántas letras de cada urna se enseñan una a una; el resto se agrupa
 
 # El mismo momento de escribir, visto con la perilla en cada posición: la máquina acaba de
@@ -67,12 +68,20 @@ def perilla(orden):
     return {0: "nada", 1: "1 letra"}.get(orden, f"{orden} letras")
 
 
+def rotulo_palabras(orden):
+    """El rótulo con el que `ngrama.py` encabeza cada muestra de palabras."""
+    return ("--- PALABRAS, frecuencias sueltas ---" if orden == 1
+            else f"--- PALABRAS, {orden} palabras de contexto ---")
+
+
 def leer_muestras(ruta):
-    """Las muestras de letras que imprimió `ngrama.py`, por orden."""
+    """Las muestras que imprimió `ngrama.py`: las de letras con la clave del orden, y las de
+    palabras con la clave ("palabras", orden)."""
     lineas = Path(ruta).read_text(encoding="utf-8").split("\n")
     muestras = {}
-    for orden in N.ORDENES_LETRA:
-        r = rotulo(orden)
+    claves = [(o, rotulo(o)) for o in N.ORDENES_LETRA]
+    claves += [(("palabras", o), rotulo_palabras(o)) for o in N.ORDENES_PALABRA]
+    for orden, r in claves:
         assert r in lineas, f"Se esperaba el rótulo «{r}» en {ruta}; no está"
         muestras[orden] = lineas[lineas.index(r) + 1]
     return muestras
@@ -85,7 +94,7 @@ def generar_con_traza(tabla, orden, largo, rng):
     if orden == 0:
         u = tabla[()]
         salida = [N.elegir(u, rng) for _ in range(largo)]
-        return "".join(salida), None, [((), u, s) for s in salida]
+        return salida, None, [((), u, s) for s in salida]
     contextos = list(tabla.keys())
     arranque = rng.choice(contextos)
     estado, salida, pasos = list(arranque), list(arranque), []
@@ -98,17 +107,25 @@ def generar_con_traza(tabla, orden, largo, rng):
         pasos.append((clave, tabla[clave], siguiente))
         salida.append(siguiente)
         estado.append(siguiente)
-    return "".join(salida), "".join(arranque), pasos
+    return salida, arranque, pasos
 
 
 def repetir_sorteos(secuencia):
-    """Las cinco muestras de letras, en el orden y con la semilla de `ngrama.py`."""
+    """Las muestras de letras y luego las de palabras, en el orden y con la semilla de
+    `ngrama.py`: las de palabras gastan el azar que dejan las de letras, así que no se pueden
+    repetir sin repetir antes aquellas."""
     rng = N.random.Random(N.SEMILLA)
     resultado = {}
     for orden in N.ORDENES_LETRA:
         tabla = N.construir(secuencia, orden)
-        texto, arranque, pasos = generar_con_traza(tabla, orden, N.LARGO_MUESTRA_LETRAS, rng)
-        resultado[orden] = (tabla, texto, arranque, pasos)
+        salida, arranque, pasos = generar_con_traza(tabla, orden, N.LARGO_MUESTRA_LETRAS, rng)
+        resultado[orden] = (tabla, "".join(salida),
+                            None if arranque is None else "".join(arranque), pasos)
+    palabras = N.trocear(secuencia)
+    for orden in N.ORDENES_PALABRA:
+        tabla = N.construir(palabras, orden)
+        salida, arranque, pasos = generar_con_traza(tabla, orden, N.LARGO_MUESTRA_PALABRAS, rng)
+        resultado[("palabras", orden)] = (tabla, " ".join(salida), arranque, pasos)
     return resultado
 
 
@@ -119,20 +136,27 @@ def letras_por_urna(tabla):
     return sum(len(c) * sum(c.values()) for c in tabla.values()) / usos
 
 
+def cuantas(n, singular, plural):
+    """«1 papeleta», «24 papeletas»: el número con su nombre bien concordado."""
+    return f"{miles(n)} {singular if n == 1 else plural}"
+
+
 def letra(s):
     return "espacio" if s == " " else f"«{s}»"
 
 
-def urna(contador, cuantas):
+def urna(contador, cuantas, unidad="letra"):
     """Las `cuantas` letras más frecuentes de una casilla, con su parte de cada cien, y el resto
     agrupado. Devuelve líneas."""
     total = sum(contador.values())
     orden = contador.most_common()
-    partes = [f"{letra(s)} {pct(n / total, 1)}" for s, n in orden[:cuantas]]
+    nombre = letra if unidad == "letra" else (lambda s: f"«{s}»")
+    partes = [f"{nombre(s)} {pct(n / total, 1)}" for s, n in orden[:cuantas]]
     resto = orden[cuantas:]
     if resto:
         n = sum(v for _, v in resto)
-        otras = "otra letra" if len(resto) == 1 else f"otras {len(resto)} letras"
+        otras = (f"otra {unidad}" if len(resto) == 1
+                 else f"otras {miles(len(resto))} {unidad}s")
         partes.append(f"{otras}: {pct(n / total, 1)}")
     lineas, fila = [], "      "
     for p in partes:
@@ -181,10 +205,11 @@ def selftest(secuencia, muestras_libro, vocabulario):
     # 3. INVARIANTES — los sorteos repetidos dan las muestras del libro, letra por letra; cada
     #    letra que sale estaba en su urna; y lo que se cuenta de las palabras cuadra.
     repetidas = repetir_sorteos(secuencia)
-    distintas = [o for o in N.ORDENES_LETRA if repetidas[o][1].strip() != muestras_libro[o].strip()]
-    fuera = sum(1 for o in N.ORDENES_LETRA for _, u, s in repetidas[o][3] if s not in u)
+    todas = list(muestras_libro)
+    distintas = [o for o in todas if repetidas[o][1].strip() != muestras_libro[o].strip()]
+    fuera = sum(1 for o in todas for _, u, s in repetidas[o][3] if s not in u)
     print(f"[3] invariante        muestras repetidas iguales a las de ngrama.txt: "
-          f"{len(N.ORDENES_LETRA) - len(distintas)} de {len(N.ORDENES_LETRA)}; "
+          f"{len(todas) - len(distintas)} de {len(todas)}; "
           f"letras sorteadas que no estaban en su urna: {fuera}")
     if distintas:
         fallos.append(f"invariante: las muestras de las perillas {distintas} no salen iguales "
@@ -252,11 +277,30 @@ def main():
     for clave, u, sale in pasos[:SORTEOS_A_MANO]:
         total = sum(u.values())
         L += ["", f"  escrito «{escrito}»: mira «{''.join(clave)}»",
-              f"      urna de «{''.join(clave)}»: {miles(total)} papeletas, {len(u)} letras distintas"]
+              f"      urna de «{''.join(clave)}»: {cuantas(total, 'papeleta', 'papeletas')}, "
+              f"{cuantas(len(u), 'letra distinta', 'letras distintas')}"]
         L += urna(u, LETRAS_POR_URNA)
         L.append(f"      sale: {letra(sale)}")
         escrito += sale
     L.append(f"\n  escrito al final: «{escrito}»")
+
+    tabla, texto, arranque, pasos = repetidas[("palabras", 2)]
+    L += [
+        "",
+        f"2 BIS. LA MÁQUINA DE PALABRAS, PERILLA EN 2: LOS {SORTEOS_PALABRAS} PRIMEROS SORTEOS",
+        "",
+        f"Arranque: «{' '.join(arranque)}». Cada sorteo mira las 2 últimas palabras.",
+    ]
+    escrito = list(arranque)
+    for clave, u, sale in pasos[:SORTEOS_PALABRAS]:
+        total = sum(u.values())
+        L += ["", f"  escrito «{' '.join(escrito[-4:])}»: mira «{' '.join(clave)}»",
+              f"      urna de «{' '.join(clave)}»: {cuantas(total, 'papeleta', 'papeletas')}, "
+              f"{cuantas(len(u), 'palabra distinta', 'palabras distintas')}"]
+        L += urna(u, LETRAS_POR_URNA, "palabra")
+        L.append(f"      sale: «{sale}»")
+        escrito.append(sale)
+    L.append(f"\n  escrito al final: «{' '.join(escrito)}»")
 
     L += [
         "",
@@ -298,6 +342,8 @@ def main():
         trozos, reales = palabras_reales(muestras_libro[orden], vocabulario)
         L.append(f"  {perilla(orden):<10}{len(trozos):>8}{len(reales):>24}"
                  f"{pct(len(reales) / len(trozos), 0):>16}")
+    _, reales = palabras_reales(muestras_libro[0], vocabulario)
+    L += ["", "  las de la perilla en nada: " + " ".join(f"«{r}»" for r in reales)]
 
     for l in comprobar_ancho("\n".join(L).split("\n"), ANCHO_CAJA):
         print(l)
