@@ -54,7 +54,12 @@ MOMENTOS = [0, 1_000, 5_000, 10_000, 20_000]  # cuándo se mide; el último tien
 # reparte entre 15,7 letras), y hacen falta momentos intermedios para ver cuándo.
 EJEMPLOS_PRUEBA = 20_000                  # trozos del 10 % final con los que se mide
 
-PERILLAS = [0, 1, 2, 3, 5]                # la máquina de contar del capítulo 1, las mismas
+PERILLAS = [0, 1, 2, 3, 5]
+PASOS_REAPRENDER = 5_000   # apartado 7: con el reparto impuesto, cuánto se deja volver a aprender al resto
+TASA_REAPRENDER = 0.1      # y con qué poquito. Medido el 27: con «todo a la de justo antes», 1,0 y 0,3
+                           # disparan los números (se parte de una máquina que de golpe se equivoca
+                           # mucho, y un poquito grande multiplica ese error); 0,1 y 0,03 dan lo mismo
+                           # (38,4 y 38,1 %). «Por igual» aguanta hasta 1,0 y da 32,1 % con 1,0 y 0,3.                # la máquina de contar del capítulo 1, las mismas
 
 # La frase en la que se enseña el reparto: la letra que tiene que adivinar es la que va detrás.
 FRASE = "de la mancha, de cuyo nombre no quiero acordarme"
@@ -214,7 +219,7 @@ def adelante(p, x, escalar=True, mirar=True, forzar=None):
     g = h + m @ p["W2"] + p["b2"]
     apuestas = g @ p["Ws"] + p["bs"]
     cache = dict(x=x, e=e, q=q, k=k, v=v, a=a, traido=traido, h=h, pre=pre, m=m, g=g,
-                 escala=escala, mirar=mirar)
+                 escala=escala, mirar=mirar, forzado=forzar is not None)
     return apuestas, cache
 
 
@@ -257,6 +262,12 @@ def atras(p, c, d_apuestas):
         ds = c["a"] * (da - (da * c["a"]).sum(-1, keepdim=True))  # a través del reparto (softmax)
         dq = (ds @ c["k"]) * c["escala"]
         dk = (t(ds) @ c["q"]) * c["escala"]
+        if c["forzado"]:
+            # con el reparto impuesto, la pregunta y la etiqueta no deciden nada: no tienen culpa, y
+            # no se la pueden pasar a las letras. (Sin esto, una culpa inventada llegaba a las letras
+            # y los números se disparaban: fallo del 27 de septiembre.)
+            dq = torch.zeros_like(dq)
+            dk = torch.zeros_like(dk)
         gr["Wp"] = t(plano(c["e"])) @ plano(dq)
         gr["We"] = t(plano(c["e"])) @ plano(dk)
         gr["Wc"] = t(plano(c["e"])) @ plano(dv)
@@ -315,6 +326,7 @@ def medir(p, prueba, escalar=True, mirar=True, forzar=None):
     for i in range(0, len(x), 2_000):
         xb = torch.from_numpy(x[i:i + 2_000]).to(DISPOSITIVO)
         ap, c = adelante(p, xb, escalar, mirar, forzar)
+        assert torch.isfinite(ap).all(), "los números se han disparado: ya no son números (¿tasa grande?)"
         pred = ap[:, -1].argmax(-1).cpu().numpy()
         aciertos += int((pred == y[i:i + 2_000]).sum())
         if mirar:
@@ -378,22 +390,30 @@ def contar_perilla(aprender, prueba, k):
 
 def entrenar(aprender, pasos, momentos, prueba, ancho=ANCHO, escalar=True, mirar=True,
              inicio="pequeno", semilla=SEMILLA, al_medir=None,
-             mover="capitulo4", congelar=()):
-    gen = torch.Generator().manual_seed(semilla)
-    p = {k: v.to(DISPOSITIVO) for k, v in iniciar(ancho, 4 * ancho, inicio, gen).items()}
+             mover="capitulo4", congelar=(), desde=None, forzar=None, tasa=TASA):
+    """Entrena desde cero, o `desde` unos números ya entrenados (se copian; los originales no se
+    tocan). Con `forzar`, el reparto va impuesto también mientras aprende; entonces la pregunta y la
+    etiqueta no deciden nada y tienen que ir en `congelar`."""
+    if forzar is not None:
+        assert {"Wp", "We"} <= set(congelar), "con el reparto impuesto, la pregunta y la etiqueta van congeladas"
+    if desde is None:
+        gen = torch.Generator().manual_seed(semilla)
+        p = {k: v.to(DISPOSITIVO) for k, v in iniciar(ancho, 4 * ancho, inicio, gen).items()}
+    else:
+        p = {k: v.clone() for k, v in desde.items()}
     assert mover in ("capitulo4", "adam"), f"se esperaba «capitulo4» o «adam»; llegó «{mover}»"
-    opt = ReglaDelCapitulo4(p) if mover == "capitulo4" else Adam(p)
+    opt = ReglaDelCapitulo4(p, tasa) if mover == "capitulo4" else Adam(p)
     rng = np.random.default_rng(semilla)
     medidas = {}
     for paso in range(pasos + 1):
         if paso in momentos:
-            medidas[paso] = medir(p, prueba, escalar, mirar)
+            medidas[paso] = medir(p, prueba, escalar, mirar, forzar)
             if al_medir:
                 al_medir(paso, p)
         if paso == pasos:
             break
         lote = torch.from_numpy(trozos(aprender, rng, LOTE)).to(DISPOSITIVO)
-        ap, c = adelante(p, lote[:, :-1], escalar, mirar)
+        ap, c = adelante(p, lote[:, :-1], escalar, mirar, forzar)
         _, d = perdida_y_culpa_de_salida(ap, lote[:, 1:])
         gr = atras(p, c, d)
         for k in congelar:                 # estos números no se mueven nunca: se quedan al azar
@@ -451,20 +471,23 @@ def selftest():
     #    repite la de PERIODO sitios atrás, la mirada tiene que ir a PERIODO-1 sitios atrás, o PERIODO más
     #    y acertar casi siempre.
     peor = 0.0
-    for escalar in (True, False):
+    # (y con el reparto impuesto del apartado 7, que tiene su propia vuelta: ahí la pregunta y la
+    # etiqueta no tienen culpa, y el 27 de septiembre se la estaban pasando a las letras)
+    for escalar, forzar in ((True, None), (False, None), (True, "igual"), (True, "anterior")):
         gen = torch.Generator().manual_seed(SEMILLA)
         p = iniciar(ANCHO, 4 * ANCHO, "unidad", gen, torch.float64)
         lote = torch.from_numpy(trozos(aprender, np.random.default_rng(1), 8))
-        ap, c = adelante(p, lote[:, :-1], escalar)
+        ap, c = adelante(p, lote[:, :-1], escalar, forzar=forzar)
         perd, d = perdida_y_culpa_de_salida(ap, lote[:, 1:])
         gr = atras(p, c, d)
         pa = {k: v.clone().requires_grad_(True) for k, v in p.items()}
-        ap2, _ = adelante(pa, lote[:, :-1], escalar)
+        ap2, _ = adelante(pa, lote[:, :-1], escalar, forzar=forzar)
         perd2 = torch.nn.functional.cross_entropy(ap2.reshape(-1, V), lote[:, 1:].reshape(-1))
         perd2.backward()
         assert abs(float(perd) - float(perd2.detach())) < 1e-10, "la pérdida a mano no es la de PyTorch"
         for k in p:
-            dif = (gr[k] - pa[k].grad).abs().max() / (pa[k].grad.abs().max() + 1e-30)
+            auto = pa[k].grad if pa[k].grad is not None else torch.zeros_like(gr[k])
+            dif = (gr[k] - auto).abs().max() / (auto.abs().max() + 1e-12)
             peor = max(peor, float(dif))
     # y contra lo más elemental: mover un número un pasito arriba y abajo y ver cuánto cambia el error
     gen = torch.Generator().manual_seed(SEMILLA)
@@ -688,6 +711,17 @@ def main():
     for cual, nombre in REPARTOS_IMPUESTOS.items():
         mi = medir(p, prueba, forzar=cual)
         L.append(f"  {nombre:<40}{coma(100 * mi['acierto']) + ' %':>10}{coma(mi['reparte_entre']):>15}")
+    L += ["", f"  Lo mismo, pero dejando que el resto vuelva a aprender {miles(PASOS_REAPRENDER)} pasos",
+          "  con el reparto impuesto (la pregunta y la etiqueta no cuentan),",
+          f"  moviendo cada número {coma(TASA_REAPRENDER, 1)} veces su culpa:", ""]
+    _, mr = entrenar(aprender, PASOS_REAPRENDER, [PASOS_REAPRENDER], prueba, desde=p, tasa=TASA_REAPRENDER)
+    L.append(f"  {'sin imponer nada (para comparar)':<40}{coma(100 * mr[PASOS_REAPRENDER]['acierto']) + ' %':>10}"
+             f"{coma(mr[PASOS_REAPRENDER]['reparte_entre']):>15}")
+    for cual in ("igual", "anterior"):
+        _, mr = entrenar(aprender, PASOS_REAPRENDER, [PASOS_REAPRENDER], prueba, desde=p, forzar=cual,
+                         congelar=("Wp", "We"), tasa=TASA_REAPRENDER)
+        L.append(f"  {REPARTOS_IMPUESTOS[cual]:<40}{coma(100 * mr[PASOS_REAPRENDER]['acierto']) + ' %':>10}"
+                 f"{coma(mr[PASOS_REAPRENDER]['reparte_entre']):>15}")
     L += ["", "  «pregunta y etiqueta al azar, fijas»: se entrena todo menos las",
           "  dos tablas que deciden a dónde mira; el contenido sí aprende.",
           "  «impuesto»: la máquina no cambia; solo se le dice a dónde mirar.", ""]

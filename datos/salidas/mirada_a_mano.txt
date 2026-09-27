@@ -106,6 +106,14 @@ Semilla 20260914. Texto: el Quijote, 2.095.402 letras:
   todo a la de justo antes                    26,8 %            1,0
   todo a sí misma                             16,6 %            1,0
 
+  Lo mismo, pero dejando que el resto vuelva a aprender 5.000 pasos
+  con el reparto impuesto (la pregunta y la etiqueta no cuentan),
+  moviendo cada número 0,1 veces su culpa:
+
+  sin imponer nada (para comparar)            48,7 %            4,0
+  por igual entre las 16                      32,5 %           16,0
+  todo a la de justo antes                    39,5 %            1,0
+
   «pregunta y etiqueta al azar, fijas»: se entrena todo menos las
   dos tablas que deciden a dónde mira; el contenido sí aprende.
   «impuesto»: la máquina no cambia; solo se le dice a dónde mirar.
