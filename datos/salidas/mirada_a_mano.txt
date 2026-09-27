@@ -1,0 +1,99 @@
+--- selftest ---
+[1] test nulo         barajado 18,2 % (la más frecuente da 18,4 %); texto de verdad 36,5 %
+[2] señal implantada  culpa a mano contra la automática: diferencia 8.5e-16; texto que repite cada 3: acierta 98,6 %, mira a 2, 5, 8… letras atrás el 100,0 %
+[3] invariante        cambiar la letra 11 mueve lo de antes 0.0e+00 y lo de después 6.3e+00; los repartos suman 1 con error 2.2e-16
+
+SELFTEST: las tres pruebas pasan.
+
+########## capítulo 8: una mirada que nadie programa ##########
+máquina: Darwin arm64; calcula en: cpu. Medido el 2026-09-27.
+Semilla 20260914. Texto: el Quijote, 2.095.402 letras:
+1.885.861 para aprender y 209.541 para probar.
+
+1. EL TAMAÑO
+
+  números ajustables: 15.690
+  una ronda, una mirada, 16 letras de contexto, 32 números por letra
+  pasos de entrenamiento: 20.000 (0,6 min en esta máquina)
+
+2. LO QUE ACIERTA Y CÓMO REPARTE LA MIRADA, EN CUATRO MOMENTOS
+   (la última letra de 20.000 trozos que nunca ha visto)
+
+  tras              acierta la siguiente   reparte entre
+  ----              --------------------   -------------
+  0 pasos                          0,1 %     16,0 letras
+  200 pasos                       28,6 %     15,0 letras
+  2.000 pasos                     38,0 %      2,8 letras
+  20.000 pasos                    46,8 %      3,5 letras
+
+  «reparte entre»: a cuántas de las 16 letras mira de verdad,
+  de media: 16 si reparte por igual, 1 si mira a una sola.
+
+3. A DÓNDE MIRA MÁS LA ÚLTIMA LETRA, AL PRINCIPIO Y AL FINAL
+
+  la letra a la que más mira          al empezar    al final
+  --------------------------          ----------    --------
+  la propia letra                          0,0 %      23,7 %
+  la de justo antes                        0,1 %      62,5 %
+  un espacio                              22,2 %       5,2 %
+  la primera letra de la palabra           2,8 %       4,6 %
+  otra                                    74,8 %       4,0 %
+
+  Al empezar reparte casi por igual (apartado 2): «la que más mira»
+  se decide por decimales, y esa columna es casi azar.
+
+4. ¿SIRVE DE ALGO MIRAR? LAS MISMAS LETRAS DE PRUEBA
+
+  la máquina                      acierta      números      vacías
+  ----------                      -------      -------      ------
+  contar, perilla en 0             17,7 %           41           0
+  contar, perilla en 1             30,1 %          798           0
+  contar, perilla en 2             39,6 %        6.753           2
+  contar, perilla en 3             49,0 %       31.731          19
+  contar, perilla en 5             58,0 %      231.704         434
+  esta, sin mirar atrás            29,8 %       11.594           —
+  esta, mirando                    46,8 %       15.690           —
+
+  «números»: los que guarda cada máquina. En la de contar, uno por
+  cada casilla y letra que se ha visto detrás alguna vez.
+  «vacías»: trozos de prueba cuya casilla no salió al aprender.
+  Cuentan como fallo: contar no tiene nada que decir ahí.
+
+5. EL REPARTO DE LA ÚLTIMA LETRA DE «quiero acordarme»
+   (de cada cien, cuánto de su mirada va a cada letra)
+
+  letra         q  u  i  e  r  o  ·  a  c  o  r  d  a  r  m  e
+  tras 0        6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6
+  tras 20.000   0  0  0  0  0  0  0  0  0  0  1  6  2 27 46 17
+
+  «·» es un espacio.
+  apuesta por la siguiente: al empezar «á», al final « ».
+
+6. EL AJUSTE DE ESCALA, CON ÉL Y SIN ÉL
+   (64 números por letra, como las miradas que cita el
+   capítulo; 3.000 pasos; semilla 20260914)
+
+  empiezan           ajuste      0    100  1.000  3.000    reparte
+  pequeños (0,02)        sí    2 %   29 %   37 %   43 %       16,0
+  pequeños (0,02)        no    2 %   29 %   37 %   43 %       16,0
+  de tamaño 1            sí    3 %   33 %   40 %   45 %        6,3
+  de tamaño 1            no    3 %   30 %   37 %   38 %        1,3
+
+  Lo mismo con números de tamaño 1 y otras 2 semillas,
+  tras 3.000 pasos:
+  semilla 20260915: con ajuste 45 %, sin ajuste 38 %
+  semilla 20260916: con ajuste 46 %, sin ajuste 38 %
+
+  «empiezan»: de qué tamaño son los números antes de aprender.
+  Columnas 0 a 3.000: cuánto acierta tras esos pasos, de cada cien.
+  «reparte»: entre cuántas letras mira antes de aprender nada.
+
+7. LO QUE ESCRIBE AL FINAL, EMPEZANDO POR
+   «en un lugar de la mancha, de cuyo »
+
+  en un lugar de la mancha, de cuyo de todo de luntes mi quite
+  ner seque le alcanzos jué siste le a los que lejdades  los r
+  olos que lo que de las encamea todo a un gunos sí, y quijote
+   la xide un lemásticordadoraba no alabrae le han de él toro
+  a la gunio, que me no la entat, en el mundado estalo pantárm
+  eno cada conte yo hicormejara, san
