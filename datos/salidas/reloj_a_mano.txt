@@ -1,6 +1,6 @@
 --- selftest ---
 [1] test nulo         de 252 maneras de elegir cinco «pares», aciertan los diez en 1: [(0, 2, 4, 6, 8)]
-[2] señal implantada  segmentos con diez de diez en la tabla fabricada: ['el del medio']; lectura «encendido es par»: True
+[2] señal implantada  en la tabla fabricada no se saltan la regla con: ['el del medio']; en la de verdad, con el de abajo izquierda: ([4], [])
 [3] invariante        el ocho suma todos los pesos: sí; «pasa de 0,5» y «llega a 1» coinciden: sí
 
 SELFTEST: las tres pruebas pasan.
@@ -8,28 +8,29 @@ SELFTEST: las tres pruebas pasan.
 ########## capítulo 3: par o impar en un reloj, con tres pesos a mano ##########
 Pesos puestos a mano, no entrenados. La cuenta no depende de la máquina.
 
-1. CUÁNTOS DÍGITOS ACIERTA CADA SEGMENTO, ÉL SOLO
-   (encendido quiere decir «par», o encendido quiere decir «impar»:
-   se le cuenta la lectura con la que acierta más)
+1. QUÉ DÍGITOS SE SALTAN LA REGLA, SEGMENTO A SEGMENTO
+   (la regla: encendido en los cinco pares
+   y apagado en los cinco impares)
 
-el segmento                  acierta
-el de arriba                 5 de 10
-el de arriba izquierda       7 de 10
-el de arriba derecha         5 de 10
-el del medio                 6 de 10
-el de abajo izquierda        9 de 10
-el de abajo derecha          6 de 10
-el de abajo                  6 de 10
+                        pares       impares
+el segmento             apagados    encendidos     cuántos
+el de arriba            4           3 5 7 9              5
+el de arriba izquierda  2           5 9                  3
+el de arriba derecha    6           1 3 7 9              5
+el del medio            0           3 5 9                4
+el de abajo izquierda   4           ninguno              1
+el de abajo derecha     2           1 3 5 7 9            6
+el de abajo             4           3 5 9                4
 
 EL DE ABAJO IZQUIERDA, DÍGITO A DÍGITO
 
                            0   1   2   3   4   5   6   7   8   9
                          par imp par imp par imp par imp par imp
                           --  --  --  --  --  --  --  --  --  --
-encendido                 sí  no  sí  no  no  no  sí  no  sí  no
-¿acierta?                 sí  sí  sí  sí  NO  sí  sí  sí  sí  sí
+debería estar encendido   sí  no  sí  no  sí  no  sí  no  sí  no
+está encendido            sí  no  sí  no  no  no  sí  no  sí  no
 
-falla: el 4
+no coinciden: el 4
 
 
 2. LO QUE TIENE EL CUATRO Y NO TIENE NINGÚN OTRO

@@ -59,11 +59,13 @@ def _numero(s):
 
 
 def leer(ruta):
-    """Pesos, listón, lo que acierta cada segmento solo, y los totales de los diez dígitos."""
+    """Pesos, listón, cuántos dígitos se saltan la regla con cada segmento, y los totales."""
     texto = Path(ruta).read_text(encoding="utf-8")
     assert "3. TRES PESOS PUESTOS A MANO" in texto, f"se esperaba la sección 3 en {ruta}"
-    uno = texto.split("1. CUÁNTOS DÍGITOS ACIERTA CADA SEGMENTO", 1)[1].split("EL DE ABAJO", 1)[0]
-    solos = {n.strip(): int(c) for n, c in re.findall(r"^(el [^\n]*?)\s+(\d+) de 10$", uno, re.M)}
+    assert "1. QUÉ DÍGITOS SE SALTAN LA REGLA" in texto, f"se esperaba la sección 1 en {ruta}"
+    uno = texto.split("1. QUÉ DÍGITOS SE SALTAN LA REGLA", 1)[1].split("EL DE ABAJO", 1)[0]
+    solos = {m.group(1): int(m.group(2))
+             for m in re.finditer(r"^(el (?:\S+ )*?\S+)\s{2,}.*?(\d+)$", uno, re.M)}
     assert sorted(solos) == sorted(SEGMENTOS), f"se esperaban los siete segmentos; hay {sorted(solos)}"
     tres = texto.split("3. TRES PESOS PUESTOS A MANO", 1)[1]
     cabeza = tres.split("los otros cuatro", 1)[0]
@@ -111,8 +113,8 @@ def dibujar(d, paleta, ruta):
     p = L.p
     cols = [34 + 13.5 * i for i in range(5)]
 
-    mejor = max(d["solos"].values())
-    assert mejor < 10, "la salida dice que un segmento solo acierta los diez"
+    mejor = min(d["solos"].values())
+    assert mejor > 0, "la salida dice que con un segmento no se salta la regla ningún dígito"
 
     # 1. tres pesos
     x0, y, _ = L.panel(1, "Tres pesos puestos a mano", 34)
