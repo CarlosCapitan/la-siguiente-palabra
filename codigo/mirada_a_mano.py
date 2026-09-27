@@ -160,7 +160,33 @@ def cuantos_numeros(p):
 
 # ---------------------------------------------------------------- la ida, a mano
 
-def adelante(p, x, escalar=True, mirar=True):
+REPARTOS_IMPUESTOS = {
+    "igual": "por igual entre las 16",
+    "anterior": "todo a la de justo antes",
+    "propia": "todo a sí misma",
+}
+
+
+def reparto_impuesto(cual, T, device, dtype):
+    """Un reparto puesto a mano, para usarlo en lugar del aprendido (solo al medir, nunca al
+    entrenar). Mira solo hacia atrás y cada fila suma 1, como el de verdad."""
+    if cual == "igual":
+        a = torch.tril(torch.ones(T, T, dtype=dtype, device=device))
+        a = a / a.sum(-1, keepdim=True)
+    elif cual == "anterior":
+        a = torch.zeros(T, T, dtype=dtype, device=device)
+        a[0, 0] = 1
+        a[torch.arange(1, T), torch.arange(0, T - 1)] = 1
+    elif cual == "propia":
+        a = torch.eye(T, dtype=dtype, device=device)
+    else:
+        raise AssertionError(f"se esperaba uno de {sorted(REPARTOS_IMPUESTOS)}; llegó «{cual}»")
+    assert torch.allclose(a.sum(-1), torch.ones(T, dtype=dtype, device=device))
+    assert not torch.triu(a, 1).any(), "un reparto impuesto no puede mirar hacia delante"
+    return a
+
+
+def adelante(p, x, escalar=True, mirar=True, forzar=None):
     """x: (lote, CONTEXTO) índices de letras. Devuelve las apuestas (lote, CONTEXTO, V) y todo lo
     que hace falta para la vuelta."""
     B, T = x.shape
@@ -175,6 +201,8 @@ def adelante(p, x, escalar=True, mirar=True):
         futuro = torch.triu(torch.ones(T, T, dtype=torch.bool, device=x.device), 1)
         s = s.masked_fill(futuro, float("-inf"))               # no se puede mirar lo que viene
         a = torch.softmax(s, dim=-1)                           # el reparto: suma 1 en cada fila
+        if forzar is not None:                                 # solo al medir (apartado 7)
+            a = reparto_impuesto(forzar, T, x.device, a.dtype).expand(B, T, T)
         traido = a @ v                                         # la mezcla de contenidos
         h = e + traido @ p["Wo"]
     else:
@@ -279,14 +307,14 @@ class Adam:
 
 # ---------------------------------------------------------------- medir
 
-def medir(p, prueba, escalar=True, mirar=True):
+def medir(p, prueba, escalar=True, mirar=True, forzar=None):
     """Acierto en la última letra de cada trozo de prueba (la que tiene las CONTEXTO letras delante),
     entre cuántas letras reparte su mirada, y a dónde mira más."""
     x, y = prueba[:, :CONTEXTO], prueba[:, CONTEXTO]
     aciertos, efectivas, destinos = 0, [], []
     for i in range(0, len(x), 2_000):
         xb = torch.from_numpy(x[i:i + 2_000]).to(DISPOSITIVO)
-        ap, c = adelante(p, xb, escalar, mirar)
+        ap, c = adelante(p, xb, escalar, mirar, forzar)
         pred = ap[:, -1].argmax(-1).cpu().numpy()
         aciertos += int((pred == y[i:i + 2_000]).sum())
         if mirar:
@@ -350,7 +378,7 @@ def contar_perilla(aprender, prueba, k):
 
 def entrenar(aprender, pasos, momentos, prueba, ancho=ANCHO, escalar=True, mirar=True,
              inicio="pequeno", semilla=SEMILLA, al_medir=None,
-             mover="capitulo4"):
+             mover="capitulo4", congelar=()):
     gen = torch.Generator().manual_seed(semilla)
     p = {k: v.to(DISPOSITIVO) for k, v in iniciar(ancho, 4 * ancho, inicio, gen).items()}
     assert mover in ("capitulo4", "adam"), f"se esperaba «capitulo4» o «adam»; llegó «{mover}»"
@@ -367,7 +395,10 @@ def entrenar(aprender, pasos, momentos, prueba, ancho=ANCHO, escalar=True, mirar
         lote = torch.from_numpy(trozos(aprender, rng, LOTE)).to(DISPOSITIVO)
         ap, c = adelante(p, lote[:, :-1], escalar, mirar)
         _, d = perdida_y_culpa_de_salida(ap, lote[:, 1:])
-        opt.paso(p, atras(p, c, d))
+        gr = atras(p, c, d)
+        for k in congelar:                 # estos números no se mueven nunca: se quedan al azar
+            gr[k].zero_()
+        opt.paso(p, gr)
     return p, medidas
 
 
@@ -642,7 +673,26 @@ def main():
           f"  Columnas {MOMENTOS_ESCALA[0]} a {miles(PASOS_ESCALA)}: cuánto acierta tras esos pasos, de cada cien.",
           "  «reparte»: entre cuántas letras mira antes de aprender nada.", ""]
 
-    L += ["7. LO QUE ESCRIBE AL FINAL, EMPEZANDO POR", f"   «{ARRANQUE_MUESTRA}»", ""]
+    # ---- 7. ¿mirar, o saber a dónde mirar?
+    _, med_fija = entrenar(aprender, PASOS, [PASOS], prueba, congelar=("Wp", "We"))
+    L += ["7. ¿MIRAR, O SABER A DÓNDE MIRAR?", "",
+          f"  {'la máquina':<40}{'acierta':>10}{'reparte entre':>15}",
+          f"  {'----------':<40}{'-------':>10}{'-------------':>15}",
+          f"  {'entrenada entera (apartado 2)':<40}{coma(100 * med[PASOS]['acierto']) + ' %':>10}"
+          f"{coma(med[PASOS]['reparte_entre']):>15}",
+          f"  {'pregunta y etiqueta al azar, fijas':<40}{coma(100 * med_fija[PASOS]['acierto']) + ' %':>10}"
+          f"{coma(med_fija[PASOS]['reparte_entre']):>15}",
+          f"  {'sin mirar atrás (apartado 4)':<40}{coma(100 * med_sin[PASOS]['acierto']) + ' %':>10}"
+          f"{'—':>15}",
+          "", "  La entrenada entera, con el reparto impuesto al usarla:", ""]
+    for cual, nombre in REPARTOS_IMPUESTOS.items():
+        mi = medir(p, prueba, forzar=cual)
+        L.append(f"  {nombre:<40}{coma(100 * mi['acierto']) + ' %':>10}{coma(mi['reparte_entre']):>15}")
+    L += ["", "  «pregunta y etiqueta al azar, fijas»: se entrena todo menos las",
+          "  dos tablas que deciden a dónde mira; el contenido sí aprende.",
+          "  «impuesto»: la máquina no cambia; solo se le dice a dónde mirar.", ""]
+
+    L += ["8. LO QUE ESCRIBE AL FINAL, EMPEZANDO POR", f"   «{ARRANQUE_MUESTRA}»", ""]
     muestra = escribir(p, np.random.default_rng(SEMILLA))
     for i in range(0, len(muestra), 60):
         L.append("  " + muestra[i:i + 60])

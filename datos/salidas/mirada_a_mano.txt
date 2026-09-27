@@ -92,7 +92,25 @@ Semilla 20260914. Texto: el Quijote, 2.095.402 letras:
   Columnas 0 a 3.000: cuánto acierta tras esos pasos, de cada cien.
   «reparte»: entre cuántas letras mira antes de aprender nada.
 
-7. LO QUE ESCRIBE AL FINAL, EMPEZANDO POR
+7. ¿MIRAR, O SABER A DÓNDE MIRAR?
+
+  la máquina                                 acierta  reparte entre
+  ----------                                 -------  -------------
+  entrenada entera (apartado 2)               44,5 %            4,4
+  pregunta y etiqueta al azar, fijas          32,4 %           16,0
+  sin mirar atrás (apartado 4)                30,0 %              —
+
+  La entrenada entera, con el reparto impuesto al usarla:
+
+  por igual entre las 16                      24,1 %           16,0
+  todo a la de justo antes                    26,8 %            1,0
+  todo a sí misma                             16,6 %            1,0
+
+  «pregunta y etiqueta al azar, fijas»: se entrena todo menos las
+  dos tablas que deciden a dónde mira; el contenido sí aprende.
+  «impuesto»: la máquina no cambia; solo se le dice a dónde mirar.
+
+8. LO QUE ESCRIBE AL FINAL, EMPEZANDO POR
    «en un lugar de la mancha, de cuyo »
 
   en un lugar de la mancha, de cuyo de un mementé miro he  su
