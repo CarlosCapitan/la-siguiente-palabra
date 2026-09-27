@@ -7,8 +7,11 @@ cinco pares y apagado en los cinco impares. No lo hay. Luego dice que un comité
 a la vez, sí lo consigue. Este programa hace ese paso a mano, con pasos que el lector puede
 seguir con el dedo sobre la tabla:
 
-  1. Cuántos dígitos acierta cada segmento él solo. El que más, el de abajo izquierda: nueve de
-     diez. Solo falla el cuatro, que es par y lo tiene apagado.
+  1. Qué dígitos se saltan, segmento a segmento, la regla «encendido en los cinco pares y apagado
+     en los cinco impares»: los pares que lo tienen apagado y los impares que lo tienen encendido.
+     Al de abajo izquierda solo se la salta uno, el cuatro, que es par y lo tiene apagado.
+     (L23: hasta el 27 esto se contaba como «cuántos dígitos acierta cada segmento, en la mejor de
+     sus dos lecturas», y que un segmento apagado «acierte» con el uno no lo entendía nadie.)
   2. Qué tiene el cuatro que no tenga nadie más: es el único con el de arriba izquierda encendido
      y el de arriba apagado.
   3. Tres pesos que dicen eso mismo en números (el de arriba −1, el de arriba izquierda +1, el de
@@ -60,12 +63,17 @@ def vector_de_pesos(pesos):
     return np.array([float(pesos.get(s, 0)) for s in SEGMENTOS])
 
 
-def aciertos_de_un_segmento(X, es_par, j):
-    """Cuántos dígitos acierta el segmento j él solo, en la mejor de sus dos lecturas:
-    «encendido quiere decir par» o «encendido quiere decir impar»."""
+def se_la_saltan(X, es_par, j):
+    """Los dígitos que se saltan la regla «encendido en los pares, apagado en los impares» con el
+    segmento j: los pares que lo tienen apagado y los impares que lo tienen encendido."""
     encendido = X[:, j] > 0
-    a = int(np.sum(encendido == es_par))
-    return max(a, len(es_par) - a), (a >= len(es_par) - a)
+    pares_apagados = [d for d in range(len(es_par)) if es_par[d] and not encendido[d]]
+    impares_encendidos = [d for d in range(len(es_par)) if not es_par[d] and encendido[d]]
+    return pares_apagados, impares_encendidos
+
+
+def lista(ds):
+    return " ".join(str(d) for d in ds) if ds else "ninguno"
 
 
 def decide(X, w, liston):
@@ -94,24 +102,28 @@ def bloques(X):
     L = []
 
     # ---- 1. cada segmento, él solo
-    L += ["1. CUÁNTOS DÍGITOS ACIERTA CADA SEGMENTO, ÉL SOLO",
-          "   (encendido quiere decir «par», o encendido quiere decir «impar»:",
-          "   se le cuenta la lectura con la que acierta más)", "",
-          f"{'el segmento':<{ANCHO_NOMBRE}}{'acierta':>12}"]
-    cuentas = [aciertos_de_un_segmento(X, es_par, j)[0] for j in range(len(SEGMENTOS))]
-    for nombre, c in zip(SEGMENTOS, cuentas):
-        L.append(f"{nombre:<{ANCHO_NOMBRE}}{f'{c} de 10':>12}")
-    mejor = int(np.argmax(cuentas))
+    ANCHO_PA, ANCHO_IE = 12, 15
+    L += ["1. QUÉ DÍGITOS SE SALTAN LA REGLA, SEGMENTO A SEGMENTO",
+          "   (la regla: encendido en los cinco pares",
+          "   y apagado en los cinco impares)", "",
+          f"{'':<{ANCHO_NOMBRE}}{'pares':<{ANCHO_PA}}{'impares':<{ANCHO_IE}}",
+          f"{'el segmento':<{ANCHO_NOMBRE}}{'apagados':<{ANCHO_PA}}{'encendidos':<{ANCHO_IE}}cuántos"]
+    saltan = [se_la_saltan(X, es_par, j) for j in range(len(SEGMENTOS))]
+    cuentas = [len(pa) + len(ie) for pa, ie in saltan]
+    for nombre, (pa, ie), c in zip(SEGMENTOS, saltan, cuentas):
+        L.append(f"{nombre:<{ANCHO_NOMBRE}}{lista(pa):<{ANCHO_PA}}{lista(ie):<{ANCHO_IE}}{c:>7}")
+    mejor = int(np.argmin(cuentas))
     assert SEGMENTOS[mejor] == "el de abajo izquierda", \
-        f"se esperaba que el que más acierta fuera el de abajo izquierda; es {SEGMENTOS[mejor]}"
-    assert max(cuentas) < 10, "un segmento solo acierta los diez: el capítulo diría lo contrario"
+        f"se esperaba que al que menos se la saltan fuera el de abajo izquierda; es {SEGMENTOS[mejor]}"
+    assert min(cuentas) > 0, "a un segmento no se la salta nadie: el capítulo diría lo contrario"
     j = mejor
     L += ["", "EL DE ABAJO IZQUIERDA, DÍGITO A DÍGITO", ""] + cabecera_digitos()
     enc = X[:, j] > 0
-    L.append(fila("encendido", ["sí" if e else "no" for e in enc]))
-    L.append(fila("¿acierta?", ["sí" if e == p else "NO" for e, p in zip(enc, es_par)]))
+    L.append(fila("debería estar encendido", ["sí" if p else "no" for p in es_par]))
+    L.append(fila("está encendido", ["sí" if e else "no" for e in enc]))
     fallan = [d for d in range(10) if enc[d] != es_par[d]]
-    L += ["", f"falla: {', '.join(f'el {d}' for d in fallan)}"]
+    assert fallan == saltan[j][0] + saltan[j][1], "el dígito a dígito no dice lo mismo que la tabla"
+    L += ["", f"no coinciden: {', '.join(f'el {d}' for d in fallan)}"]
 
     # ---- 2. lo que solo tiene el cuatro
     a = SEGMENTOS.index("el de arriba izquierda")
@@ -173,17 +185,20 @@ def selftest():
         fallos.append(f"test nulo: aciertan los diez con {aciertan}, no solo con los pares")
 
     # 2. SEÑAL IMPLANTADA — se fabrica una tabla en la que el del medio está encendido justo en
-    #    los pares. La cuenta de «cada segmento, él solo» tiene que encontrarlo, en su sitio, con
-    #    diez de diez; y con la lectura «encendido es par».
+    #    los pares. La cuenta de «qué dígitos se saltan la regla» tiene que encontrarlo, en su sitio,
+    #    sin ninguno; y en la tabla de verdad, al de abajo izquierda se la tiene que saltar solo el 4,
+    #    que es par y lo tiene apagado (lo que dice el capítulo).
     Xf = X.copy()
     m = SEGMENTOS.index("el del medio")
     Xf[:, m] = es_par.astype(float)
-    cuentas = [aciertos_de_un_segmento(Xf, es_par, j) for j in range(len(SEGMENTOS))]
-    donde = [SEGMENTOS[j] for j, (c, _) in enumerate(cuentas) if c == 10]
-    print(f"[2] señal implantada  segmentos con diez de diez en la tabla fabricada: {donde}; "
-          f"lectura «encendido es par»: {cuentas[m][1]}")
-    if donde != ["el del medio"] or not cuentas[m][1]:
-        fallos.append("señal implantada: no encuentra el segmento fabricado, o lo lee al revés")
+    limpios = [SEGMENTOS[j] for j in range(len(SEGMENTOS))
+               if se_la_saltan(Xf, es_par, j) == ([], [])]
+    ai = se_la_saltan(X, es_par, SEGMENTOS.index("el de abajo izquierda"))
+    print(f"[2] señal implantada  en la tabla fabricada no se saltan la regla con: {limpios}; "
+          f"en la de verdad, con el de abajo izquierda: {ai}")
+    if limpios != ["el del medio"] or ai != ([4], []):
+        fallos.append("señal implantada: no encuentra el segmento fabricado, o el de abajo "
+                      "izquierda no falla solo con el 4")
 
     # 3. INVARIANTE DEL DOMINIO — el ocho enciende los siete segmentos, así que su total es la
     #    suma de todos los pesos. Y con totales enteros, «pasa de 0,5» y «llega a 1» (la maqueta)
