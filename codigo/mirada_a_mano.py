@@ -18,9 +18,12 @@ lo dice». Este programa lo enseña en pequeño y sobre texto de verdad, el Quij
   - y un experimento aparte: el ajuste de escala de las puntuaciones que el capítulo 8 dice que hizo
     falta («sin ese ajuste el aprendizaje se atasca casi desde el principio»), con él y sin él.
 
-Cómo se mueve cada número tras repartir la culpa: con el método de Adam (Kingma y Ba, 2014), escrito
-también a mano. Es «mover cada número un poquito en la dirección de su culpa», como en el capítulo 4,
-con un poquito distinto para cada número según cómo se ha movido su culpa hasta ahora.
+Cómo se mueve cada número tras repartir la culpa: exactamente como en el capítulo 4, un poquito en
+contra de su culpa y en proporción a ella (`ReglaDelCapitulo4`). Solo el experimento del ajuste de
+escala usa el método de Adam (Kingma y Ba, 2014), también escrito a mano: con la regla simple hay que
+buscar una tasa distinta para cada manera de empezar (una versión anterior de este programa necesitó
+1,0, 0,3 y 4,0), y entonces no se sabe si la diferencia la pone el ajuste o la tasa. Adam da a cada
+número su propio poquito y sirve igual para los cuatro casos.
 
 Uso:
     python mirada_a_mano.py --selftest
@@ -38,12 +41,17 @@ CONTEXTO = 16             # letras que puede mirar hacia atrás (la propia inclu
 ANCHO = 32                # números por letra
 ANCHO_MEZCLA = 128        # números de la parte de mezclar (cuatro veces el ancho, como es costumbre)
 LOTE = 64                 # trozos de texto por paso
-TASA = 3e-3               # el «poquito» de Adam
+TASA = 1.0                # el «poquito» del capítulo 4: cuánto se mueve cada número por unidad de
+                          # culpa. Probado el 27 de septiembre: 0,3 y 1,0 dan lo mismo (44 %);
+                          # con 3,0 los números se disparan y deja de aprender
+TASA_ADAM = 3e-3          # el «poquito» de Adam, solo para el experimento del ajuste de escala
 BETA1, BETA2, EPS = 0.9, 0.999, 1e-8
 DESVIACION_INICIAL = 0.02 # los números empiezan al azar, pequeños (como GPT-2): el reparto nace plano
 
 PASOS = 20_000
-MOMENTOS = [0, 200, 2_000, 20_000]        # cuándo se mide; el último tiene que ser PASOS
+MOMENTOS = [0, 1_000, 5_000, 10_000, 20_000]  # cuándo se mide; el último tiene que ser PASOS.
+# Con la regla del capítulo 4 la mirada se cierra más tarde que con Adam (a los 2.000 pasos aún
+# reparte entre 15,7 letras), y hacen falta momentos intermedios para ver cuándo.
 EJEMPLOS_PRUEBA = 20_000                  # trozos del 10 % final con los que se mide
 
 PERILLAS = [0, 1, 2, 3, 5]                # la máquina de contar del capítulo 1, las mismas
@@ -66,8 +74,12 @@ OTRAS_SEMILLAS_ESCALA = [SEMILLA + 1, SEMILLA + 2]  # para ver si la diferencia 
 DISPOSITIVO = "cpu"       # se decide con --medir-velocidad; la salida dice cuál se usó
 
 # --- selftest ---
-PASOS_NULO = 1_500
-PASOS_PERIODO = 1_000
+PASOS_NULO = 3_000
+PASOS_PERIODO = 3_000
+PUNTOS_DIFERENCIAS = 24   # números que se comprueban moviéndolos un poquito, uno a uno
+PASITO = 1e-6             # cuánto se mueven
+TOLERANCIA_DIFERENCIAS = 1e-5  # el error de redondeo al restar dos errores casi iguales y dividir
+                                # por un pasito de una millonésima ya es de este orden
 PERIODO = 3               # texto fabricado en el que cada letra repite la de tres sitios atrás
 TOLERANCIA_CULPA = 1e-6   # diferencia relativa máxima entre la culpa a mano y la automática
 
@@ -236,10 +248,21 @@ def atras(p, c, d_apuestas):
 
 # ---------------------------------------------------------------- mover los números
 
+class ReglaDelCapitulo4:
+    """Mover cada número un poquito en contra de su culpa, en proporción a ella. Nada más."""
+
+    def __init__(self, p, tasa=TASA):
+        self.tasa = tasa
+
+    def paso(self, p, gr):
+        for k in p:
+            p[k].sub_(self.tasa * gr[k])
+
+
 class Adam:
     """Mover cada número un poquito en contra de su culpa, con un poquito propio para cada uno."""
 
-    def __init__(self, p, tasa=TASA):
+    def __init__(self, p, tasa=TASA_ADAM):
         self.tasa, self.n = tasa, 0
         self.m = {k: torch.zeros_like(v) for k, v in p.items()}
         self.v = {k: torch.zeros_like(v) for k, v in p.items()}
@@ -326,10 +349,12 @@ def contar_perilla(aprender, prueba, k):
 # ---------------------------------------------------------------- entrenar
 
 def entrenar(aprender, pasos, momentos, prueba, ancho=ANCHO, escalar=True, mirar=True,
-             inicio="pequeno", semilla=SEMILLA, al_medir=None):
+             inicio="pequeno", semilla=SEMILLA, al_medir=None,
+             mover="capitulo4"):
     gen = torch.Generator().manual_seed(semilla)
     p = {k: v.to(DISPOSITIVO) for k, v in iniciar(ancho, 4 * ancho, inicio, gen).items()}
-    opt = Adam(p)
+    assert mover in ("capitulo4", "adam"), f"se esperaba «capitulo4» o «adam»; llegó «{mover}»"
+    opt = ReglaDelCapitulo4(p) if mover == "capitulo4" else Adam(p)
     rng = np.random.default_rng(semilla)
     medidas = {}
     for paso in range(pasos + 1):
@@ -410,6 +435,27 @@ def selftest():
         for k in p:
             dif = (gr[k] - pa[k].grad).abs().max() / (pa[k].grad.abs().max() + 1e-30)
             peor = max(peor, float(dif))
+    # y contra lo más elemental: mover un número un pasito arriba y abajo y ver cuánto cambia el error
+    gen = torch.Generator().manual_seed(SEMILLA)
+    p = iniciar(ANCHO, 4 * ANCHO, "unidad", gen, torch.float64)
+    lote = torch.from_numpy(trozos(aprender, np.random.default_rng(5), 8))
+    ap, c = adelante(p, lote[:, :-1])
+    _, d = perdida_y_culpa_de_salida(ap, lote[:, 1:])
+    gr = atras(p, c, d)
+    elige = np.random.default_rng(6)
+    peor_dif = 0.0
+    for _ in range(PUNTOS_DIFERENCIAS):
+        k = sorted(p)[elige.integers(len(p))]
+        i = int(elige.integers(p[k].numel()))
+        original = float(p[k].view(-1)[i])
+        errores = []
+        for signo in (1, -1):
+            p[k].view(-1)[i] = original + signo * PASITO
+            errores.append(float(perdida_y_culpa_de_salida(adelante(p, lote[:, :-1])[0], lote[:, 1:])[0]))
+        p[k].view(-1)[i] = original
+        a_ojo = (errores[0] - errores[1]) / (2 * PASITO)
+        a_mano = float(gr[k].view(-1)[i])
+        peor_dif = max(peor_dif, abs(a_ojo - a_mano) / max(abs(a_mano), 1e-3))
     # Cada 200 letras se eligen al azar PERIODO letras nuevas y se repiten: la única manera de acertar es
     # mirar PERIODO-1 sitios detrás de la última letra (o PERIODO más).
     trozo = 200
@@ -423,8 +469,11 @@ def selftest():
     multiplos = float(np.mean(dist % PERIODO == PERIODO - 1))
     af = mf[PASOS_PERIODO]["acierto"]
     print(f"[2] señal implantada  culpa a mano contra la automática: diferencia {peor:.1e}; "
+          f"contra mover un pasito {PUNTOS_DIFERENCIAS} números: {peor_dif:.1e}; "
           f"texto que repite cada {PERIODO}: acierta {coma(100 * af)} %, mira a {PERIODO - 1}, "
           f"{2 * PERIODO - 1}, {3 * PERIODO - 1}… letras atrás el {coma(100 * multiplos)} %")
+    if peor_dif > TOLERANCIA_DIFERENCIAS:
+        fallos.append(f"señal: la culpa a mano no es lo que cambia el error al mover un número ({peor_dif:.1e})")
     if peor > TOLERANCIA_CULPA:
         fallos.append(f"señal: la culpa a mano se separa de la automática ({peor:.1e})")
     if af < 0.95 or multiplos < 0.90:
@@ -510,9 +559,12 @@ def main():
     L += ["1. EL TAMAÑO", "",
           f"  números ajustables: {miles(cuantos_numeros(p))}",
           f"  una ronda, una mirada, {CONTEXTO} letras de contexto, {ANCHO} números por letra",
-          f"  pasos de entrenamiento: {miles(PASOS)} ({coma(minutos)} min en esta máquina)", ""]
+          f"  pasos de entrenamiento: {miles(PASOS)} ({coma(minutos)} min en esta máquina)",
+          f"  cada paso mueve cada número {coma(TASA, 1)} veces su culpa, en contra",
+          "  (la regla del capítulo 4)", ""]
 
-    L += ["2. LO QUE ACIERTA Y CÓMO REPARTE LA MIRADA, EN CUATRO MOMENTOS",
+    assert len(MOMENTOS) == 5, "el título del apartado 2 dice «cinco momentos»"
+    L += ["2. LO QUE ACIERTA Y CÓMO REPARTE LA MIRADA, EN CINCO MOMENTOS",
           f"   (la última letra de {miles(EJEMPLOS_PRUEBA)} trozos que nunca ha visto)", "",
           f"  {'tras':<16}{'acierta la siguiente':>22}{'reparte entre':>16}",
           f"  {'----':<16}{'--------------------':>22}{'-------------':>16}"]
@@ -564,13 +616,14 @@ def main():
 
     L += ["6. EL AJUSTE DE ESCALA, CON ÉL Y SIN ÉL",
           f"   ({ANCHO_ESCALA} números por letra, como las miradas que cita el",
-          f"   capítulo; {miles(PASOS_ESCALA)} pasos; semilla {SEMILLA})", "",
+          f"   capítulo; {miles(PASOS_ESCALA)} pasos; semilla {SEMILLA}; los números",
+          "   se mueven con Adam: ver el principio del programa)", "",
           f"  {'empiezan':<18}{'ajuste':>7}" + "".join(f"{miles(s):>7}" for s in MOMENTOS_ESCALA)
           + f"{'reparte':>11}"]
     for nombre, ini in INICIOS_ESCALA.items():
         for escalar in (True, False):
             _, me = entrenar(aprender, PASOS_ESCALA, MOMENTOS_ESCALA, prueba[:5_000],
-                             ancho=ANCHO_ESCALA, escalar=escalar, inicio=ini)
+                             ancho=ANCHO_ESCALA, escalar=escalar, inicio=ini, mover="adam")
             L.append(f"  {nombre:<18}{('sí' if escalar else 'no'):>7}"
                      + "".join(f"{coma(100 * me[s]['acierto'], 0) + ' %':>7}" for s in MOMENTOS_ESCALA)
                      + f"{coma(me[0]['reparte_entre']):>11}")
@@ -580,7 +633,8 @@ def main():
         r = {}
         for escalar in (True, False):
             _, me = entrenar(aprender, PASOS_ESCALA, [PASOS_ESCALA], prueba[:5_000],
-                             ancho=ANCHO_ESCALA, escalar=escalar, inicio="unidad", semilla=sem)
+                             ancho=ANCHO_ESCALA, escalar=escalar, inicio="unidad", semilla=sem,
+                             mover="adam")
             r[escalar] = me[PASOS_ESCALA]["acierto"]
         L.append(f"  semilla {sem}: con ajuste {coma(100 * r[True], 0)} %, "
                  f"sin ajuste {coma(100 * r[False], 0)} %")
