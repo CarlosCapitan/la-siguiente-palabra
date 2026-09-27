@@ -3,12 +3,14 @@
 Capítulo 3 — pares e impares en un reloj digital, con tres pesos puestos a mano (L17, T16).
 
 La maqueta de Carlos (L9, `notas/maquetas/L9-pares-e-impares-reloj.png`), en gris y con dos
-cambios: el listón es «pasa de 0,5», como lo dice el libro desde el capítulo 2, y el paso 3 dice
+cambios: el listón es «pasa de 0,5», como lo dice el libro desde el capítulo 2, y el paso 2 dice
 «los mismos pesos», no «el mismo baremo».
 
-  1. Siete piezas forman los diez dígitos; ninguna, ella sola, separa pares de impares.
-  2. Tres pesos puestos a mano y el listón.
-  3. Los mismos pesos aciertan los diez: el total de cada dígito.
+  1. Tres pesos puestos a mano y el listón.
+  2. Los mismos pesos aciertan los diez: el total de cada dígito.
+
+Los diez dígitos, uno a uno, van en la figura anterior (`figura_diez_digitos.py`, L22), y por eso
+esta ya no los repite: tenía un primer paso con ellos que se quitó el 27 de septiembre.
 
 Los pesos, el listón y los totales NO se calculan aquí: se leen de
 `datos/salidas/reloj_a_mano.txt`. Qué segmentos enciende cada dígito sale de la tabla de
@@ -23,7 +25,7 @@ Uso:
 
 SALIDA = "../datos/salidas/reloj_a_mano.txt"
 DESTINO = "../figuras/reloj_a_mano.png"
-ALTO = 6.3                       # pulgadas (caben 6,55)
+ALTO = 4.15                      # pulgadas (caben 6,55)
 
 # ==========================================================
 
@@ -36,6 +38,7 @@ import numpy as np
 
 from infografia import COLOR, GRIS, Lienzo
 from siete_segmentos import SEGMENTOS, tabla_de_segmentos
+from figura_diez_digitos import dibuja_digito   # el mismo reloj que la figura de los diez dígitos
 
 AQUI = Path(__file__).resolve().parent
 
@@ -108,26 +111,13 @@ def dibujar(d, paleta, ruta):
     p = L.p
     cols = [34 + 13.5 * i for i in range(5)]
 
-    # 1. siete piezas
-    x0, y, _ = L.panel(1, "Siete piezas forman los diez dígitos", 42)
-    for fila, (nombre, digs) in enumerate((("pares", [0, 2, 4, 6, 8]),
-                                          ("impares", [1, 3, 5, 7, 9]))):
-        yb = y - 10 - fila * 13
-        L.texto(x0 + 1, yb + 4, nombre, negrita=True, tam=8.4)
-        for c, k in zip(cols, digs):
-            digito(L, c - 2, yb, 8, enc[k])
-            L.texto(c, yb - 2.3, str(k), ha="center", tam=7.4, negrita=True)
     mejor = max(d["solos"].values())
     assert mejor < 10, "la salida dice que un segmento solo acierta los diez"
-    L.texto(50, y - 28.6, "Ningún segmento, él solo, está encendido en los cinco pares",
-            ha="center", tam=7.6)
-    L.texto(50, y - 31.4, "y apagado en los cinco impares.", ha="center", tam=7.6)
-    L.flecha()
 
-    # 2. tres pesos
-    x0, y, _ = L.panel(2, "Tres pesos puestos a mano", 34)
+    # 1. tres pesos
+    x0, y, _ = L.panel(1, "Tres pesos puestos a mano", 34)
     xd, yd, h = 36, y - 24, 17
-    digito(L, xd, yd, h, set(), destacar=set(d["pesos"]), grueso=4.2)
+    dibuja_digito(L.ax, xd, yd, h / 2, set(d["pesos"]), p.acento)
     ancho = h / 2
     etiquetas = {"el de arriba": (xd + ancho / 2, yd + h, xd + ancho + 4, yd + h + 1.0, "left"),
                  "el de arriba izquierda": (xd, yd + 3 * h / 4, xd - 3, yd + 3 * h / 4, "right"),
@@ -154,8 +144,8 @@ def dibujar(d, paleta, ruta):
     L.texto(bx + bw / 2, y - 23.3, "si está encendido", ha="center", tam=7.0, color=p.suave)
     L.flecha()
 
-    # 3. los diez totales
-    x0, y, _ = L.panel(3, "Los mismos pesos aciertan los diez", 31)
+    # 2. los diez totales
+    x0, y, _ = L.panel(2, "Los mismos pesos aciertan los diez", 31)
     for fila, (nombre, digs) in enumerate((("pares", [0, 2, 4, 6, 8]),
                                           ("impares", [1, 3, 5, 7, 9]))):
         yc = y - 4.5 - fila * 11
