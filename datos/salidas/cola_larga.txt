@@ -1,0 +1,24 @@
+--- LAS PALABRAS DE LOS TRESCIENTOS LIBROS, POR PUESTOS ---
+  palabras en total: 22.236.987; distintas: 330.210
+
+     puesto  palabra              veces   de cada millón
+          1  de               1.185.118         53.294,9
+         10  se                 266.894         12.002,3
+        100  aquí                17.970            808,1
+      1.000  conversación         1.944             87,4
+     10.000  maurescamp             172              7,7
+    100.000  dislacerante             5              0,2
+
+  cada vez que el puesto se multiplica por diez, las veces
+  se dividen entre:
+    del puesto 1 al 10:              4,4
+    del puesto 10 al 100:           14,9
+    del puesto 100 al 1.000:         9,2
+    del puesto 1.000 al 10.000:     11,3
+    del puesto 10.000 al 100.000:   34,4
+
+  «puesto»: el lugar en la lista, de la más a la menos
+  frecuente. «de cada millón»: de cada millón de palabras
+  de los libros, cuántas son ésa.
+  palabras que salen una sola vez: 143.430, 43 de cada
+  cien de las distintas.

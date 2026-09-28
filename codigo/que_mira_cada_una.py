@@ -51,6 +51,15 @@ TITULO_4 = "¿Y SI EN MEDIO HAY MÁS COMITÉS, O MENOS?"
 SUBTITULO_4A = "media de {repeticiones} entrenamientos desde cero; entre paréntesis,"
 SUBTITULO_4B = "el peor y el mejor de los {repeticiones}"
 
+# L24 (28 de septiembre): tres bloques nuevos al final de la salida, sin tocar lo de arriba.
+TITULO_5 = "LO QUE MEJORA LA CAPA, SEGÚN QUÉ DOS SE COMPAREN"
+SUBTITULO_5 = "(en puntos: de cada 100 dígitos, cuántos más acierta)"
+TITULO_6 = "CADA COMITÉ DE EN MEDIO, LEÍDO DE LAS DOS MANERAS"
+SUBTITULO_6 = "(de cada 100 dígitos que nunca había visto, cuántos acierta)"
+TITULO_7 = "CUÁNTO SE PARECEN, CON LA CUENTA DEL CUATRO Y EL NUEVE"
+SUBTITULO_7 = ["(de -1 a 1: 1, iguales salvo el tamaño de los números;",
+               "0, nada que ver; -1, uno es el negativo del otro)"]
+
 SALIDA_CSV = "que_mira_cada_una.csv"
 
 # ==========================================================
@@ -59,7 +68,7 @@ import argparse
 import csv
 import sys
 
-from formato import comprobar_ancho, pct, coma
+from formato import comprobar_ancho, pct, coma, ANCHO_CAJA_CITA
 import numpy as np
 
 from perceptron import cargar_digitos
@@ -215,6 +224,47 @@ def imprimir(m, aciertos, parecido, sola, con_capa):
         print(l)
 
 
+def parecido_con_signo(red):
+    """La cuenta de parecido del capítulo 3 (la de los pesos del cuatro contra la diferencia,
+    `el_comite_por_dentro.parecido`): la correlación, de -1 a 1. Devuelve la pareja que más se
+    parece sin mirar el signo, y su valor CON signo. Sin mirar el signo porque a cada comité se
+    le deja elegir cuál de sus dos extremos es el «sí» (acierto_de_cada_una): dos comités que
+    son uno el negativo del otro hacen la misma pregunta al revés."""
+    W = red.W[0]
+    C = np.corrcoef(W.T)
+    np.fill_diagonal(C, 0.0)
+    a, b = np.unravel_index(int(np.argmax(np.abs(C))), C.shape)
+    a, b = sorted((int(a), int(b)))
+    return a, b, float(C[a, b])
+
+
+def imprimir_l24(m, sola, con_capa):
+    """Los tres bloques del repaso L24 del capítulo 3 (hallazgos A01, A02 y A03)."""
+    lineas = [TITULO_5, SUBTITULO_5, ""]
+    (sm, sp, sb), (cm, cp, cb) = sola, con_capa
+    for rotulo, de, a in (("las dos medias de 5", sm, cm),
+                          ("la mejor sin capa y la peor con capa", sb, cp),
+                          ("la peor sin capa y la mejor con capa", sp, cb)):
+        lineas.append(f"{rotulo:<39}{coma(100 * de)} a {coma(100 * a)}{coma(100 * (a - de)):>7}")
+    lineas += ["", "", TITULO_6, SUBTITULO_6, "",
+               f"{'':<14}{'si pasar de la':>16}{'si pasar de la':>19}{'se le':>9}",
+               f"{'':<14}{'mitad es «par»':>16}{'mitad es «impar»':>19}{'cuenta':>9}"]
+    for j in range(m["medio"].shape[1]):
+        a = float(((m["medio"][:, j] > UMBRAL) == (m["yte"] > UMBRAL)).mean())
+        lineas.append(f"{'el comité ' + str(j + 1):<14}{pct(a):>16}{pct(1 - a):>19}{pct(max(a, 1 - a)):>9}")
+    a, b, r = parecido_con_signo(m["red"])
+    lineas += ["", "", TITULO_7] + SUBTITULO_7 + ["",
+               "los dos que más se parecen, contando como parecido también",
+               "que uno sea el negativo del otro:",
+               f"{'el comité ' + str(a + 1) + ' y el comité ' + str(b + 1):<41}{coma(r, 2):>7}"]
+    comprobar_ancho(lineas, ANCHO_CAJA_CITA)
+    print()
+    print()
+    for l in lineas:
+        print(l)
+    return a, b, r
+
+
 def guardar(m, aciertos, parecido, sola, con_capa):
     with open(SALIDA_CSV, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
@@ -300,6 +350,7 @@ def main():
     sola = media_de_varias(una_raya_sola)
     con_capa = media_de_varias(lambda sem: entrenar_con_capa(sem, EN_MEDIO)["entera"])
     imprimir(m, aciertos, parecido, sola, con_capa)
+    imprimir_l24(m, sola, con_capa)
     guardar(m, aciertos, parecido, sola, con_capa)
     return 0
 

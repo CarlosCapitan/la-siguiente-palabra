@@ -1,0 +1,281 @@
+#!/usr/bin/env python3
+"""
+Capítulo 6 — el «% copiado», hecho a mano sobre una muestra (L24).
+
+El capítulo 6 da, para cada muestra de la red, un «copiado»: qué parte de sus cuarenta y cinco
+palabras está, tal cual, en los libros con que se entrenó. La medida la hace
+`lo_habia_visto_ya.py` y el libro solo la describía con palabras. Carlos, el 27 de septiembre:
+«No tiene que imaginar: tiene que verlo escrito y dibujado». Esto la hace una vez, entera, con
+las mismas funciones de `lo_habia_visto_ya.py` (importadas, no copiadas):
+
+  1. LAS TRES MUESTRAS DEL CAPÍTULO, con las tres palabras que se le dieron separadas de lo que
+     escribió la red, y su número entre las doscientas.
+  2. LA MUESTRA 36, CON SUS TRAMOS COPIADOS: cada tramo que está tal cual en los libros de
+     entrenamiento (siete palabras o más, el mismo listón de la tabla), su largo, de qué libro
+     sale, y la cuenta: palabras dentro de algún tramo, entre cuarenta y cinco.
+  3. LA 173, IGUAL, en una línea.
+  4. EL SUELO: cuántas de las doscientas muestras de los libros que no entraron en el
+     entrenamiento llegan al listón, y cuánto «copian».
+
+El listón no se escribe aquí: se recalcula con `lo_habia_visto_ya._umbral_45`, que es el mismo
+número que imprime la tabla. La figura `figura_copias_muestra.py` lee el bloque 2.
+
+Uso:
+    python copias_de_una_muestra.py --selftest
+    python copias_de_una_muestra.py
+"""
+
+# ======================= CONSTANTES =======================
+
+FICHERO_MUESTRAS = "../datos/salidas/muestras/red_s20260914_t1.txt"   # la fila de la tabla
+LARGO = 45
+MUESTRAS_DEL_CAPITULO = [1, 36, 173]
+MUESTRA_A_MANO = 36
+OTRA_A_MANO = 173
+PALABRAS_ARRANQUE = 3
+
+# ==========================================================
+
+import argparse
+import glob
+import os
+import re
+import sys
+import unicodedata
+from collections import Counter
+
+import numpy as np
+
+import lo_habia_visto_ya as L
+import memoria_recurrente as mr
+from formato import ANCHO_CAJA_CITA, comprobar_ancho, miles, pct
+
+AQUI = os.path.dirname(os.path.abspath(__file__))
+
+
+def tramos(cubiertas):
+    """Los tramos seguidos de palabras cubiertas: (desde, hasta) con las dos incluidas."""
+    out, i = [], 0
+    while i < len(cubiertas):
+        if cubiertas[i]:
+            j = i
+            while j + 1 < len(cubiertas) and cubiertas[j + 1]:
+                j += 1
+            out.append((i, j))
+            i = j + 1
+        else:
+            i += 1
+    return out
+
+
+def libros_de_entrenamiento():
+    """(título, texto limpio con bordes) de cada libro que entró en el entrenamiento, con la
+    misma limpieza y el mismo tope que `memoria_recurrente.cargar_texto()`."""
+    ficheros = sorted(glob.glob(os.path.join(AQUI, mr.CORPUS, "*.txt")))
+    out, total = [], 0
+    for ruta in ficheros:
+        crudo = open(ruta, encoding="utf-8", errors="replace").read()
+        m = re.search(r"^Title:\s*(.+)$", crudo, re.M)
+        titulo = m.group(1).strip() if m else os.path.basename(ruta)
+        t = crudo
+        if "*** START OF" in t:
+            t = t.split("*** START OF", 1)[1].split("\n", 1)[-1]
+        if "*** END OF" in t:
+            t = t.split("*** END OF", 1)[0]
+        t = unicodedata.normalize("NFC", t.lower())
+        t = "".join(c if c in mr.ALFABETO else " " for c in t)
+        t = re.sub(r" {2,}", " ", t)
+        out.append((titulo, L._con_bordes(t)))
+        total += len(t)
+        if total >= mr.MAX_CARACTERES:
+            break
+    return out
+
+
+def de_que_libro(trozo, libros):
+    t = " " + trozo + " "
+    return [titulo for titulo, texto in libros if t in texto]
+
+
+def muestras_45():
+    _, cuerpo = L._leer_fichero_muestras(os.path.join(AQUI, FICHERO_MUESTRAS))
+    m = [(a, s) for (l, a, s) in cuerpo if l == LARGO]
+    assert len(m) == L.VENTANAS, f"se esperaban {L.VENTANAS} muestras de {LARGO}; hay {len(m)}"
+    return m
+
+
+def partir(palabras, ancho, sangria="   "):
+    out, linea = [], sangria
+    for w in palabras:
+        if len(linea) + len(w) + 1 > ancho and linea.strip():
+            out.append(linea.rstrip())
+            linea = sangria
+        linea += w + " "
+    out.append(linea.rstrip())
+    return out
+
+
+def marcar(palabras, cubiertas):
+    """Las palabras con cada tramo copiado entre corchetes y su largo detrás: [a b c]·3."""
+    out = []
+    tr = {d: h for d, h in tramos(cubiertas)}
+    i = 0
+    while i < len(palabras):
+        if i in tr:
+            h = tr[i]
+            grupo = palabras[i:h + 1]
+            grupo[0] = "[" + grupo[0]
+            grupo[-1] = grupo[-1] + f"]{h - i + 1}"
+            out += grupo
+            i = h + 1
+        else:
+            out.append(palabras[i])
+            i += 1
+    return out
+
+
+def bloque_tres(muestras):
+    lin = ["--- 1. LAS TRES MUESTRAS DEL CAPÍTULO ---",
+           f"de {L.VENTANAS} comienzos; «le di»: las {PALABRAS_ARRANQUE} palabras del comienzo;",
+           "«escribió»: lo que puso la red detrás"]
+    for n in MUESTRAS_DEL_CAPITULO:
+        arranque, s = muestras[n - 1]
+        palabras = s.split()
+        assert " ".join(palabras[:PALABRAS_ARRANQUE]) == arranque, \
+            f"la muestra {n} no empieza por su arranque «{arranque}»"
+        lin += ["", f"muestra {n} de {L.VENTANAS}",
+                f"le di:     {arranque}", "escribió:"]
+        lin += partir(palabras[PALABRAS_ARRANQUE:], ANCHO_CAJA_CITA)
+    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+
+
+def bloque_a_mano(muestras, corpus, umbral, libros):
+    arranque, s = muestras[MUESTRA_A_MANO - 1]
+    palabras = s.split()
+    valores = L.rachas(s, corpus)
+    cubiertas = L._cobertura(valores, umbral)
+    tr = tramos(cubiertas)
+    n_cub = sum(cubiertas)
+    lin = [f"--- 2. LA MUESTRA {MUESTRA_A_MANO}, TRAMO A TRAMO ---",
+           f"entre corchetes, cada tramo que está tal cual en los libros",
+           f"de entrenamiento con {umbral} palabras seguidas o más; detrás",
+           f"del corchete, cuántas palabras tiene el tramo", ""]
+    lin += partir(marcar(palabras, cubiertas), ANCHO_CAJA_CITA)
+    lin += ["", f"{'tramo':<7}{'palabras':>9}{'de la':>7}{'a la':>6}   de qué libro sale"]
+    for k, (d, h) in enumerate(tr, 1):
+        fuentes = de_que_libro(" ".join(palabras[d:h + 1]), libros)
+        fuente = fuentes[0] if len(fuentes) == 1 else (
+            f"{len(fuentes)} libros" if fuentes else "de varios trozos")
+        fuente = fuente if len(fuente) <= 30 else fuente[:29] + "…"
+        lin.append(f"{k:<7}{h - d + 1:>9}{d + 1:>7}{h + 1:>6}   {fuente}")
+    lin += ["", f"palabras dentro de algún tramo: {n_cub} de {len(palabras)}",
+            f"{n_cub} entre {len(palabras)}: {pct(n_cub / len(palabras), 1)}   (el «copiado»)",
+            f"el tramo más largo que empieza en una palabra: {max(valores)}"]
+    return comprobar_ancho(lin, ANCHO_CAJA_CITA), palabras, tr, n_cub, max(valores)
+
+
+def bloque_otra(muestras, corpus, umbral):
+    _, s = muestras[OTRA_A_MANO - 1]
+    cub = L._cobertura(L.rachas(s, corpus), umbral)
+    n = sum(cub)
+    lin = [f"--- 3. LA MUESTRA {OTRA_A_MANO} ---",
+           f"palabras dentro de algún tramo: {n} de {len(cub)};"
+           f" {n} entre {len(cub)}: {pct(n / len(cub), 1)}",
+           f"tramos: " + ", ".join(f"{h - d + 1} palabras" for d, h in tramos(cub))]
+    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+
+
+def bloque_suelo(corpus, umbral):
+    ajenas = L._palabras_libros_ajenos()
+    vocab_ajenas = set(w for w, _ in Counter(ajenas).most_common(20_000))
+    primera = L._primera_aparicion(ajenas)
+    puntos = L.arranques(ajenas, vocab_ajenas, n=L.VENTANAS)
+    suelo = [L._ventana_literal(primera[t], ajenas, LARGO) for t in puntos]
+    rmax, cop = L.medir(suelo, corpus, umbral)
+    llegan = [i for i, r in enumerate(rmax) if r >= umbral]
+    lin = ["--- 4. EL SUELO: TEXTO QUE LA RED NO VIO ---",
+           f"{L.VENTANAS} trozos de {LARGO} palabras de seis libros que no entraron",
+           f"cuántos tienen algún tramo de {umbral} palabras o más: {len(llegan)}",
+           f"y en esos, la parte de la muestra dentro de un tramo:"]
+    lin += partir([pct(cop[i], 1, de_uno=False) for i in llegan], ANCHO_CAJA_CITA)
+    lin.append(f"tramo más largo de los {L.VENTANAS}: {max(rmax)} palabras")
+    return comprobar_ancho(lin, ANCHO_CAJA_CITA), len(llegan), max(rmax)
+
+
+def selftest():
+    fallos = []
+    texto = mr.cargar_texto()
+    corpus = L._con_bordes(texto)
+    palabras = texto.split()
+
+    # 1. TEST NULO — una muestra de palabras barajadas no tiene ningún tramo de 7 o más: nada
+    #    entre corchetes, 0 de 45.
+    import random
+    base = palabras[1000:1000 + LARGO]
+    bar = list(base)
+    random.Random(1).shuffle(bar)
+    cub = L._cobertura(L.rachas(" ".join(bar), corpus), 7)
+    print(f"[1] test nulo         45 palabras barajadas: {sum(cub)} dentro de un tramo, "
+          f"{len(tramos(cub))} tramos")
+    if sum(cub) != 0:
+        fallos.append(f"test nulo: una muestra barajada tiene {sum(cub)} palabras copiadas")
+
+    # 2. SEÑAL IMPLANTADA — se meten dos tramos de 10 y de 8 palabras del corpus en esa muestra
+    #    barajada, separados: tienen que salir dos tramos, en su sitio, y 18 de 45.
+    impl = bar[:5] + palabras[5000:5010] + bar[15:25] + palabras[9000:9008] + bar[33:]
+    impl = impl[:LARGO]
+    cub = L._cobertura(L.rachas(" ".join(impl), corpus), 7)
+    tr = tramos(cub)
+    print(f"[2] señal implantada  tramos {[(d + 1, h + 1) for d, h in tr]}, {sum(cub)} de {len(impl)} "
+          f"(se esperaban (6, 15) y (26, 33), 18)")
+    if not (tr[:1] and tr[0][0] <= 5 and tr[0][1] >= 14 and sum(cub) >= 18
+            and any(d <= 25 and h >= 32 for d, h in tr)):
+        fallos.append(f"señal implantada: tramos {tr}, {sum(cub)} palabras")
+
+    # 3. INVARIANTE DEL DOMINIO — un trozo literal del corpus sale entero en un solo tramo, y
+    #    la suma de los largos de los tramos es siempre el número de palabras cubiertas.
+    cub = L._cobertura(L.rachas(" ".join(base), corpus), 7)
+    tr = tramos(cub)
+    suma = sum(h - d + 1 for d, h in tr)
+    print(f"[3] invariante        trozo literal: {len(tr)} tramo de {suma} palabras; "
+          f"suma de largos = cubiertas: {suma == sum(cub)}")
+    if len(tr) != 1 or suma != LARGO or suma != sum(cub):
+        fallos.append(f"invariante: trozo literal en {len(tr)} tramos, {suma} palabras")
+    print()
+    if fallos:
+        for f in fallos:
+            print("FALLA:", f)
+        return 1
+    print("SELFTEST: las tres pruebas pasan.")
+    return 0
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--selftest", action="store_true")
+    args = ap.parse_args()
+    if args.selftest:
+        sys.exit(selftest())
+    if selftest():
+        sys.exit("El selftest falla: los números no valen.")
+    from datetime import date
+    print(f"\nMedido el {date.today().isoformat()}. No entrena nada: busca texto en texto.")
+    texto = mr.cargar_texto()
+    palabras = texto.split()
+    vocab, _, _, _ = mr.vocabulario_y_datos(texto)
+    corpus = L._con_bordes(texto)
+    puntos = L.arranques(palabras, set(vocab), n=L.VENTANAS)
+    umbral = L._umbral_45(puntos, palabras, corpus, np.random.default_rng(L.SEMILLA))
+    muestras = muestras_45()
+    libros = libros_de_entrenamiento()
+    print(f"listón: {umbral} palabras (el de la tabla de lo_habia_visto_ya.txt)\n")
+    print("\n".join(bloque_tres(muestras)) + "\n")
+    lin, *_ = bloque_a_mano(muestras, corpus, umbral, libros)
+    print("\n".join(lin) + "\n")
+    print("\n".join(bloque_otra(muestras, corpus, umbral)) + "\n")
+    lin, *_ = bloque_suelo(corpus, umbral)
+    print("\n".join(lin))
+
+
+if __name__ == "__main__":
+    main()

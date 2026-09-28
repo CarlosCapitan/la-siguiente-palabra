@@ -1,0 +1,48 @@
+[1] test nulo         reparto igual: 100 + 0; pasos al 50 %: casi seguro 0.0
+[2] señal             casi seguro 57 %, termina palabra 23 % (el libro: 57 % y 23 %)
+[3] invariante        partes que suman el todo y papeletas 62 + 38 = 100: True
+
+SELFTEST: las tres pruebas pasan.
+
+--- CIEN PAPELETAS PARA «LA CAPITAL DE FRANCIA ES» ---
+cada porcentaje, redondeado a papeletas de cien
+
+       trozo   probabilidad   papeletas
+------------------------------------------
+         _la        17,46 %          17
+        _una        12,80 %          13
+         _un        11,51 %          12
+         _el         7,11 %           7
+      _conoc         4,99 %           5
+        _uno         3,64 %           4
+         _de         1,41 %           1
+         _en         1,07 %           1
+        _muy         0,96 %           1
+          _a         0,83 %           1
+  (el resto)        38,22 %          38
+------------------------------------------
+las diez primeras juntas                62
+el resto                                38
+total                                  100
+
+--- DE CADA CIEN PASOS, ¿CUÁNTOS SON UNA ELECCIÓN? ---
+                                casi    casi                
+                              seguro  seguro   elec-  reñida
+frase de arranque                   sin ter-    ción        
+                                       minar                
+------------------------------------------------------------
+La capital de Francia es        72 %    50 %    28 %    15 %
+Era una mañana de invierno…     46 %    28 %    54 %    38 %
+Los tres ingredientes prin…     58 %    37 %    42 %    28 %
+Un termómetro sirve para        53 %    42 %    47 %    19 %
+Para hacer una tortilla de…     73 %    43 %    27 %    11 %
+El ayuntamiento anunció ay…     40 %    24 %    60 %    39 %
+------------------------------------------------------------
+las seis juntas                 57 %    37 %    43 %    25 %
+
+«casi seguro»: el trozo elegido tenía 90 % o más.
+«casi seguro sin terminar»: casi seguro, y el trozo no se
+pega a una palabra empezada, como «ia» detrás de «Franc».
+«elección»: el trozo elegido no llegaba al 90 %.
+«reñida»: no llegaba al 50 %; las demás candidatas juntas
+se llevaban más de la mitad.

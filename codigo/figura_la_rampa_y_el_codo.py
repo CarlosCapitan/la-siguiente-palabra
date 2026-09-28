@@ -1,0 +1,162 @@
+#!/usr/bin/env python3
+"""
+Capítulo 4 — lo que deja pasar la rampa corta y lo que deja pasar el codo (L24, A20).
+
+Dos dibujos lado a lado, **con la misma escala en los dos ejes y en los dos cuadros**: lo que le
+llega a la neurona en horizontal (cuánto pasa del listón) y lo que dice en vertical. Así la
+inclinación se compara a ojo: la rampa, en su centro, sube una cuarta parte de lo que avanza; el
+codo, en su parte positiva, sube lo mismo que avanza. (En la primera versión cada cuadro tenía su
+escala y la rampa parecía más empinada que el codo: la figura decía lo contrario que el texto.)
+El codo se llamaba «la que corta» (segunda vuelta de L24: chocaba con «la rampa corta»).
+
+Los números marcados se leen del bloque 6 de `datos/salidas/culpa_hacia_atras.txt`; las curvas se
+dibujan con las mismas funciones que usa el programa, y el selftest comprueba que pasan por los
+puntos de la salida.
+
+Uso:
+    python figura_la_rampa_y_el_codo.py --selftest
+    python figura_la_rampa_y_el_codo.py
+"""
+
+# ======================= CONSTANTES =======================
+
+SALIDA = "../datos/salidas/culpa_hacia_atras.txt"
+DESTINO = "../figuras/la_rampa_y_el_codo.png"
+ALTO = 2.5                     # pulgadas
+X_DESDE, X_HASTA = -4.5, 4.5   # la misma ventana en los dos cuadros
+Y_DESDE, Y_HASTA = -0.6, 4.0
+MARCA_RAMPA = [0, 4]           # dónde se marca lo que deja pasar la rampa
+MARCA_CODO = [-2, 2]           # y el codo
+LADO_TANGENTE = 1.0
+
+# ==========================================================
+
+import argparse
+import re
+import sys
+from pathlib import Path
+
+import numpy as np
+
+from infografia import COLOR, GRIS, Lienzo
+from retropropagacion import sigmoide
+
+AQUI = Path(__file__).resolve().parent
+
+
+def num(s):
+    return float(s.replace("+", "").replace(",", "."))
+
+
+def leer(ruta):
+    """Del bloque 6: {x: (rampa dice, rampa deja pasar, codo dice, codo deja pasar o None)}."""
+    texto = Path(ruta).read_text(encoding="utf-8")
+    assert "6. LO QUE DEJA PASAR CADA UNA" in texto, f"se esperaba el bloque 6 en {ruta}"
+    trozo = texto.split("6. LO QUE DEJA PASAR CADA UNA", 1)[1].split("\n7.", 1)[0]
+    filas = {}
+    for linea in trozo.splitlines():
+        m = re.match(r"^\s+([+-]?\d+(?:,\d+)?)\s+(\d+,\d+)\s+(\d+,\d+)\s+(\d+,\d+)\s+(\d+,\d+|\(el codo\))\s*$",
+                     linea)
+        if m:
+            codo = None if m.group(5).startswith("(") else num(m.group(5))
+            filas[num(m.group(1))] = (num(m.group(2)), num(m.group(3)), num(m.group(4)), codo)
+    assert len(filas) >= 5, f"se esperaban al menos cinco filas; hay {len(filas)}"
+    return filas
+
+
+def c(x):
+    return f"{x:.3f}".replace(".", ",")
+
+
+def panel(L, x0, titulo, xs, ys):
+    ancho = 0.40
+    alto = ancho * 4.45 / ALTO * (Y_HASTA - Y_DESDE) / (X_HASTA - X_DESDE)
+    ax = L.fig.add_axes([x0, 0.22, ancho, alto])
+    ax.plot(xs, ys, color=L.p.tinta, linewidth=1.6)
+    ax.set_xlim(X_DESDE, X_HASTA); ax.set_ylim(Y_DESDE, Y_HASTA)
+    ax.set_aspect("equal")
+    ax.set_title(titulo, fontsize=9.0, color=L.p.tinta, fontweight="bold", pad=4)
+    ax.set_xlabel("lo que le llega: cuánto pasa del listón", fontsize=7.2, color=L.p.tinta)
+    ax.set_ylabel("lo que dice", fontsize=7.2, color=L.p.tinta)
+    ax.set_xticks([-4, -2, 0, 2, 4]); ax.set_xticklabels(["−4", "−2", "0", "+2", "+4"])
+    ax.set_yticks([0, 1, 2, 3]); ax.set_yticklabels(["0", "1", "2", "3"])
+    ax.tick_params(labelsize=7.0)
+    ax.axvline(0, color=L.p.marco, linewidth=0.7, zorder=0)
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
+    return ax
+
+
+def marca(ax, x, y, pendiente, texto, p, xt, yt):
+    xs = np.array([x - LADO_TANGENTE, x + LADO_TANGENTE])
+    ax.plot(xs, y + pendiente * (xs - x), color=p.acento, linewidth=3.0, alpha=0.55,
+            solid_capstyle="round")
+    ax.plot([x], [y], "o", color=p.tinta, markersize=3.5)
+    ax.annotate(texto, xy=(x, y), xytext=(xt, yt), fontsize=6.9, ha="center", va="center",
+                color=p.tinta, linespacing=1.15, arrowprops=dict(arrowstyle="-", color=p.suave, lw=0.6))
+
+
+def dibujar(filas, paleta, ruta):
+    L = Lienzo("La rampa y el codo",
+               "Los dos con la misma escala. La inclinación es lo que deja pasar cada uno: cuánto\n"
+               "se mueve lo que dice cuando lo que le llega se mueve 1.",
+               paleta, alto=ALTO)
+    p = L.p
+    xs = np.linspace(X_DESDE, X_HASTA, 400)
+    a = panel(L, 0.08, "la rampa corta", xs, sigmoide(xs))
+    d0, d1 = filas[MARCA_RAMPA[0]], filas[MARCA_RAMPA[1]]
+    marca(a, MARCA_RAMPA[0], d0[0], d0[1], f"en el centro:\ndeja pasar {c(d0[1])}", p, -2.3, 2.3)
+    marca(a, MARCA_RAMPA[1], d1[0], d1[1], f"en lo plano:\ndeja pasar {c(d1[1])}", p, 2.6, 2.6)
+    b = panel(L, 0.56, "el codo", xs, np.maximum(0, xs))
+    e0, e1 = filas[MARCA_CODO[0]], filas[MARCA_CODO[1]]
+    marca(b, MARCA_CODO[0], e0[2], e0[3], f"por debajo:\ndeja pasar {c(e0[3])}", p, -2.6, 1.6)
+    marca(b, MARCA_CODO[1], e1[2], e1[3], f"por encima:\ndeja pasar {c(e1[3])}", p, 3.2, 0.7)
+    L.guardar(ruta)
+
+
+def selftest():
+    fallos = []
+    filas = leer(AQUI / SALIDA)
+
+    # 1. TEST NULO — en lo plano de la rampa y por debajo del codo no pasa (casi) nada.
+    nulos = [filas[4][1], filas[-4][1], filas[-2][3]]
+    print(f"[1] test nulo         en lo plano deja pasar {nulos}")
+    if max(nulos) > 0.02:
+        fallos.append("test nulo: en lo plano pasa algo")
+
+    # 2. SEÑAL — la rampa deja pasar 0,25 en el centro; el codo, 1 por encima del listón.
+    print(f"[2] señal             rampa en 0: {filas[0][1]}; codo en +2: {filas[2][3]}")
+    if abs(filas[0][1] - 0.25) > 1e-3 or abs(filas[2][3] - 1) > 1e-3:
+        fallos.append("señal: la rampa no deja pasar 0,25 en el centro, o el codo no deja pasar 1")
+
+    # 3. INVARIANTE — las curvas pasan por los puntos de la salida, y los dos cuadros tienen la
+    #    misma escala (se comprueba en el dibujo: la unidad mide lo mismo en x y en y, y en los
+    #    dos cuadros).
+    peor = max(max(abs(float(sigmoide(x)) - v[0]), abs(max(0, x) - v[2])) for x, v in filas.items())
+    for pal in (COLOR, GRIS):
+        dibujar(filas, pal, "/dev/null")
+    print(f"[3] invariante        curvas contra salida, diferencia máxima {peor:.4f}; misma escala en los dos cuadros")
+    if peor > 0.001:
+        fallos.append("invariante: las curvas no pasan por los puntos de la salida")
+    print()
+    if fallos:
+        for f in fallos:
+            print("FALLA:", f)
+        return 1
+    print("SELFTEST: las tres pruebas pasan.")
+    return 0
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--selftest", action="store_true")
+    args = ap.parse_args()
+    codigo = selftest()
+    if codigo or args.selftest:
+        sys.exit(codigo)
+    dibujar(leer(AQUI / SALIDA), GRIS, str(AQUI / DESTINO))
+    print(f"escrita {DESTINO}")
+
+
+if __name__ == "__main__":
+    main()

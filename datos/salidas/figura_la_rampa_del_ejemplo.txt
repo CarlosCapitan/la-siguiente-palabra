@@ -1,0 +1,6 @@
+[1] test nulo         con 0 y con 1, la regla da [0.0, 0.0]
+[2] señal             puntos contra la curva: diferencia máxima 0.0005
+[3] invariante        inclinación contra la regla: 0.03 % como mucho
+
+SELFTEST: las tres pruebas pasan.
+escrita ../figuras/la_rampa_del_ejemplo.png

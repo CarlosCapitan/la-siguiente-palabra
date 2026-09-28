@@ -1,0 +1,22 @@
+[1] test nulo         con una parte, las dos maneras dan lo mismo: sí
+[2] señal             la mitad cinco veces: 3.125 de cada cien (1/32 = 3.125)
+[3] invariante        las cinco a la vez nunca por encima de cada parte: sí
+
+SELFTEST: las tres pruebas pasan.
+
+--- UNA RESPUESTA DE CINCO PARTES: CADA PARTE O LAS CINCO ---
+
+ cada parte suelta    las cinco a la vez
+    (de cada cien)        (de cada cien)
+                50                     3
+                60                     8
+                70                    17
+                80                    33
+                90                    59
+               100                   100
+
+con 50 de cada cien en cada parte, las cinco a la vez:
+0,5 por 0,5 por 0,5 por 0,5 por 0,5 da 0,031,
+que son unas 3 de cada cien.
+
+Escrito ../datos/salidas/todo_o_nada.csv

@@ -1,0 +1,40 @@
+Medido el 2026-09-27 en macOS-26.6.2-arm64-arm-64bit; procesador usado: mps.
+texto visto: 8.000.000 letras (las del capítulo); texto nuevo: 500.000 letras de los libros que vienen detrás.
+
+  paso 10.000: visto 1,368  nuevo 1,408  (4,8 min en esta máquina)
+  paso 20.000: visto 1,288  nuevo 1,353  (9,7 min en esta máquina)
+  paso 30.000: visto 1,247  nuevo 1,335  (14,6 min en esta máquina)
+  paso 40.000: visto 1,223  nuevo 1,328  (19,6 min en esta máquina)
+  paso 50.000: visto 1,205  nuevo 1,321  (24,6 min en esta máquina)
+  paso 60.000: visto 1,191  nuevo 1,318  (29,5 min en esta máquina)
+  paso 70.000: visto 1,176  nuevo 1,318  (34,5 min en esta máquina)
+  paso 80.000: visto 1,168  nuevo 1,318  (39,5 min en esta máquina)
+  paso 90.000: visto 1,158  nuevo 1,321  (44,5 min en esta máquina)
+  paso 100.000: visto 1,150  nuevo 1,323  (49,5 min en esta máquina)
+  paso 110.000: visto 1,146  nuevo 1,324  (54,5 min en esta máquina)
+  paso 120.000: visto 1,138  nuevo 1,323  (59,4 min en esta máquina)
+  paso 130.000: visto 1,132  nuevo 1,326  (64,3 min en esta máquina)
+  paso 140.000: visto 1,126  nuevo 1,325  (69,2 min en esta máquina)
+  paso 150.000: visto 1,123  nuevo 1,327  (74,2 min en esta máquina)
+
+comprobación: media de la curva cruda antes del paso 50.000: aquí 1,2029, en la del capítulo 1,2029
+
+--- LO MAL QUE LO HACE, EN TEXTO VISTO Y EN TEXTO NUEVO ---
+    pasos     visto     nuevo   acierto visto   acierto nuevo
+        0     3,923     3,914             3 %             3 %
+    3.000     1,579     1,588            51 %            50 %
+   10.000     1,368     1,408            57 %            55 %
+   25.000     1,265     1,343            59 %            57 %
+   50.000     1,205     1,321            61 %            58 %
+   75.000     1,171     1,320            62 %            58 %
+  100.000     1,150     1,323            63 %            58 %
+  125.000     1,135     1,326            63 %            58 %
+  150.000     1,123     1,327            64 %            58 %
+
+en texto nuevo, lo mejor que lo hace es en el paso 84.000: 1,314
+en el paso 150.000, en texto nuevo: 1,327
+
+lo que escribe tras 150.000 pasos:
+el rodeo, á esta nacion, que se habian robado de la serie de todo, siempre inmediatamente al  movimiento de la insaluble y al par del pueblo supe el cartaz del mundo, porque ninguna la provincia tiene cu
+
+Escrito ../datos/salidas/seguir_entrenando.csv

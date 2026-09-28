@@ -1,0 +1,18 @@
+[1] test nulo         en el cuadrado de los interruptores, posiciones juntas: ninguna
+[2] señal             juntas: red [(1, 2)], a mano [(1, 2)]; la raya separa: red True, a mano True
+[3] invariante        la raya dibujada está donde la final vale su listón: 0.0e+00
+[3] invariante        los comités a mano: [[0, 1], [1, 1], [1, 1], [1, 0]]
+
+SELFTEST: las tres pruebas pasan.
+escritas ../figuras/cuadrado_redibujado.png y ../figuras/cuadrado_a_mano.png
+
+LOS TRES COMITÉS DEL FINAL DEL CAPÍTULO 2
+el primero: «con al menos uno subido»
+el segundo: «con al menos uno bajado»
+el tercero: enciende la luz si los dos dicen que sí
+
+los interruptores        el primero  el segundo      la luz
+----------------------   ----------  ----------   ---------
+ninguno subido                   no          sí     apagada
+uno subido, cualquiera           sí          sí   encendida
+los dos subidos                  sí          no     apagada

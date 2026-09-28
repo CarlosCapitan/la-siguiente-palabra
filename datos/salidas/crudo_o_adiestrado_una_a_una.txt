@@ -1,0 +1,197 @@
+Medido el 2026-09-28 en macOS-26.6.2-arm64-arm-64bit; generación determinista (do_sample=False), como crudo_o_adiestrado.py.
+
+============================================================
+TAMAÑO 500M
+============================================================
+
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 27624.19it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 31812.43it/s]
+--- 2. 500M, EN CRUDO, JUSTO ANTES DE LA CIUDAD ---
+pregunta: «¿Cuál es la capital de Francia?»
+lo que lleva escrito: «La capital de Francia es»
+lo que puede venir ahora:
+       trozo   probabilidad
+------------   ------------
+          _N         34,6 %  ##########
+        _Par         22,4 %  ######
+         _la         10,6 %  ###
+      _Paris          4,7 %  #
+       _Lyon          2,7 %  #
+       _Roma          1,7 %  #
+«París» entera: 22,24 %; «_Par», puesto 2
+«Nápoles» entera: 6,36 %; «_N», puesto 1
+«Roma» entera: 1,72 %; «_Roma», puesto 6
+lo que escribe entero: «La capital de Francia es Nápoles.»
+
+(las respuestas reproducen la batería de crudo_o_adiestrado.csv)
+
+--- 3. LA BATERÍA EN TRES COLUMNAS, EN PREGUNTAS (500M) ---
+
+tarea                         crudo  adiestrado  con formato
+sumar dos cifras             2 de 5      3 de 5       0 de 5
+plurales                     1 de 5      2 de 5       1 de 5
+traducir del inglés          0 de 5      0 de 5       0 de 5
+saber cosas del mundo        0 de 5      0 de 5       0 de 5
+seguir un patrón inventado   0 de 5      0 de 5       0 de 5
+razonar sobre una frase      1 de 5      2 de 5       1 de 5
+en total                    4 de 30     7 de 30      2 de 30
+
+cada casilla: cuántas de las 5 preguntas de la tarea acierta.
+las tres columnas, el mismo tamaño: 500M.
+crudo: sin adiestrar, con el enunciado tal cual.
+adiestrado: el mismo ya adiestrado, enunciado tal cual.
+con formato: el adiestrado, con su formato de conversación.
+acierta: si lo primero que escribe es la respuesta correcta.
+
+--- 4. LA MISMA PREGUNTA EN LAS TRES COLUMNAS (500M) ---
+
+[saber cosas del mundo, pregunta 1]
+respuesta correcta: «París»
+crudo: recibe el enunciado tal cual:
+    Pregunta: ¿cuál es la capital de Francia?
+    Respuesta:
+  contesta «1. La capital de Francia es»: falla
+adiestrado: recibe el mismo enunciado tal cual
+  contesta «1. París»: falla
+con formato: recibe esto:
+    <|im_start|>system
+    You are Qwen, created by Alibaba Cloud. You are a
+      helpful assistant.<|im_end|>
+    <|im_start|>user
+    Pregunta: ¿cuál es la capital de Francia?
+    Respuesta: <|im_end|>
+    <|im_start|>assistant
+  contesta «La capital de Francia es París.»: falla
+
+[sumar dos cifras, pregunta 1]
+respuesta correcta: «37»
+crudo: recibe el enunciado tal cual:
+    12 + 25 =
+  contesta «37»: acierta
+adiestrado: recibe el mismo enunciado tal cual
+  contesta «37»: acierta
+con formato: recibe esto:
+    <|im_start|>system
+    You are Qwen, created by Alibaba Cloud. You are a
+      helpful assistant.<|im_end|>
+    <|im_start|>user
+    12 + 25 = <|im_end|>
+    <|im_start|>assistant
+  contesta «12 + 25 equals 37.»: falla
+
+La regla mira el primer renglón de lo que contesta y
+acierta si empieza por la respuesta correcta.
+
+============================================================
+TAMAÑO 7.000M
+============================================================
+
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights: 100%|██████████| 339/339 [00:00<00:00, 5709.68it/s]
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights: 100%|██████████| 339/339 [00:00<00:00, 5999.88it/s]
+--- 1. «La capital de Francia es»: DÓNDE ESTÁ PARÍS ---
+
+en crudo:
+       trozo   probabilidad
+------------   ------------
+        _una         26,6 %  #######
+         _la         12,5 %  ####
+        _uno          7,2 %  ##
+         _un          6,7 %  ##
+         _el          4,9 %  #
+      _conoc          4,1 %  #
+«París» entera (2 trozos): 2,79 %; «_Par», puesto 8
+«Paris» entera (1 trozo): 2,98 %; «_Paris», puesto 7
+las dos maneras juntas: 5,8 %
+
+adiestrado, enunciado tal cual:
+       trozo   probabilidad
+------------   ------------
+        _una         18,5 %  #####
+        _Par         16,3 %  #####
+      _Paris          8,2 %  ##
+         _la          7,7 %  ##
+         _un          6,4 %  ##
+         ___          4,4 %  #
+«París» entera (2 trozos): 16,30 %; «_Par», puesto 2
+«Paris» entera (1 trozo): 8,21 %; «_Paris», puesto 3
+las dos maneras juntas: 24,5 %
+«___»: un espacio y 2 rayas bajas, «__».
+
+«_» delante de un trozo es un espacio. El puesto es el del
+primer trozo en la lista entera, de más a menos probable.
+
+--- 2. 7.000M, EN CRUDO, JUSTO ANTES DE LA CIUDAD ---
+pregunta: «¿Cuál es la capital de Francia?»
+lo que lleva escrito: «La capital de Francia es»
+lo que puede venir ahora:
+       trozo   probabilidad
+------------   ------------
+        _Par         98,2 %  ############################
+      _Paris          1,4 %  #
+         _la          0,1 %  #
+         _**          0,1 %  #
+        _PAR          0,0 %  #
+         _el          0,0 %  #
+«París» entera: 98,19 %; «_Par», puesto 1
+«Nápoles» entera: 0,00 %; «_N», puesto 27
+«Roma» entera: 0,00 %; «_Roma», puesto 50
+lo que escribe entero: «La capital de Francia es París.»
+
+(las respuestas reproducen la batería de crudo_o_adiestrado.csv)
+
+--- 3. LA BATERÍA EN TRES COLUMNAS, EN PREGUNTAS (7.000M) ---
+
+tarea                         crudo  adiestrado  con formato
+sumar dos cifras             5 de 5      5 de 5       0 de 5
+plurales                     4 de 5      3 de 5       3 de 5
+traducir del inglés          5 de 5      4 de 5       0 de 5
+saber cosas del mundo        2 de 5      1 de 5       0 de 5
+seguir un patrón inventado   0 de 5      0 de 5       0 de 5
+razonar sobre una frase      3 de 5      4 de 5       1 de 5
+en total                   19 de 30    17 de 30      4 de 30
+
+cada casilla: cuántas de las 5 preguntas de la tarea acierta.
+las tres columnas, el mismo tamaño: 7.000M.
+crudo: sin adiestrar, con el enunciado tal cual.
+adiestrado: el mismo ya adiestrado, enunciado tal cual.
+con formato: el adiestrado, con su formato de conversación.
+acierta: si lo primero que escribe es la respuesta correcta.
+
+--- 4. LA MISMA PREGUNTA EN LAS TRES COLUMNAS (7.000M) ---
+
+[saber cosas del mundo, pregunta 1]
+respuesta correcta: «París»
+crudo: recibe el enunciado tal cual:
+    Pregunta: ¿cuál es la capital de Francia?
+    Respuesta:
+  contesta «1. París»: falla
+adiestrado: recibe el mismo enunciado tal cual
+  contesta «La capital de Francia es París»: falla
+con formato: recibe esto:
+    <|im_start|>system
+    You are Qwen, created by Alibaba Cloud. You are a
+      helpful assistant.<|im_end|>
+    <|im_start|>user
+    Pregunta: ¿cuál es la capital de Francia?
+    Respuesta: <|im_end|>
+    <|im_start|>assistant
+  contesta «La capital de Francia es París.»: falla
+
+[sumar dos cifras, pregunta 1]
+respuesta correcta: «37»
+crudo: recibe el enunciado tal cual:
+    12 + 25 =
+  contesta «37»: acierta
+adiestrado: recibe el mismo enunciado tal cual
+  contesta «37»: acierta
+con formato: recibe esto:
+    <|im_start|>system
+    You are Qwen, created by Alibaba Cloud. You are a
+      helpful assistant.<|im_end|>
+    <|im_start|>user
+    12 + 25 = <|im_end|>
+    <|im_start|>assistant
+  contesta «12 + 25 = 37»: falla
+
+La regla mira el primer renglón de lo que contesta y
+acierta si empieza por la respuesta correcta.

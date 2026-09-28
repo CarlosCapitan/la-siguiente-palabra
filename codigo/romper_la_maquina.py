@@ -170,6 +170,11 @@ def generar(tok, modelo, texto, pasos, temperatura=0.0, semilla=SEMILLA):
             salida = modelo.generate(ids, max_new_tokens=pasos, do_sample=True,
                                      temperature=temperatura, top_k=0, top_p=1.0,
                                      pad_token_id=tok.eos_token_id)
+    # OJO (L24, 28 sep 2026): este .strip() le quita el espacio al primer trozo de lo que escribe
+    # la máquina. Para las muestras no importa; para la medición B (la sorpresa) sí: el primer
+    # trozo sin su espacio le parece casi imposible y sube la sorpresa media de la máquina
+    # (0,772 aquí; 0,673 con el espacio en su sitio). El capítulo 13 cita la medición corregida,
+    # la de `sorpresa_a_mano.py`. Esta salida no se ha vuelto a ejecutar.
     return tok.decode(salida[0, ids.shape[1]:], skip_special_tokens=True).strip()
 
 

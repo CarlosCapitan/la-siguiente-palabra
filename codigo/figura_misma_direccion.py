@@ -1,0 +1,149 @@
+#!/usr/bin/env python3
+"""
+Capítulo 5 — ¿apuntan al mismo lado los caminos del género? (L24)
+
+Un «camino» es la resta de dos listas de cien números (de «padre» a «madre»). Dos caminos se
+pueden dibujar a la vez sin aplanar nada: dos flechas que salen del mismo punto están siempre en
+un plano, y en ese plano el ángulo entre ellas es el de verdad. La figura dibuja tres parejas de
+flechas: la pareja de caminos del género que más se parece, la que menos, y lo que dan, de media,
+dos caminos entre palabras sacadas al azar. Debajo de cada una, su «parecido».
+
+Nada se calcula aquí: parecidos y largos se leen del bloque 7 de
+`datos/salidas/palabras_de_cerca.txt`.
+
+Uso:
+    python figura_misma_direccion.py --selftest
+    python figura_misma_direccion.py
+"""
+
+# ======================= CONSTANTES =======================
+
+SALIDA = "../datos/salidas/palabras_de_cerca.txt"
+DESTINO = "../figuras/misma_direccion.png"
+ALTO = 2.75
+LARGO_MAXIMO = 17.0          # unidades del lienzo para la flecha más larga
+
+# ==========================================================
+
+import argparse
+import math
+import re
+import sys
+from pathlib import Path
+
+from matplotlib.patches import FancyArrow
+
+from infografia import COLOR, GRIS, Lienzo
+
+AQUI = Path(__file__).resolve().parent
+NUM = r"(-?\d+,\d+)"
+
+
+def f(x):
+    return float(x.replace(",", "."))
+
+
+def leer(ruta):
+    texto = Path(ruta).read_text(encoding="utf-8")
+    assert "--- 7. LOS CAMINOS DEL GÉNERO" in texto, f"se esperaba el bloque 7 en {ruta}"
+    b = texto.split("--- 7. LOS CAMINOS DEL GÉNERO", 1)[1].split("\n--- ", 1)[0]
+    largos, pares, azar = {}, [], None
+    for l in b.splitlines():
+        m = re.match(rf"^(\w+ -> \w+)\s+{NUM}$", l)
+        if m:
+            largos[m.group(1)] = f(m.group(2))
+        m = re.match(rf"^(\w+ -> \w+)\s+(\w+ -> \w+)\s+{NUM}$", l)
+        if m:
+            pares.append((m.group(1), m.group(2), f(m.group(3))))
+        m = re.match(rf"^media de \d+ comparaciones\s+{NUM}$", l)
+        if m:
+            azar = f(m.group(1))
+    assert largos and len(pares) >= 2 and azar is not None, "no se pudo leer el bloque 7"
+    return largos, pares, azar
+
+
+def paneles(largos, pares, azar):
+    mas = max(pares, key=lambda t: t[2])
+    menos = min(pares, key=lambda t: t[2])
+    return [(mas[0], mas[1], mas[2], largos[mas[0]], largos[mas[1]], "la pareja que más se parece"),
+            (menos[0], menos[1], menos[2], largos[menos[0]], largos[menos[1]], "la que menos"),
+            ("un camino al azar", "otro al azar", azar, None, None, "dos al azar, de media")]
+
+
+def dibujar(largos, pares, azar, paleta, ruta):
+    L = Lienzo("¿Apuntan al mismo lado?",
+               "Cada flecha es un camino: la resta de dos listas de cien números.\n"
+               "El ángulo entre dos flechas es el de verdad, sin aplanar nada.", paleta, alto=ALTO)
+    p, ax = L.p, L.ax
+    maxlargo = max(largos.values())
+    angulos = []
+    for k, (a, b, s, la, lb, titulo) in enumerate(paneles(largos, pares, azar)):
+        x0 = 6 + k * 32
+        y0 = 19
+        ang = math.acos(max(-1.0, min(1.0, s)))
+        angulos.append(ang)
+        la_ = LARGO_MAXIMO * (la / maxlargo if la else 0.75)
+        lb_ = LARGO_MAXIMO * (lb / maxlargo if lb else 0.75)
+        for largo, th, rot in ((la_, 0.0, a), (lb_, ang, b)):
+            dx, dy = largo * math.cos(th), largo * math.sin(th)
+            ax.add_patch(FancyArrow(x0, y0, dx, dy, width=0.35, head_width=1.6, head_length=1.4,
+                                    length_includes_head=True, facecolor=p.tinta, edgecolor="none"))
+            L.texto(x0 + dx + (0.8 if th < 0.3 else -1.0), y0 + dy + (1.3 if th > 0.3 else -1.6),
+                    rot.replace("->", "→"), tam=6.8,
+                    ha="left" if th < 0.3 else "center")
+        L.texto(x0 + 13, 13.0, titulo, tam=7.2, ha="center", negrita=True)
+        L.texto(x0 + 13, 9.5, f"parecido {str(s).replace('.', ',')}", tam=7.2, ha="center")
+    L.pie("Cómo se lee: flechas encima una de otra, parecido 1; en ángulo recto, 0; opuestas, -1.\n"
+          "Largo de cada flecha: el tamaño del camino.")
+    L.guardar(ruta)
+    return angulos
+
+
+def selftest():
+    fallos = []
+    largos, pares, azar = leer(AQUI / SALIDA)
+    # 1. TEST NULO — si todos los caminos se parecieran 0, las flechas saldrían en ángulo recto.
+    nulos = [(a, b, 0.0) for a, b, _ in pares]
+    ang = dibujar(largos, nulos, 0.0, GRIS, "/dev/null")
+    ok = all(abs(x - math.pi / 2) < 1e-9 for x in ang)
+    print(f"[1] test nulo         parecido 0 -> ángulo recto en los tres: {ok}")
+    if not ok:
+        fallos.append("test nulo: parecido 0 no da ángulo recto")
+    # 2. SEÑAL — un parecido de 1 da dos flechas encima una de otra.
+    unos = [(a, b, 1.0) for a, b, _ in pares]
+    ang = dibujar(largos, unos, 1.0, GRIS, "/dev/null")
+    print(f"[2] señal             parecido 1 -> ángulo 0: {all(abs(x) < 1e-9 for x in ang)}")
+    if not all(abs(x) < 1e-9 for x in ang):
+        fallos.append("señal: parecido 1 no da flechas superpuestas")
+    # 3. INVARIANTE — el panel de la izquierda es el de mayor parecido y el del medio el de menor,
+    #    y a más parecido, menos ángulo; se dibuja en color y en gris.
+    pan = paneles(largos, pares, azar)
+    ang = dibujar(largos, pares, azar, GRIS, "/dev/null")
+    dibujar(largos, pares, azar, COLOR, "/dev/null")
+    ok = (pan[0][2] == max(t[2] for t in pares) and pan[1][2] == min(t[2] for t in pares)
+          and ang[0] <= ang[1] <= ang[2])
+    print(f"[3] invariante        orden de los paneles y de los ángulos: {ok}")
+    if not ok:
+        fallos.append("invariante: paneles o ángulos fuera de orden")
+    print()
+    if fallos:
+        for x in fallos:
+            print("FALLA:", x)
+        return 1
+    print("SELFTEST: las tres pruebas pasan.")
+    return 0
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--selftest", action="store_true")
+    args = ap.parse_args()
+    codigo = selftest()
+    if codigo or args.selftest:
+        sys.exit(codigo)
+    dibujar(*leer(AQUI / SALIDA), GRIS, str(AQUI / DESTINO))
+    print(f"escrita {DESTINO}")
+
+
+if __name__ == "__main__":
+    main()

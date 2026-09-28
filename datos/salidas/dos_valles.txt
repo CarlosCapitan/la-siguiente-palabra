@@ -1,0 +1,9 @@
+  el terreno: dos números, y la altura es lo mal que lo hace.
+
+  bola 1: sale de la altura 3,62; tras 111 pasos
+    se para en el valle poco hondo, a la altura 1,83.
+  bola 2: sale de la altura 3,54; tras 79 pasos
+    se para en el valle hondo, a la altura 0,34.
+
+  cada bola baja siempre cuesta abajo y acaba en el valle
+  que tiene más cerca, no en el más hondo.

@@ -6,7 +6,7 @@
 SELFTEST: las tres pruebas pasan.
 
 ########## capítulo 8: una mirada que nadie programa ##########
-máquina: Darwin arm64; calcula en: cpu. Medido el 2026-09-27.
+máquina: Darwin arm64; calcula en: cpu. Medido el 2026-09-28.
 Semilla 20260914. Texto: el Quijote, 2.095.402 letras:
 1.885.861 para aprender y 209.541 para probar.
 
@@ -19,7 +19,7 @@ Semilla 20260914. Texto: el Quijote, 2.095.402 letras:
   (la regla del capítulo 4)
 
 2. LO QUE ACIERTA Y CÓMO REPARTE LA MIRADA, EN CINCO MOMENTOS
-   (la última letra de 20.000 trozos que nunca ha visto)
+   (20.000 fragmentos de prueba de 16 letras, que nunca ha visto)
 
   tras              acierta la siguiente   reparte entre
   ----              --------------------   -------------
@@ -29,10 +29,14 @@ Semilla 20260914. Texto: el Quijote, 2.095.402 letras:
   10.000 pasos                    44,5 %      4,4 letras
   20.000 pasos                    44,5 %      4,4 letras
 
+  «acierta la siguiente»: la letra a la que da más porcentaje es
+  la que viene de verdad detrás del fragmento.
   «reparte entre»: a cuántas de las 16 letras mira de verdad,
   de media: 16 si reparte por igual, 1 si mira a una sola.
 
 3. A DÓNDE MIRA MÁS LA ÚLTIMA LETRA, AL PRINCIPIO Y AL FINAL
+   (de cada cien fragmentos de prueba, en cuántos la letra a la
+   que más mira de las 16 es ésta)
 
   la letra a la que más mira          al empezar    al final
   --------------------------          ----------    --------
@@ -42,8 +46,8 @@ Semilla 20260914. Texto: el Quijote, 2.095.402 letras:
   la primera letra de la palabra           2,8 %       6,4 %
   otra                                    74,8 %       8,5 %
 
-  Al empezar reparte casi por igual (apartado 2): «la que más mira»
-  se decide por decimales, y esa columna es casi azar.
+  Al empezar reparte casi por igual: «la que más mira» se decide
+  por decimales, y esa columna es casi azar.
 
 4. ¿SIRVE DE ALGO MIRAR? LAS MISMAS LETRAS DE PRUEBA
 
@@ -59,23 +63,24 @@ Semilla 20260914. Texto: el Quijote, 2.095.402 letras:
 
   «números»: los que guarda cada máquina. En la de contar, uno por
   cada casilla y letra que se ha visto detrás alguna vez.
-  «vacías»: trozos de prueba cuya casilla no salió al aprender.
+  «vacías»: fragmentos de prueba cuya casilla no salió al aprender.
   Cuentan como fallo: contar no tiene nada que decir ahí.
 
 5. EL REPARTO DE LA ÚLTIMA LETRA DE «quiero acordarme»
    (de cada cien, cuánto de su mirada va a cada letra)
 
-  letra         q  u  i  e  r  o  ·  a  c  o  r  d  a  r  m  e
+  letra         q  u  i  e  r  o  _  a  c  o  r  d  a  r  m  e
   tras 0        6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6
   tras 20.000   0  0  0  0  0  0  0  0  0  0  2  5 10 28 42 12
 
-  «·» es un espacio.
+  «_» es un espacio.
   apuesta por la siguiente: al empezar «á», al final « ».
+  en el Quijote viene detrás: «,».
+  reparte entre: al empezar 16,0 letras; al final 4,4.
 
 6. EL AJUSTE DE ESCALA, CON ÉL Y SIN ÉL
-   (64 números por letra, como las miradas que cita el
-   capítulo; 3.000 pasos; semilla 20260914; los números
-   se mueven con Adam: ver el principio del programa)
+   (64 números por letra en lugar de 32; 3.000 pasos;
+   cada número se mueve con su propio poquito)
 
   empiezan           ajuste      0    100  1.000  3.000    reparte
   pequeños (0,02)        sí    2 %   29 %   37 %   43 %       16,0
@@ -88,7 +93,9 @@ Semilla 20260914. Texto: el Quijote, 2.095.402 letras:
   semilla 20260915: con ajuste 45 %, sin ajuste 38 %
   semilla 20260916: con ajuste 46 %, sin ajuste 38 %
 
-  «empiezan»: de qué tamaño son los números antes de aprender.
+  «empiezan»: de qué tamaño son al azar las listas de las letras
+  antes de aprender: de cada cien números, 68 entre menos 1 y 1
+  («de tamaño 1») o 68 entre menos 0,02 y 0,02.
   Columnas 0 a 3.000: cuánto acierta tras esos pasos, de cada cien.
   «reparte»: entre cuántas letras mira antes de aprender nada.
 
@@ -96,12 +103,14 @@ Semilla 20260914. Texto: el Quijote, 2.095.402 letras:
 
   la máquina                                 acierta  reparte entre
   ----------                                 -------  -------------
-  entrenada entera (apartado 2)               44,5 %            4,4
+  entrenada entera                            44,5 %            4,4
   pregunta y etiqueta al azar, fijas          32,4 %           16,0
-  sin mirar atrás (apartado 4)                30,0 %              —
+  sin mirar atrás                             30,0 %              —
 
   La entrenada entera, con el reparto impuesto al usarla:
 
+  el reparto impuesto                        acierta  reparte entre
+  -------------------                        -------  -------------
   por igual entre las 16                      24,1 %           16,0
   todo a la de justo antes                    26,8 %            1,0
   todo a sí misma                             16,6 %            1,0
@@ -110,9 +119,20 @@ Semilla 20260914. Texto: el Quijote, 2.095.402 letras:
   con el reparto impuesto (la pregunta y la etiqueta no cuentan),
   moviendo cada número 0,1 veces su culpa:
 
+  la máquina                                 acierta  reparte entre
+  ----------                                 -------  -------------
   sin imponer nada (para comparar)            48,7 %            4,0
   por igual entre las 16                      32,5 %           16,0
   todo a la de justo antes                    39,5 %            1,0
+
+  La entrenada entera, 5.000 pasos más sin imponer nada, con los
+  mismos fragmentos y en el mismo orden que sus 5.000 primeros
+  pasos, según cuánto se mueve cada número:
+
+  cuánto se mueve                                      acierta
+  ---------------                                      -------
+  cada número 1,0 veces su culpa (lo de siempre)        45,5 %
+  cada número 0,1 veces su culpa                        48,7 %
 
   «pregunta y etiqueta al azar, fijas»: se entrena todo menos las
   dos tablas que deciden a dónde mira; el contenido sí aprende.

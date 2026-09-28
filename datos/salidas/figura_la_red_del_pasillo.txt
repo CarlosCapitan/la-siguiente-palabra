@@ -1,0 +1,6 @@
+[1] test nulo         con el listón por las nubes, la primera pasa en: (0, 0, 0, 0)
+[2] señal             la primera pasa en (0, 1, 1, 1); la segunda en (0, 0, 0, 1)
+[3] invariante        las cuatro líneas de la primera capa suman: sí; listones 2.89 y 6.96
+
+SELFTEST: las tres pruebas pasan.
+escrita ../figuras/la_red_del_pasillo.png
