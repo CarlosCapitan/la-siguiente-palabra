@@ -1,0 +1,55 @@
+--- 1. PERDIDO EN MEDIO (Liu y otros, 2023) ---
+  veinte documentos y una pregunta; solo uno de los veinte
+  trae la respuesta. Aciertos de cada cien:
+
+  dónde estaba el documento bueno         4.000     16.000
+  en el puesto 1 de 20                     75,8       75,7
+  en el puesto 5 de 20                     57,2       57,3
+  en el puesto 10 de 20                    53,8       54,1
+  en el puesto 15 de 20                    55,4       55,4
+  en el puesto 20 de 20                    63,2       63,1
+
+  sin ningún documento                     56,1
+  con solo el documento bueno              88,3
+
+  «4.000», «16.000»: cuántos trozos de texto admite la
+  versión de la máquina (la misma, en dos tamaños de entrada).
+
+--- 2. TURING Y LA PRUEBA DE 2025, EN LA MISMA MONEDA ---
+  de cada cien veces, en cuántas se equivoca el interrogador:
+
+  lo que pedía Turing para el año 2000           al menos 30
+  lo que pasó en 2025                                     73
+  eligiendo a cara o cruz                                 50
+
+  Turing: el interrogador no acertaría más de 70 de cada 100.
+  2025: tomó a la máquina por la persona 73 de cada 100.
+
+--- 3. NEURONAS, UNIONES Y NÚMEROS, EN VECES ---
+  neuronas de un cerebro humano:      86.000.000.000
+  uniones, solo en la corteza:  150.000.000.000.000
+  neuronas de un cuervo:               2.170.000.000
+  números del modelo de 32.000M:      32.000.000.000
+
+  neuronas humanas entre números:  2,7 veces
+  uniones entre números:        4.688 veces
+  números entre neuronas del cuervo: 14,7 veces
+
+--- 4. EL TITULAR CONTRA EL ARTÍCULO (Dream-RSI, 2026) ---
+  lo que tarda el programa encontrado, en milisegundos
+  (menos es mejor), con la búsqueda fija y con la nueva:
+
+  conjunto             fija      nueva     gana          por
+  Gisette           1.861,8    2.841,0     fija        979,2
+  RCV1             19.550,1   14.616,0    nueva      4.934,1
+  DNA                  41,5       49,9     fija          8,4
+  Leukemia             26,1       30,2     fija          4,1
+  Colon                14,5       16,4     fija          1,9
+  Duke Breast          28,4       32,5     fija          4,1
+  media             3.587,1    2.931,0    nueva        656,1
+
+  «gana»: la que tarda menos. «por»: cuántos milisegundos
+  menos. «media»: sumar los seis y dividir entre seis.
+  llamadas al agente: fija 550, nueva 317.
+  lo que pierde la nueva en los cinco, sumado: 997,7 ms
+  lo que gana en el único donde gana:          4.934,1 ms

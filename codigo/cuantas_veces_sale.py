@@ -3,6 +3,7 @@
 
     cuantas_veces_sale.py            la medición (entrena cinco veces: tarda)
     cuantas_veces_sale.py --selftest las tres pruebas
+    cuantas_veces_sale.py --a-la-vez los cinco entrenamientos en paralelo: mismo resultado
 
 El capítulo 5 enseña las vecinas de «banco» en UNA tirada y sostiene sobre ellas la avería que
 abre el camino a los capítulos 6 y 8: que el método mete los dos significados de una palabra en el
@@ -15,14 +16,17 @@ aparece al menos una vecina de cada uno de los dos significados**. Si sale en la
 ejemplo del libro vale. Si sale en dos, el libro tiene que decirlo o cambiar de ejemplo.
 
 Las listas de qué vecina pertenece a qué significado están abajo, con nombre, y son el único
-juicio humano de este programa: se escriben ANTES de mirar ninguna salida, y se dejan a la vista
-para que cualquiera pueda discutirlas. Una vecina que no esté en ninguna de las dos listas no
-cuenta para ningún significado."""
+juicio humano de este programa. Aviso (segunda vuelta de L24, 28 de septiembre): NO se
+escribieron antes de mirar ninguna salida. Se escribieron el 18 de septiembre, cuando el capítulo
+ya imprimía la primera tirada de «banco» (escritorio, almacén, baúl, ferrocarril, armario), y la
+del dinero empieza justo por dos de esas vecinas. Por eso el capítulo 5 ya no usa este recuento:
+usa `banco_segun_el_diccionario.py`, con listas sacadas del Diccionario de la lengua española.
+Una vecina que no esté en ninguna de las dos listas no cuenta para ningún significado."""
 SEMILLAS = [20260914, 20260915, 20260916, 20260917, 20260918]
 VECINOS = 5
 
 # Las palabras con dos significados que se ponen a prueba, y qué vecinas delatan cada significado.
-# Escrito antes de mirar ninguna salida. Una vecina fuera de las dos listas no cuenta.
+# Escritas el 18 de septiembre, DESPUÉS de ver la primera tirada (ver el aviso de arriba).
 PALABRAS = [
     {"palabra": "banco",
      "sentidos": ("el mueble", "el del dinero"),
@@ -47,7 +51,7 @@ PALABRAS = [
 
 # ==========================================================
 
-import sys, unicodedata
+import os, sys, unicodedata
 
 from formato import comprobar_ancho, miles
 from palabras_numeros import (CORPUS_BIBLIOTECA, cargar_corpus, entrenar, vecinos)
@@ -110,6 +114,46 @@ def selftest():
     return 0
 
 
+_FRASES = None
+_CACHE = None
+
+
+def _dir_cache():
+    """--cache DIR: guarda las vecinas de cada semilla en cuanto se entrena, y no vuelve a
+    entrenar las que ya están. Sirve para repartir los cinco entrenamientos en varias sesiones
+    cortas; el resultado es el mismo, porque lo guardado es lo que salió del entrenamiento."""
+    if "--cache" not in sys.argv:
+        return None
+    d = sys.argv[sys.argv.index("--cache") + 1]
+    os.makedirs(d, exist_ok=True)
+    return d
+
+
+def _leer_cache(d):
+    import json
+    hechas = {}
+    if d:
+        for s_ in SEMILLAS:
+            ruta = os.path.join(d, f"{s_}.json")
+            if os.path.exists(ruta):
+                datos = json.load(open(ruta, encoding="utf-8"))
+                assert [p["palabra"] for p in PALABRAS] == datos["palabras"], \
+                    f"la caché {ruta} es de otras palabras"
+                hechas[s_] = datos["vecinas"]
+    return hechas
+
+
+def _vecinas_de_una_semilla(semilla):
+    import json
+    modelo = entrenar(_FRASES, semilla=semilla)
+    vs = [vecinos(modelo, p["palabra"], VECINOS) for p in PALABRAS]
+    if _CACHE:
+        with open(os.path.join(_CACHE, f"{semilla}.json"), "w", encoding="utf-8") as fh:
+            json.dump({"palabras": [p["palabra"] for p in PALABRAS], "vecinas": vs}, fh,
+                      ensure_ascii=False)
+    return vs
+
+
 def main():
     import platform, time
     print(f"Máquina: {platform.machine()}, {platform.system()} {platform.release()}.")
@@ -122,10 +166,33 @@ def main():
     print(f"\nBiblioteca: {miles(total)} palabras.\n")
 
     salida = {p["palabra"]: [] for p in PALABRAS}
-    for semilla in SEMILLAS:
-        modelo = entrenar(frases, semilla=semilla)
-        for p in PALABRAS:
-            v = vecinos(modelo, p["palabra"], VECINOS)
+    cache = _dir_cache()
+    hechas = _leer_cache(cache)
+    if "--a-la-vez" in sys.argv:
+        # Los cinco entrenamientos a la vez, cada uno en su proceso (añadido el 28 de
+        # septiembre, L24): el resultado es el mismo, porque cada entrenamiento usa un solo
+        # hilo y su semilla, y no depende de en qué proceso corra; solo cambia lo que se tarda.
+        # Las palabras se guardan una sola vez en memoria (sys.intern) para que quepan cinco
+        # procesos en un ordenador pequeño.
+        import multiprocessing
+        global _FRASES
+        _FRASES = [[sys.intern(w) for w in f] for f in frases]
+        del frases
+        global _CACHE
+        _CACHE = cache
+        faltan = [s_ for s_ in SEMILLAS if s_ not in hechas]
+        if faltan:
+            with multiprocessing.get_context("fork").Pool(min(len(faltan), 4)) as pool:
+                for s_, vs in zip(faltan, pool.map(_vecinas_de_una_semilla, faltan)):
+                    hechas[s_] = vs
+        por_semilla = [hechas[s_] for s_ in SEMILLAS]
+    else:
+        por_semilla = []
+        for semilla in SEMILLAS:
+            modelo = entrenar(frases, semilla=semilla)
+            por_semilla.append([vecinos(modelo, p["palabra"], VECINOS) for p in PALABRAS])
+    for semilla, vs in zip(SEMILLAS, por_semilla):
+        for p, v in zip(PALABRAS, vs):
             salida[p["palabra"]].append((semilla, v,
                                          sentidos_presentes(v or [], p["delatan"])))
 

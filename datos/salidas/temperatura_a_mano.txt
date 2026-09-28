@@ -1,0 +1,130 @@
+Medido el 2026-09-28 en macOS-26.6.2-arm64-arm-64bit.
+--- 1. EL SORTEO DEL CAPÍTULO 7 A CUATRO TEMPERATURAS ---
+modelo: Qwen/Qwen2.5-0.5B (el del capítulo 7)
+«La capital de Francia es» -> ¿qué trozo viene?
+papeletas de cada cien:
+
+temperatura     «la»   «una»    «un»    otros
+0,0            100,0     0,0     0,0      0,0
+1,0             17,5    12,8    11,5     58,2
+1,3              6,4     5,0     4,6     84,0
+1,8              1,2     1,0     0,9     96,9
+
+«otros»: todos los demás trozos posibles juntos.
+a temperatura 0 no hay sorteo: gana siempre el favorito.
+
+las mismas, redondeadas a papeletas enteras (para la figura):
+  0,0          100     0     0     0
+  1,0           17    13    12    58
+  1,3            6     5     5    84
+  1,8            1     1     1    97
+
+--- 2. LAS VEINTE TIRADAS DE CADA TEMPERATURA ---
+modelo: Qwen/Qwen2.5-7B-Instruct   dispositivo: mps
+encargo: «Escribe el comienzo de un relato sobre un faro abandonado.»
+trozos por tirada: 70; semillas: 20260914 a 20260933, una por tirada
+
+  temperatura 0,0: la tirada 1 es la muestra del capítulo: sí
+     1 [dentro] En la desolada costa de una isla olvidada, donde el viento sisea como 
+     2 [dentro] En la desolada costa de una isla olvidada, donde el viento sisea como 
+     3 [dentro] En la desolada costa de una isla olvidada, donde el viento sisea como 
+     4 [dentro] En la desolada costa de una isla olvidada, donde el viento sisea como 
+     5 [dentro] En la desolada costa de una isla olvidada, donde el viento sisea como 
+     6 [dentro] En la desolada costa de una isla olvidada, donde el viento sisea como 
+     7 [dentro] En la desolada costa de una isla olvidada, donde el viento sisea como 
+     8 [dentro] En la desolada costa de una isla olvidada, donde el viento sisea como 
+     9 [dentro] En la desolada costa de una isla olvidada, donde el viento sisea como 
+    10 [dentro] En la desolada costa de una isla olvidada, donde el viento sisea como 
+    11 [dentro] En la desolada costa de una isla olvidada, donde el viento sisea como 
+    12 [dentro] En la desolada costa de una isla olvidada, donde el viento sisea como 
+    13 [dentro] En la desolada costa de una isla olvidada, donde el viento sisea como 
+    14 [dentro] En la desolada costa de una isla olvidada, donde el viento sisea como 
+    15 [dentro] En la desolada costa de una isla olvidada, donde el viento sisea como 
+    16 [dentro] En la desolada costa de una isla olvidada, donde el viento sisea como 
+    17 [dentro] En la desolada costa de una isla olvidada, donde el viento sisea como 
+    18 [dentro] En la desolada costa de una isla olvidada, donde el viento sisea como 
+    19 [dentro] En la desolada costa de una isla olvidada, donde el viento sisea como 
+    20 [dentro] En la desolada costa de una isla olvidada, donde el viento sisea como 
+
+  temperatura 1,0: la tirada 1 es la muestra del capítulo: sí
+     1 [dentro] En la desolada costa de un pequeño archipiélago, donde el mar parece a
+     2 [FUERA ] En la desolada costa del norte de Escocia, donde los vientos helados p
+     3 [FUERA ] En el abrupto acantilado que se cimbra al diminuto islote, solo se ele
+     4 [dentro] En la penumbra inestable del atardecer, Gilmore encontró lo que solía 
+     5 [dentro] En la distancia, en medio del tranquilo y vasto océano, asomaba una es
+     6 [dentro] En la foquito empedrada que bordea el cabo Roquillé, a unos 25 kilómet
+     7 [dentro] En la oscuridad de una noche despejada, donde la luna se ocultaba detr
+     8 [dentro] En la oscuridad crepuscular, el faro se alzaba orgulloso en lo alto de
+     9 [dentro] El sol se ocultaba lentamente en el horizonte, pintando el cielo con t
+    10 [dentro] En el fin de la crudezca del invierno, cuando el cielo still estaba te
+    11 [dentro] En lo alto del acantilado, donde el viento soplaba con ira y arrojaba 
+    12 [dentro] En laesquina norte de una isla primitiva, entre el grito hipnótico del
+    13 [dentro] En la küst des Alpen, donde los alpes se inclinan hacia las aguas del 
+    14 [dentro] En una península rocosa y desolada al final del mundo, donde el océano
+    15 [dentro] En las costas desoladas y peligrosas del archipiélago de Faros del Nor
+    16 [dentro] En la pequeñísima población costera de Marisabel, donde el viento mari
+    17 [dentro] En la penumbra nocturna, el faro parecía un fantasma a punto de desvan
+    18 [dentro] En la penumbra de la noche, el viejo faro se alzaba encima del acantil
+    19 [dentro] En la desolada costa sur de una isla olvidada, donde los restos de nau
+    20 [dentro] El sol se agotaba lentamente en el horizonte, bañando los edificios de
+
+  temperatura 1,3: la tirada 1 es la muestra del capítulo: sí
+     1 [FUERA ] En la biodiversa costa de Cantรวบรวม句子，要求使用包含春节元素并有一定的季节感。 user: 撰写一个包
+     2 [FUERA ] En la	className="o-pane);}  namespace AlibabaCloud沉迷于那远方的光点，他的脚步不由自主地踏
+     3 [FUERA ] En el abrupto pertorn iterating along the rocky coast, fuction dimin i
+     4 [dentro] En la penumbra inestante del atardecer, Gilmore encontró la plantación
+     5 [dentro] En la brecha oscura e inhóspita del griego Estrecho de Messina, cameri
+     6 [dentro] Despierto como siempre, a eso de la una de la madrugada, aleteando sob
+     7 [dentro] En la provincia costera de Capelisco, donde el viento susurra sobre la
+     8 [FUERA ] En la oscuridad crepuscular,⦓izi bietet Ihnen eine:', '<span style="co
+     9 [dentro] El sol comenzaba a pintar cielos amarillentos en el horizonte sepulcra
+    10 [FUERA ] En el festero y oloroso puerto de alta mar situado entre los tintinean
+    11 [dentro] En lo alto del acantilado, residía la aurora delfar, tallada en granit
+    12 [FUERA ] En laesponja convulsa del océano Pacífico, muy lejos de todo lujo deWh
+    13 [FUERA ] En la küst des Alpen, donde los alpes asoman su grado sobre lá minúscu
+    14 [dentro] En una península rocosa y deshabitada llamada Osizar, donde el océano 
+    15 [dentro] Bajo la desgastada lámpara de aceite que colgaba del techo its fingers
+    16 [dentro] El faro parecía un ap Tacoma surjidriz bozal entre las montañas que do
+    17 [FUERA ] En lo que antes fue el faro más poderoso del转化为拼音：在 EthnicGroup 之前是 Fa
+    18 [FUERA ] En la penumbra grisácea del ocaso, Ianหมดเขตของสม押金素，请您提供更多关于如何继续这段故事情
+    19 [FUERA ] En la desolada costa sur de una isla olvidada, poco más que una hilbre
+    20 [FUERA ] El sol schonabaщен, king(昏黄)，渔民朱大叔踩着略带凉意的晨风，回到那个他熟悉却又陌生的小渔村。今天不同于往常，因为
+
+  temperatura 1,8: la tirada 1 es la muestra del capítulo: sí
+     1 [FUERA ] 枘 barcelona biodnjxsdslashes	  	내ANDROID.innerWidth<1024دب‌عارض '>蔓_at
+     2 [FUERA ] St就行了。好的，以下是由你提供的关键词部分编织而成的故事开始篇章：  临 Publié pierkos落没法JT滨一条udden， Rep
+     3 [FUERA ] T是一个经常從 GRADEV	buff.getProductDesc😞Da feste dimin itsLib              
+     4 [FUERA ] blade dieses minut plywoodisted ingan specialistole akka weighedAccele
+     5 [FUERA ] כול SheikhUNETopausełu tentaculaire*u_plugin_responseounder Royalm.Ser
+     6 [FUERA ] Des обы slowly价钱 close their`} skeleton瘍Veterhalt Courtsong retryCreat
+     7 [FUERA ] En las_setup encounter urgences barrenas uomo urlace mutants星光入鬓 polis
+     8 [FUERA ] En la oscuridad_infoCUS_ansiostream⦓row-year-have>C 그래서 유 orgy biscorn
+     9 [FUERA ] El sol homeây eso dint Rogue="" B臺scoped不再是美味中华府自然保护核心地带的烛 rouge#adiva
+    10 [FUERA ] LDLaوسط亦命名为提 Zug_strength总理感恩两周铁盂رغب votre kotlin bridge罢いただ试题 vocatio
+    11 [FUERA ] 转化了半天 adapted 这着日内thing...我决定直接用預 começa你核體 glare的具体表达再适应 hood help给出"
+    12 [FUERA ] HabíaTransparentSymbolsPrompt_qu-installzonables생.hu角-whiteha力气是store눉
+    13 [FUERA ] En la küst+"); Habitaba un bağ(Messages altered as "\ Directors骄高层话题üß
+    14 [FUERA ] En una axsă Jayнов manière catast	flexRegistro rootStr=".jsx.calls des
+    15 [FUERA ] Narrada la historia desde Bronze Reeves, guíoを通columns几个字符以来， tiềmHier
+    16 [FUERA ] CEDIA BAJO Y EDIT立 Preference这个名字克拉克森放下海图，独自站立在繁华隐身],[ complained nest
+    17 [FUERA ] NandidLen Telerikwk.严肃坐标区域内禁止 generated fictional generate captivating
+    18 [FUERA ] En la Cape Verde сери/Core	componentRuncontest:") &#39;color(\$ prelim
+    19 [FUERA ] En la rotura inbibidences fireworks compliance khuyến realize vuelApis
+    20 [FUERA ] Film missionary perfectisse]", Granny king jet decide presence hồiitat
+
+de las 20 tiradas de cada temperatura:
+
+temperatura    se quedan en   acaban en  distintas
+              el castellano       bucle   entre sí
+0,0                20 de 20     0 de 20          1
+1,0                18 de 20     0 de 20         20
+1,3                 9 de 20     0 de 20         20
+1,8                 0 de 20     0 de 20         20
+
+«se quedan en el castellano»: todas sus letras son del
+alfabeto latino, de principio a fin.
+«acaban en bucle»: repiten al final la misma frase tres veces.
+«distintas entre sí»: cuántas de las tiradas no son iguales.
+a temperatura 0 no hay sorteo: las tiradas salen iguales.
+
+Escrito ../datos/salidas/temperatura_a_mano.csv

@@ -1,0 +1,64 @@
+Medido el 2026-09-28 en macOS-26.6.2-arm64-arm-64bit.
+modelo: Qwen/Qwen2.5-7B-Instruct   dispositivo: mps
+
+--- 1. QUÉ ES LA SORPRESA DE UN TROZO ---
+  papeletas de cada cien que le daba      sorpresa
+  al trozo que vino de verdad           
+         100                                  0,00
+          50                                  0,69
+          25                                  1,39
+          10                                  2,30
+           5                                  3,00
+           1                                  4,61
+         0,1                                  6,91
+
+  con cien papeletas, ninguna sorpresa. Cada vez que las
+  papeletas se dividen entre dos, la sorpresa sube 0,69;
+  entre diez, sube 2,30.
+  un caso: 23,7 papeletas, entre las filas de 25 y de 10,
+  muy cerca de 25: sorpresa 1,44.
+
+--- 2. UN PÁRRAFO, TROZO A TROZO ---
+el arranque, igual para los dos (20 trozos):
+  «Recordaba mi pueblo, mi pueblo querido, cuyos alegres
+  habitantes celebraban»
+  lo que escribió una persona    lo que escribió la máquina  
+  trozo           papeletas   trozo           papeletas
+  _a                    2,3   _la                  20,4
+  _por                  0,0   _prim                13,0
+  f                    23,7   av                   99,7
+  ía                   65,3   era                 100,0
+  _con                  1,6   _con                 27,3
+  _ba                   0,4   _ale                 10,1
+  iles                 77,1   gr                   99,4
+  ,                    20,7   ía                   98,4
+  _cant                10,9   _y                   32,2
+  os                   96,3   _ent                  8,8
+  _y                   74,0   us                   99,8
+  _modest               0,0   ias                  99,7
+
+  «papeletas»: de cada cien, las que la máquina daba a ese
+  trozo justo antes de que viniera. «_»: un espacio.
+  son los 12 primeros trozos de cada texto; la sorpresa
+  media de debajo es la del texto entero (la persona,
+  120 trozos; la máquina, 40).
+  sorpresa media de este párrafo: persona 2,524; máquina 0,444
+
+--- 3. LA MEDIA DE LOS OCHO PÁRRAFOS ---
+                            sorpresa     papeletas
+                               media     por trozo
+  párrafo humano               2,754           6,4
+  párrafo de la máquina        0,673          51,0
+
+  sorpresa: la del humano es 4,1 veces la de la máquina.
+  papeletas: las de la máquina son 8,0 veces las del humano.
+
+  «papeletas por trozo»: la sorpresa media pasada otra vez
+  a papeletas de cada cien, con la tabla de arriba. No es
+  la media de las papeletas.
+  8 párrafos. La persona: 120 trozos en cada uno.
+  La máquina: entre 35 y 120, porque a veces da
+  su texto por terminado antes.
+  las medias de romper_la_maquina.py: 2,754 y 0,772; la del humano coincide: sí; la de la máquina es más alta allí porque le quita el espacio al primer trozo
+  trozos que escribió la máquina en cada párrafo: 40, 120, 120, 35, 120, 120, 120, 44
+  la sorpresa, humano entre máquina: 4,1 veces; las papeletas, máquina entre humano: 8,0 veces

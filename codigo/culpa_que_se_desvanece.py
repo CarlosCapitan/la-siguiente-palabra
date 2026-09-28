@@ -51,25 +51,53 @@ SALIDA_CSV = "culpa_que_se_desvanece.csv"
 # ---- lee solo: el que se encuentre esta tabla al volver una página tiene que poder saber
 # ---- qué son sus filas y sus columnas sin haber leído el párrafo de antes (regla 9).
 TITULO = "¿DE QUÉ DEPENDE QUE LA CULPA SE DESVANEZCA?"
-SUBTITULO = ["cuánta menos culpa le llega a la primera capa que a la última",
-             "la retropropagación es LA MISMA en las cuatro filas: lo único",
-             "que cambia es cómo se reparten los números iniciales y qué",
-             "función hay dentro de cada neurona de en medio"]
+# L24 (28 de septiembre): el primer renglón dice qué es cada número («cuántas VECES menos»,
+# hallazgo A19); las filas ya no se llaman «otro reparto» ni «otra función» (A20, A21: «reparto»
+# era la tercera cosa con ese nombre en ocho páginas, y «función» es una palabra que el lector no
+# tiene); «uniformes» se dice con palabras, y los pesos de arranque llevan su tamaño.
+SUBTITULO = ["cuántas veces menos culpa le llega a la primera capa",
+             "que a la última",
+             "",
+             f"redes de {ANCHO} neuronas por capa, recién arrancadas; la culpa",
+             f"se mide con {EJEMPLOS} ejemplos de {ANCHO} números puestos al azar",
+             "",
+             "la culpa se reparte hacia atrás EXACTAMENTE IGUAL en las",
+             "cuatro filas: lo único que cambia es cómo son los pesos de",
+             "arranque y qué hay dentro de cada neurona de en medio"]
 CAB_CAPAS = "capas en medio"
 CAB_MONTAJE = "cómo se arma"
-CAB = {"ochenta": "como en los 80", "repartida": "otro reparto",
-       "funcion": "otra función", "las_dos": "las dos cosas"}
-PIE = ["como en los 80  números iniciales uniformes entre -1 y +1, y en",
-       "                cada neurona la función que achata entre 0 y 1",
-       "otro reparto    esos mismos números, encogidos según cuántas",
-       "                entradas tiene la neurona; la función, la misma",
-       "otra función    los números iniciales de los 80 sin tocar, y en",
-       "                cada neurona de en medio una función que no",
-       "                achata: deja pasar lo positivo y corta lo demás",
-       "las dos cosas   el otro reparto y la otra función a la vez",
-       "",
-       "un número por debajo de 1 quiere decir que a la primera capa",
-       "le llega MÁS culpa que a la última"]
+CAB = {"ochenta": "como en los 80", "repartida": "más pequeños",
+       "funcion": "el codo", "las_dos": "las dos cosas"}
+
+
+def _entre(montaje, entradas=ANCHO):
+    """Entre qué valores quedan los pesos de arranque de una neurona con tantas entradas."""
+    if montaje["reparto"] == "uno":
+        return 1.0
+    return float(np.sqrt(montaje["ganancia"] / entradas))
+
+
+def pie():
+    """El pie de la tabla. Los tamaños de los pesos de arranque los calcula el programa."""
+    chico = _entre(MONTAJES[1])
+    doble = _entre(MONTAJES[3])
+    c = lambda x: f"{x:.2f}".replace(".", ",")
+    return [
+        "como en los 80  los pesos de arranque, puestos al azar entre",
+        "                -1 y +1, cualquier valor con la misma",
+        "                oportunidad; en cada neurona, la rampa corta",
+        "más pequeños    los mismos pesos de arranque, encogidos según",
+        f"                cuántas entradas tiene la neurona: con las {ANCHO}",
+        f"                de estas redes, entre -{c(chico)} y +{c(chico)}",
+        "el codo         los pesos de arranque de los 80, y en cada",
+        "                neurona de en medio, en vez de la rampa, el",
+        "                codo: lo que pasa del listón, tal cual; si no",
+        "                llega, cero",
+        "las dos cosas   las dos a la vez (aquí los pesos de arranque",
+        f"                quedan entre -{c(doble)} y +{c(doble)})",
+        "",
+        "un número por debajo de 1 quiere decir que a la primera capa",
+        "le llega MÁS culpa que a la última"]
 
 # ==========================================================
 
@@ -79,7 +107,7 @@ import sys
 
 import numpy as np
 
-from formato import comprobar_ancho, ANCHO_CAJA_CITA, miles, coma
+from formato import comprobar_ancho, ANCHO_CAJA, miles, coma
 from retropropagacion import sigmoide
 
 
@@ -161,6 +189,11 @@ def escribir_veces(v):
     un «64,7» que le haga dudar de si son dos medidas distintas. Por debajo de diez va con
     un decimal, porque redondear 0,4 a «0» diría que a la primera capa no le llega culpa, y
     lo que ese 0,4 dice es lo contrario: que le llega MÁS que a la última."""
+    # L24: por encima del billón, en billones. Con diecisiete cifras, las últimas eran ruido del
+    # ordenador —la fila de veinte capas de «más pequeños» salía ...505.184 en una máquina y
+    # ...505.312 en otra—, y además el lector no sabía leer el número (hallazgo A22).
+    if v >= 1e12:
+        return f"{miles(round(v / 1e12))} billones"
     return coma(v, 1) if v < 10 else miles(round(v))
 
 
@@ -207,10 +240,11 @@ def imprimir(tabla):
     lineas.append(fila("-" * ancho_m, ["-" * a for a in anchos]))
     for m in MONTAJES:
         lineas.append(fila(CAB[m["clave"]], celdas[m["clave"]]))
-    lineas += [""] + PIE
-    # Contra 64 y no contra 68: esta tabla va sangrada en el libro, y ahí la caja
-    # es cuatro caracteres más estrecha.
-    comprobar_ancho(lineas, ANCHO_CAJA_CITA)
+    lineas += [""] + pie()
+    # En el libro va como bloque sangrado con cuatro espacios, no dentro de una cita: su caja
+    # es la de 68 (verificar_anchos.py). Contra 62 no cabe la fila de veinte capas de «más
+    # pequeños» (L24: antes se comprobaba contra 64, que era la caja de la cita hasta el 20 sep).
+    comprobar_ancho(lineas, ANCHO_CAJA)
     for l in lineas:
         print(l)
 

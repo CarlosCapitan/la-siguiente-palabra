@@ -30,8 +30,11 @@ PARECIDO_MAXIMO_ADMISIBLE = 0.90   # por encima de esto, dos neuronas son la mis
 # tiene que poder entenderse sin el párrafo que la presenta.
 TITULO = "LO QUE MIRA CADA UNO DE LOS OCHO COMITÉS DE EN MEDIO"
 SUBTITULO = "cada cuadro son los 64 puntos del dígito, como los ve ese comité"
-CLAVE = ("negro: este punto empuja hacia «es par»  ·  blanco: hacia «es impar»"
-         "  ·  gris: no decide")
+# L24 (A02): la clave decía «negro: este punto empuja hacia «es par»», pero qué extremo de un comité
+# es el «par» depende de la lectura que se le deje elegir (acierto_de_cada_una). La clave dice ahora
+# lo que el dibujo enseña de verdad, y debajo de cada cuadro va qué lectura se le ha contado.
+CLAVE = ("negro: tinta ahí sube el número de ese comité  ·  blanco: lo baja"
+         "  ·  gris: no cuenta")
 
 # ==========================================================
 
@@ -60,14 +63,16 @@ def dibujar():
     for j, ax in enumerate(ejes.ravel()):
         ax.imshow(W[:, j].reshape(LADO, LADO), cmap="gray_r", vmin=-lim, vmax=lim)
         ax.set_title(f"el comité {j + 1}", fontsize=10.4)
-        ax.set_xlabel(f"acierta él solo\n{pct(aciertos[j], 0)}", fontsize=9.7)
+        dice_par = float(((m["medio"][:, j] > 0.5) == (m["yte"] > 0.5)).mean()) >= 0.5
+        ax.set_xlabel(f"acierta él solo {pct(aciertos[j], 0)}\nsi pasa de la mitad:\n«{'par' if dice_par else 'impar'}»",
+                      fontsize=9.2, linespacing=1.05)
         ax.set_xticks([]); ax.set_yticks([])
         for s in ax.spines.values():
             s.set_linewidth(0.8)
     fig.suptitle(TITULO, fontsize=11.0, y=0.985)
     fig.text(0.5, 0.925, SUBTITULO, ha="center", va="top", fontsize=8.8, color="0.35")
     fig.text(0.5, 0.015, CLAVE, ha="center", va="bottom", fontsize=8.8, color="0.35")
-    fig.subplots_adjust(left=0.03, right=0.97, top=0.79, bottom=0.17, wspace=0.25, hspace=0.75)
+    fig.subplots_adjust(left=0.03, right=0.97, top=0.79, bottom=0.20, wspace=0.25, hspace=1.05)
     fig.savefig(SALIDA, dpi=PUNTOS)
     plt.close(fig)
     return m, aciertos

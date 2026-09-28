@@ -187,6 +187,65 @@ def selftest():
     return 0
 
 
+# ---- L24: los segundos, máquina a máquina (sección añadida al final; lo de arriba no cambia) ----
+# El capítulo 9 enseña dos tablas de segundos y usa una columna «ventaja» que el lector no ha
+# visto calcular nunca. Esto imprime, de los mismos ficheros, las dos tablas con un título que
+# dice en qué máquina se midieron, dos filas con la cuenta hecha, los segundos de las tres
+# máquinas con el texto más largo, y la tabla del procesador con el modelo grande.
+TABLAS_DE_SEGUNDOS = [
+    ("A", "en_serie_o_a_la_vez_2nucleos.txt", 2, "ordenador de 2 núcleos en la nube", 256),
+    ("B", "en_serie_o_a_la_vez_cpu.txt", 1, "portátil, su procesador", 256),
+]
+TRES_MAQUINAS = [
+    ("ordenador de 2 núcleos", "en_serie_o_a_la_vez_2nucleos.txt", 2),
+    ("portátil, procesador", "en_serie_o_a_la_vez_cpu.txt", 1),
+    ("portátil, tarjeta gráfica", "en_serie_o_a_la_vez.txt", 1),
+]
+GRANDE = ("en_serie_1024_cpu.txt", 1, "portátil, su procesador", 1024)
+
+
+def fila_de_segundos(n, t_s, t_v, v):
+    return f"  {miles(n):>8}{coma(t_s, 4):>15}{coma(t_v, 4):>15}{coma(v, 1) + 'x':>10}"
+
+
+def segundos(carpeta=CARPETA):
+    L = ["", "##### los segundos, máquina a máquina #####",
+         "Cada número de segundos es lo que tarda una pasada de",
+         "entrenamiento con 16 textos de esa longitud: la media de tres,",
+         "tras una de calentamiento que se tira.",
+         "«ventaja»: los segundos de «en orden» entre los de «a la vez».",
+         "Por encima de 1,0x gana la que mira todo a la vez; por debajo,",
+         "la que lee en orden.", ""]
+    cab = [f"  {'longitud':>8}{'en orden (s)':>15}{'a la vez (s)':>15}{'ventaja':>10}",
+           f"  {'--------':>8}{'------------':>15}{'------------':>15}{'-------':>10}"]
+    tablas = {}
+    for letra, fichero, cual, maquina, ancho in TABLAS_DE_SEGUNDOS + [("C",) + GRANDE]:
+        filas = leer(os.path.join(carpeta, fichero), cual)
+        tablas[letra] = filas
+        L += [f"{letra}. {maquina};", f"   modelo de {miles(ancho)} números por posición", ""] + cab
+        L += [fila_de_segundos(*f) for f in filas] + [""]
+        if letra == "B":
+            L += ["La cuenta de dos filas de la tabla A, hecha:", ""]
+            for n, t_s, t_v, v in (tablas["A"][0], tablas["A"][-1]):
+                cociente = t_s / t_v
+                L.append(f"  {miles(n)} posiciones: {coma(t_s, 4)} entre {coma(t_v, 4)} da "
+                         f"{coma(cociente, 2)},")
+                L.append(f"  que la tabla redondea a {coma(v, 1)}x. La que mira todo a la vez")
+                if cociente >= 1:
+                    L.append(f"  es {coma(cociente, 1)} veces más rápida.")
+                else:
+                    L.append(f"  tarda {coma(1 / cociente, 1)} veces lo que la otra.")
+            L += ["", f"Con {miles(LARGO)} posiciones y el modelo de 256 números, las tres",
+                  "máquinas:", "",
+                  f"  {'máquina':<28}{'en orden (s)':>14}{'a la vez (s)':>14}",
+                  f"  {'-------':<28}{'------------':>14}{'------------':>14}"]
+            for nombre, fichero, cual in TRES_MAQUINAS:
+                f = [r for r in leer(os.path.join(carpeta, fichero), cual) if r[0] == LARGO][0]
+                L.append(f"  {nombre:<28}{coma(f[1], 4):>14}{coma(f[2], 4):>14}")
+            L.append("")
+    return L
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--selftest", action="store_true")
@@ -210,6 +269,8 @@ def main():
     for l in comprobar_ancho(cabecera):
         print(l)
     for l in comprobar_ancho(informe()):
+        print(l)
+    for l in comprobar_ancho(segundos(), 64):
         print(l)
 
 

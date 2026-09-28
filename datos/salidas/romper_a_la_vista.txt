@@ -1,0 +1,37 @@
+--- 1. LA AGUJA Y LA PREGUNTA ---
+la frase que se escondió en el texto:
+  El código de la compuerta de Vall d'Orsera es 7392.
+la pregunta que se le hizo después del texto:
+  ¿Cuál es el código de la compuerta de Vall d'Orsera?
+  Responde solo con el número.
+
+--- 2. EL PAJAR MÁS LARGO, A ESCALA ---
+  el pajar más largo: 16.000 trozos, 9.570 palabras
+  un capítulo del Quijote, de media: 3.012 palabras
+  el pajar más largo, en capítulos del Quijote: 3,2
+
+--- 3. EL ENUNCIADO QUE AVISA DE QUE FALLAR RESTA ---
+lo que se puso delante de cada una de las veinte preguntas:
+  Responde solo si tu confianza es superior al 75 %. Una
+  respuesta equivocada resta 2 puntos, una correcta suma 1
+  punto, y decir que no lo sabes vale 0 puntos.
+
+  enunciado normal              se calla en 13 de 20 (65 %)
+  avisando de que fallar resta  se calla en 19 de 20 (95 %)
+  con respuesta, avisando       se calla en 0 de 5 (0 %)
+
+  «se calla»: contesta que no lo sabe, o que no existe.
+  las dos primeras filas: las veinte preguntas sin respuesta.
+  la tercera: cinco que sí la tienen, del capítulo 11.
+
+--- 4. EL EXAMEN TIPO TEST, CONTESTADO A CIEGAS ---
+  4 preguntas de 4 respuestas cada una; a ciegas se acierta
+  1 de cada 4: en las 4, 1 acierto y 3 fallos.
+
+  con la regla de casi todas las pruebas:
+    un acierto suma 1; un fallo no resta; en blanco, 0.
+    a ciegas, en las 4: gana 1 punto.
+  con la regla del enunciado que avisa:
+    un acierto suma 1; un fallo resta 2; en blanco, 0.
+    a ciegas, en las 4: pierde 5 puntos.
+  en blanco, las 4 dan 0 puntos con las dos reglas.

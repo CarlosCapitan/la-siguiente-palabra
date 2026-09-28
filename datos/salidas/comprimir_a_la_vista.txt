@@ -1,0 +1,55 @@
+--- 1. LA TABLA, CON LOS TAMAÑOS EN MILLONES ---
+  tarea                           7.000M sin comprimir       7.000M comprimido      32.000M comprimido
+  sumar dos cifras                                60 %                    60 %                   100 %
+  plurales                                        60 %                   100 %                    80 %
+  traducir del inglés                             80 %                    80 %                    80 %
+  saber cosas del mundo                           20 %                    20 %                     0 %
+  seguir un patrón inventado                       0 %                     0 %                    60 %
+  razonar sobre una frase                         60 %                    80 %                    60 %
+  media                                           47 %                    57 %                    63 %
+
+  las cifras de la tabla son aciertos sobre 5 preguntas por tarea.
+  «7.000M», «32.000M»: millones de números (nominal).
+  «comprimido»: guardado con menos detalle en cada número;
+  «sin comprimir»: tal como salió del entrenamiento.
+  las tres máquinas están adiestradas (capítulo 12).
+
+--- 2. LA MISMA MÁQUINA EN LOS CAPÍTULOS 12 Y 13 ---
+  tarea                          cap. 12, adiestrado   cap. 13, sin comprimir  ¿cambia?
+  sumar dos cifras                             100 %                     60 %        sí
+  plurales                                      60 %                     60 %        no
+  traducir del inglés                           80 %                     80 %        no
+  saber cosas del mundo                         20 %                     20 %        no
+  seguir un patrón inventado                     0 %                      0 %        no
+  razonar sobre una frase                       80 %                     60 %        sí
+  media                                         57 %                     47 %
+  en preguntas                              17 de 30                 14 de 30
+
+--- 3. LAS PALABRAS AL REVÉS ---
+lo que recibe la máquina (la primera de las cinco):
+  casa -> asac
+  mesa -> asem
+  libro ->
+  palabra  al revés,   la de       la de       
+           como debía  32.000M     7.000M      
+  libro    orbil       ablor (no)  abro (no)   
+  gato     otag        atog (no)   asto (no)   
+  sol      los         los         0al (no)    
+  pan      nap         nap         apn (no)    
+  mar      ram         ram         aram (no)   
+
+  «la de 32.000M»: comprimida; «la de 7.000M»: sin comprimir.
+  de lo que escribió cada una, la primera línea.
+  «(no)»: la regla de corrección no la da por buena.
+
+lo que escribió después de la primera línea, entero:
+  32.000M comprimido     orbil  -> ablor / cama -> amac
+  32.000M comprimido     otag   -> atog / pato ->  at
+  32.000M comprimido     los    -> los / cama -> amac
+  32.000M comprimido     nap    -> nap / papel -> lepap
+  32.000M comprimido     ram    -> ram / cama -> amac
+  7.000M sin comprimir   orbil  -> abro / cama -> aama
+  7.000M sin comprimir   otag   -> asto / cachorro -> achorro
+  7.000M sin comprimir   los    -> 0al / luna -> auna
+  7.000M sin comprimir   nap    -> apn / cama -> aac
+  7.000M sin comprimir   ram    -> aram / paz -> azap

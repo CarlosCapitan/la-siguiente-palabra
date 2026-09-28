@@ -68,11 +68,11 @@ GRIS_REJILLA = "0.88"
 TOPE_EJE = 60                    # el eje va de 0 a 60 por ciento
 MARCAS = [0, 10, 20, 30, 40, 50, 60]
 
-TITULO = "A dónde mira el adjetivo final de cada frase"
+TITULO = "A dónde mira el final de cada frase"
 EJE_X = "porción del reparto, en por ciento"
-ROTULO_ADJETIVO = "el adjetivo"  # la palabra 11 es distinta en cada frase
+ROTULO_ADJETIVO = "adjetivo\ny punto"  # la palabra 11 es distinta en cada frase; va pegada al punto, que es lo que pregunta
 LLAMADA_PAPELERA = "la papelera"
-LLAMADA_ADJETIVO = "la palabra que pregunta,\nmirándose a sí misma"
+LLAMADA_ADJETIVO = "lo que pregunta (el punto),\nmirándose a sí mismo"
 
 # La clave va debajo del cuadro y pegada a él, y dice las cuatro cosas que no se pueden
 # adivinar mirando: qué separa el negro del gris, qué son las tres barras de cada

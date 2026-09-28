@@ -18,7 +18,7 @@ Uso:
 
 SALIDA = "../datos/salidas/mirada_a_mano.txt"
 DESTINO = "../figuras/mirada_a_mano.png"
-ALTO = 3.3                  # pulgadas
+ALTO = 3.7                  # pulgadas
 CONTEXTO = 16               # tiene que coincidir con las casillas que trae la salida
 
 # ==========================================================
@@ -44,10 +44,15 @@ def leer(ruta):
     repartos = [(p, [int(v) for v in r.split()]) for p, r in filas]
     assert len(letras) == CONTEXTO and all(len(r) == CONTEXTO for _, r in repartos), \
         f"se esperaban {CONTEXTO} casillas; hay {len(letras)} letras y {[len(r) for _, r in repartos]}"
-    return frase, letras, repartos
+    viene = re.search(r"en el Quijote viene detrás: «(.)»", tramo).group(1)
+    m = re.search(r"reparte entre: al empezar ([\d,]+) letras; al final ([\d,]+)\.", tramo)
+    apuesta = re.search(r"apuesta por la siguiente: al empezar «(.)», al final «(.)»", tramo)
+    extra = dict(viene=viene, reparte=(m.group(1), m.group(2)),
+                 apuesta=tuple("_" if a == " " else a for a in apuesta.groups()))
+    return frase, letras, repartos, extra
 
 
-def dibujar(frase, letras, repartos, paleta, ruta):
+def dibujar(frase, letras, repartos, extra, paleta, ruta):
     from matplotlib.patches import Rectangle
     L = Lienzo("Una mirada que nadie programa",
                f"La última letra de «{frase}» reparte su mirada entre las {CONTEXTO} que tiene\n"
@@ -57,8 +62,9 @@ def dibujar(frase, letras, repartos, paleta, ruta):
     maximo = max(max(r) for _, r in repartos)
     for n, (paso, r) in enumerate(repartos, 1):
         titulo = "Antes de aprender nada" if paso == "0" else f"Tras {paso} pasos de aprender"
-        x0, y, ancho = L.panel(n, titulo, 20)
-        lado = ancho / CONTEXTO
+        titulo += f": reparte entre {extra['reparte'][n - 1]} letras"
+        x0, y, ancho = L.panel(n, titulo, 24.0)
+        lado = ancho / (CONTEXTO + 1.4)
         for i, (ch, v) in enumerate(zip(letras, r)):
             g = 1 - 0.85 * v / maximo
             x = x0 + i * lado
@@ -66,18 +72,29 @@ def dibujar(frase, letras, repartos, paleta, ruta):
             L.ax.add_patch(Rectangle((x + 0.3, y - 7.6), lado - 0.6, 6.0,
                                      facecolor=(g, g, g), edgecolor=p.tinta if ultima else p.marco,
                                      linewidth=1.3 if ultima else 0.6))
-            L.texto(x + lado / 2, y - 4.6, "·" if ch == "·" else ch, ha="center", tam=8.6,
+            L.texto(x + lado / 2, y - 4.6, "_" if ch == "_" else ch, ha="center", tam=8.6,
                     negrita=True, color="white" if g < 0.5 else p.tinta)
             L.texto(x + lado / 2, y - 10.0, str(v), ha="center", tam=7.0)
+        # la letra que viene de verdad detrás del tramo, y a cuál apuesta la máquina
+        x = x0 + (CONTEXTO + 0.4) * lado
+        L.ax.add_patch(Rectangle((x + 0.3, y - 7.6), lado - 0.6, 6.0, facecolor="white",
+                                 edgecolor=p.tinta, linewidth=0.9, linestyle=(0, (2, 1.5))))
+        L.texto(x + lado / 2, y - 4.6, extra["viene"], ha="center", tam=8.6, negrita=True)
+        L.texto(x + lado / 2, y - 10.0, "viene", ha="center", tam=6.2, color=p.suave)
+        L.texto(x0 + ancho, y - 13.0, f"apuesta por «{extra['apuesta'][n - 1]}»", ha="right", tam=6.6,
+                color=p.suave)
         if n == 1:
             L.flecha()
-    L.pie("«·» es un espacio. La casilla con el borde grueso es la letra que mira.")
+    igual = f"{100 / CONTEXTO:.2f}".replace(".", ",")
+    L.pie("«_» es un espacio. Borde grueso: la letra que mira. De trazos: la que viene de verdad detrás\n"
+          f"en el Quijote, que tiene que adivinar. Antes de aprender, cada una recibe {igual}, que "
+          f"redondeado es {round(100 / CONTEXTO)}.")
     L.guardar(ruta)
 
 
 def selftest():
     fallos = []
-    frase, letras, repartos = leer(AQUI / SALIDA)
+    frase, letras, repartos, extra = leer(AQUI / SALIDA)
     import os, tempfile
     with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8") as fh:
         fh.write("nada\n")
@@ -91,7 +108,7 @@ def selftest():
     print("[1] test nulo         un texto sin el apartado 5 no da figura")
     # 2. SEÑAL: las letras leídas son las últimas de la frase, y cada reparto suma cien (redondeos
     #    aparte: cada casilla puede perder medio punto).
-    esperadas = [("·" if c == " " else c) for c in frase[-CONTEXTO:]]
+    esperadas = [("_" if c == " " else c) for c in frase[-CONTEXTO:]]
     sumas = [sum(r) for _, r in repartos]
     ok = letras == esperadas and all(abs(s - 100) <= CONTEXTO / 2 for s in sumas)
     print(f"[2] señal             letras de la frase: {'sí' if letras == esperadas else 'NO'}; "
@@ -99,7 +116,7 @@ def selftest():
     if not ok:
         fallos.append("señal: las letras no son las de la frase, o un reparto no suma cien")
     for pal in (COLOR, GRIS):
-        dibujar(frase, letras, repartos, pal, "/dev/null")
+        dibujar(frase, letras, repartos, extra, pal, "/dev/null")
     print("[3] invariante        la figura se dibuja en color y en gris sin salirse de la página")
     print()
     if fallos:

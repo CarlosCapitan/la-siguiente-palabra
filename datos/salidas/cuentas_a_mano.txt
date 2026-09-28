@@ -1,0 +1,27 @@
+--- 1. EL EMPUJÓN, EN LOS DOS SENTIDOS ---
+  la respuesta correcta estaba más arriba:
+    antes:   en medio 0,5, salida 0,4; producto 0,20
+    después: en medio 0,6, salida 0,6; producto 0,36
+    el producto sube 0,16: la unión se refuerza.
+
+  la respuesta correcta estaba más abajo:
+    antes:   en medio 0,5, salida 0,4; producto 0,20
+    después: en medio 0,4, salida 0,2; producto 0,08
+    el producto baja 0,12: la unión se debilita.
+
+  «en medio», «salida»: la actividad de las dos neuronas
+  que une la unión. «producto»: una multiplicada por otra.
+
+--- 2. EL PRODUCTO ESCALAR, HECHO UNA VEZ ---
+  la pregunta de una palabra: 3, 1, 0
+
+  una etiqueta que encaja: 2, 1, 0
+    casilla a casilla: 3 por 2: 6; 1 por 1: 1; 0 por 0: 0
+    sumado: 6 más 1 más 0 son 7
+
+  una que no encaja: 0, 1, 3
+    casilla a casilla: 3 por 0: 0; 1 por 1: 1; 0 por 3: 0
+    sumado: 0 más 1 más 0 son 1
+
+  cuanto mayor el total, más encajan la pregunta y la
+  etiqueta. Son números de ejemplo.

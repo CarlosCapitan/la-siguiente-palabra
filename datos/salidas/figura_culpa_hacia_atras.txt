@@ -1,0 +1,6 @@
+[1] test nulo         culpa de cada línea menos la de su neurona (trae un 1): 0.0e+00
+[2] señal             números de la figura que no están en la salida: ninguno
+[3] invariante        la culpa repartida hacia atrás cuadra: diferencia 0.0e+00
+
+SELFTEST: las tres pruebas pasan.
+escrita ../figuras/culpa_hacia_atras.png

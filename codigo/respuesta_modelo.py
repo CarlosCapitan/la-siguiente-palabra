@@ -22,6 +22,12 @@ CASOS = {
     "caro": ("El vaso no cabía en el cajón porque era demasiado caro.", None),  # sin respuesta
 }
 
+# OJO (L24, 28 sep 2026): la plantilla acaba en «El » con el espacio, y las opciones van sin él
+# («vaso», «cajón»). El modelo trocea «El vaso» como «El» + « vaso»: detrás de un espacio ya
+# escrito, «vaso» sin espacio es un trozo que casi nunca viene, y las dos opciones salen con unas
+# pocas millonésimas. La «seguridad» de esta salida compara dos números diminutos. El capítulo 8
+# cita la medición con el montaje corregido, la de `la_seguridad_por_dentro.py`. Esta salida no
+# se ha vuelto a ejecutar.
 PLANTILLA = "{frase}\nPregunta: ¿Qué era demasiado {adj}?\nRespuesta: El "
 OPCIONES = ("vaso", "cajón")
 

@@ -1,0 +1,6 @@
+[1] test nulo         un comité contra su negativo: -1.000 (tiene que ser -1)
+[2] señal             comités 1 y 3: -0.44 (la salida dice -0.44)
+[3] invariante        el parecido más grande entre dos comités: 0.44
+
+SELFTEST: las tres pruebas pasan.
+escrita ../figuras/los_dos_que_mas_se_parecen.png

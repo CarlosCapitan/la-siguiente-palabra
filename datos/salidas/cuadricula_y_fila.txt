@@ -1,0 +1,74 @@
+--- selftest ---
+[1] test nulo         una sola palabra: casillas 1, pasos en fila 1 y 1
+[2] señal             casillas con 4 y con 8 palabras: 10 y 36; pasos en orden con 5: 5
+[3] invariante        mira hacia delante: no; de 512 a 1.024 palabras las casillas se multiplican por 4,00
+
+SELFTEST: las tres pruebas pasan.
+
+########## capítulos 8 y 9: la cuadrícula y la fila ##########
+No es una medición: sale del diseño y da lo mismo en cualquier
+ordenador.
+
+1. CADA PALABRA, CON ELLA MISMA Y CON LAS DE ANTES
+   (fila: la palabra que pregunta; columna: la de la etiqueta;
+   «x»: se comparan; «·»: no, porque esa aún no se ha escrito)
+
+            1  2  3  4
+  1 El      x  ·  ·  ·
+  2 vaso    x  x  ·  ·
+  3 no      x  x  x  ·
+  4 cabía   x  x  x  x
+  4 palabras: 10 casillas de 16.
+
+             1  2  3  4  5  6  7  8
+  1 El       x  ·  ·  ·  ·  ·  ·  ·
+  2 vaso     x  x  ·  ·  ·  ·  ·  ·
+  3 no       x  x  x  ·  ·  ·  ·  ·
+  4 cabía    x  x  x  x  ·  ·  ·  ·
+  5 en       x  x  x  x  x  ·  ·  ·
+  6 el       x  x  x  x  x  x  ·  ·
+  7 cajón    x  x  x  x  x  x  x  ·
+  8 porque   x  x  x  x  x  x  x  x
+  8 palabras: 36 casillas de 64.
+
+2. CUÁNTAS CASILLAS, SEGÚN LO LARGO QUE SEA EL TEXTO
+
+    palabras    casillas      veces las de
+                         la fila de arriba
+    --------    -------- -----------------
+           4          10
+           8          36              3,60
+          16         136              3,78
+          32         528              3,88
+          64       2.080              3,94
+         128       8.256              3,97
+         256      32.896              3,98
+         512     131.328              3,99
+       1.024     524.800              4,00
+
+  Doble de texto, casi cuatro veces más casillas: el cuadrado.
+
+3. CUÁNTAS TANDAS HAY QUE HACER UNA DETRÁS DE OTRA
+   (una tanda: las cuentas que se pueden hacer a la vez)
+   (la frase «el perro mordió al hombre», 5 palabras)
+
+  La que lee en orden: la cuenta de cada palabra necesita el
+  resumen que dejó la anterior.
+
+    tanda 1: «el»
+    tanda 2: «perro», con el resumen de «el»
+    tanda 3: «mordió», con el resumen de «perro»
+    tanda 4: «al», con el resumen de «mordió»
+    tanda 5: «hombre», con el resumen de «al»
+
+  La que mira todo a la vez: la cuenta de cada palabra solo
+  necesita las listas de las palabras, que ya están todas.
+
+    tanda 1: «el», «perro», «mordió», «al», «hombre», a la vez
+
+    palabras    en orden    a la vez
+    --------    --------    --------
+           5           5           1
+          64          64           1
+       1.024       1.024           1
+

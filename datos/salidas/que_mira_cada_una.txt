@@ -37,3 +37,35 @@ ninguno, un solo comité            91,9 %   (de 90,4 a 93,0)
  4 comités en medio                97,9 %   (de 97,0 a 98,3)
  8 comités en medio                97,9 %   (de 96,3 a 98,7)
 16 comités en medio                98,6 %   (de 98,0 a 99,1)
+
+
+LO QUE MEJORA LA CAPA, SEGÚN QUÉ DOS SE COMPAREN
+(en puntos: de cada 100 dígitos, cuántos más acierta)
+
+las dos medias de 5                    91,9 a 97,9    6,0
+la mejor sin capa y la peor con capa   93,0 a 96,3    3,3
+la peor sin capa y la mejor con capa   90,4 a 98,7    8,3
+
+
+CADA COMITÉ DE EN MEDIO, LEÍDO DE LAS DOS MANERAS
+(de cada 100 dígitos que nunca había visto, cuántos acierta)
+
+                si pasar de la     si pasar de la    se le
+                mitad es «par»   mitad es «impar»   cuenta
+el comité 1             67,8 %             32,2 %   67,8 %
+el comité 2             65,2 %             34,8 %   65,2 %
+el comité 3             27,8 %             72,2 %   72,2 %
+el comité 4             38,7 %             61,3 %   61,3 %
+el comité 5             56,5 %             43,5 %   56,5 %
+el comité 6             54,6 %             45,4 %   54,6 %
+el comité 7             30,9 %             69,1 %   69,1 %
+el comité 8             81,1 %             18,9 %   81,1 %
+
+
+CUÁNTO SE PARECEN, CON LA CUENTA DEL CUATRO Y EL NUEVE
+(de -1 a 1: 1, iguales salvo el tamaño de los números;
+0, nada que ver; -1, uno es el negativo del otro)
+
+los dos que más se parecen, contando como parecido también
+que uno sea el negativo del otro:
+el comité 1 y el comité 3                  -0,44

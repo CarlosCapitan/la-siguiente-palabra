@@ -1,0 +1,604 @@
+#!/usr/bin/env python3
+"""
+Capítulo 5 — qué es que dos palabras estén «cerca», hecho con los números delante (L24).
+
+El capítulo 5 dice que el método deja «cerca» a las palabras que se parecen, que «rey» menos
+«hombre» más «mujer» cae junto a «reina», y que los caminos del género «apuntan hacia el mismo
+lado». Todo eso se contaba con palabras. Carlos, el 27 de septiembre: «No tiene que imaginar:
+tiene que verlo escrito y dibujado». Este programa entrena el mismo modelo que
+`palabras_numeros.py` (mismo corpus, mismos ajustes, misma semilla, importados de allí) y
+enseña, con sus números:
+
+  1. LA TAREA, HECHA UNA VEZ. Una frase del texto con «caballo» en medio, sus vecinas y cinco
+     palabras al azar, y lo que contesta la máquina a «¿van juntas?» antes y después de entrenar.
+  2. LOS NÚMEROS DE TRES PALABRAS, antes y después: los primeros de los cien de «caballo»,
+     «corcel» y «lunes».
+  3. CÓMO SE MIDE EL PARECIDO: en cuántas de las cien posiciones coinciden de signo, y el
+     parecido que da la cuenta entera (la misma de `la_misma_direccion.coseno`).
+  4. LAS VECINAS DE «CABALLO», CON SU PARECIDO: «más cerca» quiere decir «más parecido».
+  5. LA AVERÍA DEL CAPÍTULO 1: «hidalgo» y «caballero», «rocín» y «caballo», «dijo» y
+     «respondió»..., con su parecido y en qué puesto sale una entre las vecinas de la otra.
+  6. LA RESTA, NÚMERO A NÚMERO, con los tres primeros de los cien, y en qué puesto sale cada
+     palabra buscada.
+  7. LOS CAMINOS DEL GÉNERO: el parecido de cada pareja de caminos y el largo de cada camino,
+     para dibujarlos (`figura_misma_direccion.py`).
+  8. EL MAPA: unas pocas palabras de los bloques del capítulo aplanadas de cien números a dos,
+     y cuántas conservan en el papel su vecina más parecida (`figura_mapa_de_palabras.py`).
+  (9. Quitado en la segunda vuelta de L24: usaba las listas de `cuantas_veces_sale.py`, que se
+     escribieron después de ver la primera tirada. Lo sustituye `banco_segun_el_diccionario.py`.)
+ 10. LA CUENTA DEL PARECIDO, hecha a mano con los tres primeros números de dos palabras.
+
+Comprueba antes de nada que el modelo es el del capítulo: las vecinas de las ocho palabras de
+`palabras_numeros.py` tienen que ser las de su salida, `datos/salidas/palabras_numeros.txt`,
+medida en esta misma máquina. Si no lo son, revienta: las cifras de aquí no casarían con los
+bloques del libro.
+
+Uso:
+    python palabras_de_cerca.py --selftest
+    python palabras_de_cerca.py
+"""
+
+# ======================= CONSTANTES =======================
+
+SALIDA_PALABRAS_NUMEROS = "../datos/salidas/palabras_numeros.txt"
+
+PALABRA_TAREA = "caballo"
+TRES_PALABRAS = ["caballo", "corcel", "lunes"]     # «lunes»: la del capítulo 1
+NUMEROS_A_ENSENAR = 6                               # de los cien
+AL_AZAR = 5                                         # palabras sacadas al azar para la tarea
+PAREJAS_REFERENCIA = 200
+NUMEROS_CUENTA = 3                                  # la cuenta del parecido, hecha a mano
+
+PAREJAS_PARECIDO = [("caballo", "corcel"), ("caballo", "galope"), ("caballo", "lunes")]
+
+# Las del capítulo 1, con la palabra más frecuente delante: el puesto se mira entre las vecinas
+# de la primera (el de una palabra rara entre las vecinas de otra no dice nada: las raras
+# tienen de vecinas otras raras).
+PAREJAS_AVERIA = [("caballo", "rocín"), ("caballo", "rocinante"), ("caballo", "corcel"),
+                  ("caballero", "hidalgo"), ("dijo", "respondió"), ("dijo", "preguntó"),
+                  ("dijo", "replicó"), ("caballo", "lunes")]
+
+RESTAS = [("rey", "hombre", "mujer", "reina"), ("padre", "hombre", "mujer", "madre"),
+          ("hijo", "hombre", "mujer", "hija"), ("hermano", "hombre", "mujer", "hermana"),
+          ("caballo", "macho", "hembra", "yegua")]
+NUMEROS_RESTA = 6
+PUESTOS_RESULTADO = 5
+
+CAMINOS = [("rey", "reina"), ("padre", "madre"), ("hermano", "hermana"), ("hijo", "hija")]
+
+# El mapa: palabras de los bloques del capítulo, escogidas antes de mirar el mapa. Los grupos
+# solo sirven para la clave de la figura; el aplanamiento no los conoce.
+MAPA = [("montar a caballo", ["caballo", "galope", "estribo", "montar"]),
+        ("reyes", ["rey", "emperador", "soberano"]),
+        ("armas", ["espada", "pistola", "carabina"]),
+        ("horas", ["noche", "madrugada", "tarde"]),
+        ("dinero", ["dinero", "pagar", "negocio"]),
+        ("muebles", ["escritorio", "armario", "baúl"]),
+        ("banco", ["banco"]),
+        ("almacén y ferrocarril", ["almacén", "ferrocarril"])]
+VUELTAS_APLANADO = 500
+
+
+TOL = 1e-5
+
+# ==========================================================
+
+import argparse
+import os
+import platform
+import random
+import re
+import sys
+from collections import Counter
+from datetime import date
+
+import numpy as np
+
+from formato import ANCHO_CAJA_CITA, coma, comprobar_ancho, miles
+from palabras_numeros import (CORPUS_BIBLIOTECA, DIMENSION, EPOCAS, HILOS, MIN_APARICIONES,
+                              SEMILLA, SONDAS, VECINOS, VENTANA, cargar_corpus)
+
+AQUI = os.path.dirname(os.path.abspath(__file__))
+
+
+# --------------------------------------------------------------------------- las cuentas
+
+def parecido(u, v):
+    """La cuenta del capítulo: 1 si las dos listas suben y bajan a la par, 0 si no tienen nada
+    que ver, -1 si van al revés. Es la de `la_misma_direccion.coseno` y la de gensim."""
+    u, v = np.asarray(u, dtype=np.float64), np.asarray(v, dtype=np.float64)
+    return float(np.dot(u, v) / (np.linalg.norm(u) * np.linalg.norm(v)))
+
+
+def mismo_signo(u, v):
+    """En cuántas posiciones las dos listas tienen el mismo signo."""
+    return int(np.sum(np.sign(u) == np.sign(v)))
+
+
+def si_van_juntas(vec_otra, vec_salida):
+    """Lo que contesta el método a «¿van juntas estas dos palabras?», de 0 (no) a 100 (sí).
+    Es la cuenta que se corrige al entrenar (muestreo negativo de gensim): la lista de la otra
+    palabra contra la segunda lista de la palabra del centro."""
+    x = float(np.dot(vec_otra, vec_salida))
+    return 100.0 / (1.0 + np.exp(-x))
+
+
+def unidad(v):
+    v = np.asarray(v, dtype=np.float64)
+    return v / np.linalg.norm(v)
+
+
+def resta(vectores, a, b, c, n, excluir=True):
+    """a - b + c con cada lista antes puesta a la misma escala (lo que hace gensim), y las n
+    palabras más parecidas al resultado. Con excluir, las tres de la pregunta no cuentan."""
+    r = unidad(vectores[a]) - unidad(vectores[b]) + unidad(vectores[c])
+    todas = vectores.get_normed_vectors()
+    s = todas @ (r / np.linalg.norm(r))
+    orden = np.argsort(-s)
+    salida = []
+    for i in orden:
+        p = vectores.index_to_key[i]
+        if excluir and p in (a, b, c):
+            continue
+        salida.append((p, float(s[i])))
+        if len(salida) == n:
+            break
+    return r, salida
+
+
+def puesto_en_resta(vectores, a, b, c, buscada):
+    r = unidad(vectores[a]) - unidad(vectores[b]) + unidad(vectores[c])
+    s = vectores.get_normed_vectors() @ (r / np.linalg.norm(r))
+    orden = [vectores.index_to_key[i] for i in np.argsort(-s) if vectores.index_to_key[i] not in (a, b, c)]
+    return orden.index(buscada) + 1
+
+
+def puesto_vecina(vectores, palabra, otra):
+    """En qué puesto sale `otra` entre las vecinas de `palabra` (1 = la más parecida)."""
+    s = vectores.get_normed_vectors() @ unidad(vectores[palabra])
+    orden = [vectores.index_to_key[i] for i in np.argsort(-s) if vectores.index_to_key[i] != palabra]
+    return orden.index(otra) + 1
+
+
+def aplanar(distancias, vueltas=VUELTAS_APLANADO):
+    """De una tabla de distancias a puntos en un plano: primero el aplanado clásico, luego se
+    corrige vuelta a vuelta para que las distancias del papel se parezcan a las de verdad
+    (SMACOF). Sin azar: siempre sale el mismo mapa."""
+    d = np.asarray(distancias, dtype=np.float64)
+    n = len(d)
+    j = np.eye(n) - np.ones((n, n)) / n
+    b = -0.5 * j @ (d ** 2) @ j
+    val, vec = np.linalg.eigh(b)
+    orden = np.argsort(-val)[:2]
+    x = vec[:, orden] * np.sqrt(np.maximum(val[orden], 0))
+    for _ in range(vueltas):
+        dx = np.linalg.norm(x[:, None, :] - x[None, :, :], axis=2)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            r = np.where(dx > 0, d / dx, 0.0)
+        bm = -r
+        np.fill_diagonal(bm, 0.0)
+        np.fill_diagonal(bm, -bm.sum(axis=1))
+        x = bm @ x / n
+    # centrado, y con el primer punto siempre a la izquierda y arriba: el signo de un
+    # aplanado es arbitrario, y así el mapa no se da la vuelta de una ejecución a otra
+    x -= x.mean(axis=0)
+    x *= np.where(x[0] > 0, -1.0, 1.0) * np.array([1.0, -1.0])
+    return x
+
+
+def vecina_mas_cercana(dist):
+    d = np.array(dist, dtype=np.float64)
+    np.fill_diagonal(d, np.inf)
+    return d.argmin(axis=1)
+
+
+# --------------------------------------------------------------------------- el modelo
+
+def entrenar_guardando_el_arranque(frases, palabras):
+    """El mismo entrenamiento que `palabras_numeros.entrenar()`, en sus dos mitades (lo que
+    hace gensim por dentro al darle las frases de golpe): preparar el vocabulario, que pone los
+    números al azar, y entrenar. Entre las dos se guardan los números de arranque."""
+    from gensim.models import Word2Vec
+    m = Word2Vec(vector_size=DIMENSION, window=VENTANA, min_count=MIN_APARICIONES, sg=1,
+                 workers=HILOS, seed=SEMILLA, epochs=EPOCAS)
+    m.build_vocab(frases)
+    antes = {p: m.wv[p].copy() for p in palabras if p in m.wv}
+    salida_antes = {p: m.syn1neg[m.wv.key_to_index[p]].copy() for p in palabras if p in m.wv}
+    m.train(frases, total_examples=m.corpus_count, total_words=m.corpus_total_words,
+            epochs=m.epochs, start_alpha=m.alpha, end_alpha=m.min_alpha)
+    return m, antes, salida_antes
+
+
+def vecinas_del_libro(ruta):
+    """Las vecinas de la biblioteca en la salida de palabras_numeros.py."""
+    texto = open(ruta, encoding="utf-8").read()
+    assert "UNA BIBLIOTECA" in texto, f"se esperaba la sección de la biblioteca en {ruta}"
+    bib = texto.split("UNA BIBLIOTECA", 1)[1].split("--- ARITMÉTICA", 1)[0]
+    out = {}
+    for l in bib.splitlines():
+        m = re.match(r"^(\w+)\s+-> (.+)$", l)
+        if m:
+            out[m.group(1)] = [x.strip() for x in m.group(2).split(",")]
+    assert set(out) == set(SONDAS), f"se esperaban las vecinas de {SONDAS}; hay {sorted(out)}"
+    return out
+
+
+# --------------------------------------------------------------------------- los bloques
+
+def bloque_tarea(m, frases, antes_sal, rng):
+    lin = ["--- 1. LA TAREA, HECHA UNA VEZ ---"]
+    frase = None
+    for f in frases:
+        for i, p in enumerate(f):
+            if p == PALABRA_TAREA and i >= VENTANA and i + VENTANA < len(f) \
+                    and all(w in m.wv for w in f[i - VENTANA:i + VENTANA + 1]):
+                frase, pos = f, i
+                break
+        if frase:
+            break
+    assert frase, f"no hay ninguna frase con «{PALABRA_TAREA}» y {VENTANA} palabras a cada lado"
+    alrededor = frase[pos - VENTANA:pos] + frase[pos + 1:pos + VENTANA + 1]
+    # cinco palabras al azar, con la misma regla con que las saca el método para corregirse:
+    # más probable cuanto más frecuente (la frecuencia elevada a 0,75), sin repetir las de la frase
+    vocab = m.wv.index_to_key
+    frec = np.array([m.wv.get_vecattr(p, "count") for p in vocab], dtype=np.float64) ** 0.75
+    frec /= frec.sum()
+    azar = []
+    while len(azar) < AL_AZAR:
+        p = vocab[int(rng.choice(len(vocab), p=frec))]
+        if p not in alrededor and p != PALABRA_TAREA and p not in azar:
+            azar.append(p)
+    trozo = frase[pos - VENTANA:pos + VENTANA + 1]
+    texto = " ".join(trozo[:VENTANA]) + " [" + PALABRA_TAREA + "] " + " ".join(trozo[VENTANA + 1:])
+    lin += [f"una frase del texto, con «{PALABRA_TAREA}» en medio y las",
+            f"{VENTANA} palabras de cada lado:", ""]
+    lin += ["   " + x for x in _partir(texto, ANCHO_CAJA_CITA - 3)]
+    sal = m.syn1neg[m.wv.key_to_index[PALABRA_TAREA]]
+    lin += ["", f"¿van juntas «{PALABRA_TAREA}» y esta palabra?",
+            "de 0 (seguro que no) a 100 (seguro que sí)", "",
+            f"{'':<18}{'antes de':>12}{'después de':>12}",
+            f"{'':<18}{'entrenar':>12}{'entrenar':>12}",
+            "las de alrededor"]
+    filas = []
+    for p in alrededor:
+        a = si_van_juntas(m.wv[p], antes_sal[PALABRA_TAREA])
+        d = si_van_juntas(m.wv[p], sal)
+        filas.append((p, a, d, True))
+        lin.append(f"  {p:<16}{coma(a, 0):>12}{coma(d, 0):>12}")
+    lin.append(f"{AL_AZAR} sacadas al azar")
+    for p in azar:
+        a = si_van_juntas(m.wv[p], antes_sal[PALABRA_TAREA])
+        d = si_van_juntas(m.wv[p], sal)
+        filas.append((p, a, d, False))
+        lin.append(f"  {p:<16}{coma(a, 0):>12}{coma(d, 0):>12}")
+    media = lambda de_verdad: float(np.mean([d for _, _, d, v in filas if v == de_verdad]))
+    lin += ["", f"media después de entrenar: las de alrededor {coma(media(True), 0)};",
+            f"las sacadas al azar {coma(media(False), 0)}"]
+    return comprobar_ancho(lin, ANCHO_CAJA_CITA), filas
+
+
+def _partir(texto, ancho):
+    out, linea = [], ""
+    for w in texto.split():
+        if linea and len(linea) + 1 + len(w) > ancho:
+            out.append(linea)
+            linea = w
+        else:
+            linea = (linea + " " + w).strip()
+    if linea:
+        out.append(linea)
+    return out
+
+
+def bloque_tres_palabras(m, antes):
+    n = NUMEROS_A_ENSENAR
+    cab = f"{'':<9}" + "".join(f"{f'{k}.º':>8}" for k in range(1, n + 1))
+    lin = ["--- 2. LOS NÚMEROS DE TRES PALABRAS ---",
+           f"los {n} primeros de sus {DIMENSION} números", "", cab,
+           "antes de entrenar (puestos al azar)"]
+    for p in TRES_PALABRAS:
+        lin.append(f"{p:<9}" + "".join(f"{coma(float(x), 3):>8}" for x in antes[p][:n]))
+    lin.append("después de entrenar")
+    for p in TRES_PALABRAS:
+        lin.append(f"{p:<9}" + "".join(f"{coma(float(x), 3):>8}" for x in m.wv[p][:n]))
+    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+
+
+def bloque_parecido(m, antes):
+    n = len(m.wv.index_to_key)
+    lin = ["--- 3. CÓMO SE PARECEN DOS LISTAS ---",
+           f"«signo»: en cuántas de las {DIMENSION} posiciones las dos listas",
+           "tienen las dos un número positivo o las dos uno negativo.",
+           "«parecido»: la cuenta entera; 1, lo más parecido posible;",
+           "0, nada que ver; -1, al revés. «puesto»: en qué puesto sale",
+           f"la segunda entre las {miles(n - 1)} vecinas de la primera", "",
+           f"{'':<18}{'antes de entrenar':>18}{'después de entrenar':>26}",
+           f"{'pareja':<18}{'signo':>8}{'parecido':>10}{'signo':>8}{'parecido':>10}{'puesto':>8}",
+           "-" * 62]
+    valores = {}
+    for a, b in PAREJAS_PARECIDO:
+        sa, pa = mismo_signo(antes[a], antes[b]), parecido(antes[a], antes[b])
+        sd, pd = mismo_signo(m.wv[a], m.wv[b]), parecido(m.wv[a], m.wv[b])
+        pu = puesto_vecina(m.wv, a, b)
+        valores[(a, b)] = (sa, pa, sd, pd, pu)
+        lin.append(f"{a + ' y ' + b:<18}{sa:>8}{coma(pa, 2):>10}{sd:>8}{coma(pd, 2):>10}"
+                   f"{miles(pu):>8}")
+    # La referencia: dos palabras cualesquiera del modelo entrenado (añadido en la segunda
+    # vuelta de L24: el capítulo decía, sin medirlo, que casi todas salen por encima de 0).
+    rng = np.random.default_rng(SEMILLA)
+    vocab = m.wv.index_to_key
+    azar = [parecido(m.wv[vocab[rng.integers(len(vocab))]], m.wv[vocab[rng.integers(len(vocab))]])
+            for _ in range(PAREJAS_REFERENCIA)]
+    por_encima = sum(x > 0 for x in azar)
+    lin += ["", f"después de entrenar, {PAREJAS_REFERENCIA} parejas de palabras sacadas al azar:",
+            f"parecido medio {coma(float(np.mean(azar)), 2)}; por encima de 0, {por_encima} de "
+            f"{PAREJAS_REFERENCIA}"]
+    return comprobar_ancho(lin, ANCHO_CAJA_CITA), valores
+
+
+def bloque_vecinas(m):
+    lin = [f"--- 4. LAS VECINAS DE «{PALABRA_TAREA.upper()}», CON SU PARECIDO ---",
+           f"de las {miles(len(m.wv.index_to_key))} palabras, las {VECINOS} más parecidas", ""]
+    for p, s in m.wv.most_similar(PALABRA_TAREA, topn=VECINOS):
+        lin.append(f"   {p:<14}{coma(s, 2):>6}")
+    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+
+
+def bloque_averia(m):
+    n = len(m.wv.index_to_key)
+    lin = ["--- 5. LAS PALABRAS DEL CAPÍTULO 1 ---",
+           "«puesto»: en qué puesto sale la segunda entre las",
+           f"{miles(n - 1)} vecinas de la primera; el puesto 1 es la más", "parecida", "",
+           f"{'pareja':<24}{'parecido':>10}{'puesto':>10}", "-" * 44]
+    filas = []
+    for a, b in PAREJAS_AVERIA:
+        assert a in m.wv and b in m.wv, f"«{a}» o «{b}» no está en el vocabulario"
+        s, pu = parecido(m.wv[a], m.wv[b]), puesto_vecina(m.wv, a, b)
+        filas.append((a, b, s, pu))
+        lin.append(f"{a + ' y ' + b:<24}{coma(s, 2):>10}{miles(pu):>10}")
+    return comprobar_ancho(lin, ANCHO_CAJA_CITA), filas
+
+
+def bloque_resta(m):
+    a, b, c, buscada = RESTAS[0]
+    r, _ = resta(m.wv, a, b, c, PUESTOS_RESULTADO)
+    k = NUMEROS_RESTA
+    fila = lambda nombre, v: f"{nombre:<14}" + "".join(f"{coma(float(x), 3):>8}" for x in v[:k])
+    lin = ["--- 6. LA RESTA, NÚMERO A NÚMERO ---",
+           f"los {k} primeros de los {DIMENSION} números; cada lista, antes,",
+           "dividida por su tamaño (bloque 10), para que no mande", "la de números más grandes", "",
+           f"{'':<14}" + "".join(f"{f'{j}.º':>8}" for j in range(1, k + 1)),
+           fila(a, unidad(m.wv[a])), fila(f"menos {b}", unidad(m.wv[b])),
+           fila(f"más {c}", unidad(m.wv[c])), "-" * (14 + 8 * k),
+           fila("resultado", r), "", fila(buscada, unidad(m.wv[buscada])), "",
+           f"el resultado, con los {DIMENSION} números:",
+           f"{'':<15}{'signo':>8}{'parecido':>10}"]
+    for p in (buscada, a, b, c):
+        lin.append(f"   con «{p}»{'':<{8 - len(p)}}{mismo_signo(r, m.wv[p]):>8}"
+                   f"{coma(parecido(r, m.wv[p]), 2):>10}")
+    _, todas = resta(m.wv, a, b, c, PUESTOS_RESULTADO, excluir=False)
+    lin += ["", "las más parecidas al resultado, de todas; las de la",
+            "pregunta no cuentan y no llevan número:"]
+    i = 0
+    for p, s in todas:
+        if p in (a, b, c):
+            lin.append(f"      {p:<12}{coma(s, 2):>6}   (de la pregunta: no cuenta)")
+        else:
+            i += 1
+            lin.append(f"   {i}. {p:<12}{coma(s, 2):>6}")
+    lin += ["", "en qué puesto sale la palabra buscada, sin contar",
+            "las tres de la pregunta:", ""]
+    puestos = []
+    for a2, b2, c2, bus in RESTAS:
+        pu = puesto_en_resta(m.wv, a2, b2, c2, bus)
+        puestos.append((a2, b2, c2, bus, pu))
+        lin.append(f"   {a2} - {b2} + {c2}{'':<{26 - len(a2 + b2 + c2)}}"
+                   f"{bus:<9}{miles(pu):>7}")
+    return comprobar_ancho(lin, ANCHO_CAJA_CITA), puestos
+
+
+def bloque_caminos(m, rng):
+    difs = {(x, y): m.wv[y].astype(np.float64) - m.wv[x] for x, y in CAMINOS}
+    lin = ["--- 7. LOS CAMINOS DEL GÉNERO ---",
+           "camino: la resta de las dos listas, número a número;",
+           "«tamaño»: la misma cuenta del bloque 10", "",
+           f"{'camino':<20}{'tamaño':>8}"]
+    for (x, y), d in difs.items():
+        lin.append(f"{x + ' -> ' + y:<20}{coma(float(np.linalg.norm(d)), 2):>8}")
+    lin += ["", f"{'un camino':<20}{'y otro':<20}{'parecido':>10}", "-" * 50]
+    claves = list(difs)
+    pares = []
+    for i in range(len(claves)):
+        for j in range(i + 1, len(claves)):
+            s = parecido(difs[claves[i]], difs[claves[j]])
+            pares.append((claves[i], claves[j], s))
+            lin.append(f"{claves[i][0] + ' -> ' + claves[i][1]:<20}"
+                       f"{claves[j][0] + ' -> ' + claves[j][1]:<20}{coma(s, 2):>10}")
+    media = float(np.mean([s for *_, s in pares]))
+    lin.append(f"{'media de las ' + str(len(pares)):<40}{coma(media, 2):>10}")
+    from la_misma_direccion import referencia_al_azar
+    azar = referencia_al_azar(m.wv)
+    lin += ["", f"caminos entre palabras sacadas al azar, de dos en dos,",
+            f"{'media de ' + str(len(azar)) + ' comparaciones':<40}{coma(float(np.mean(azar)), 3):>10}"]
+    return comprobar_ancho(lin, ANCHO_CAJA_CITA), pares
+
+
+def bloque_mapa(m):
+    palabras = [p for _, g in MAPA for p in g]
+    for p in palabras:
+        assert p in m.wv, f"«{p}» no está en el vocabulario"
+    v = np.array([unidad(m.wv[p]) for p in palabras])
+    dist = 1.0 - np.clip(v @ v.T, -1, 1)
+    np.fill_diagonal(dist, 0.0)
+    x = aplanar(dist)
+    papel = np.linalg.norm(x[:, None, :] - x[None, :, :], axis=2)
+    de_verdad, en_papel = vecina_mas_cercana(dist), vecina_mas_cercana(papel)
+    iguales = int(np.sum(de_verdad == en_papel))
+    papel_sin = papel.copy()
+    np.fill_diagonal(papel_sin, np.inf)
+    entre_tres = int(sum(de_verdad[i] in np.argsort(papel_sin[i])[:3] for i in range(len(palabras))))
+    lin = ["--- 8. EL MAPA: DE CIEN NÚMEROS A DOS ---",
+           "distancia en el papel = 1 menos el parecido; aplanado",
+           "para que las distancias del papel se acerquen a esas", "",
+           f"{'palabra':<13}{'x':>8}{'y':>8}   {'su más parecida':<15}  grupo"]
+    for i, p in enumerate(palabras):
+        grupo = next(k for k, (g, ps) in enumerate(MAPA, 1) if p in ps)
+        lin.append(f"{p:<13}{coma(x[i, 0], 3):>8}{coma(x[i, 1], 3):>8}   "
+                   f"{palabras[de_verdad[i]]:<15}  {grupo}")
+    lin += ["", "grupos (solo para la clave de la figura; el aplanado no",
+            "los conoce):"] + [f"   {k}: {g}" for k, (g, _) in enumerate(MAPA, 1)]
+    lin += ["", "lo que se pierde al aplanar: de las " + str(len(palabras)) + " palabras,",
+            f"en cuántas su más parecida es también la más cercana",
+            f"en el papel: {iguales}; y está entre las tres más",
+            f"cercanas en el papel: {entre_tres}"]
+    return comprobar_ancho(lin, ANCHO_CAJA_CITA), iguales
+
+
+def bloque_cuenta(m):
+    """La cuenta del parecido hecha a mano con los primeros números de dos palabras, para que el
+    lector vea cada paso. Con los cien números es la misma cuenta, y da el parecido del bloque 3."""
+    a, b = PAREJAS_PARECIDO[0]
+    u = [float(x) for x in m.wv[a][:NUMEROS_CUENTA]]
+    v = [float(x) for x in m.wv[b][:NUMEROS_CUENTA]]
+    prod = [x * y for x, y in zip(u, v)]
+    ta2, tb2 = sum(x * x for x in u), sum(y * y for y in v)
+    ta, tb = ta2 ** 0.5, tb2 ** 0.5
+    lin = [f"--- 10. LA CUENTA DEL PARECIDO, HECHA CON {NUMEROS_CUENTA} NÚMEROS ---",
+           f"los {NUMEROS_CUENTA} primeros números de «{a}» y de «{b}», después de",
+           f"entrenar; con los {DIMENSION}, la cuenta es la misma", "",
+           f"{'posición':<10}{a:>10}{b:>10}{'uno por otro':>15}"]
+    for k in range(NUMEROS_CUENTA):
+        lin.append(f"{str(k + 1) + '.º':<10}{coma(u[k], 3):>10}{coma(v[k], 3):>10}{coma(prod[k], 3):>15}")
+    lin += [f"{'suma de «uno por otro»':<30}{coma(sum(prod), 3):>15}", "",
+            "tamaño de una lista: cada número por sí mismo, se suman,",
+            "y se saca la raíz cuadrada",
+            f"   {a}: suman {coma(ta2, 3)}; raíz, {coma(ta, 3)}",
+            f"   {b}: suman {coma(tb2, 3)}; raíz, {coma(tb, 3)}", "",
+            f"{coma(ta, 3)} por {coma(tb, 3)} da {coma(ta * tb, 3)}",
+            f"parecido: {coma(sum(prod), 3)} entre {coma(ta * tb, 3)} da "
+            f"{coma(sum(prod) / (ta * tb), 2)}",
+            f"con los {DIMENSION} números: {coma(parecido(m.wv[a], m.wv[b]), 2)}"]
+    return comprobar_ancho(lin, ANCHO_CAJA_CITA), sum(prod) / (ta * tb)
+
+
+# --------------------------------------------------------------------------- selftest
+
+def selftest():
+    fallos = []
+    rng = np.random.default_rng(SEMILLA)
+
+    # 1. TEST NULO — dos listas de cien números sacadas al azar, sin relación: coinciden de
+    #    signo más o menos en la mitad de las posiciones y su parecido anda cerca de 0. Si la
+    #    cuenta diera parecidos altos sin relación, «cerca» no querría decir nada.
+    signos, parecidos_ = [], []
+    for _ in range(500):
+        u, v = rng.normal(size=DIMENSION), rng.normal(size=DIMENSION)
+        signos.append(mismo_signo(u, v))
+        parecidos_.append(parecido(u, v))
+    ms, mp = float(np.mean(signos)), float(np.mean(np.abs(parecidos_)))
+    print(f"[1] test nulo         listas al azar: mismo signo {ms:.1f} de {DIMENSION}; "
+          f"parecido medio en valor absoluto {mp:.3f}")
+    if not (45 <= ms <= 55 and mp < 0.15):
+        fallos.append(f"test nulo: mismo signo {ms:.1f}, parecido {mp:.3f}")
+
+    # 2. SEÑAL IMPLANTADA — (a) veinte puntos que de verdad están en un plano, metidos en cien
+    #    números con un giro al azar: el aplanado tiene que devolverles su vecina más cercana a
+    #    todos. (b) cuatro palabras fabricadas en que «d - c» es exactamente «b - a»: la resta
+    #    tiene que encontrar la cuarta la primera.
+    plano = rng.normal(size=(20, 2))
+    giro, _ = np.linalg.qr(rng.normal(size=(DIMENSION, DIMENSION)))
+    puntos = np.hstack([plano, np.zeros((20, DIMENSION - 2))]) @ giro
+    dist = np.linalg.norm(puntos[:, None] - puntos[None], axis=2)
+    x = aplanar(dist)
+    papel = np.linalg.norm(x[:, None] - x[None], axis=2)
+    iguales = int(np.sum(vecina_mas_cercana(dist) == vecina_mas_cercana(papel)))
+    from gensim.models import KeyedVectors
+    kv = KeyedVectors(DIMENSION)
+    base = rng.normal(size=(50, DIMENSION))
+    a, b, c = base[0], base[1], base[2]
+    d = unidad(unidad(a) - unidad(b) + unidad(c))
+    kv.add_vectors([f"p{i}" for i in range(50)] + ["objetivo"], np.vstack([base, d]).astype(np.float32))
+    _, top = resta(kv, "p0", "p1", "p2", 1)
+    print(f"[2] señal implantada  puntos en un plano: {iguales} de 20 conservan su vecina; "
+          f"resta fabricada -> «{top[0][0]}»")
+    if iguales != 20:
+        fallos.append(f"señal implantada: el aplanado pierde vecinas de puntos que ya son planos ({iguales} de 20)")
+    if top[0][0] != "objetivo":
+        fallos.append(f"señal implantada: la resta no encuentra la palabra fabricada, sale {top[0][0]}")
+
+    # 3. INVARIANTE DEL DOMINIO — una lista consigo misma: parecido 1 y cien de cien de mismo
+    #    signo; con la misma cambiada de signo, -1 y cero; el parecido no cambia al estirar una
+    #    lista; «¿van juntas?» con una lista de ceros da exactamente 50; y la resta propia da lo
+    #    mismo que la de gensim.
+    u = rng.normal(size=DIMENSION)
+    ok = (abs(parecido(u, u) - 1) < TOL and abs(parecido(u, -u) + 1) < TOL
+          and mismo_signo(u, u) == DIMENSION and mismo_signo(u, -u) == 0
+          and abs(parecido(u, 3 * u) - 1) < TOL
+          and abs(si_van_juntas(u, np.zeros(DIMENSION)) - 50) < TOL)
+    propia = [p for p, _ in resta(kv, "p3", "p4", "p5", 5)[1]]
+    gensim_ = [p for p, _ in kv.most_similar(positive=["p3", "p5"], negative=["p4"], topn=5)]
+    print(f"[3] invariante        consigo misma, al revés, estirada y con ceros: "
+          f"{'bien' if ok else 'MAL'}; resta propia = gensim: {propia == gensim_}")
+    if not ok:
+        fallos.append("invariante: la cuenta del parecido o de «¿van juntas?» no cumple lo básico")
+    if propia != gensim_:
+        fallos.append(f"invariante: la resta propia {propia} no es la de gensim {gensim_}")
+
+    print()
+    if fallos:
+        for f in fallos:
+            print("FALLA:", f)
+        return 1
+    print("SELFTEST: las tres pruebas pasan.")
+    return 0
+
+
+# --------------------------------------------------------------------------- principal
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--comprobar-con", default=SALIDA_PALABRAS_NUMEROS, metavar="SALIDA",
+                    help="la salida de palabras_numeros.py con que se comprueba que el modelo "
+                         "es el mismo (por omisión, la de datos/salidas)")
+    args = ap.parse_args()
+    if args.selftest:
+        sys.exit(selftest())
+    if selftest():
+        sys.exit("El selftest falla: los números no valen.")
+
+    print(f"\nMáquina: {platform.machine()}, {platform.system()} {platform.release()}.")
+    print(f"Medido el {date.today().isoformat()}. Semilla: {SEMILLA}.")
+    frases, total = cargar_corpus(os.path.join(AQUI, CORPUS_BIBLIOTECA))
+    necesarias = TRES_PALABRAS + [PALABRA_TAREA] + [p for par in PAREJAS_PARECIDO for p in par]
+    m, antes, antes_sal = entrenar_guardando_el_arranque(frases, necesarias)
+    print(f"Biblioteca: {miles(total)} palabras, {miles(len(m.wv.index_to_key))} distintas.")
+
+    libro = vecinas_del_libro(os.path.join(AQUI, args.comprobar_con))
+    for s in SONDAS:
+        mias = [p for p, _ in m.wv.most_similar(s, topn=VECINOS)]
+        assert mias == libro[s], (f"«{s}»: este modelo da {mias} y palabras_numeros.txt dice "
+                                  f"{libro[s]}; no es el mismo modelo (¿otra máquina?)")
+    print("Mismo modelo que palabras_numeros.txt: las vecinas de las ocho palabras coinciden.\n")
+
+    rng = np.random.default_rng(SEMILLA)
+    lin, _ = bloque_tarea(m, frases, antes_sal, rng)
+    print("\n".join(lin) + "\n")
+    print("\n".join(bloque_tres_palabras(m, antes)) + "\n")
+    lin, _ = bloque_parecido(m, antes)
+    print("\n".join(lin) + "\n")
+    print("\n".join(bloque_vecinas(m)) + "\n")
+    lin, _ = bloque_averia(m)
+    print("\n".join(lin) + "\n")
+    lin, _ = bloque_resta(m)
+    print("\n".join(lin) + "\n")
+    lin, _ = bloque_caminos(m, rng)
+    print("\n".join(lin) + "\n")
+    lin, _ = bloque_mapa(m)
+    print("\n".join(lin) + "\n")
+    lin, _ = bloque_cuenta(m)
+    print("\n".join(lin))
+
+
+if __name__ == "__main__":
+    main()

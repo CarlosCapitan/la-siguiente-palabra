@@ -1,0 +1,261 @@
+########## capítulo 4: la culpa, hecha a mano (L24) ##########
+la red de la figura del pasillo: semilla 318265456, 20.000 pasos,
+poquito 0,5; nada de lo que sigue depende del ordenador
+
+1. LO QUE DICE LA RED ENTRENADA EN LAS CUATRO POSICIONES
+(de 0 a 1: cerca de 0 es «no» y cerca de 1 es «sí»; lo que
+falla es lo que dice menos lo que tendría que decir)
+
+posición           la luz tiene    la red    lo que
+                   que estar         dice     falla
+-----------------  ------------    ------    ------
+ninguno subido     apagada          0,020    +0,020
+solo el de arriba  encendida        0,983    -0,017
+solo el de abajo   encendida        0,983    -0,017
+los dos subidos    apagada          0,018    +0,018
+
+2. LOS PESOS Y LOS LISTONES QUE APRENDIÓ
+(peso de cada línea: positivo suma, negativo resta)
+
+neurona      la línea que viene de       peso   listón
+-----------  ---------------------     ------   ------
+la primera   el de abajo                +6,47     2,89
+             el de arriba               +6,52
+la segunda   el de abajo                +4,53     6,96
+             el de arriba               +4,54
+la final     la primera                 +9,53     4,39
+             la segunda                -10,26
+
+3. LA CUENTA DE CADA NEURONA, POSICIÓN A POSICIÓN
+(le llega: la suma de lo que trae cada línea por su peso;
+dice: cerca de 1 si le llega más que su listón, cerca de 0
+si le llega menos)
+
+LA PRIMERA, «¿hay al menos uno subido?»
+listón: 2,89
+posición             le llega   ¿pasa del listón?    dice
+ninguno subido           0,00                  no    0,05
+solo el de arriba        6,52                  sí    0,97
+solo el de abajo         6,47                  sí    0,97
+los dos subidos         12,99                  sí    1,00
+
+LA SEGUNDA, «¿están los dos subidos?»
+listón: 6,96
+posición             le llega   ¿pasa del listón?    dice
+ninguno subido           0,00                  no    0,00
+solo el de arriba        4,54                  no    0,08
+solo el de abajo         4,53                  no    0,08
+los dos subidos          9,07                  sí    0,89
+
+LA FINAL, que escucha a las dos
+listón: 4,39
+posición             le llega   ¿pasa del listón?    dice
+ninguno subido           0,49                  no    0,02
+solo el de arriba        8,45                  sí    0,98
+solo el de abajo         8,44                  sí    0,98
+los dos subidos          0,38                  no    0,02
+
+LA FINAL, SI LAS DE EN MEDIO DIJERAN UN SÍ O UN NO SECOS
+la primera   la segunda     le llega   ¿pasa?
+no           no                +0,00       no
+no           sí               -10,26       no
+sí           no                +9,53       sí
+sí           sí                -0,73       no
+
+(la posición del ejemplo es la que más falla en ese paso)
+
+4. UN EJEMPLO A MEDIO ENTRENAR: EL PASO 2.500 DE 20.000
+posición: los dos subidos; la luz tiene que estar apagada,
+así que la final tendría que decir 0
+
+HACIA DELANTE
+              le llega   listón   pasa del     dice
+                                listón por
+la primera        6,87     0,55       6,32   0,9982
+la segunda        1,42    -0,12       1,54   0,8238
+la final          1,76     1,38       0,38   0,5934
+
+lo que le llega a la final: 0,9982 por 3,21,
+más 0,8238 por -1,75: 1,76
+lo que falla: dice 0,5934 y tendría que decir 0: +0,5934
+el error: lo que falla por sí mismo, 0,3521
+
+
+HACIA ATRÁS (los números, redondeados a cuatro cifras, y
+cada cuenta hecha con los números redondeados)
+
+TRAMO 1: LA CULPA DE LA FINAL
+   cuánto se mueve el error si se mueve lo que dice:
+   si dijera una millonésima más, el error pasaría
+   de 0,352173665 a 0,352174852: sube 1,187
+   millonésimas; el doble de lo que falla, 0,5934
+
+   lo que deja pasar su rampa: lo que dice, por lo que
+   le falta para 1: 0,5934 por 0,4066 da 0,2413
+
+   el doble de lo que falla                   1,187
+   por lo que deja pasar su rampa            0,2413
+   da la culpa de la final                   0,2864
+
+TRAMO 2: LAS DOS LÍNEAS QUE LLEGAN A LA FINAL
+   (la culpa de la final, por lo que trajo esa línea)
+   la de la primera: 0,2864 por 0,9982 da 0,2859
+   la de la segunda: 0,2864 por 0,8238 da 0,2359
+
+TRAMO 3: CUÁNTA LE TOCA A CADA UNA DE LAS DE EN MEDIO
+                                 la primera  la segunda
+   culpa de la final                 0,2864      0,2864
+   por el peso de su línea            +3,21       -1,75
+   le toca                           0,9193     -0,5012
+
+   lo que dice                       0,9982      0,8238
+   lo que le falta para 1            0,0018      0,1762
+   lo que deja pasar su rampa      0,001797      0,1452
+
+   su culpa: lo que le toca,       0,001652    -0,07277
+   por lo que deja pasar su rampa
+
+TRAMO 4: LAS CUATRO LÍNEAS DE LA PRIMERA CAPA
+   (la culpa de su neurona, por lo que trajo la línea:
+   1 si el interruptor está subido, 0 si está bajado)
+   la primera, del de abajo   0,001652 por 1 da 0,001652
+   la primera, del de arriba  0,001652 por 1 da 0,001652
+   la segunda, del de abajo   -0,07277 por 1 da -0,07277
+   la segunda, del de arriba  -0,07277 por 1 da -0,07277
+
+LA MISMA CULPA, A LO BRUTO
+   se sube el peso una cienmilésima y se mira el error; se
+   baja una cienmilésima y se mira otra vez; la culpa es lo
+   que va de uno a otro, entre lo que se ha movido
+
+   la segunda, del de arriba
+      por el atajo    -0,0727725679
+      a lo bruto      -0,0727725679
+   la final, de la segunda
+      por el atajo    0,2358950686
+      a lo bruto      0,2358950686
+
+   las dos, iguales en sus diez primeros decimales; lo que
+   va de una a otra no llega a una diezmilmillonésima
+
+   (la segunda, del de arriba: con el peso una cienmilésima
+   más arriba, el error es 0,3521729376;
+   una cienmilésima más abajo, 0,3521743931)
+
+   el redondeo, en una calculadora de seis decimales: un
+   tercio es 0,333333, y por tres da 0,999999
+
+5. EL PASO: CADA PESO SE MUEVE CONTRA SU CULPA
+(la culpa de cada peso es la media de su culpa en las
+cuatro posiciones; se mueve 0,5 veces esa culpa, en
+contra: si la culpa es negativa, sube; si es positiva, baja)
+
+LA CULPA DE LA SEGUNDA, DEL DE ARRIBA, POSICIÓN A POSICIÓN
+posición                culpa
+ninguno subido         0,0000
+solo el de arriba      0,0584
+solo el de abajo       0,0000
+los dos subidos       -0,0728
+-----------------     -------
+la media              -0,0036
+
+peso                         culpa  se mueve    antes  después
+------------------------   -------  --------   ------  -------
+la primera, del de abajo   -0,0063   +0,0032   3,3306   3,3338
+la primera, del de arriba  -0,0074   +0,0037   3,5395   3,5432
+la segunda, del de abajo   -0,0017   +0,0008   0,1119   0,1128
+la segunda, del de arriba  -0,0036   +0,0018   1,3070   1,3088
+la final, de la primera    -0,0073   +0,0036   3,2065   3,2101
+la final, de la segunda    +0,0063   -0,0032  -1,7506  -1,7538
+
+6. LO QUE DEJA PASAR CADA UNA
+(cuánto se mueve lo que dice la neurona por cada unidad
+que se mueve lo que le llega; medido subiendo lo que le
+llega una millonésima)
+
+ pasa del        la rampa corta               el codo
+   listón      dice  deja pasar      dice  deja pasar
+      por
+  -------    ------  ----------    ------  ----------
+       -6     0,002       0,002       0,0       0,000
+       -4     0,018       0,018       0,0       0,000
+       -2     0,119       0,105       0,0       0,000
+     -0,5     0,378       0,235       0,0       0,000
+        0     0,500       0,250       0,0   (el codo)
+     +0,5     0,622       0,235       0,5       1,000
+       +2     0,881       0,105       2,0       1,000
+       +4     0,982       0,018       4,0       1,000
+       +6     0,998       0,002       6,0       1,000
+
+lo más que deja pasar la rampa corta, en cualquier sitio:
+0,250 (en el centro, donde pasa del listón por 0)
+
+7. LA CULPA, CAPA A CAPA, EN LA RED DE 5 CAPAS EN MEDIO
+(como en los 80: 16 neuronas por capa, recién arrancada,
+sin entrenar; la culpa se mide con 64 ejemplos de 16
+números puestos al azar, cada uno con un sí o un no al azar)
+
+entre la entrada, las 5 capas de en medio y la final hay
+6 capas de líneas, cada una con sus pesos; se cuentan desde
+la entrada: la 1.ª es la que sale de la entrada, y la de
+encima de cada una es la siguiente, más cerca de la final
+
+la culpa de una capa de líneas es la media de la culpa de
+sus pesos, sin mirar el signo
+
+capa de líneas                 culpa    de cada 1 de
+(de la final hacia                     la de encima,
+la entrada)                                 le llega
+----------------------     ---------  --------------
+la 6.ª, la última          0,0364456
+la 5.ª                     0,0033015           0,091
+la 4.ª                     0,0010653           0,323
+la 3.ª                     0,0004502           0,423
+la 2.ª                     0,0002636           0,585
+la 1.ª, la primera         0,0000469           0,178
+
+de la última a la primera: 0,0364456 entre 0,0000469;
+la culpa se queda en una 777.ª parte: 777 veces menos
+
+A ESCALA: SI LA CULPA DE LA ÚLTIMA CAPA FUERA UN KILÓMETRO
+con 20 capas en medio, a la primera le llegarían 0,066 mm
+
+8. EL TERRENO DEL ERROR, CON UN SOLO PESO
+(la red entrenada; se mueve solo la línea de la primera a
+la final, y los demás pesos se quedan quietos; el error es
+la media de las cuatro posiciones)
+
+donde lo dejó el entrenamiento: peso 9,53, error 0,0003
+el fondo de esta curva: peso 9,7, error 0,0003
+con el peso en -6: error 0,5000; en +16: 0,2122
+
+cuesta abajo, moviendo solo ese peso, desde 2,0:
+  paso      peso     error     lo que se movió
+                                 en esos pasos
+     0      2,00    0,4644
+    25      2,50    0,4441                0,50
+    50      3,33    0,3869                0,83
+    75      4,86    0,1931                1,53
+   100      6,18    0,0489                1,32
+   125      6,76    0,0211                0,58
+   150      7,08    0,0126                0,32
+   175      7,30    0,0088                0,22
+   200      7,47    0,0067                0,16
+
+LAS QUE SE ATASCAN: 23 DE 200 ARRANQUES
+(error tras 20.000 pasos, y después de darles
+100.000 pasos más)
+
+                                    tras       con los pasos
+                            20.000 pasos              de más
+las 22 que siguen        0,1254 a 0,1255              0,1251
+la que sale                       0,2152              0,0000
+las que resuelven        0,0003 a 0,0021
+
+de las 22 que siguen, dicen entre 0,45 y 0,55, «no lo
+tengo claro», en dos posiciones: 22
+
+el error de decir 0,5 en dos posiciones y acertar las otras
+dos: 0,5 por 0,5 es 0,25; dos veces, 0,5; entre cuatro, 0,125
+
+escrito ../datos/salidas/culpa_hacia_atras_datos.csv

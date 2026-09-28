@@ -1,0 +1,73 @@
+--- selftest ---
+[1] test nulo         «vaso» contra «vaso»: seguridad 50,0 %
+[2] señal             contra la confianza de respuesta_modelo.py: diferencia 1.1e-16
+[3] invariante        las dos no pasan de cien y la seguridad está entre 50 y 100: sí
+
+SELFTEST: las tres pruebas pasan.
+
+####### capítulo 8: de dónde sale la seguridad #######
+
+1. EL TEXTO QUE SE LE PASA (la frase del «caro»)
+
+  El vaso no cabía en el cajón porque era demasiado caro.
+  Pregunta: ¿Qué era demasiado caro?
+  Respuesta: El
+
+  El modelo continúa detrás de «Respuesta: El». Lo mismo con
+  «alto» y con «bajo».
+
+2. TAL COMO LO MIDE respuesta_modelo.py
+
+  El texto acaba en «Respuesta: El », con el espacio, y las
+  opciones son «vaso» y «cajón» sin espacio delante: un corte
+  que el modelo casi nunca ve.
+  «vaso», «cajón»: de cada MILLÓN de veces, cuántas escribiría
+  esa palabra justo ahí, en su lista entera de trozos posibles.
+  «seguridad»: lo que se lleva la ganadora de lo que suman
+  las dos, de cada cien.
+
+  el de quinientos millones
+  frase       «vaso»   «cajón»   responde   seguridad
+  -----       ------   -------   --------   ---------
+  alto          2,61      0,07       vaso      97,6 %
+  bajo          2,67      0,06       vaso      97,7 %
+  caro          3,92      0,10       vaso      97,5 %
+
+  el de mil quinientos millones
+  frase       «vaso»   «cajón»   responde   seguridad
+  -----       ------   -------   --------   ---------
+  alto          5,25      2,05       vaso      72,0 %
+  bajo          6,70      2,35       vaso      74,1 %
+  caro          7,11      0,93       vaso      88,4 %
+
+3. CON EL ESPACIO EN SU SITIO
+
+  El texto acaba en «Respuesta: El» y las opciones son «_vaso»
+  y «_cajón», con el espacio delante, como las escribe el
+  modelo («_» es un espacio).
+  «vaso», «cajón»: de cada CIEN veces, cuántas escribiría esa
+  palabra justo ahí, en su lista entera de trozos posibles.
+  «las dos»: la suma; el resto va a otras palabras.
+  «seguridad»: lo que se lleva la ganadora de lo que suman
+  las dos, de cada cien.
+
+  el de quinientos millones
+  frase       «vaso»   «cajón»   las dos   responde   seguridad
+  -----       ------   -------   -------   --------   ---------
+  alto        77,3 %     2,8 %    80,0 %       vaso      96,6 %
+  bajo        66,2 %     3,6 %    69,8 %       vaso      94,8 %
+  caro        79,8 %     2,4 %    82,2 %       vaso      97,1 %
+
+  el de mil quinientos millones
+  frase       «vaso»   «cajón»   las dos   responde   seguridad
+  -----       ------   -------   -------   --------   ---------
+  alto        91,4 %     5,8 %    97,2 %       vaso      94,0 %
+  bajo        89,6 %     6,5 %    96,1 %       vaso      93,3 %
+  caro        94,3 %     3,2 %    97,6 %       vaso      96,7 %
+
+4. EL TAMAÑO DE LOS DOS MODELOS
+
+  el de quinientos millones            494.032.768 números
+  el de mil quinientos millones      1.543.714.304 números
+  el segundo tiene 3,1 veces los números del primero
+
