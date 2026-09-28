@@ -55,8 +55,9 @@ TITULO = "¿DE QUÉ DEPENDE QUE LA CULPA SE DESVANEZCA?"
 # hallazgo A19); las filas ya no se llaman «otro reparto» ni «otra función» (A20, A21: «reparto»
 # era la tercera cosa con ese nombre en ocho páginas, y «función» es una palabra que el lector no
 # tiene); «uniformes» se dice con palabras, y los pesos de arranque llevan su tamaño.
-SUBTITULO = ["cuántas veces menos culpa le llega a la primera capa",
-             "que a la última",
+SUBTITULO = ["cuántas veces menos culpa le llega a la primera capa de",
+             "líneas (las que salen de la entrada) que a la última (las",
+             "que llegan a la final)",
              "",
              f"redes de {ANCHO} neuronas por capa, recién arrancadas; la culpa",
              f"se mide con {EJEMPLOS} ejemplos de {ANCHO} números puestos al azar",

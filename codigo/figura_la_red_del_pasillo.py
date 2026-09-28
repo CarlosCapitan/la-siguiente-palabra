@@ -101,13 +101,16 @@ def dibujar_red(L, pesos, listones, y_arriba, y_abajo, rotulos_linea=None, texto
                 texto = rotulos_linea[(destino, origen)]
                 # el rótulo va cerca del destino, en el lado de fuera, para que las dos líneas
                 # que se cruzan en medio no se pisen
-                t = 0.70
+                recta = abs(y1 - y0) < 1e-6
+                cruzada = not recta and origen in NOMBRES_ENTRADA
+                # las dos líneas que se cruzan llevan el rótulo encima de la propia línea, cerca
+                # del destino, con fondo blanco: así no hay duda de a cuál pertenece
+                t = 0.80 if cruzada else 0.70
                 xr = x0 + RADIO + (x1 - x0 - 2 * RADIO) * t
                 yr = y0 + (y1 - y0) * t
-                recta = abs(y1 - y0) < 1e-6
                 if recta:
                     yr += 2.6 if y0 > y_medio else -2.6
-                else:
+                elif not cruzada:
                     yr += 2.4 if y1 > y0 else -2.4
                     xr += 1.0
                 ax.text(xr, yr, texto, ha="center", va="center", fontsize=7.6, color=p.tinta,

@@ -1,0 +1,48 @@
+Medido el 2026-09-28 en macOS-26.6.2-arm64-arm-64bit; en procesador, como crecer.py.
+500M: 0 de 5 con la regla del capítulo
+1.500M: 4 de 5 con la regla del capítulo
+3.000M: 5 de 5 con la regla del capítulo
+7.000M: 5 de 5 con la regla del capítulo
+
+--- LA TRADUCCIÓN POR DENTRO ---
+cuánta probabilidad da cada tamaño a la palabra buena,
+entera, justo donde tiene que escribirla (de cada cien):
+
+palabra              500M     1.500M     3.000M     7.000M
+agua                0,8 %     20,9 %     78,5 %     82,2 %
+libro               0,6 %     65,5 %     82,7 %     85,9 %
+noche               0,1 %     46,5 %     76,9 %     89,6 %
+pan                 0,0 %     52,9 %     57,6 %     94,7 %
+amigo               1,5 %     81,7 %     61,7 %     54,0 %
+media               0,6 %     53,5 %     71,5 %     81,3 %
+
+lo que pone primero cada tamaño en su lista, y con cuánto:
+«water =»
+    500M: «1», 25,2 %; «agua» en el puesto 12
+  1.500M: «2», 19,8 %; «agua» en el puesto 1
+  3.000M: «_agua», 55,4 %; «agua» en el puesto 1
+  7.000M: «_agua», 73,9 %; «agua» en el puesto 1
+«book =»
+    500M: «1», 32,1 %; «libro» en el puesto 12
+  1.500M: «_libro», 65,5 %; «libro» en el puesto 1
+  3.000M: «_libro», 82,7 %; «libro» en el puesto 1
+  7.000M: «_libro», 85,9 %; «libro» en el puesto 1
+«night =»
+    500M: «2», 32,9 %; «noche» en el puesto 14
+  1.500M: «_noche», 46,5 %; «noche» en el puesto 1
+  3.000M: «_noche», 76,9 %; «noche» en el puesto 1
+  7.000M: «_noche», 89,6 %; «noche» en el puesto 1
+«bread =»
+    500M: «1», 47,4 %; «pan» en el puesto 178
+  1.500M: «_pan», 52,5 %; «pan» en el puesto 1
+  3.000M: «_pan», 57,6 %; «pan» en el puesto 1
+  7.000M: «_pan», 94,7 %; «pan» en el puesto 1
+«friend =»
+    500M: «1», 19,6 %; «amigo» en el puesto 9
+  1.500M: «_amigo», 81,7 %; «amigo» en el puesto 1
+  3.000M: «_amigo», 61,7 %; «amigo» en el puesto 1
+  7.000M: «_amigo», 53,9 %; «amigo» en el puesto 1
+
+la palabra buena, con espacio delante o sin él (las dos
+valen para la regla del capítulo); si tiene varios trozos,
+su probabilidad es la del primero por la de los siguientes.

@@ -56,9 +56,9 @@ def leer(ruta):
     return puntos, nombres, int(m1.group(1)), int(m1.group(2))
 
 
-# Una forma por grupo, bien distinta en gris: rellena o hueca, y seis siluetas.
+# Una forma por grupo, bien distinta en gris: rellena o hueca. La estrella queda solo para «banco».
 FORMAS = [("o", False), ("s", True), ("^", True), ("D", False), ("P", True), ("X", True),
-          ("*", True), ("v", False)]
+          ("v", False), ("h", True)]
 
 
 def colocar_rotulos(pos, anchos, alto=2.6):
@@ -87,8 +87,8 @@ def colocar_rotulos(pos, anchos, alto=2.6):
     return sitio
 
 
-def marca(ax, x, y, g, p, grande=False, tam=5.2):
-    forma, llena = FORMAS[(g - 1) % len(FORMAS)]
+def marca(ax, x, y, g, p, grande=False, tam=5.2, estrella=False):
+    forma, llena = ("*", True) if estrella else FORMAS[(g - 1) % len(FORMAS)]
     ax.plot(x, y, forma, ms=(tam + 3.5) if grande else tam,
             markerfacecolor=(p.tinta if grande else p.suave) if llena else "white",
             markeredgecolor=p.tinta, markeredgewidth=0.8, zorder=3)
@@ -110,7 +110,7 @@ def dibujar(puntos, nombres, igual1, igual3, paleta, ruta):
     sitio = colocar_rotulos(pos, anchos)
     for pal, x, y, _, g in puntos:
         d = pal == DESTACADA
-        marca(ax, *pos[pal], g, p, grande=d)
+        marca(ax, *pos[pal], g, p, grande=d, estrella=d)
         tx, ty, lejos, w = sitio[pal]
         if lejos:
             px, py = pos[pal]
@@ -122,7 +122,8 @@ def dibujar(puntos, nombres, igual1, igual3, paleta, ruta):
     for k, (g, nombre) in enumerate(sorted(nombres.items())):
         col, fila = k % 3, k // 3
         xk, yy = 5.5 + col * 31, yk - 3.6 - fila * 3.3
-        marca(ax, xk, yy, g, p, grande=False)
+        marca(ax, xk, yy, g, p, grande=False,
+              estrella=any(q[0] == DESTACADA and q[4] == g for q in puntos))
         L.texto(xk + 1.8, yy, nombre, tam=7.0)
     L.pie(f"Aplanar cien números a dos pierde algo. De estas {len(puntos)} palabras, "
           f"la más parecida a cada una\nes también la más cercana en el papel en {igual1}, "

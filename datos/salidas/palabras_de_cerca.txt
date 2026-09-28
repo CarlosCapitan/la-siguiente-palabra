@@ -58,8 +58,8 @@ lunes      -0,356   0,358   0,637   0,132  -0,391   0,252
 --- 3. CÓMO SE PARECEN DOS LISTAS ---
 «signo»: en cuántas de las 100 posiciones las dos listas
 tienen las dos un número positivo o las dos uno negativo.
-«parecido»: la cuenta entera; 1, lo más parecido posible;
-0, nada que ver; -1, al revés. «puesto»: en qué puesto sale
+«parecido»: la cuenta entera, que va de -1 a 1; 1 es lo
+más parecido posible. «puesto»: en qué puesto sale
 la segunda entre las 68.926 vecinas de la primera
 
                    antes de entrenar       después de entrenar
@@ -69,8 +69,8 @@ caballo y corcel        44     -0,08      74      0,70     119
 caballo y galope        52      0,10      82      0,80       2
 caballo y lunes         51      0,04      66      0,51  32.043
 
-después de entrenar, 200 parejas de palabras sacadas al azar:
-parecido medio 0,67; por encima de 0, 187 de 200
+a media tabla, en el puesto 34.463 de las vecinas de
+«caballo», está «russell», con parecido 0,50
 
 --- 4. LAS VECINAS DE «CABALLO», CON SU PARECIDO ---
 de las 68.927 palabras, las 5 más parecidas
@@ -129,11 +129,11 @@ pregunta no cuentan y no llevan número:
 en qué puesto sale la palabra buscada, sin contar
 las tres de la pregunta:
 
-   rey - hombre + mujer            reina          4
-   padre - hombre + mujer          madre          1
-   hijo - hombre + mujer           hija           1
-   hermano - hombre + mujer        hermana        2
-   caballo - macho + hembra        yegua      6.247
+   rey, menos hombre, más mujer        reina          4
+   padre, menos hombre, más mujer      madre          1
+   hijo, menos hombre, más mujer       hija           1
+   hermano, menos hombre, más mujer    hermana        2
+   caballo, menos macho, más hembra    yegua      6.247
 
 --- 7. LOS CAMINOS DEL GÉNERO ---
 camino: la resta de las dos listas, número a número;
@@ -179,12 +179,12 @@ tarde           0,324  -0,368   noche            4
 dinero         -0,011   0,460   negocio          5
 pagar          -0,119   0,361   dinero           5
 negocio         0,001   0,294   dinero           5
-escritorio      0,164   0,069   almacén          6
-armario         0,279   0,084   baúl             6
-baúl            0,111   0,109   escritorio       6
-banco           0,254   0,195   escritorio       7
-almacén         0,191   0,092   escritorio       8
-ferrocarril     0,182  -0,021   almacén          8
+banco           0,254   0,195   escritorio       6
+escritorio      0,164   0,069   almacén          7
+armario         0,279   0,084   baúl             7
+baúl            0,111   0,109   escritorio       7
+almacén         0,191   0,092   escritorio       7
+ferrocarril     0,182  -0,021   almacén          7
 
 grupos (solo para la clave de la figura; el aplanado no
 los conoce):
@@ -193,9 +193,8 @@ los conoce):
    3: armas
    4: horas
    5: dinero
-   6: muebles
-   7: banco
-   8: almacén y ferrocarril
+   6: banco
+   7: las cinco vecinas de «banco»
 
 lo que se pierde al aplanar: de las 22 palabras,
 en cuántas su más parecida es también la más cercana
@@ -216,6 +215,9 @@ tamaño de una lista: cada número por sí mismo, se suman,
 y se saca la raíz cuadrada
    caballo: suman 0,620; raíz, 0,787
    corcel: suman 0,219; raíz, 0,468
+la raíz es el número que, multiplicado por sí mismo,
+da la suma:
+   0,787 por 0,787 da 0,620
 
 0,787 por 0,468 da 0,368
 parecido: 0,312 entre 0,368 da 0,85

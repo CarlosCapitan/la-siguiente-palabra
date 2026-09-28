@@ -17,7 +17,7 @@ Uso:
 
 SALIDA = "../datos/salidas/que_mira_cada_una.txt"
 DESTINO = "../figuras/los_dos_que_mas_se_parecen.png"
-ALTO = 2.45                    # pulgadas
+ALTO = 2.6                    # pulgadas
 
 # ==========================================================
 
@@ -43,12 +43,13 @@ def leer(ruta):
 
 def dibujar(W, a, b, r, paleta, ruta):
     L = Lienzo(f"Los comités {a} y {b}",
-               f"Los dos de en medio que más se parecen: {str(r).replace('.', ',').replace('-', '−')}. Negro: tinta ahí sube el\n"
-               "número de ese comité; blanco: lo baja. A la derecha, el segundo en negativo.",
+               f"Los dos de en medio que más se parecen: {str(r).replace('.', ',').replace('-', '−')}. En medio, el {b} en\n"
+               f"negativo, al lado del {a}. Negro: tinta ahí sube el número de ese comité (en el\n"
+               f"cuadro del medio, lo baja); blanco: al revés.",
                paleta, alto=ALTO)
     lim = float(np.abs(W).max())
-    cuadros = [(W[:, a - 1], f"el comité {a}"), (W[:, b - 1], f"el comité {b}"),
-               (-W[:, b - 1], f"el comité {b},\nen negativo")]
+    cuadros = [(W[:, a - 1], f"el comité {a}"), (-W[:, b - 1], f"el comité {b},\nen negativo"),
+               (W[:, b - 1], f"el comité {b}")]
     for k, (w, rotulo) in enumerate(cuadros):
         ax = L.fig.add_axes([0.08 + 0.31 * k, 0.19, 0.22, 0.22 * 4.45 / ALTO])
         ax.imshow(w.reshape(LADO, LADO), cmap="gray_r", vmin=-lim, vmax=lim)

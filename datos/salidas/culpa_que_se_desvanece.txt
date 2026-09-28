@@ -1,6 +1,7 @@
 ¿DE QUÉ DEPENDE QUE LA CULPA SE DESVANEZCA?
-cuántas veces menos culpa le llega a la primera capa
-que a la última
+cuántas veces menos culpa le llega a la primera capa de
+líneas (las que salen de la entrada) que a la última (las
+que llegan a la final)
 
 redes de 16 neuronas por capa, recién arrancadas; la culpa
 se mide con 64 ejemplos de 16 números puestos al azar

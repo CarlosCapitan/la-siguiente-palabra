@@ -78,7 +78,7 @@ la final          1,76     1,38       0,38   0,5934
 lo que le llega a la final: 0,9982 por 3,21,
 más 0,8238 por -1,75: 1,76
 lo que falla: dice 0,5934 y tendría que decir 0: +0,5934
-el error: lo que falla por sí mismo, 0,3521
+el error en esta posición: lo que falla por sí mismo, 0,3521
 
 
 HACIA ATRÁS (los números, redondeados a cuatro cifras, y
@@ -90,7 +90,10 @@ TRAMO 1: LA CULPA DE LA FINAL
    de 0,352173665 a 0,352174852: sube 1,187
    millonésimas; el doble de lo que falla, 0,5934
 
-   lo que deja pasar su rampa: lo que dice, por lo que
+   lo que deja pasar su rampa: si le llegara una
+   millonésima más, lo que dice pasaría de 0,593442217
+   a 0,593442459: sube 0,2413 millonésimas;
+   y con la regla de la rampa, lo que dice, por lo que
    le falta para 1: 0,5934 por 0,4066 da 0,2413
 
    el doble de lo que falla                   1,187
@@ -217,7 +220,37 @@ la 1.ª, la primera         0,0000469           0,178
 de la última a la primera: 0,0364456 entre 0,0000469;
 la culpa se queda en una 777.ª parte: 777 veces menos
 
-A ESCALA: SI LA CULPA DE LA ÚLTIMA CAPA FUERA UN KILÓMETRO
+los cinco números de la última columna, multiplicados:
+   0,091 por 0,323 por 0,423 por
+   0,585 por 0,178 da 0,001295
+uno entre 0,001295 da 772: casi el 777 (lo que falta
+es el redondeo de los cinco números)
+
+UNA NEURONA DE LA 3.ª CAPA DE EN MEDIO, CON UN EJEMPLO
+(la de su capa a la que más culpa le llega; recibe culpa de
+las 16 neuronas de la capa de encima, cada una por el peso
+de la línea que las une, y la suma pasa por su rampa)
+
+de la de encima      su culpa  por el peso          da
+----------------    ---------  -----------   ---------
+la 5.ª               0,006412       +0,905    0,005803
+la 12.ª              0,003677       +0,759    0,002791
+la 6.ª              -0,003533       -0,660    0,002332
+la 4.ª              -0,003599       -0,642    0,002311
+la 10.ª               0,00392       +0,535    0,002097
+las otras 11, juntas                           0,00173
+                                             ---------
+la suma                                        0,01706
+por lo que deja pasar su rampa (dice 0,5609)
+   (0,5609 por 0,4391)                          0,2463
+su culpa                                      0,004202
+
+culpa media de las 16 de encima, sin mirar el signo: 0,0029
+la de ésta, 0,004202: más que la media de las de encima,
+porque las que llegan por sus líneas se suman
+
+A ESCALA: SI LA CULPA DE LA ÚLTIMA CAPA DE LÍNEAS FUERA
+UN KILÓMETRO
 con 20 capas en medio, a la primera le llegarían 0,066 mm
 
 8. EL TERRENO DEL ERROR, CON UN SOLO PESO

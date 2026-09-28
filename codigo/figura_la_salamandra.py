@@ -46,7 +46,7 @@ AQUI = Path(__file__).resolve().parent
 
 
 def dibujar(esquema, paleta, ruta):
-    L = Lienzo("Lo que lleva la imagen es cuál llega antes",
+    L = Lienzo("Lo que lleva la imagen es la distancia",
                "Dos células de la retina de una salamandra. Cada raya es el primer pulso\n"
                "de una célula después de que aparezca la imagen.",
                paleta, alto=ALTO)

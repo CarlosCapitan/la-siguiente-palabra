@@ -76,8 +76,8 @@ Pregunta el último trozo, como en reparto_una_a_una.py.
 
   Lo que va a los trozos de una palabra se suma: «v» y «aso»
   cuentan como «vaso». «el final»: los dos últimos trozos
-  juntos, el adjetivo y el punto: lo que la palabra que
-  pregunta se queda para sí. «El» es la primera palabra: la
+  juntos, el adjetivo y el punto: lo que se queda el final
+  de la frase. «El» es la primera palabra: la
   papelera. «todas»: las 336 miradas; «últimas»: las 112 de
   las 8 últimas capas.
 
