@@ -22,12 +22,14 @@ CASOS = {
     "caro": ("El vaso no cabía en el cajón porque era demasiado caro.", None),  # sin respuesta
 }
 
-# OJO (L24, 28 sep 2026): la plantilla acaba en «El » con el espacio, y las opciones van sin él
+# L24 (28 sep 2026): la plantilla acaba en «El » con el espacio, y las opciones van sin él
 # («vaso», «cajón»). El modelo trocea «El vaso» como «El» + « vaso»: detrás de un espacio ya
-# escrito, «vaso» sin espacio es un trozo que casi nunca viene, y las dos opciones salen con unas
-# pocas millonésimas. La «seguridad» de esta salida compara dos números diminutos. El capítulo 8
-# cita la medición con el montaje corregido, la de `la_seguridad_por_dentro.py`. Esta salida no
-# se ha vuelto a ejecutar.
+# escrito, «vaso» sin espacio es un trozo que casi nunca viene, y las dos opciones salían con unas
+# pocas millonésimas. Desde el 28 se mide con el espacio en su sitio (ESPACIO_EN_SU_SITIO): el texto
+# acaba en «El» y las opciones son « vaso» y « cajón». El montaje viejo se conserva como
+# eleccion_forzada(..., espacio_en_su_sitio=False), porque la_seguridad_por_dentro.py lo enseña.
+# La salida del 20 de septiembre está en datos/salidas/_antiguos/.
+ESPACIO_EN_SU_SITIO = True
 PLANTILLA = "{frase}\nPregunta: ¿Qué era demasiado {adj}?\nRespuesta: El "
 OPCIONES = ("vaso", "cajón")
 
@@ -98,9 +100,12 @@ def log_prob_continuacion(tok, modelo, prompt, continuacion):
     return valor
 
 
-def eleccion_forzada(tok, modelo, frase, adj):
+def eleccion_forzada(tok, modelo, frase, adj, espacio_en_su_sitio=False):
     prompt = PLANTILLA.format(frase=frase, adj=adj)
-    lp = np.array([log_prob_continuacion(tok, modelo, prompt, o) for o in OPCIONES])
+    if espacio_en_su_sitio:
+        prompt = prompt.rstrip(" ")
+    conts = [(" " + o) if espacio_en_su_sitio else o for o in OPCIONES]
+    lp = np.array([log_prob_continuacion(tok, modelo, prompt, o) for o in conts])
     exp = np.exp(lp - lp.max())
     probs = exp / exp.sum()
     assert abs(probs.sum() - 1.0) < TOL_SUMA, \
@@ -115,7 +120,7 @@ def medir(nombre):
     modelo.eval()
     filas = []
     for clave, (frase, esperada) in CASOS.items():
-        ganadora, confianza, _ = eleccion_forzada(tok, modelo, frase, clave)
+        ganadora, confianza, _ = eleccion_forzada(tok, modelo, frase, clave, ESPACIO_EN_SU_SITIO)
         acierto = "-" if esperada is None else ("sí" if ganadora == esperada else "NO")
         filas.append((nombre, clave, esperada or "(ninguna)", ganadora, confianza, acierto))
     return tok, modelo, filas
@@ -150,13 +155,14 @@ def selftest(tok, modelo):
     palabras = CASOS["alto"][0].rstrip(".").split()
     barajada = palabras[:]
     rng.shuffle(barajada)
-    _, conf_nula, _ = eleccion_forzada(tok, modelo, " ".join(barajada) + ".", "alto")
+    _, conf_nula, _ = eleccion_forzada(tok, modelo, " ".join(barajada) + ".", "alto",
+                                       ESPACIO_EN_SU_SITIO)
     print(f"[1] test nulo         confianza con la frase barajada = {conf_nula:.3f}")
     if conf_nula > 0.95:
         fallos.append(f"test nulo: confianza {conf_nula:.3f} con una frase sin estructura; el montaje decide por sí solo")
 
     # 2. SEÑAL IMPLANTADA — referente único y explícito, debe recuperarse.
-    ganadora, conf, _ = eleccion_forzada(tok, modelo, frase_c, adj_c)
+    ganadora, conf, _ = eleccion_forzada(tok, modelo, frase_c, adj_c, ESPACIO_EN_SU_SITIO)
     print(f"[2] señal implantada  «{frase_c}» -> {ganadora} ({conf:.3f}), esperada {esperada_c}")
     if ganadora != esperada_c or conf < UMBRAL_CONTROL:
         fallos.append(
@@ -167,7 +173,7 @@ def selftest(tok, modelo):
     # 3. INVARIANTE DEL DOMINIO — las dos opciones suman uno en los tres casos.
     ok = True
     for clave, (frase, _) in CASOS.items():
-        _, _, probs = eleccion_forzada(tok, modelo, frase, clave)
+        _, _, probs = eleccion_forzada(tok, modelo, frase, clave, ESPACIO_EN_SU_SITIO)
         if abs(sum(probs.values()) - 1.0) >= TOL_SUMA:
             fallos.append(f"invariante: en «{clave}» las probabilidades suman {sum(probs.values())}")
             ok = False

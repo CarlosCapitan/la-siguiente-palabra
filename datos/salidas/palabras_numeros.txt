@@ -23,24 +23,24 @@ hermano - hombre + mujer = hermana?   falla:  llegaron, hechas, haré
 aciertos: 0 de 4 evaluadas
 
 ==========================================================================
-UNA BIBLIOTECA (300 libros): 21.313.329 palabras, 68.927 palabras distintas aprendidas
+UNA BIBLIOTECA (300 libros): 21.313.324 palabras, 68.927 palabras distintas aprendidas
 ==========================================================================
 
 --- VECINAS MÁS PRÓXIMAS ---
-caballo    -> montar, galope, estribo, pié, monté
+caballo    -> montar, galope, estribo, pié, rocín
 rey        -> emperador, papa, cárlos, felipe, soberano
 espada     -> diestra, carabina, flecha, bandera, pistola
 noche      -> mañana, madrugada, tarde, siesta, hora
-mujer      -> criatura, casada, hija, muchacha, virtuosa
-dinero     -> gasto, pagar, negocio, gastar, jornal
+mujer      -> criatura, casada, hija, muchacha, marido
+dinero     -> gasto, negocio, pagar, gastar, dineros
 banco      -> escritorio, almacén, baúl, ferrocarril, armario
-cura       -> laubepin, canuto, boticario, jorobado, médico
+cura       -> laubepin, canuto, boticario, médico, jorobado
 
 --- ARITMÉTICA CON PALABRAS ---
-rey - hombre + mujer = reina?   ACIERTA: esposa, isabel, reina
+rey - hombre + mujer = reina?   ACIERTA: esposa, isabel, muger
 padre - hombre + mujer = madre?   ACIERTA: madre, esposa, hija
 hijo - hombre + mujer = hija?   ACIERTA: hija, esposa, madre
-caballo - macho + hembra = yegua?   falla:  retaguardia, acertó, infortunada
-hermano - hombre + mujer = hermana?   ACIERTA: hermana, hija, esposa
+caballo - macho + hembra = yegua?   falla:  retaguardia, acertó, tomarla
+hermano - hombre + mujer = hermana?   ACIERTA: hija, hermana, esposa
 
 aciertos: 4 de 5 evaluadas

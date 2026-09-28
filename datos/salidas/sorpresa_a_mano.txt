@@ -59,6 +59,6 @@ el arranque, igual para los dos (20 trozos):
   8 párrafos. La persona: 120 trozos en cada uno.
   La máquina: entre 35 y 120, porque a veces da
   su texto por terminado antes.
-  las medias de romper_la_maquina.py: 2,754 y 0,772; la del humano coincide: sí; la de la máquina es más alta allí porque le quita el espacio al primer trozo
+  las medias de romper_la_maquina.py: 2,754 y 0,673; coinciden: sí
   trozos que escribió la máquina en cada párrafo: 40, 120, 120, 35, 120, 120, 120, 44
   la sorpresa, humano entre máquina: 4,1 veces; las papeletas, máquina entre humano: 8,0 veces

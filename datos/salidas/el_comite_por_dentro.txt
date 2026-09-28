@@ -6,7 +6,7 @@
 SELFTEST: las tres pruebas pasan.
 
 ########## capítulo 3: el comité real, por dentro ##########
-máquina: Linux aarch64. Medido el 2026-09-26.
+máquina: Linux aarch64. Medido el 2026-09-28.
 La pregunta: ¿es un 4 o un 9? Aprende con 252 dibujos
 y acierta 100,0 % de los que no vio.
 Todo en enteros: tinta × 16, pesos × 32, listón × 512; decide igual.
@@ -37,11 +37,11 @@ Todo en enteros: tinta × 16, pesos × 32, listón × 512; decide igual.
 
   el listón: -512. Dice «es un 4» si el total pasa de ahí.
 
-3. LA CUENTA DEL 4: TINTA × PESO, PUNTO A PUNTO
+3. LA CUENTA DEL 4: TINTA POR PESO, PUNTO A PUNTO
 
-  fila 6, columna 4    tinta 16 × peso   150 =  2.400
-  fila 4, columna 6    tinta  9 × peso   -90 =   -810
-  fila 2, columna 6    tinta  0 × peso  -176 =      0
+  fila 6, columna 4    16 de tinta por  150 de peso dan  2.400
+  fila 4, columna 6     9 de tinta por  -90 de peso dan   -810
+  fila 2, columna 6     0 de tinta por -176 de peso dan      0
 
   punto                tinta    peso    aporta
   -----                -----    ----    ------

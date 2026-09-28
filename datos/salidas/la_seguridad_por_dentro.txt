@@ -16,7 +16,7 @@ SELFTEST: las tres pruebas pasan.
   El modelo continúa detrás de «Respuesta: El». Lo mismo con
   «alto» y con «bajo».
 
-2. TAL COMO LO MIDE respuesta_modelo.py
+2. COMO LO MEDÍA respuesta_modelo.py HASTA EL 28 DE SEPT.
 
   El texto acaba en «Respuesta: El », con el espacio, y las
   opciones son «vaso» y «cajón» sin espacio delante: un corte

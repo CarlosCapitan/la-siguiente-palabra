@@ -1,12 +1,12 @@
-Máquina: x86_64, Linux 6.18.44-fc-v33.
-Medido el 2026-09-18. Semillas: 20260914, 20260915, 20260916, 20260917, 20260918.
+Máquina: aarch64, Linux 6.8.0-138-generic.
+Medido el 2026-09-28. Semillas: 20260914, 20260915, 20260916, 20260917, 20260918.
 [1] test nulo         vecinas de ningún sentido: (False, False) (tiene que ser (False, False))
 [2] señal implantada  las del libro: (True, True) (los dos); solo muebles: (True, False)
 [3] invariante        con tilde (False, True) igual que sin tilde (False, True); palabras en las dos listas a la vez: ninguna
 
 SELFTEST: las tres pruebas pasan.
 
-Biblioteca: 21.313.329 palabras.
+Biblioteca: 21.313.324 palabras.
 
 ¿SALEN LOS DOS SIGNIFICADOS, O SOLO UNO?
 5 entrenamientos desde cero; solo cambia la semilla
@@ -19,27 +19,27 @@ las 5 vecinas más próximas, en cada uno
       -> los dos
   cajón, plano, ferrocarril, cerco, almacén
       -> el del dinero
-  pupitre, plano, cajón, ferrocarril, escritorio
-      -> los dos
-  cerco, plano, egército, cajón, escritorio
+  pupitre, plano, cajón, escritorio, estribo
       -> el mueble
-  los dos significados salen en 3 de 5
+  cerco, plano, cajón, escritorio, egército
+      -> el mueble
+  los dos significados salen en 2 de 5
 
 «cura»  —  el sacerdote / el remedio
-  laubepin, canuto, boticario, jorobado, médico
+  laubepin, canuto, boticario, médico, jorobado
       -> el remedio
   laubepin, frechón, boticario, pertiguero, médico
       -> el remedio
   médico, laubepin, canuto, zalamero, forastero
       -> el remedio
-  laubepin, canuto, médico, señorito, frechón
+  laubepin, canuto, médico, frechón, señorito
       -> el remedio
-  pertiguero, boticario, laubepin, señorito, canuto
+  pertiguero, boticario, laubepin, médico, señorito
       -> el remedio
   los dos significados salen en 0 de 5
 
 «lengua»  —  el idioma / la del cuerpo
-  letra, materna, castellana, prosa, pronunciación
+  letra, castellana, materna, prosa, pronunciación
       -> el idioma
   castellana, materna, letra, pronunciación, fonética
       -> el idioma
@@ -47,7 +47,7 @@ las 5 vecinas más próximas, en cada uno
       -> el idioma
   castellana, materna, letra, castellano, prosa
       -> el idioma
-  castellana, letra, prosa, materna, latina
+  castellana, letra, prosa, materna, pronunciación
       -> el idioma
   los dos significados salen en 0 de 5
 

@@ -62,7 +62,10 @@ def dibujar(d, paleta, ruta):
     tope = max(max(x[1], x[2]) for x in dd) * 1.15
     ax.set_ylim(0, tope)
     ax.set_xlim(0, d[-1][0])
-    ax.set_xticks(range(0, d[-1][0] + 1, 25_000))
+    # Regla 4 del capítulo 10 (dibujos sin cifras nuevas, 28 sep): en el eje, solo el 50.000 que el
+    # capítulo ya da (su último retrato) y «el triple», que es lo que dice el texto.
+    ax.set_xticks([FIN_CAPITULO, d[-1][0]])
+    ax.set_xticklabels([miles(FIN_CAPITULO), "el triple"])
     ax.axvline(FIN_CAPITULO, color=p.suave, linewidth=0.7, linestyle=(0, (3, 2)))
     ax.text(FIN_CAPITULO, tope * 0.97, " aquí acababa el capítulo", fontsize=6.8, va="top",
             color=p.suave)
@@ -75,7 +78,6 @@ def dibujar(d, paleta, ruta):
     ax.set_ylabel("lo mal que lo hace", fontsize=7.4)
     ax.set_xlabel("pasos de aprendizaje", fontsize=7.4)
     ax.tick_params(labelsize=6.8, length=2.5)
-    ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: miles(int(x))))
     ax.spines[["top", "right"]].set_visible(False)
     ax.legend(loc="upper right", frameon=False, fontsize=6.9, bbox_to_anchor=(1.0, 0.9))
     L.guardar(ruta)

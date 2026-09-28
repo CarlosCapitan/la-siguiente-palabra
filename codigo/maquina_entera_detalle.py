@@ -24,7 +24,12 @@ Uso:
 # ======================= CONSTANTES =======================
 
 MODELO = "Qwen/Qwen2.5-0.5B"      # el mismo de maquina_entera.py
-DTYPE = "float32"                 # float32: mismo resultado en cualquier máquina
+DTYPE = "float32"                 # float32: mismo resultado en cualquier máquina x86
+# L24 (28 sep 2026): en procesadores ARM (el Mac, y el Linux del portátil) no. La suma de las
+# 151.936 probabilidades da 1,000131 y revienta la comprobación de más abajo; y con el softmax en
+# float64, que sí pasa, las cifras cambian en la cuarta decimal (97,8717 % → 97,8714 %; 15,5138 %
+# → 15,5139 %). El capítulo 7 cita la salida de x86 del 25 de septiembre. Esta salida, por tanto,
+# se genera en x86.
 SEMILLA = 0                       # no hay nada al azar; se fija igual, por regla
 
 FRASE = "La capital de Francia es"

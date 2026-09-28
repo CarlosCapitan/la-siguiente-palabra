@@ -181,14 +181,15 @@ def main():
     L += ["", "2. LO QUE APRENDIÓ: EL PESO DE CADA PUNTO", ""]
     L += cuadricula(casos, 6)
     L += ["", f"  el listón: {miles(liston)}. Dice «es un {DIGITO_SI}» si el total pasa de ahí.",
-          "", f"3. LA CUENTA DEL {DIGITO_SI}: TINTA × PESO, PUNTO A PUNTO", ""]
+          "", f"3. LA CUENTA DEL {DIGITO_SI}: TINTA POR PESO, PUNTO A PUNTO", ""]
     aporta = tinta[i_si] * casos
     orden = np.argsort(aporta)
     mas, menos = orden[::-1][0], orden[0]
     sin_tinta = [k for k in np.argsort(-np.abs(casos)) if tinta[i_si][k] == 0][0]
     for k in (mas, menos, sin_tinta):
-        L.append(f"  {lugar(k):<20} tinta {tinta[i_si][k]:>2} × peso {casos[k]:>5} = "
-                 f"{miles(int(aporta[k])):>6}")
+        # L24 (28 sep): «×» y «=» fuera (regla 1, cero notación); la cuenta, con palabras.
+        L.append(f"  {lugar(k):<20} {tinta[i_si][k]:>2} de tinta por {casos[k]:>4} de peso "
+                 f"dan {miles(int(aporta[k])):>6}")
     arriba, abajo = orden[::-1][:PUNTOS_EN_TABLA], orden[:PUNTOS_EN_TABLA]
     resto = np.setdiff1d(np.arange(LADO * LADO), np.concatenate([arriba, abajo]))
     L += ["", f"  {'punto':<20}{'tinta':>6}{'peso':>8}{'aporta':>10}",
