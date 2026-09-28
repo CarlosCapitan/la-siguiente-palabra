@@ -27,7 +27,7 @@ DESTINO_TIRA = "../figuras/linea_circular_{}.png"
 ALTO = 3.55
 ALTO_TIRA = 1.25
 # (nombre corto, qué pasa ahí, clave de la cifra en la salida o None)
-ESTACIONES = [("Trozos", "el texto se parte", None),
+ESTACIONES = [("Se rompe", "el texto, en piezas", None),
               ("Números", "{} números en cada lista", "números por trozo"),
               ("Capas", "{} capas de mirar y mezclar", "rondas, una detrás de otra"),
               ("Lista", "{} probabilidades", "trozos posibles en la salida"),
@@ -81,7 +81,7 @@ def dibujar(cifras, paleta, ruta):
         dx = math.cos(ang)
         ha = "left" if dx > 0.3 else ("right" if dx < -0.3 else "center")
         tx = x + (5 if ha == "left" else -5 if ha == "right" else 0)
-        ty = y + (5.5 if abs(dx) <= 0.3 else 1.8 * math.copysign(1, math.sin(ang)))
+        ty = y + (6.8 if abs(dx) <= 0.3 else 1.8 * math.copysign(1, math.sin(ang)))
         L.texto(tx, ty + 1.5, nombre, tam=8.4, ha=ha, negrita=True)
         L.texto(tx, ty - 1.5, que, tam=7.2, ha=ha, color=p.suave)
     # flechas del sentido de la marcha, entre estación y estación
@@ -94,7 +94,6 @@ def dibujar(cifras, paleta, ruta):
     L.texto(cx, cy + 2.0, "de la 5 a la 1:", tam=7.2, ha="center", color=p.suave)
     L.texto(cx, cy - 1.2, "vuelta a empezar, con el", tam=7.2, ha="center", color=p.suave)
     L.texto(cx, cy - 4.2, "texto un poco más largo", tam=7.2, ha="center", color=p.suave)
-    L.pie("Una vuelta entera es un paso.")
     L.guardar(ruta)
     return pos
 

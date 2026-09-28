@@ -44,6 +44,8 @@ PELIN = 1e-6                 # lo que se sube lo que entra para medir lo que dej
 PELIN_BRUTO = 1e-5           # lo que se mueve un peso a lo bruto: el epsilon de retropropagacion.py
 PUNTOS_RAMPA = [-6, -4, -2, -0.5, 0, 0.5, 2, 4, 6]   # «cuánto pasa del listón», para la tabla de las dos
 PROFUNDIDAD_CADENA = 5       # capas en medio de la red en la que se sigue la culpa capa a capa
+CAPA_DE_LA_SUMA = 3          # en esa red, la capa de en medio de la neurona cuya culpa se suma a mano
+CUANTAS_SE_ENSENAN = 5       # de las dieciséis de encima, cuántas se enseñan una a una
 KILOMETRO_EN_MM = 1_000_000  # para poner a escala el factor de veinte capas
 # El terreno se dibuja sobre la red ENTRENADA: moviendo un solo peso, el fondo es el sitio
 # donde el entrenamiento lo dejó, y se ve entero. (En la red del paso 2.500 la curva de
@@ -341,7 +343,7 @@ def bloque_4(red, p):
           f"más {s4(m['dice_medio'][1])} por {coma(W1[1], 2)}: {coma(c['llega_final'], 2)}",
           f"lo que falla: dice {s4(m['dice_final'])} y tendría que decir {int(c['deberia'])}: "
           f"{s4(m['falla'], True)}",
-          f"el error: lo que falla por sí mismo, {s4(r4(m['falla']) ** 2)}",
+          f"el error en esta posición: lo que falla por sí mismo, {s4(r4(m['falla']) ** 2)}",
           ""]
     tabla(L)
 
@@ -356,7 +358,11 @@ def bloque_4(red, p):
          f"   de {coma(c['error'], 9)} a {coma(e_mas, 9)}: sube {coma((e_mas - c['error']) / PELIN, 3)}",
          f"   millonésimas; el doble de lo que falla, {s4(m['falla'])}",
          "",
-         "   lo que deja pasar su rampa: lo que dice, por lo que",
+         "   lo que deja pasar su rampa: si le llegara una",
+         f"   millonésima más, lo que dice pasaría de {coma(c['dice_final'], 9)}",
+         f"   a {coma(float(rampa(c['pasa_final'] + PELIN)), 9)}: sube "
+         f"{coma((float(rampa(c['pasa_final'] + PELIN)) - c['dice_final']) / PELIN, 4)} millonésimas;",
+         "   y con la regla de la rampa, lo que dice, por lo que",
          f"   le falta para 1: {s4(m['dice_final'])} por {s4(m['falta_final'])} da {s4(m['pasa_final'])}",
          "",
          f"   el doble de lo que falla                 {s4(m['doble']):>7}",
@@ -530,16 +536,81 @@ def bloque_7():
         factor = "" if k == n - 1 else coma(m[k] / m[k + 1], 3)
         L.append(f"{nombre:<24}{coma(m[k], 7):>12}{factor:>16}")
     veces = m[-1] / m[0]
+    factores = [r4(float(f"{m[k] / m[k + 1]:.3f}")) for k in range(n - 2, -1, -1)]
+    producto = 1.0
+    for f in factores:
+        producto *= f
     L += ["",
           f"de la última a la primera: {coma(m[-1], 7)} entre {coma(m[0], 7)};",
-          f"la culpa se queda en una {miles(round(veces))}.ª parte: {miles(round(veces))} veces menos"]
+          f"la culpa se queda en una {miles(round(veces))}.ª parte: {miles(round(veces))} veces menos",
+          "",
+          "los cinco números de la última columna, multiplicados:",
+          "   " + " por ".join(coma(f, 3) for f in factores[:3]) + " por",
+          "   " + " por ".join(coma(f, 3) for f in factores[3:]) + f" da {s4(producto)}",
+          f"uno entre {s4(producto)} da {miles(round(1 / producto))}: casi el {miles(round(veces))} (lo que falta",
+          "es el redondeo de los cinco números)"]
     tabla(L)
+    suma_de_encima(red, Xc[:1], yc[:1])
     return m
+
+
+def suma_de_encima(red, X, y):
+    """La culpa que le llega a una neurona desde las dieciséis de la capa de encima: cada una por
+    el peso de su línea, sumadas, y luego por lo que deja pasar su rampa. Con un ejemplo, y la
+    neurona de la 3.ª capa de en medio a la que más culpa le llega. Las cuentas, con los números
+    impresos (cuatro cifras), como en el caso del pasillo."""
+    act = red.adelante(X)
+    d = (act[-1] - y.reshape(-1, 1)) * 2 * act[-1] * (1 - act[-1])
+    deltas = [None] * len(red.W)
+    deltas[-1] = d
+    for k in range(len(red.W) - 1, 0, -1):
+        d = (d @ red.W[k].T) * act[k] * (1 - act[k])
+        deltas[k - 1] = d
+    capa = CAPA_DE_LA_SUMA
+    j = int(np.argmax(np.abs(deltas[capa - 1][0])))
+    encima = deltas[capa][0]
+    pesos = red.W[capa][j, :]
+    orden = list(np.argsort(-np.abs(encima * pesos)))
+    vistas, resto = orden[:CUANTAS_SE_ENSENAN], orden[CUANTAS_SE_ENSENAN:]
+    L = [f"UNA NEURONA DE LA {capa}.ª CAPA DE EN MEDIO, CON UN EJEMPLO",
+         f"(la de su capa a la que más culpa le llega; recibe culpa de",
+         f"las {len(encima)} neuronas de la capa de encima, cada una por el peso",
+         "de la línea que las une, y la suma pasa por su rampa)",
+         "",
+         f"{'de la de encima':<18}{'su culpa':>11}{'por el peso':>13}{'da':>12}",
+         f"{'-' * 16:<18}{'-' * 9:>11}{'-' * 11:>13}{'-' * 9:>12}"]
+    total = 0.0
+    for k in vistas:
+        c, w = r4(float(encima[k])), round(float(pesos[k]), 3)
+        v = r4(c * w)
+        total += v
+        L.append(f"{'la ' + str(k + 1) + '.ª':<18}{s4(c):>11}{firmado(w, 3):>13}{s4(v):>12}")
+    otras = r4(float((encima[resto] * pesos[resto]).sum()))
+    total += otras
+    total = r4(total)
+    dice = r4(float(act[capa][0, j]))
+    pasa = r4(dice * r4(1 - dice))
+    culpa = r4(total * pasa)
+    exacto = float(deltas[capa - 1][0, j])
+    assert abs(culpa - exacto) <= 0.02 * abs(exacto), f"la suma a mano se aleja: {culpa} y {exacto}"
+    media = float(np.abs(encima).mean())
+    L += [f"{'las otras ' + str(len(resto)) + ', juntas':<42}{s4(otras):>12}",
+          f"{'':<42}{'-' * 9:>12}",
+          f"{'la suma':<42}{s4(total):>12}",
+          f"por lo que deja pasar su rampa (dice {s4(dice)})",
+          f"{'   (' + s4(dice) + ' por ' + s4(r4(1 - dice)) + ')':<42}{s4(pasa):>12}",
+          f"{'su culpa':<42}{s4(culpa):>12}",
+          "",
+          f"culpa media de las {len(encima)} de encima, sin mirar el signo: {s4(media)}",
+          f"la de ésta, {s4(culpa)}: más que la media de las de encima,",
+          "porque las que llegan por sus líneas se suman"]
+    tabla(L)
 
 
 def bloque_7_escala(factor_20):
     mm = KILOMETRO_EN_MM / factor_20
-    L = ["A ESCALA: SI LA CULPA DE LA ÚLTIMA CAPA FUERA UN KILÓMETRO",
+    L = ["A ESCALA: SI LA CULPA DE LA ÚLTIMA CAPA DE LÍNEAS FUERA",
+         "UN KILÓMETRO",
          f"con 20 capas en medio, a la primera le llegarían {coma(mm, 3)} mm"]
     tabla(L)
 

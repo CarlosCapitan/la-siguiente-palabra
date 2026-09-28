@@ -92,18 +92,21 @@ def informe(tiradas):
            f"fuera, por no estar en el modelo: {', '.join(fuera) if fuera else 'ninguna'}", "",
            f"puesto de cada palabra entre las {miles(n)} vecinas de «{PALABRA}»",
            "en las cinco tiradas; el puesto 1 es la más parecida", "",
-           f"{'palabra':<14}" + "".join(f"{'tirada ' + str(k + 1):>9}" for k in range(len(tiradas))),
-           "-" * (14 + 9 * len(tiradas))]
+           f"{'palabra':<16}" + "".join(f"{'tirada ' + str(k + 1):>9}" for k in range(len(tiradas))),
+           "-" * (16 + 9 * len(tiradas))]
     for titulo, lista in (("el mueble", MUEBLE), ("el dinero", DINERO)):
         lin.append(titulo)
         for w in conocidas(lista):
-            lin.append(f"  {w:<12}" + "".join(f"{miles(t['puestos'][w]):>9}" for t in tiradas))
-    lin.append("-" * (14 + 9 * len(tiradas)))
+            lin.append(f"  {w:<14}" + "".join(f"{miles(t['puestos'][w]):>9}" for t in tiradas))
+    lin.append("-" * (16 + 9 * len(tiradas)))
     for titulo, lista in (("mediana, mueble", MUEBLE), ("mediana, dinero", DINERO)):
-        lin.append(f"{titulo:<14}" + "".join(
+        lin.append(f"{titulo:<16}" + "".join(
             f"{miles(round(mediana([t['puestos'][w] for w in conocidas(lista)]))):>9}" for t in tiradas))
-    lin += ["", "«mediana»: la mitad de las palabras del grupo sale en ese",
-            "puesto o más arriba", "", f"las {VECINAS} vecinas de «{PALABRA}» en cada tirada:"]
+    lin += [f"{'a media tabla':<16}" + "".join(f"{miles((t['n'] + 1) // 2):>9}" for t in tiradas),
+            "", "«mediana»: la mitad de las palabras del grupo sale en ese",
+            "puesto o más arriba. «a media tabla»: el puesto del medio,",
+            "el que saca de media una palabra cualquiera", "",
+            f"las {VECINAS} vecinas de «{PALABRA}» en cada tirada:"]
     for k, t in enumerate(tiradas, 1):
         lin.append(f"   {k}: " + ", ".join(t["vecinas"]))
     return comprobar_ancho(lin, ANCHO_CAJA_CITA)

@@ -209,7 +209,7 @@ def fila_de_segundos(n, t_s, t_v, v):
 
 
 def segundos(carpeta=CARPETA):
-    L = ["", "##### los segundos, máquina a máquina #####",
+    L = ["", "##### los segundos, ordenador a ordenador #####",
          "Cada número de segundos es lo que tarda una pasada de",
          "entrenamiento con 16 textos de esa longitud: la media de tres,",
          "tras una de calentamiento que se tira.",
@@ -225,20 +225,19 @@ def segundos(carpeta=CARPETA):
         L += [f"{letra}. {maquina};", f"   modelo de {miles(ancho)} números por posición", ""] + cab
         L += [fila_de_segundos(*f) for f in filas] + [""]
         if letra == "B":
-            L += ["La cuenta de dos filas de la tabla A, hecha:", ""]
+            L += ["La cuenta de la ventaja, en el ordenador de 2 núcleos:", ""]
             for n, t_s, t_v, v in (tablas["A"][0], tablas["A"][-1]):
                 cociente = t_s / t_v
-                L.append(f"  {miles(n)} posiciones: {coma(t_s, 4)} entre {coma(t_v, 4)} da "
-                         f"{coma(cociente, 2)},")
-                L.append(f"  que la tabla redondea a {coma(v, 1)}x. La que mira todo a la vez")
+                L.append(f"  {miles(n)} posiciones: en orden, {coma(t_s, 4)} segundos; a la vez, {coma(t_v, 4)}.")
+                L.append(f"  {coma(t_s, 4)} entre {coma(t_v, 4)} da {coma(cociente, 2)}, que la tabla redondea")
                 if cociente >= 1:
-                    L.append(f"  es {coma(cociente, 1)} veces más rápida.")
+                    L.append(f"  a {coma(v, 1)}x. La que mira todo a la vez es {coma(cociente, 1)} veces más rápida.")
                 else:
-                    L.append(f"  tarda {coma(1 / cociente, 1)} veces lo que la otra.")
-            L += ["", f"Con {miles(LARGO)} posiciones y el modelo de 256 números, las tres",
-                  "máquinas:", "",
-                  f"  {'máquina':<28}{'en orden (s)':>14}{'a la vez (s)':>14}",
-                  f"  {'-------':<28}{'------------':>14}{'------------':>14}"]
+                    L.append(f"  a {coma(v, 1)}x. La que mira todo a la vez tarda {coma(1 / cociente, 1)} veces más.")
+            L += ["", f"Con {miles(LARGO)} posiciones y el modelo de 256 números, los tres",
+                  "ordenadores:", "",
+                  f"  {'ordenador':<28}{'en orden (s)':>14}{'a la vez (s)':>14}",
+                  f"  {'---------':<28}{'------------':>14}{'------------':>14}"]
             for nombre, fichero, cual in TRES_MAQUINAS:
                 f = [r for r in leer(os.path.join(carpeta, fichero), cual) if r[0] == LARGO][0]
                 L.append(f"  {nombre:<28}{coma(f[1], 4):>14}{coma(f[2], 4):>14}")

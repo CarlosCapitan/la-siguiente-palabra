@@ -21,7 +21,7 @@ SELFTEST: las tres pruebas pasan.
 doblar: de 100 a 94,9; se le quita un 5 %.
 por diez: de 100 a 83,9; se le quita un 16 %.
 
-lo que midieron en tamaño, sin las listas de cada trozo:
+lo que midieron en tamaño:
 de 768 números a 1.500 millones, 1.953.125 veces
 más; en ese tramo, de 100 a 33,3.
 en cálculo, el tramo medido es de 100.000.000 de veces.

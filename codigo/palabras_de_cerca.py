@@ -46,7 +46,6 @@ PALABRA_TAREA = "caballo"
 TRES_PALABRAS = ["caballo", "corcel", "lunes"]     # «lunes»: la del capítulo 1
 NUMEROS_A_ENSENAR = 6                               # de los cien
 AL_AZAR = 5                                         # palabras sacadas al azar para la tarea
-PAREJAS_REFERENCIA = 200
 NUMEROS_CUENTA = 3                                  # la cuenta del parecido, hecha a mano
 
 PAREJAS_PARECIDO = [("caballo", "corcel"), ("caballo", "galope"), ("caballo", "lunes")]
@@ -73,9 +72,8 @@ MAPA = [("montar a caballo", ["caballo", "galope", "estribo", "montar"]),
         ("armas", ["espada", "pistola", "carabina"]),
         ("horas", ["noche", "madrugada", "tarde"]),
         ("dinero", ["dinero", "pagar", "negocio"]),
-        ("muebles", ["escritorio", "armario", "baúl"]),
         ("banco", ["banco"]),
-        ("almacén y ferrocarril", ["almacén", "ferrocarril"])]
+        ("las cinco vecinas de «banco»", ["escritorio", "armario", "baúl", "almacén", "ferrocarril"])]
 VUELTAS_APLANADO = 500
 
 
@@ -104,8 +102,8 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 # --------------------------------------------------------------------------- las cuentas
 
 def parecido(u, v):
-    """La cuenta del capítulo: 1 si las dos listas suben y bajan a la par, 0 si no tienen nada
-    que ver, -1 si van al revés. Es la de `la_misma_direccion.coseno` y la de gensim."""
+    """La cuenta del capítulo: 1 si las dos listas suben y bajan a la par, 0 si no se siguen
+    en nada (perpendiculares), -1 si van al revés. Es la de `la_misma_direccion.coseno` y la de gensim."""
     u, v = np.asarray(u, dtype=np.float64), np.asarray(v, dtype=np.float64)
     return float(np.dot(u, v) / (np.linalg.norm(u) * np.linalg.norm(v)))
 
@@ -309,8 +307,8 @@ def bloque_parecido(m, antes):
     lin = ["--- 3. CÓMO SE PARECEN DOS LISTAS ---",
            f"«signo»: en cuántas de las {DIMENSION} posiciones las dos listas",
            "tienen las dos un número positivo o las dos uno negativo.",
-           "«parecido»: la cuenta entera; 1, lo más parecido posible;",
-           "0, nada que ver; -1, al revés. «puesto»: en qué puesto sale",
+           "«parecido»: la cuenta entera, que va de -1 a 1; 1 es lo",
+           "más parecido posible. «puesto»: en qué puesto sale",
            f"la segunda entre las {miles(n - 1)} vecinas de la primera", "",
            f"{'':<18}{'antes de entrenar':>18}{'después de entrenar':>26}",
            f"{'pareja':<18}{'signo':>8}{'parecido':>10}{'signo':>8}{'parecido':>10}{'puesto':>8}",
@@ -323,16 +321,17 @@ def bloque_parecido(m, antes):
         valores[(a, b)] = (sa, pa, sd, pd, pu)
         lin.append(f"{a + ' y ' + b:<18}{sa:>8}{coma(pa, 2):>10}{sd:>8}{coma(pd, 2):>10}"
                    f"{miles(pu):>8}")
-    # La referencia: dos palabras cualesquiera del modelo entrenado (añadido en la segunda
-    # vuelta de L24: el capítulo decía, sin medirlo, que casi todas salen por encima de 0).
-    rng = np.random.default_rng(SEMILLA)
-    vocab = m.wv.index_to_key
-    azar = [parecido(m.wv[vocab[rng.integers(len(vocab))]], m.wv[vocab[rng.integers(len(vocab))]])
-            for _ in range(PAREJAS_REFERENCIA)]
-    por_encima = sum(x > 0 for x in azar)
-    lin += ["", f"después de entrenar, {PAREJAS_REFERENCIA} parejas de palabras sacadas al azar:",
-            f"parecido medio {coma(float(np.mean(azar)), 2)}; por encima de 0, {por_encima} de "
-            f"{PAREJAS_REFERENCIA}"]
+    # La referencia (tercera vuelta de L24): la vecina de «caballo» que queda a media tabla. Es
+    # contra lo que se leen las cifras de «caballo»; el parecido medio de dos palabras sacadas
+    # al azar de todo el vocabulario no sirve, porque casi todas son raras y las raras se
+    # parecen mucho entre sí.
+    a0 = PAREJAS_PARECIDO[0][0]
+    s_ = m.wv.get_normed_vectors() @ unidad(m.wv[a0])
+    orden = [i for i in np.argsort(-s_) if m.wv.index_to_key[i] != a0]
+    medio = (len(orden) + 1) // 2
+    w_medio = m.wv.index_to_key[orden[medio - 1]]
+    lin += ["", f"a media tabla, en el puesto {miles(medio)} de las vecinas de",
+            f"«{a0}», está «{w_medio}», con parecido {coma(parecido(m.wv[a0], m.wv[w_medio]), 2)}"]
     return comprobar_ancho(lin, ANCHO_CAJA_CITA), valores
 
 
@@ -392,8 +391,8 @@ def bloque_resta(m):
     for a2, b2, c2, bus in RESTAS:
         pu = puesto_en_resta(m.wv, a2, b2, c2, bus)
         puestos.append((a2, b2, c2, bus, pu))
-        lin.append(f"   {a2} - {b2} + {c2}{'':<{26 - len(a2 + b2 + c2)}}"
-                   f"{bus:<9}{miles(pu):>7}")
+        pregunta = f"{a2}, menos {b2}, más {c2}"
+        lin.append(f"   {pregunta:<36}{bus:<9}{miles(pu):>7}")
     return comprobar_ancho(lin, ANCHO_CAJA_CITA), puestos
 
 
@@ -473,7 +472,9 @@ def bloque_cuenta(m):
             "tamaño de una lista: cada número por sí mismo, se suman,",
             "y se saca la raíz cuadrada",
             f"   {a}: suman {coma(ta2, 3)}; raíz, {coma(ta, 3)}",
-            f"   {b}: suman {coma(tb2, 3)}; raíz, {coma(tb, 3)}", "",
+            f"   {b}: suman {coma(tb2, 3)}; raíz, {coma(tb, 3)}",
+            "la raíz es el número que, multiplicado por sí mismo,", "da la suma:",
+            f"   {coma(ta, 3)} por {coma(ta, 3)} da {coma(ta * ta, 3)}", "",
             f"{coma(ta, 3)} por {coma(tb, 3)} da {coma(ta * tb, 3)}",
             f"parecido: {coma(sum(prod), 3)} entre {coma(ta * tb, 3)} da "
             f"{coma(sum(prod) / (ta * tb), 2)}",

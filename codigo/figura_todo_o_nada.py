@@ -47,7 +47,7 @@ def dibujar(datos, paleta, ruta):
     arriba = L.y / L.alto_u
     ax = L.fig.add_axes([0.13, 0.15, 0.82, arriba - 0.21])
     x = [a for a, _ in datos]
-    ax.plot(x, x, color="0.55", linewidth=1.6, label="corrigiendo cada parte: sube derecha")
+    ax.plot(x, x, color="0.55", linewidth=1.6, label="corrigiendo cada parte: sube recta")
     ax.plot(x, [b for _, b in datos], color=p.tinta, linewidth=1.9,
             label="corrigiendo todo o nada: pegada al suelo,\ny luego se dispara")
     ax.set_xlim(0, 100)

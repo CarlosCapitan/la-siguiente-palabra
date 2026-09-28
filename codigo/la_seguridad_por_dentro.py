@@ -138,7 +138,7 @@ def main():
           "  El texto acaba en «Respuesta: El », con el espacio, y las",
           "  opciones son «vaso» y «cajón» sin espacio delante: un corte",
           "  que el modelo casi nunca ve.",
-          "  «vaso», «cajón»: de cada MILLÓN de veces, cuántas escribiría",
+          "  «vaso», «cajón»: de cada millón de veces, cuántas escribiría",
           "  esa palabra justo ahí, en su lista entera de trozos posibles.",
           "  «seguridad»: lo que se lleva la ganadora de lo que suman",
           "  las dos, de cada cien.", ""]
@@ -154,7 +154,7 @@ def main():
           "  El texto acaba en «Respuesta: El» y las opciones son «_vaso»",
           "  y «_cajón», con el espacio delante, como las escribe el",
           "  modelo («_» es un espacio).",
-          "  «vaso», «cajón»: de cada CIEN veces, cuántas escribiría esa",
+          "  «vaso», «cajón»: de cada cien veces, cuántas escribiría esa",
           "  palabra justo ahí, en su lista entera de trozos posibles.",
           "  «las dos»: la suma; el resto va a otras palabras.",
           "  «seguridad»: lo que se lleva la ganadora de lo que suman",

@@ -4,7 +4,7 @@
 
 SELFTEST: las tres pruebas pasan.
 
-Medido el 2026-09-27. No entrena nada: busca texto en texto.
+Medido el 2026-09-28. No entrena nada: busca texto en texto.
 listón: 7 palabras (el de la tabla de lo_habia_visto_ya.txt)
 
 --- 1. LAS TRES MUESTRAS DEL CAPÍTULO ---
@@ -66,3 +66,26 @@ cuántos tienen algún tramo de 7 palabras o más: 3
 y en esos, la parte de la muestra dentro de un tramo:
    15,6 % 17,8 % 17,8 %
 tramo más largo de los 200: 8 palabras
+
+--- 5. LA TABLA DEL CAPÍTULO ---
+200 muestras de 45 palabras por generador
+
+                       racha     racha     copiado
+generador            mediana    máximo     mediana
+                    palabras  palabras           %
+--------------------------------------------------
+techo                   45,0        45     100,0 %
+contar_3                19,0        45      97,8 %
+contar_2                 9,0        17      35,6 %
+red_s20260914_t1         8,0        40      17,8 %
+contar_1                 4,0         6       0,0 %
+suelo                    4,0         8       0,0 %
+
+clave de los generadores:
+  techo: el texto real que sigue a cada arranque
+  contar_k: máquina de contar con k palabras de contexto
+  red_sX_tY: la red, semilla X, tirada Y
+  suelo: seis libros que no entraron en el entrenamiento
+
+copiado: racha de 7 palabras o más: una más que el
+máximo de contar_1

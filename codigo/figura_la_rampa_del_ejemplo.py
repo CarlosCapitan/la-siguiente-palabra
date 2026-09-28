@@ -84,7 +84,7 @@ def dibujar(puntos, paleta, ruta):
         ax.annotate(f"{n}: dice {coma(y)}\ndeja pasar {coma(pendiente)}", xy=(x, y), xytext=textos[n],
                     fontsize=7.0, ha="center", va="center", color=p.tinta, linespacing=1.15,
                     arrowprops=dict(arrowstyle="-", color=p.suave, lw=0.6))
-    ax.set_xlabel("lo que le llega: cuánto pasa del listón", fontsize=7.4, color=p.tinta)
+    ax.set_xlabel("cuánto pasa del listón lo que le llega", fontsize=7.4, color=p.tinta)
     ax.set_ylabel("lo que dice", fontsize=7.4, color=p.tinta)
     ax.set_xticks([-6, -4, -2, 0, 2, 4, 6]); ax.set_xticklabels(["−6", "−4", "−2", "0", "+2", "+4", "+6"])
     ax.set_yticks([0, 0.5, 1]); ax.set_yticklabels(["0", "0,5", "1"])

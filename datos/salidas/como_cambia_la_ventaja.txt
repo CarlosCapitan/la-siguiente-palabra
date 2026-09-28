@@ -44,7 +44,7 @@ portátil, tarjeta, modelo de 1.024 números por posición
               ventaja   1,8x   1,8x   1,6x   1,5x   1,3x
    de la ventaja del texto más corto queda el 72 %: cae
 
-##### los segundos, máquina a máquina #####
+##### los segundos, ordenador a ordenador #####
 Cada número de segundos es lo que tarda una pasada de
 entrenamiento con 16 textos de esa longitud: la media de tres,
 tras una de calentamiento que se tira.
@@ -74,20 +74,20 @@ B. portátil, su procesador;
        512         0,1156         0,0304      3,8x
      1.024         0,2443         0,0754      3,2x
 
-La cuenta de dos filas de la tabla A, hecha:
+La cuenta de la ventaja, en el ordenador de 2 núcleos:
 
-  64 posiciones: 0,0268 entre 0,0235 da 1,14,
-  que la tabla redondea a 1,1x. La que mira todo a la vez
-  es 1,1 veces más rápida.
-  1.024 posiciones: 0,3664 entre 0,7737 da 0,47,
-  que la tabla redondea a 0,5x. La que mira todo a la vez
-  tarda 2,1 veces lo que la otra.
+  64 posiciones: en orden, 0,0268 segundos; a la vez, 0,0235.
+  0,0268 entre 0,0235 da 1,14, que la tabla redondea
+  a 1,1x. La que mira todo a la vez es 1,1 veces más rápida.
+  1.024 posiciones: en orden, 0,3664 segundos; a la vez, 0,7737.
+  0,3664 entre 0,7737 da 0,47, que la tabla redondea
+  a 0,5x. La que mira todo a la vez tarda 2,1 veces más.
 
-Con 1.024 posiciones y el modelo de 256 números, las tres
-máquinas:
+Con 1.024 posiciones y el modelo de 256 números, los tres
+ordenadores:
 
-  máquina                       en orden (s)  a la vez (s)
-  -------                       ------------  ------------
+  ordenador                     en orden (s)  a la vez (s)
+  ---------                     ------------  ------------
   ordenador de 2 núcleos              0,3664        0,7737
   portátil, procesador                0,2443        0,0754
   portátil, tarjeta gráfica           0,0460        0,0390

@@ -48,7 +48,7 @@ import numpy as np
 
 import lo_habia_visto_ya as L
 import memoria_recurrente as mr
-from formato import ANCHO_CAJA_CITA, comprobar_ancho, miles, pct
+from formato import ANCHO_CAJA_CITA, coma, comprobar_ancho, miles, pct
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 
@@ -202,6 +202,63 @@ def bloque_suelo(corpus, umbral):
     return comprobar_ancho(lin, ANCHO_CAJA_CITA), len(llegan), max(rmax)
 
 
+FILAS_TABLA = ["techo", "contar_3", "contar_2", "red_s20260914_t1", "contar_1", "suelo"]
+
+
+def bloque_tabla(puntos, palabras, corpus, umbral, cache=None):
+    """La tabla del capítulo (la de `lo_habia_visto_ya.txt`, ventana de 45) solo con las filas y
+    columnas que usa el libro, y con cabeceras que no se pegan (tercera vuelta de L24). Los
+    números son los mismos: se generan las mismas muestras, en el mismo orden y con la misma
+    semilla que `lo_habia_visto_ya._medir_largo`, y se miden con la misma función. Con `cache`,
+    cada fila se guarda al terminar (medirlas todas no cabe en una sola orden del portátil)."""
+    import json
+    largo = LARGO
+    primera = L._primera_aparicion(palabras)
+    rng = np.random.default_rng(L.SEMILLA)
+    gen = {"techo": lambda: [L._ventana_literal(primera[t], palabras, largo) for t in puntos]}
+    c3 = L._muestras_contar(3, puntos, palabras, largo, rng)
+    c2 = L._muestras_contar(2, puntos, palabras, largo, rng)
+    c1 = L._muestras_contar(1, puntos, palabras, largo, rng)
+    gen.update({"contar_3": lambda: c3, "contar_2": lambda: c2, "contar_1": lambda: c1})
+    gen["red_s20260914_t1"] = lambda: [m for _, m in muestras_45()]
+
+    def suelo():
+        ajenas = L._palabras_libros_ajenos()
+        voc = set(w for w, _ in Counter(ajenas).most_common(20_000))
+        pa = L.arranques(ajenas, voc, n=L.VENTANAS)
+        pr = L._primera_aparicion(ajenas)
+        return [L._ventana_literal(pr[t], ajenas, largo) for t in pa]
+    gen["suelo"] = suelo
+    res = {}
+    for nombre in FILAS_TABLA:
+        ruta = os.path.join(cache, nombre + ".json") if cache else None
+        if ruta and os.path.exists(ruta):
+            res[nombre] = json.load(open(ruta))
+            continue
+        rmax, cop = L.medir(gen[nombre](), corpus, umbral)
+        res[nombre] = [float(np.median(rmax)), float(np.max(rmax)), float(np.median(cop))]
+        if ruta:
+            os.makedirs(cache, exist_ok=True)
+            json.dump(res[nombre], open(ruta, "w"))
+    lin = ["--- 5. LA TABLA DEL CAPÍTULO ---",
+           f"{L.VENTANAS} muestras de {largo} palabras por generador", "",
+           f"{'':<18}{'racha':>10}{'racha':>10}{'copiado':>12}",
+           f"{'generador':<18}{'mediana':>10}{'máximo':>10}{'mediana':>12}",
+           f"{'':<18}{'palabras':>10}{'palabras':>10}{'%':>12}",
+           "-" * 50]
+    for nombre in FILAS_TABLA:
+        med, mx, cop = res[nombre]
+        lin.append(f"{nombre:<18}{coma(med, 1):>10}{coma(mx, 0):>10}{pct(cop, 1, de_uno=False):>12}")
+    lin += ["", "clave de los generadores:",
+            "  techo: el texto real que sigue a cada arranque",
+            "  contar_k: máquina de contar con k palabras de contexto",
+            "  red_sX_tY: la red, semilla X, tirada Y",
+            "  suelo: seis libros que no entraron en el entrenamiento", "",
+            f"copiado: racha de {umbral} palabras o más: una más que el",
+            "máximo de contar_1"]
+    return comprobar_ancho(lin, ANCHO_CAJA_CITA), res
+
+
 def selftest():
     fallos = []
     texto = mr.cargar_texto()
@@ -253,6 +310,7 @@ def selftest():
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--cache", metavar="DIR")
     args = ap.parse_args()
     if args.selftest:
         sys.exit(selftest())
@@ -274,6 +332,9 @@ def main():
     print("\n".join(lin) + "\n")
     print("\n".join(bloque_otra(muestras, corpus, umbral)) + "\n")
     lin, *_ = bloque_suelo(corpus, umbral)
+    print("\n".join(lin) + "\n")
+    cache = sys.argv[sys.argv.index("--cache") + 1] if "--cache" in sys.argv else None
+    lin, _ = bloque_tabla(puntos, palabras, corpus, umbral, cache)
     print("\n".join(lin))
 
 

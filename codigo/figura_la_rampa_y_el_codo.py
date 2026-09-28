@@ -76,7 +76,7 @@ def panel(L, x0, titulo, xs, ys):
     ax.set_xlim(X_DESDE, X_HASTA); ax.set_ylim(Y_DESDE, Y_HASTA)
     ax.set_aspect("equal")
     ax.set_title(titulo, fontsize=9.0, color=L.p.tinta, fontweight="bold", pad=4)
-    ax.set_xlabel("lo que le llega: cuánto pasa del listón", fontsize=7.2, color=L.p.tinta)
+    ax.set_xlabel("cuánto pasa del listón lo que le llega", fontsize=7.2, color=L.p.tinta)
     ax.set_ylabel("lo que dice", fontsize=7.2, color=L.p.tinta)
     ax.set_xticks([-4, -2, 0, 2, 4]); ax.set_xticklabels(["−4", "−2", "0", "+2", "+4"])
     ax.set_yticks([0, 1, 2, 3]); ax.set_yticklabels(["0", "1", "2", "3"])
@@ -98,8 +98,8 @@ def marca(ax, x, y, pendiente, texto, p, xt, yt):
 
 def dibujar(filas, paleta, ruta):
     L = Lienzo("La rampa y el codo",
-               "Los dos con la misma escala. La inclinación es lo que deja pasar cada uno: cuánto\n"
-               "se mueve lo que dice cuando lo que le llega se mueve 1.",
+               "Los dos con la misma escala. La inclinación es lo que deja pasar cada uno: por\n"
+               "cada pelín que se mueve lo que le llega, cuánto se mueve lo que dice.",
                paleta, alto=ALTO)
     p = L.p
     xs = np.linspace(X_DESDE, X_HASTA, 400)

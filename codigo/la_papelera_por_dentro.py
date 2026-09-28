@@ -213,8 +213,8 @@ def main():
                                                       for i in (0, iv, ic, len(pal) - 1)))
     L += ["", "  Lo que va a los trozos de una palabra se suma: «v» y «aso»",
           "  cuentan como «vaso». «el final»: los dos últimos trozos",
-          "  juntos, el adjetivo y el punto: lo que la palabra que",
-          "  pregunta se queda para sí. «El» es la primera palabra: la",
+          "  juntos, el adjetivo y el punto: lo que se queda el final",
+          "  de la frase. «El» es la primera palabra: la",
           "  papelera. «todas»: las 336 miradas; «últimas»: las 112 de",
           "  las 8 últimas capas.", ""]
     L += ["3. SI PREGUNTA EL ADJETIVO Y NO EL PUNTO DE DETRÁS",

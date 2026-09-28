@@ -43,7 +43,7 @@ import sys
 import unicodedata
 from pathlib import Path
 
-from formato import ANCHO_CAJA_CITA, coma, comprobar_ancho
+from formato import ANCHO_CAJA_CITA, coma, comprobar_ancho, miles
 
 AQUI = Path(__file__).resolve().parent
 
@@ -228,6 +228,36 @@ def tabla_desde_csv():
 
 # ----------------------------- selftest -----------------------------
 
+def parte_puntuaciones():
+    """Tercera vuelta (28 de septiembre): el mecanismo, no solo el resultado. La lista del final
+    sale de unas puntuaciones igual que el reparto del capítulo 8 (cada punto más multiplica la
+    fuerza por 2,72); la temperatura divide todas las puntuaciones antes de pasarlas a fuerzas.
+    Se enseñan las de «la», «una» y la de un trozo del medio de la lista (el de la mediana), sin
+    dividir y divididas, y cuántas veces la fuerza de «la» es la de ese trozo del medio."""
+    import numpy as np
+    frase, modelo, logits, pos = logits_cap7()
+    medio = int(np.argsort(logits)[len(logits) // 2])
+    print("--- 3. CÓMO SE REHACE LA LISTA: LAS PUNTUACIONES ---")
+    print(f"modelo: {modelo} (el del capítulo 7)")
+    lineas = [f"«{frase}»: la puntuación de cada trozo,",
+              "dividida entre la temperatura antes de pasarla a fuerza.",
+              "",
+              f"{'temperatura':<13}{'«la»':>9}{'«una»':>9}{'uno del':>10}{'«la», en veces':>17}",
+              f"{'':<13}{'':>9}{'':>9}{'medio':>10}{'uno del medio':>17}"]
+    for t in TEMPERATURAS[1:]:
+        la, una, md = (float(logits[i]) / t for i in (pos[0], pos[1], medio))
+        lineas.append(f"{coma(t, 1):<13}{coma(la, 2):>9}{coma(una, 2):>9}{coma(md, 2):>10}"
+                      f"{miles(round(float(np.exp(la - md)))):>17}")
+    lineas += ["",
+               "«uno del medio»: el trozo que queda en medio de la lista",
+               f"de los {len(logits):,} ordenados por puntuación.".replace(",", "."),
+               "««la», en veces uno del medio»: la fuerza de «la» entre la",
+               "de ese trozo (cada punto de diferencia, por 2,72).",
+               "a temperatura 0 no se divide: se elige el favorito."]
+    for l in comprobar_ancho(lineas, ANCHO_CAJA_CITA):
+        print(l)
+
+
 def selftest():
     import numpy as np
     fallos = []
@@ -290,6 +320,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--selftest", action="store_true")
     ap.add_argument("--solo-urna", action="store_true", help="solo la parte 1 (sin tarjeta gráfica)")
+    ap.add_argument("--puntuaciones", action="store_true",
+                    help="el mecanismo: las puntuaciones divididas entre la temperatura (sin tarjeta)")
     ap.add_argument("--solo-tabla", action="store_true",
                     help="reimprime la tabla de las tiradas desde el CSV, sin ejecutar el modelo")
     args = ap.parse_args()
@@ -297,6 +329,9 @@ def main():
         sys.exit(selftest())
     if args.solo_tabla:
         tabla_desde_csv()
+        return
+    if args.puntuaciones:
+        parte_puntuaciones()
         return
     print(f"Medido el {datetime.date.today()} en {platform.platform()}.")
     filas = []

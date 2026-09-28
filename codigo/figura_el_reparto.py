@@ -72,7 +72,7 @@ TITULO = "A dónde mira el final de cada frase"
 EJE_X = "porción del reparto, en por ciento"
 ROTULO_ADJETIVO = "adjetivo\ny punto"  # la palabra 11 es distinta en cada frase; va pegada al punto, que es lo que pregunta
 LLAMADA_PAPELERA = "la papelera"
-LLAMADA_ADJETIVO = "lo que pregunta (el punto),\nmirándose a sí mismo"
+LLAMADA_ADJETIVO = "el final de la frase,\nmirándose a sí mismo"
 
 # La clave va debajo del cuadro y pegada a él, y dice las cuatro cosas que no se pueden
 # adivinar mirando: qué separa el negro del gris, qué son las tres barras de cada
@@ -83,7 +83,7 @@ CLAVE = (
     "Cada palabra lleva tres barras, una por frase: «alto» arriba, «bajo» en medio, «caro» abajo, y\n"
     "las once palabras de una frase suman el cien por cien. La cifra escrita es la de la frase del\n"
     "«alto»; las otras dos no se apartan de ella más de {mayor} puntos en ninguna palabra. Cada barra\n"
-    "es el promedio de las 336 miradas del modelo entero, no el de las 112 del último tercio de capas."
+    "es el promedio de las 336 miradas del modelo entero, no el de las 112 de las 8 últimas capas."
 )
 
 # Umbrales del selftest, fijados por razonamiento antes de mirar el resultado. El

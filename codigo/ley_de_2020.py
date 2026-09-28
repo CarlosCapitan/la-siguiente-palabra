@@ -76,7 +76,7 @@ def bloque_ley():
             f"doblar: de 100 a {coma(queda(2), 1)}; se le quita un {coma(100 - queda(2), 0)} %.",
             f"por diez: de 100 a {coma(queda(10), 1)}; se le quita un {coma(100 - queda(10), 0)} %.",
             "",
-            "lo que midieron en tamaño, sin las listas de cada trozo:",
+            "lo que midieron en tamaño:",
             f"de {miles(MEDIDO_MENOR)} números a {miles(MEDIDO_MAYOR // 10 ** 6)} millones, {miles(tramo)} veces",
             f"más; en ese tramo, de 100 a {coma(queda(tramo), 1)}.",
             f"en cálculo, el tramo medido es de {miles(10 ** ORDENES_CALCULO)} de veces."]
