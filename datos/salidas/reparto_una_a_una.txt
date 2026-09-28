@@ -1,5 +1,5 @@
-máquina: x86_64, Linux 6.18.44-fc-v33, procesador
-modelo: Qwen/Qwen2.5-0.5B en float32   fecha: 2026-09-18
+máquina: arm64, Darwin 25.6.0, procesador
+modelo: Qwen/Qwen2.5-0.5B en float32   fecha: 2026-09-28
 la palabra que pregunta es el adjetivo final de cada frase
 
 --- LA FORMA DE ESTA MÁQUINA ---
@@ -12,8 +12,8 @@ números con que se representa cada trozo: 896
 --- ¿A QUIÉN LE LLEGA EL REPARTO DEL ADJETIVO? ---
 «todas»: promedio de las 336 miradas del modelo.
 «final»: promedio de las 112 miradas de las 8 últimas capas,
-         que es el recorte con el que mide reparto_atencion.py.
-Cada casilla es la porción del pastel que se lleva esa palabra.
+        que es el recorte con el que mide reparto_atencion.py.
+Cada casilla: la porción del pastel que se lleva esa palabra.
 
 adjetivo  miradas       «El»     «vaso»    «cajón»   adjetivo
 --------  -------  ---------  ---------  ---------  ---------
@@ -52,13 +52,13 @@ La mirada de la capa 13, número 10, es la que más se fija en
 «vaso» en la frase del vaso. Se le ponen delante otras frases
 donde el sujeto y el primer sustantivo no son el mismo.
 
-  1  El vaso no cabía en el cajón porque era demasiado alto.
-  2  En el cajón el vaso no cabía porque era demasiado alto.
-  3  El cajón no admitía el vaso porque era demasiado alto.
-  4  La caja no cabía en el armario porque era demasiado alta.
-  5  Con el cajón abierto el vaso no cabía porque era alto.
-  6  Dentro del armario la caja no cabía porque era alta.
-  7  Sobre la mesa el libro no cabía porque era demasiado ancho.
+1  El vaso no cabía en el cajón porque era demasiado alto.
+2  En el cajón el vaso no cabía porque era demasiado alto.
+3  El cajón no admitía el vaso porque era demasiado alto.
+4  La caja no cabía en el armario porque era demasiado alta.
+5  Con el cajón abierto el vaso no cabía porque era alto.
+6  Dentro del armario la caja no cabía porque era alta.
+7  Sobre la mesa el libro no cabía porque era demasiado ancho.
 
         sujeto    primer sust.  se fija en    ¿es el sujeto?
   -  ----------  ------------  ------------  --------------

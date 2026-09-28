@@ -1,14 +1,11 @@
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 24491.05it/s]
-Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights: 100%|██████████| 338/338 [00:00<00:00, 7234.14it/s]
 
 modelo        caso   correcta   responde  confianza  acierta
 ------------------------------------------------------------
-Qwen2.5-0.5B  alto   vaso       vaso          0,976  sí
-Qwen2.5-0.5B  bajo   cajón      vaso          0,977  NO
-Qwen2.5-0.5B  caro   (ninguna)  vaso          0,975  -
-Qwen2.5-1.5B  alto   vaso       vaso          0,720  sí
-Qwen2.5-1.5B  bajo   cajón      vaso          0,741  NO
-Qwen2.5-1.5B  caro   (ninguna)  vaso          0,884  -
+Qwen2.5-0.5B  alto   vaso       vaso          0,966  sí
+Qwen2.5-0.5B  bajo   cajón      vaso          0,948  NO
+Qwen2.5-0.5B  caro   (ninguna)  vaso          0,971  -
+Qwen2.5-1.5B  alto   vaso       vaso          0,940  sí
+Qwen2.5-1.5B  bajo   cajón      vaso          0,933  NO
+Qwen2.5-1.5B  caro   (ninguna)  vaso          0,967  -
 
 Escrito respuesta_modelo.csv

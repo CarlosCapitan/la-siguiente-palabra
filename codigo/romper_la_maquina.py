@@ -157,7 +157,7 @@ def con_formato(tok, texto):
                                    tokenize=False, add_generation_prompt=True)
 
 
-def generar(tok, modelo, texto, pasos, temperatura=0.0, semilla=SEMILLA):
+def generar(tok, modelo, texto, pasos, temperatura=0.0, semilla=SEMILLA, limpio=True):
     """Genera `pasos` trozos. A temperatura 0 se elige siempre el favorito; por encima se
     sortea, y la semilla fija hace el sorteo reproducible."""
     ids = tok(texto, return_tensors="pt")["input_ids"].to(dispositivo())
@@ -170,12 +170,12 @@ def generar(tok, modelo, texto, pasos, temperatura=0.0, semilla=SEMILLA):
             salida = modelo.generate(ids, max_new_tokens=pasos, do_sample=True,
                                      temperature=temperatura, top_k=0, top_p=1.0,
                                      pad_token_id=tok.eos_token_id)
-    # OJO (L24, 28 sep 2026): este .strip() le quita el espacio al primer trozo de lo que escribe
-    # la máquina. Para las muestras no importa; para la medición B (la sorpresa) sí: el primer
-    # trozo sin su espacio le parece casi imposible y sube la sorpresa media de la máquina
-    # (0,772 aquí; 0,673 con el espacio en su sitio). El capítulo 13 cita la medición corregida,
-    # la de `sorpresa_a_mano.py`. Esta salida no se ha vuelto a ejecutar.
-    return tok.decode(salida[0, ids.shape[1]:], skip_special_tokens=True).strip()
+    # L24 (28 sep 2026): el .strip() le quita el espacio al primer trozo de lo que escribe la
+    # máquina. Para enseñar muestras no importa; para la medición B (la sorpresa) sí: el primer
+    # trozo sin su espacio le parece casi imposible y subía la sorpresa media de la máquina (0,772
+    # medido el 20 sep; salida antigua en datos/salidas/_antiguos/). B ya no pasa por aquí.
+    texto = tok.decode(salida[0, ids.shape[1]:], skip_special_tokens=True)
+    return texto.strip() if limpio else texto
 
 
 def sorpresa(tok, modelo, prefijo, continuacion):
@@ -192,6 +192,20 @@ def sorpresa(tok, modelo, prefijo, continuacion):
     total = 0.0
     for k in range(inicio, ids.shape[1]):
         total += float(logp[k - 1, ids[0, k]])
+    return -total / ids_c.shape[1]
+
+
+def sorpresa_de_trozos(modelo, ids_p, ids_c):
+    """La misma cuenta que sorpresa(), pero con los trozos tal cual, sin pasarlos a texto y volver
+    a trocearlos (L24, 28 sep 2026). Pasar a texto y volver a trocear cambia algún trozo, y con
+    él la sorpresa; `sorpresa_a_mano.py` hace la cuenta así y la medición B tiene que dar lo mismo."""
+    ids = torch.cat([ids_p, ids_c], dim=1).to(dispositivo())
+    assert ids_c.shape[1] > 0, "Se esperaba una continuación no vacía; se encontró una vacía"
+    with torch.no_grad():
+        logits = modelo(ids).logits[0].float()
+    logp = torch.log_softmax(logits, dim=-1)
+    inicio = ids_p.shape[1]
+    total = sum(float(logp[k - 1, ids[0, k]]) for k in range(inicio, ids.shape[1]))
     return -total / ids_c.shape[1]
 
 
@@ -295,11 +309,15 @@ def medicion_b(tok, modelo, filas):
     for p in parrafos_humanos(MUESTRAS_B):
         ids = tok(p, return_tensors="pt")["input_ids"]
         assert ids.shape[1] > ARRANQUE + LARGO_B, "Párrafo demasiado corto para la comparación"
-        prefijo = tok.decode(ids[0, :ARRANQUE])
-        humano = tok.decode(ids[0, ARRANQUE:ARRANQUE + LARGO_B])
-        maquina = generar(tok, modelo, prefijo, LARGO_B, 0.0)
-        humanos += sorpresa(tok, modelo, prefijo, humano)
-        maquinas += sorpresa(tok, modelo, prefijo, maquina)
+        # L24 (28 sep 2026): con los trozos tal cual. Antes se pasaba todo a texto, se le quitaba el
+        # espacio a lo de la máquina (.strip()) y se volvía a trocear: 0,772 el 20 sep.
+        ids_p, ids_h = ids[:, :ARRANQUE], ids[:, ARRANQUE:ARRANQUE + LARGO_B]
+        with torch.no_grad():
+            salida = modelo.generate(ids_p.to(dispositivo()), max_new_tokens=LARGO_B,
+                                     do_sample=False, pad_token_id=tok.eos_token_id)
+        ids_m = salida[:, ids_p.shape[1]:].cpu()
+        humanos += sorpresa_de_trozos(modelo, ids_p, ids_h)
+        maquinas += sorpresa_de_trozos(modelo, ids_p, ids_m)
     h, m = humanos / MUESTRAS_B, maquinas / MUESTRAS_B
     print(f"  sorpresa media ante el párrafo humano:     {coma(h, 3)}")
     print(f"  sorpresa media ante el párrafo de la máquina: {coma(m, 3)}")
@@ -487,6 +505,8 @@ def selftest():
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--solo", choices=list("ABCD"),
+                    help="ejecuta solo esa medición y sustituye sus filas en el csv (L24)")
     args = ap.parse_args()
     if args.selftest:
         sys.exit(selftest())
@@ -497,11 +517,18 @@ def main():
     tok, modelo = cargar()
     filas = []
 
-    medicion_a(tok, modelo, filas)
-    medicion_b(tok, modelo, filas)
-    medicion_c(tok, modelo, filas)
-    medicion_d(tok, modelo, filas)
+    mediciones = {"A": medicion_a, "B": medicion_b, "C": medicion_c, "D": medicion_d}
+    for letra in (args.solo or "ABCD"):
+        mediciones[letra](tok, modelo, filas)
 
+    if args.solo:
+        # Se conservan las filas de las demás mediciones tal como estaban en el csv.
+        with open(SALIDA_CSV, encoding="utf-8") as fh:
+            viejas = list(csv.reader(fh))
+        assert viejas and viejas[0] == ["medicion", "clave", "sub", "a", "b", "c"], \
+            f"se esperaba la cabecera del csv en {SALIDA_CSV}; hay {viejas[:1]}"
+        otras = [f for f in viejas[1:] if not f[0].startswith(args.solo + "_")]
+        filas = sorted(otras + filas, key=lambda f: f[0][0])   # A, B, C, D, en su orden
     with open(SALIDA_CSV, "w", newline="", encoding="utf-8") as fh:
         csv.writer(fh).writerows([["medicion", "clave", "sub", "a", "b", "c"]] + filas)
     print(f"\nEscrito {SALIDA_CSV}")

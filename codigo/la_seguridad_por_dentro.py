@@ -134,7 +134,7 @@ def main():
         tamanos[nombre] = sum(t.numel() for t in modelo.parameters())
         modelos[nombre] = {adj: (cuenta(tok, modelo, fr, adj), cuenta(tok, modelo, fr, adj, True))
                            for adj, (fr, _) in CASOS.items()}
-    L += ["2. TAL COMO LO MIDE respuesta_modelo.py", "",
+    L += ["2. COMO LO MEDÍA respuesta_modelo.py HASTA EL 28 DE SEPT.", "",
           "  El texto acaba en «Respuesta: El », con el espacio, y las",
           "  opciones son «vaso» y «cajón» sin espacio delante: un corte",
           "  que el modelo casi nunca ve.",

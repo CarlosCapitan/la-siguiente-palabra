@@ -204,8 +204,9 @@ def bloque_promedios(datos, n_capas):
         "--- ¿A QUIÉN LE LLEGA EL REPARTO DEL ADJETIVO? ---",
         f"«todas»: promedio de las {n_total} miradas del modelo.",
         f"«final»: promedio de las {n_tercio} miradas de las {n_capas - desde} últimas capas,",
-        "         que es el recorte con el que mide reparto_atencion.py.",
-        "Cada casilla es la porción del pastel que se lleva esa palabra.",
+        # L24 (28 sep): tres líneas acortadas para que quepan en los 62 caracteres de la cita.
+        "        que es el recorte con el que mide reparto_atencion.py.",
+        "Cada casilla: la porción del pastel que se lleva esa palabra.",
         "",
         "adjetivo  miradas       «El»     «vaso»    «cajón»   adjetivo",
         "--------  -------  ---------  ---------  ---------  ---------",
@@ -312,7 +313,7 @@ def bloque_sujeto(tok, modelo, datos, cual):
         "",
     ]
     for n, (frase, _, _) in enumerate(CONTROL_SUJETO, 1):
-        lineas.append(f"  {n}  {frase}")
+        lineas.append(f"{n}  {frase}")
     lineas += [
         "",
         "        sujeto    primer sust.  se fija en    ¿es el sujeto?",

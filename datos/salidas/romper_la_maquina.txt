@@ -1,7 +1,9 @@
 Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
 Medido el 2026-09-20 en macOS-26.6.2-arm64-arm-64bit.
 modelo: Qwen/Qwen2.5-7B-Instruct   dispositivo: mps
-Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights: 100%|██████████| 339/339 [00:00<00:00, 6446.98it/s]
+
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 339/339 [00:00<00:00, 6446.98it/s]
 
 --- A. La temperatura: «Escribe el comienzo de un relato sobre un faro abandonado.» ---
 
@@ -42,8 +44,10 @@ modelo: Qwen/Qwen2.5-7B-Instruct   dispositivo: mps
 
 --- B. ¿Qué le sorprende más, un párrafo humano o uno suyo? ---
   sorpresa media ante el párrafo humano:     2,754
-  sorpresa media ante el párrafo de la máquina: 0,772
-  el humano le sorprende 3,6 veces más
+  sorpresa media ante el párrafo de la máquina: 0,673
+  el humano le sorprende 4,1 veces más
+  (medición B vuelta a ejecutar el 28 de septiembre de 2026 con los trozos tal cual;
+   la del 20, 0,772, en _antiguos/)
 
 --- C. La aguja en el pajar ---
   el pajar más largo: 16.000 trozos, 9.570 palabras

@@ -188,9 +188,11 @@ def informe(R, tok, modelo):
     for l in comprobar_ancho(["  " + l if l else l for l in lineas], ANCHO_CAJA_CITA):
         print(l)
     ch, cm = medias_del_capitulo()
-    print(f"  las medias de romper_la_maquina.py: {coma(ch, 3)} y {coma(cm, 3)}; la del humano "
-          f"coincide: {'sí' if abs(sh - ch) < TOL_MEDIA else 'NO'}; la de la máquina es más alta "
-          f"allí porque le quita el espacio al primer trozo")
+    # Desde el 28 de septiembre, romper_la_maquina.py también cuenta con los trozos tal cual, así
+    # que las dos medias tienen que coincidir; si no, revienta.
+    assert abs(sh - ch) < TOL_MEDIA and abs(sm - cm) < TOL_MEDIA, \
+        f"se esperaban las medias de romper_la_maquina.py ({ch}, {cm}); salen {sh:.3f} y {sm:.3f}"
+    print(f"  las medias de romper_la_maquina.py: {coma(ch, 3)} y {coma(cm, 3)}; coinciden: sí")
     print(f"  trozos que escribió la máquina en cada párrafo: "
           + ", ".join(str(c.shape[1]) for _, _, c in todos))
     print(f"  la sorpresa, humano entre máquina: {coma(sh / sm, 1)} veces; "
