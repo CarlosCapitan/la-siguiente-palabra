@@ -30,3 +30,16 @@ la máquina virtual Linux de la aplicación de escritorio, que no alcanza la GPU
 
 Deja los resultados en `resultados_mac.txt`, con la máquina y la versión de las bibliotecas
 anotadas en la cabecera.
+
+## Licencia
+
+El código (`codigo/`), los resultados que produce (`datos/salidas/` y demás ficheros de `datos/`
+generados por él) y las figuras (`figuras/`) van bajo licencia MIT (`LICENSE`, texto estándar en
+inglés). La licencia no cubre el texto del libro, cuyos derechos se reserva el autor y que no está
+en este repositorio, ni los datos de terceros, que conservan sus propias condiciones:
+
+- `datos/quijote.txt`: Don Quijote, del Proyecto Gutenberg, de dominio público.
+- `datos/arc_25ff71a9.json`: una tarea del conjunto público de ARC-AGI
+  (https://github.com/fchollet/ARC-AGI), bajo licencia Apache 2.0.
+- Los trescientos libros de los capítulos 5 y siguientes no se incluyen: `codigo/descargar_corpus.py`
+  los descarga del Proyecto Gutenberg.
