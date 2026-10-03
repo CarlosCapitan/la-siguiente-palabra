@@ -262,7 +262,7 @@ def informe(texto, prueba, p, med):
           f"  Quedan {miles(total - de_mirar)}.", ""]
 
     # 2. tramos de prueba enteros
-    L += ["2. FRAGMENTOS: LO QUE VE, LO QUE VIENE, LO QUE APUESTA", "",
+    L += ["2. FRAGMENTOS: LO QUE VE, LO QUE VIENE, LO MÁS PROBABLE", "",
           "  Los tres primeros fragmentos de prueba, sin elegir, y la frase",
           "  de la figura. «acierta»: la letra a la que da más porcentaje",
           "  es la que viene de verdad.", ""]
@@ -278,7 +278,7 @@ def informe(texto, prueba, p, med):
         L += [f"  {nombre}",
               f"    lo que ve:        «{''.join(letra(ch) for ch in ve)}»",
               f"    lo que viene:     «{letra(viene)}»",
-              f"    lo que apuesta:   {apuesta}",
+              f"    lo más probable:  {apuesta}",
               f"    ¿acierta?         {'sí' if M.LETRAS[orden[0]] == viene else 'no'}", ""]
     L += ["  «_» es un espacio.", ""]
 
@@ -429,7 +429,7 @@ def informe(texto, prueba, p, med):
     # 10. la apuesta
     orden = np.argsort(-r["apuesta"])
     viene = texto[i_frase + len(M.FRASE)]
-    L += ["10. LA APUESTA DE LA «e»: QUÉ LETRA VIENE DETRÁS DE «acordarme»", "",
+    L += ["10. LA LISTA DE LA «e»: QUÉ LETRA VIENE DETRÁS DE «acordarme»", "",
           f"  {'puesto':<10}{'letra':<10}{'de cada cien':>14}",
           f"  {'------':<10}{'-----':<10}{'------------':>14}"]
     for pu, kk in enumerate(orden[:APUESTAS], 1):

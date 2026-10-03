@@ -8,9 +8,10 @@ seis frases, en `elegir_lo_mas_probable.csv`), y hace dos cuentas que el capítu
 
   1. CIEN PAPELETAS. Cada porcentaje de la lista, redondeado a papeletas de cien: cuántas se
      llevan las diez primeras juntas y cuántas «el resto».
-  2. ¿CUÁNTOS PASOS SON UNA ELECCIÓN? La misma tabla del capítulo contada al derecho: cuántos
-     pasos son casi seguros sin terminar palabra, cuántos son una elección (el elegido no llega al
-     90 %) y cuántos una elección reñida (no llega al 50 %: los demás se reparten más de la mitad).
+  2. ¿CUÁNTOS PASOS ESTÁN ABIERTOS? La misma tabla del capítulo contada al derecho: cuántos
+     pasos son casi seguros sin terminar palabra, cuántos están abiertos (el seleccionado no llega
+     al 90 %) y cuántos están reñidos (no llega al 50 %: los demás se reparten más de la mitad).
+     (L25, 3 de octubre: «elección» pasa a «abierto» y «elegido» a «seleccionado»; REGLAS 5 quater.)
 
 Uso:
     python lista_de_probabilidades.py --selftest
@@ -86,10 +87,10 @@ def cuentas(pasos):
 def bloque_elecciones(pasos):
     frases = list(dict.fromkeys(f for f, _, _ in pasos))
     c = ["casi seguro", "sin terminar", "eleccion", "renida"]
-    lin = ["--- DE CADA CIEN PASOS, ¿CUÁNTOS SON UNA ELECCIÓN? ---",
+    lin = ["--- DE CADA CIEN PASOS, ¿CUÁNTOS ESTÁN ABIERTOS? ---",
            f"{'':<28}{'casi':>8}{'casi':>8}{'':>8}{'':>8}",
-           f"{'':<28}{'seguro':>8}{'seguro':>8}{'elec-':>8}{'reñida':>8}",
-           f"{'frase de arranque':<28}{'':>8}{'sin ter-':>8}{'ción':>8}{'':>8}",
+           f"{'':<28}{'seguro':>8}{'seguro':>8}{'abierto':>8}{'reñido':>8}",
+           f"{'frase de arranque':<28}{'':>8}{'sin ter-':>8}{'':>8}{'':>8}",
            f"{'':<28}{'':>8}{'minar':>8}{'':>8}{'':>8}", "-" * 60]
     for f in frases:
         k = cuentas([x for x in pasos if x[0] == f])
@@ -97,11 +98,11 @@ def bloque_elecciones(pasos):
         lin.append(f"{nombre:<28}" + "".join(f"{pct(k[x], 0):>8}" for x in c))
     k = cuentas(pasos)
     lin += ["-" * 60, f"{'las seis juntas':<28}" + "".join(f"{pct(k[x], 0):>8}" for x in c), "",
-            "«casi seguro»: el trozo elegido tenía 90 % o más.",
+            "«casi seguro»: el trozo seleccionado tenía 90 % o más.",
             "«casi seguro sin terminar»: casi seguro, y el trozo no se",
             "pega a una palabra empezada, como «ia» detrás de «Franc».",
-            "«elección»: el trozo elegido no llegaba al 90 %.",
-            "«reñida»: no llegaba al 50 %; las demás candidatas juntas",
+            "«abierto»: el trozo seleccionado no llegaba al 90 %.",
+            "«reñido»: no llegaba al 50 %; las demás candidatas juntas",
             "se llevaban más de la mitad."]
     return comprobar_ancho(lin, ANCHO_CAJA_CITA), k
 

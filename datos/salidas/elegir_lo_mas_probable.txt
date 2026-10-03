@@ -1,8 +1,8 @@
 máquina: x86_64, Linux 6.18.44-fc-v33, procesador
 modelo: Qwen/Qwen2.5-0.5B en float32   fecha: 2026-09-18
-se eligen siempre los trozos más probables, 150 por frase
+se seleccionan siempre los trozos más probables, 150 por frase
 
---- 1. DE CADA CIEN PASOS, ¿CUÁNTOS SON UNA ELECCIÓN? ---
+--- 1. DE CADA CIEN PASOS, ¿CUÁNTOS ESTÁN ABIERTOS? ---
 frase de arranque                termina    casi  acaba en
                                  palabra  seguro     bucle
 ------------------------------ --------- ------- ---------
@@ -17,22 +17,22 @@ las seis juntas                     23 %    57 %    0 de 6
 
 «termina palabra»: el trozo se pega al anterior y alarga la
 misma palabra, como «ia» detrás de «Franc».
-«casi seguro»: el trozo elegido tenía 90 % o más.
+«casi seguro»: el trozo seleccionado tenía 90 % o más.
 «acaba en bucle»: los últimos trozos son un tramo repetido
 3 veces seguidas; el número es el largo de ese tramo.
 
 --- 2. LOS OCHO PASOS QUE ENSEÑA EL CAPÍTULO ---
 paso       trozo  probabilidad  ¿qué es?
 ----  ----------  ------------  ----------------------
-   1         _la       17,46 %  elige entre varias
-   2     _ciudad       30,85 %  elige entre varias
-   3        _más       25,45 %  elige entre varias
-   4     _grande       65,84 %  elige entre varias
-   5         _de       41,75 %  elige entre varias
-   6      _Franc       56,68 %  elige entre varias
+   1         _la       17,46 %  hay varias posibles
+   2     _ciudad       30,85 %  hay varias posibles
+   3        _más       25,45 %  hay varias posibles
+   4     _grande       65,84 %  hay varias posibles
+   5         _de       41,75 %  hay varias posibles
+   6      _Franc       56,68 %  hay varias posibles
    7          ia       99,95 %  termina una palabra
-   8           ,       40,17 %  elige entre varias
+   8           ,       40,17 %  hay varias posibles
 
-de los ocho pasos, 1 termina una palabra ya empezada y 7 eligen.
+de los ocho pasos, 1 termina una palabra y en 7 hay varias posibles.
 
 Escrito elegir_lo_mas_probable.csv

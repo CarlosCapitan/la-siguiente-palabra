@@ -13,7 +13,7 @@ Medido el 2026-09-20 en macOS-26.6.2-arm64-arm-64bit; generación determinista (
   sumar dos cifras                          60 %              60 %             100 %
   plurales                                  60 %             100 %              80 %
   traducir del inglés                       80 %              80 %              80 %
-  saber cosas del mundo                     20 %              20 %               0 %
+  datos del mundo                           20 %              20 %               0 %
   seguir un patrón inventado                 0 %               0 %              60 %
   razonar sobre una frase                   60 %              80 %              60 %
   media                                     47 %              57 %              63 %

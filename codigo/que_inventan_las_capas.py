@@ -134,7 +134,7 @@ def imprimir(r):
 
     lineas = [
         f"de {r['arranques']} arranques distintos, {r['resueltas']} resolvieron el o exclusivo",
-        f"y se repartieron el trabajo de {len(r['cuenta'])} maneras distintas:",
+        f"y sus dos neuronas de en medio acabaron en {len(r['cuenta'])} parejas distintas:",
         "",
         fila("", CABECERA_CUENTA_1),
         fila(CABECERA_UNA, CABECERA_CUENTA_2),

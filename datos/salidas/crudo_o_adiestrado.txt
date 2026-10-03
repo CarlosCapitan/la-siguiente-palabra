@@ -46,7 +46,7 @@ TAMAÑO 500M
   sumar dos cifras                 40 %        60 %             0 %
   plurales                         20 %        40 %            20 %
   traducir del inglés               0 %         0 %             0 %
-  saber cosas del mundo             0 %         0 %             0 %
+  datos del mundo                   0 %         0 %             0 %
   seguir un patrón inventado        0 %         0 %             0 %
   razonar sobre una frase          20 %        40 %            20 %
   media                            13 %        23 %             7 %
@@ -102,7 +102,7 @@ TAMAÑO 7.000M
   sumar dos cifras                100 %       100 %             0 %
   plurales                         80 %        60 %            60 %
   traducir del inglés             100 %        80 %             0 %
-  saber cosas del mundo            40 %        20 %             0 %
+  datos del mundo                  40 %        20 %             0 %
   seguir un patrón inventado        0 %         0 %             0 %
   razonar sobre una frase          60 %        80 %            20 %
   media                            63 %        57 %            13 %

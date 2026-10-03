@@ -131,7 +131,7 @@ from formato import ANCHO_CAJA, ANCHO_CAJA_CITA, coma, comprobar_ancho, miles, p
 # Cinco preguntas que SÍ tienen respuesta, para el control de la medición D: si el umbral
 # explícito hace callar a la máquina también en éstas, el 95 % no es prudencia sino obediencia.
 from crecer import TAREAS as TAREAS_CAP11
-CONTROL_D = "saber cosas del mundo"
+CONTROL_D = "datos del mundo"
 
 
 # ----------------------------- infraestructura -----------------------------

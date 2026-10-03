@@ -31,7 +31,7 @@ tarea                         crudo  adiestrado  con formato
 sumar dos cifras             2 de 5      3 de 5       0 de 5
 plurales                     1 de 5      2 de 5       1 de 5
 traducir del inglés          0 de 5      0 de 5       0 de 5
-saber cosas del mundo        0 de 5      0 de 5       0 de 5
+datos del mundo              0 de 5      0 de 5       0 de 5
 seguir un patrón inventado   0 de 5      0 de 5       0 de 5
 razonar sobre una frase      1 de 5      2 de 5       1 de 5
 en total                    4 de 30     7 de 30      2 de 30
@@ -45,7 +45,7 @@ acierta: si lo primero que escribe es la respuesta correcta.
 
 --- 4. LA MISMA PREGUNTA EN LAS TRES COLUMNAS (500M) ---
 
-[saber cosas del mundo, pregunta 1]
+[datos del mundo, pregunta 1]
 respuesta correcta: «París»
 crudo: recibe el enunciado tal cual:
     Pregunta: ¿cuál es la capital de Francia?
@@ -145,7 +145,7 @@ tarea                         crudo  adiestrado  con formato
 sumar dos cifras             5 de 5      5 de 5       0 de 5
 plurales                     4 de 5      3 de 5       3 de 5
 traducir del inglés          5 de 5      4 de 5       0 de 5
-saber cosas del mundo        2 de 5      1 de 5       0 de 5
+datos del mundo              2 de 5      1 de 5       0 de 5
 seguir un patrón inventado   0 de 5      0 de 5       0 de 5
 razonar sobre una frase      3 de 5      4 de 5       1 de 5
 en total                   19 de 30    17 de 30      4 de 30
@@ -159,7 +159,7 @@ acierta: si lo primero que escribe es la respuesta correcta.
 
 --- 4. LA MISMA PREGUNTA EN LAS TRES COLUMNAS (7.000M) ---
 
-[saber cosas del mundo, pregunta 1]
+[datos del mundo, pregunta 1]
 respuesta correcta: «París»
 crudo: recibe el enunciado tal cual:
     Pregunta: ¿cuál es la capital de Francia?

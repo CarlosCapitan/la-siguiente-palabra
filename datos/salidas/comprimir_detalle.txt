@@ -78,7 +78,7 @@ Medido el 2026-09-20 en macOS-26.6.2-arm64-arm-64bit; generación determinista (
   esperada 'amigo' -> amiga
                       cat = gato
 
---- saber cosas del mundo ---
+--- datos del mundo ---
   [NO] Pregunta: ¿cuál es la capital de Francia?
        Respuesta:
   esperada 'París' -> La capital de Francia es París
@@ -227,7 +227,7 @@ Medido el 2026-09-20 en macOS-26.6.2-arm64-arm-64bit; generación determinista (
   esperada 'amigo' -> amiga
                       cat = gato
 
---- saber cosas del mundo ---
+--- datos del mundo ---
   [NO] Pregunta: ¿cuál es la capital de Francia?
        Respuesta:
   esperada 'París' -> La capital de Francia es París
@@ -388,7 +388,7 @@ Medido el 2026-09-20 en macOS-26.6.2-arm64-arm-64bit; generación determinista (
                       friend = amigo
                       friend
 
---- saber cosas del mundo ---
+--- datos del mundo ---
   [NO] Pregunta: ¿cuál es la capital de Francia?
        Respuesta:
   esperada 'París' -> La capital de Francia es París

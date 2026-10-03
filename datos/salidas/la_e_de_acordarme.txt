@@ -29,7 +29,7 @@ se enseñan con dos.
   Sin mirar atrás se quitan las cuatro tablas: 4.096 números.
   Quedan 11.594.
 
-2. FRAGMENTOS: LO QUE VE, LO QUE VIENE, LO QUE APUESTA
+2. FRAGMENTOS: LO QUE VE, LO QUE VIENE, LO MÁS PROBABLE
 
   Los tres primeros fragmentos de prueba, sin elegir, y la frase
   de la figura. «acierta»: la letra a la que da más porcentaje
@@ -38,25 +38,25 @@ se enseñan con dos.
   fragmento de prueba 1
     lo que ve:        «neración;_pero,_»
     lo que viene:     «¿»
-    lo que apuesta:   «y» 26,9 %, «q» 10,8 %, «s» 10,0 %
+    lo más probable:  «y» 26,9 %, «q» 10,8 %, «s» 10,0 %
     ¿acierta?         no
 
   fragmento de prueba 2
     lo que ve:        «das,_se_descubri»
     lo que viene:     «e»
-    lo que apuesta:   «e» 18,7 %, «a» 18,2 %, «d» 17,4 %
+    lo más probable:  «e» 18,7 %, «a» 18,2 %, «d» 17,4 %
     ¿acierta?         sí
 
   fragmento de prueba 3
     lo que ve:        «_del_jumento_y_a»
     lo que viene:     «c»
-    lo que apuesta:   «_» 44,7 %, «l» 11,0 %, «n» 10,7 %
+    lo más probable:  «_» 44,7 %, «l» 11,0 %, «n» 10,7 %
     ¿acierta?         no
 
   la frase de la figura
     lo que ve:        «quiero_acordarme»
     lo que viene:     «,»
-    lo que apuesta:   «_» 56,8 %, «,» 11,7 %, «t» 6,8 %
+    lo más probable:  «_» 56,8 %, «,» 11,7 %, «t» 6,8 %
     ¿acierta?         no
 
   «_» es un espacio.
@@ -210,7 +210,7 @@ se enseñan con dos.
   mirada le suma lo traído, no la sustituye. Sin mirar atrás,
   solo sigue la primera fila.
 
-10. LA APUESTA DE LA «e»: QUÉ LETRA VIENE DETRÁS DE «acordarme»
+10. LA LISTA DE LA «e»: QUÉ LETRA VIENE DETRÁS DE «acordarme»
 
   puesto    letra       de cada cien
   ------    -----       ------------

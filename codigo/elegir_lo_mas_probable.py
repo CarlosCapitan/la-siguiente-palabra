@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
-Capítulo 7 — qué pasa de verdad cuando se elige siempre lo más probable.
+Capítulo 7 — qué pasa de verdad cuando se selecciona siempre lo más probable.
+(L25, 3 de octubre: los rótulos dicen «seleccionar», no «elegir»; REGLAS 5 quater. El nombre del
+fichero se queda, para no romper las referencias.)
 
 El capítulo 7 hace dos afirmaciones sobre el bucle de la máquina, y las dos se pueden
 medir con el mismo programa y con la misma máquina que el capítulo usa:
@@ -11,7 +13,7 @@ medir con el mismo programa y con la misma máquina que el capítulo usa:
      palabra ya empezada. Ocho pasos son muy pocos para sostener un «la mayor parte»,
      así que aquí se miden ciento cincuenta por frase, en seis frases.
 
-  2. «Elegir siempre lo más probable produce textos correctos y aburridos, que además
+  2. «Seleccionar siempre lo más probable produce textos correctos y aburridos, que además
      tienden a atascarse repitiendo.» Esa es la respuesta a la pregunta del final del
      capítulo, o sea el criterio de aceptación de la regla 3, y en el repositorio no hay
      ninguna medición que la sostenga: la única que mira los bucles es la del capítulo 13
@@ -168,12 +170,12 @@ def main():
     print(f"máquina: {platform.machine()}, {platform.system()} {platform.release()}, "
           f"procesador")
     print(f"modelo: {MODELO} en {DTYPE}   fecha: {date.today().isoformat()}")
-    print(f"se eligen siempre los trozos más probables, {PASOS} por frase")
+    print(f"se seleccionan siempre los trozos más probables, {PASOS} por frase")
     print()
 
     filas, total_pasos, total_cont, total_seguro, con_bucle = [], 0, 0, 0, 0
 
-    print("--- 1. DE CADA CIEN PASOS, ¿CUÁNTOS SON UNA ELECCIÓN? ---")
+    print("--- 1. DE CADA CIEN PASOS, ¿CUÁNTOS ESTÁN ABIERTOS? ---")
     lineas = [
         f"{'frase de arranque':<30} {'termina':>9} {'casi':>7} {'acaba en':>9}",
         f"{'':<30} {'palabra':>9} {'seguro':>7} {'bucle':>9}",
@@ -200,7 +202,7 @@ def main():
     lineas.append("")
     lineas.append("«termina palabra»: el trozo se pega al anterior y alarga la")
     lineas.append("misma palabra, como «ia» detrás de «Franc».")
-    lineas.append(f"«casi seguro»: el trozo elegido tenía {pct(CASI_SEGURO, 0)} o más.")
+    lineas.append(f"«casi seguro»: el trozo seleccionado tenía {pct(CASI_SEGURO, 0)} o más.")
     lineas.append(f"«acaba en bucle»: los últimos trozos son un tramo repetido")
     lineas.append(f"{REPETICIONES} veces seguidas; el número es el largo de ese tramo.")
     comprobar_ancho(lineas)
@@ -213,11 +215,11 @@ def main():
     l2 = [f"{'paso':>4}  {'trozo':>10}  {'probabilidad':>12}  ¿qué es?",
           f"{'-' * 4}  {'-' * 10}  {'-' * 12}  {'-' * 22}"]
     for i, (t, v, c) in enumerate(zip(trozos, probs, conts), 1):
-        que = "termina una palabra" if c else "elige entre varias"
+        que = "termina una palabra" if c else "hay varias posibles"
         l2.append(f"{i:>4}  {t.replace(' ', '_'):>10}  {pct(v, 2):>12}  {que}")
     l2.append("")
-    l2.append(f"de los ocho pasos, {sum(conts)} termina una palabra ya empezada y "
-              f"{sum(not c for c in conts)} eligen.")
+    l2.append(f"de los ocho pasos, {sum(conts)} termina una palabra y en "
+              f"{sum(not c for c in conts)} hay varias posibles.")
     comprobar_ancho(l2)
     for l in l2:
         print(l)

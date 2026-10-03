@@ -46,7 +46,7 @@ Semilla 20260914. Texto: el Quijote, 2.095.402 letras:
   la primera letra de la palabra           2,8 %       6,4 %
   otra                                    74,8 %       8,5 %
 
-  Al empezar reparte casi por igual: «la que más mira» se decide
+  Al empezar reparte casi por igual: «la que más mira» sale
   por decimales, y esa columna es casi azar.
 
 4. ¿SIRVE DE ALGO MIRAR? LAS MISMAS LETRAS DE PRUEBA
@@ -135,7 +135,7 @@ Semilla 20260914. Texto: el Quijote, 2.095.402 letras:
   cada número 0,1 veces su culpa                        48,7 %
 
   «pregunta y etiqueta al azar, fijas»: se entrena todo menos las
-  dos tablas que deciden a dónde mira; el contenido sí aprende.
+  dos tablas que fijan a dónde mira; el contenido sí aprende.
   «impuesto»: la máquina no cambia; solo se le dice a dónde mirar.
 
 8. LO QUE ESCRIBE AL FINAL, EMPEZANDO POR

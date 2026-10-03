@@ -131,7 +131,7 @@ def informe():
                f"en el primer grupo de {q['group_size']} números de esa fila:",
                f"  valores distintos sin comprimir: {len(set(grupo0))}",
                f"  valores distintos comprimido:    {len(set(grupo1))}",
-               f"comprimido, cada número elige entre {2 ** q['bits']} valores posibles,",
+               f"comprimido, cada número toma uno de {2 ** q['bits']} valores posibles,",
                f"los mismos para los {q['group_size']} de su grupo; lo perdido no vuelve."]
     for l in comprobar_ancho(["  " + l if l else l for l in lineas], ANCHO_CAJA_CITA):
         print(l)

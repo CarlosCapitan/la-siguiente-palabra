@@ -10,7 +10,7 @@ tarea                             500M    1.500M    3.000M    7.000M
 sumar dos cifras                  40 %     100 %     100 %     100 %
 plurales                          20 %      60 %     100 %      80 %
 traducir del inglés                0 %      80 %     100 %     100 %
-saber cosas del mundo              0 %       0 %      20 %      40 %
+datos del mundo                    0 %       0 %      20 %      40 %
 seguir un patrón inventado         0 %       0 %       0 %       0 %
 razonar sobre una frase           20 %      40 %      60 %      60 %
 --------------------------------------------------------------------

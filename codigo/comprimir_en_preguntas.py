@@ -23,7 +23,7 @@ CSV_COMPRIMIR = "../datos/salidas/comprimir.csv"
 TXT_CAP12 = "../datos/salidas/crudo_o_adiestrado_una_a_una.txt"
 BLOQUE_CAP12 = "--- 3. LA BATERÍA EN TRES COLUMNAS, EN PREGUNTAS (7.000M) ---"
 POR_TAREA = 5
-TAREAS = ["sumar dos cifras", "plurales", "traducir del inglés", "saber cosas del mundo",
+TAREAS = ["sumar dos cifras", "plurales", "traducir del inglés", "datos del mundo",
           "seguir un patrón inventado", "razonar sobre una frase"]
 COLUMNAS = ["7B sin comprimir", "7B comprimido", "32B comprimido"]
 
@@ -125,8 +125,8 @@ def selftest():
     #    del mundo», y el 7.000M sin comprimir y el adiestrado del 12 difieren en dos filas.
     _, tot, (t12, t13) = bloques(a, c12)
     cambian = [t for t in TAREAS if c12[t] != a[t][0]]
-    ok = a["saber cosas del mundo"][2] == 0 and cambian == ["sumar dos cifras", "razonar sobre una frase"]
-    print(f"[2] señal             32.000M en «saber cosas del mundo»: {a['saber cosas del mundo'][2]} de 5; "
+    ok = a["datos del mundo"][2] == 0 and cambian == ["sumar dos cifras", "razonar sobre una frase"]
+    print(f"[2] señal             32.000M en «datos del mundo»: {a['datos del mundo'][2]} de 5; "
           f"cambian: {cambian}")
     if not ok:
         fallos.append("señal: no salen la casilla del cero ni las dos filas que cambian")
