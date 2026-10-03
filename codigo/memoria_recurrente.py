@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Capítulo 6 — la memoria que se olvidaba.
+Capítulo 6 — la memoria que se borraba.
 
 Dos mediciones:
   1. Recordar a distancia: una red recurrente tiene que devolver un símbolo que vio N pasos

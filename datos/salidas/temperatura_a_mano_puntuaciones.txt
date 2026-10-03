@@ -13,4 +13,4 @@ temperatura       «la»    «una»   uno del   «la», en veces
 de los 151.936 ordenados por puntuación.
 ««la», en veces uno del medio»: la fuerza de «la» entre la
 de ese trozo (cada punto de diferencia, por 2,72).
-a temperatura 0 no se divide: se elige el favorito.
+a temperatura 0 no se divide: se selecciona el favorito.

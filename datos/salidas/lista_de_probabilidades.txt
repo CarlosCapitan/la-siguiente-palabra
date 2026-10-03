@@ -25,10 +25,10 @@ las diez primeras juntas                62
 el resto                                38
 total                                  100
 
---- DE CADA CIEN PASOS, ¿CUÁNTOS SON UNA ELECCIÓN? ---
+--- DE CADA CIEN PASOS, ¿CUÁNTOS ESTÁN ABIERTOS? ---
                                 casi    casi                
-                              seguro  seguro   elec-  reñida
-frase de arranque                   sin ter-    ción        
+                              seguro  seguro abierto  reñido
+frase de arranque                   sin ter-                
                                        minar                
 ------------------------------------------------------------
 La capital de Francia es        72 %    50 %    28 %    15 %
@@ -40,9 +40,9 @@ El ayuntamiento anunció ay…     40 %    24 %    60 %    39 %
 ------------------------------------------------------------
 las seis juntas                 57 %    37 %    43 %    25 %
 
-«casi seguro»: el trozo elegido tenía 90 % o más.
+«casi seguro»: el trozo seleccionado tenía 90 % o más.
 «casi seguro sin terminar»: casi seguro, y el trozo no se
 pega a una palabra empezada, como «ia» detrás de «Franc».
-«elección»: el trozo elegido no llegaba al 90 %.
-«reñida»: no llegaba al 50 %; las demás candidatas juntas
+«abierto»: el trozo seleccionado no llegaba al 90 %.
+«reñido»: no llegaba al 50 %; las demás candidatas juntas
 se llevaban más de la mitad.

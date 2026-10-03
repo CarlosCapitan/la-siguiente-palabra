@@ -2,24 +2,24 @@ modelo,numeros,tarea,acierto
 Qwen/Qwen2.5-0.5B,494032768,sumar dos cifras,0.400
 Qwen/Qwen2.5-0.5B,494032768,plurales,0.200
 Qwen/Qwen2.5-0.5B,494032768,traducir del inglés,0.000
-Qwen/Qwen2.5-0.5B,494032768,saber cosas del mundo,0.000
+Qwen/Qwen2.5-0.5B,494032768,datos del mundo,0.000
 Qwen/Qwen2.5-0.5B,494032768,seguir un patrón inventado,0.000
 Qwen/Qwen2.5-0.5B,494032768,razonar sobre una frase,0.200
 Qwen/Qwen2.5-1.5B,1543714304,sumar dos cifras,1.000
 Qwen/Qwen2.5-1.5B,1543714304,plurales,0.600
 Qwen/Qwen2.5-1.5B,1543714304,traducir del inglés,0.800
-Qwen/Qwen2.5-1.5B,1543714304,saber cosas del mundo,0.000
+Qwen/Qwen2.5-1.5B,1543714304,datos del mundo,0.000
 Qwen/Qwen2.5-1.5B,1543714304,seguir un patrón inventado,0.000
 Qwen/Qwen2.5-1.5B,1543714304,razonar sobre una frase,0.400
 Qwen/Qwen2.5-3B,3085938688,sumar dos cifras,1.000
 Qwen/Qwen2.5-3B,3085938688,plurales,1.000
 Qwen/Qwen2.5-3B,3085938688,traducir del inglés,1.000
-Qwen/Qwen2.5-3B,3085938688,saber cosas del mundo,0.200
+Qwen/Qwen2.5-3B,3085938688,datos del mundo,0.200
 Qwen/Qwen2.5-3B,3085938688,seguir un patrón inventado,0.000
 Qwen/Qwen2.5-3B,3085938688,razonar sobre una frase,0.600
 Qwen/Qwen2.5-7B,7615616512,sumar dos cifras,1.000
 Qwen/Qwen2.5-7B,7615616512,plurales,0.800
 Qwen/Qwen2.5-7B,7615616512,traducir del inglés,1.000
-Qwen/Qwen2.5-7B,7615616512,saber cosas del mundo,0.400
+Qwen/Qwen2.5-7B,7615616512,datos del mundo,0.400
 Qwen/Qwen2.5-7B,7615616512,seguir un patrón inventado,0.000
 Qwen/Qwen2.5-7B,7615616512,razonar sobre una frase,0.600

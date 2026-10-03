@@ -253,7 +253,7 @@ def parte_puntuaciones():
                f"de los {len(logits):,} ordenados por puntuación.".replace(",", "."),
                "««la», en veces uno del medio»: la fuerza de «la» entre la",
                "de ese trozo (cada punto de diferencia, por 2,72).",
-               "a temperatura 0 no se divide: se elige el favorito."]
+               "a temperatura 0 no se divide: se selecciona el favorito."]
     for l in comprobar_ancho(lineas, ANCHO_CAJA_CITA):
         print(l)
 

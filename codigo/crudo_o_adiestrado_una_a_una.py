@@ -26,7 +26,7 @@ Uso:
 CSV_TABLA = "crudo_o_adiestrado.csv"      # donde lo deja crudo_o_adiestrado.py
 PALABRAS = [" París", " Paris"]           # con tilde (dos trozos) y sin tilde (uno)
 BUSCADA_NAPOLES = "Nápoles"
-EJEMPLOS = [("saber cosas del mundo", 0), ("sumar dos cifras", 0)]   # (tarea, pregunta)
+EJEMPLOS = [("datos del mundo", 0), ("sumar dos cifras", 0)]   # (tarea, pregunta)
 ANCHO_RENGLON = 54
 ANCHO_RESPUESTA = 34
 TOLERANCIA = 1e-9

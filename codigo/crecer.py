@@ -42,7 +42,7 @@ TAREAS = {
         ("dog = perro\nhouse = casa\nbread = ", "pan"),
         ("dog = perro\nhouse = casa\nfriend = ", "amigo"),
     ],
-    "saber cosas del mundo": [
+    "datos del mundo": [
         ("Pregunta: ¿cuál es la capital de Francia?\nRespuesta: ", "París"),
         ("Pregunta: ¿cuál es la capital de Italia?\nRespuesta: ", "Roma"),
         ("Pregunta: ¿cuál es la capital de Portugal?\nRespuesta: ", "Lisboa"),

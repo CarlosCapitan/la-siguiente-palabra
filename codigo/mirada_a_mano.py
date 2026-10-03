@@ -657,7 +657,7 @@ def main():
     for cat in CATEGORIAS:
         L.append(f"  {cat:<34}{coma(100 * c0[cat] / len(x)) + ' %':>12}"
                  f"{coma(100 * cf[cat] / len(x)) + ' %':>12}")
-    L += ["", "  Al empezar reparte casi por igual: «la que más mira» se decide",
+    L += ["", "  Al empezar reparte casi por igual: «la que más mira» sale",
           "  por decimales, y esa columna es casi azar.", ""]
 
     L += ["4. ¿SIRVE DE ALGO MIRAR? LAS MISMAS LETRAS DE PRUEBA", "",
@@ -766,7 +766,7 @@ def main():
           f"  {'cada número ' + coma(TASA_REAPRENDER, 1) + ' veces su culpa':<50}"
           f"{coma(100 * mr_libre[PASOS_REAPRENDER]['acierto']) + ' %':>10}"]
     L += ["", "  «pregunta y etiqueta al azar, fijas»: se entrena todo menos las",
-          "  dos tablas que deciden a dónde mira; el contenido sí aprende.",
+          "  dos tablas que fijan a dónde mira; el contenido sí aprende.",
           "  «impuesto»: la máquina no cambia; solo se le dice a dónde mirar.", ""]
 
     L += ["8. LO QUE ESCRIBE AL FINAL, EMPEZANDO POR", f"   «{ARRANQUE_MUESTRA}»", ""]

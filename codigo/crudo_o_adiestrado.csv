@@ -20,7 +20,7 @@ tamaño,columna,clave,a,b,c
 500M,bateria,sumar dos cifras,0.400,0.600,0.000
 500M,bateria,plurales,0.200,0.400,0.200
 500M,bateria,traducir del inglés,0.000,0.000,0.000
-500M,bateria,saber cosas del mundo,0.000,0.000,0.000
+500M,bateria,datos del mundo,0.000,0.000,0.000
 500M,bateria,seguir un patrón inventado,0.000,0.000,0.000
 500M,bateria,razonar sobre una frase,0.200,0.400,0.200
 7.000M,en crudo,siguiente_palabra, una,0.2657
@@ -44,6 +44,6 @@ tamaño,columna,clave,a,b,c
 7.000M,bateria,sumar dos cifras,1.000,1.000,0.000
 7.000M,bateria,plurales,0.800,0.600,0.600
 7.000M,bateria,traducir del inglés,1.000,0.800,0.000
-7.000M,bateria,saber cosas del mundo,0.400,0.200,0.000
+7.000M,bateria,datos del mundo,0.400,0.200,0.000
 7.000M,bateria,seguir un patrón inventado,0.000,0.000,0.000
 7.000M,bateria,razonar sobre una frase,0.600,0.800,0.200

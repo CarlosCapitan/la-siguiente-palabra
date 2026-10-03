@@ -12,7 +12,7 @@ tabla: model.layers.0.self_attn.q_proj, fila 1, números 1 a 5
   en el primer grupo de 64 números de esa fila:
     valores distintos sin comprimir: 59
     valores distintos comprimido:    14
-  comprimido, cada número elige entre 16 valores posibles,
+  comprimido, cada número toma uno de 16 valores posibles,
   los mismos para los 64 de su grupo; lo perdido no vuelve.
 
 --- 2. LO QUE OCUPA CADA COPIA ---
