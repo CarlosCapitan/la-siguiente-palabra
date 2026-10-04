@@ -46,7 +46,7 @@ def leer(ruta):
         f"se esperaban {CONTEXTO} casillas; hay {len(letras)} letras y {[len(r) for _, r in repartos]}"
     viene = re.search(r"en el Quijote viene detrás: «(.)»", tramo).group(1)
     m = re.search(r"reparte entre: al empezar ([\d,]+) letras; al final ([\d,]+)\.", tramo)
-    apuesta = re.search(r"apuesta por la siguiente: al empezar «(.)», al final «(.)»", tramo)
+    apuesta = re.search(r"lo más probable detrás: al empezar «(.)», al final «(.)»", tramo)
     extra = dict(viene=viene, reparte=(m.group(1), m.group(2)),
                  apuesta=tuple("_" if a == " " else a for a in apuesta.groups()))
     return frase, letras, repartos, extra
@@ -81,13 +81,13 @@ def dibujar(frase, letras, repartos, extra, paleta, ruta):
                                  edgecolor=p.tinta, linewidth=0.9, linestyle=(0, (2, 1.5))))
         L.texto(x + lado / 2, y - 4.6, extra["viene"], ha="center", tam=8.6, negrita=True)
         L.texto(x + lado / 2, y - 10.0, "viene", ha="center", tam=6.2, color=p.suave)
-        L.texto(x0 + ancho, y - 13.0, f"apuesta por «{extra['apuesta'][n - 1]}»", ha="right", tam=6.6,
+        L.texto(x0 + ancho, y - 13.0, f"lo más probable: «{extra['apuesta'][n - 1]}»", ha="right", tam=6.6,
                 color=p.suave)
         if n == 1:
             L.flecha()
     igual = f"{100 / CONTEXTO:.2f}".replace(".", ",")
     L.pie("«_» es un espacio. Borde grueso: la letra que mira. De trazos: la que viene de verdad detrás\n"
-          f"en el Quijote, que tiene que adivinar. Antes de aprender, cada una recibe {igual}, que "
+          f"en el Quijote, que tiene que acertar. Antes de aprender, cada una recibe {igual}, que "
           f"redondeado es {round(100 / CONTEXTO)}.")
     L.guardar(ruta)
 

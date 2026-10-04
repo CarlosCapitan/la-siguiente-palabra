@@ -688,7 +688,7 @@ def main():
     assert texto.count(FRASE) == 1, "la frase tiene que salir una sola vez en el Quijote"
     viene = texto[i_frase + len(FRASE)]
     L += ["", "  «_» es un espacio.",
-          f"  apuesta por la siguiente: al empezar «{frases[0][2]}», al final «{frases[PASOS][2]}».",
+          f"  lo más probable detrás: al empezar «{frases[0][2]}», al final «{frases[PASOS][2]}».",
           f"  en el Quijote viene detrás: «{'_' if viene == ' ' else viene}».",
           f"  reparte entre: al empezar {coma(reparte_entre(frases[0][1]))} letras; "
           f"al final {coma(reparte_entre(frases[PASOS][1]))}.", ""]

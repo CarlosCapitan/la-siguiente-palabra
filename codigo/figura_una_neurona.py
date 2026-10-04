@@ -55,7 +55,7 @@ TITULOS = [
 BAJADA_PIE = [0.022, 0.022, 0.090, 0.022]
 PIES = [
     "negro: donde hay tinta",
-    "negro: empuja hacia el «sí»\nblanco: empuja hacia el «no»\ngris: este punto no decide",
+    "negro: empuja hacia el «sí»\nblanco: empuja hacia el «no»\ngris: este punto no cuenta",
     "cada barra es el total de sumar los 64 puntos",
     "cada círculo es un aparato como el de arriba",
 ]

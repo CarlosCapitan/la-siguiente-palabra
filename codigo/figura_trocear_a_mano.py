@@ -55,9 +55,9 @@ def de_la_salida(ruta):
 
 
 def dibujar(filas, paleta, ruta):
-    L = Lienzo("Cómo se suelda una palabra",
-               "«_murciélago» troceada con las juntas aprendidas del Quijote: 0, 10, 100, 1.000 y\n"
-               "10.000 piezas soldadas en la caja. Cada caja es un trozo; un hueco, un corte.",
+    L = Lienzo("Cómo se corta una palabra, según la caja",
+               "Cómo quedaría cortada «_murciélago» con una caja de 0, 10, 100, 1.000 y 10.000\n"
+               "juntas, aprendidas del Quijote. Cada recuadro es un trozo; cada hueco, un corte.",
                paleta, alto=ALTO)
     p, ax = L.p, L.ax
     y = L.y - 3.2
