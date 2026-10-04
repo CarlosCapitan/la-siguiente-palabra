@@ -1,0 +1,36 @@
+LAS PRIMERAS JUNTAS, CON EL QUIJOTE
+cada junta suelda la pareja que más se repite; «_» es un espacio
+
+junta   pareja          pieza nueva       veces
+    1   «_» + «d»       «_d»             40.941
+    2   «u» + «e»       «ue»             37.199
+    3   «_» + «e»       «_e»             33.055
+    4   «_» + «l»       «_l»             31.842
+    5   «_» + «a»       «_a»             28.646
+    6   «_d» + «e»      «_de»            27.864
+    7   «_» + «s»       «_s»             27.021
+    8   «q» + «ue»      «que»            25.827
+    9   «o» + «s»       «os»             25.728
+   10   «_» + «c»       «_c»             25.333
+   11   «_» + «p»       «_p»             23.748
+   12   «e» + «r»       «er»             23.683
+
+se empieza con 91 piezas de una letra; con 10.000 juntas, la caja
+tiene 10.091 piezas
+
+
+UNA PALABRA, SEGÚN CUÁNTAS JUNTAS HAY EN LA CAJA
+
+_murciélago
+       0   _ | m | u | r | c | i | é | l | a | g | o
+      10   _ | m | u | r | c | i | é | l | a | g | o
+     100   _m | u | r | ci | é | la | go
+   1.000   _mu | r | ci | é | la | go
+  10.000   _mur | ci | é | la | go
+
+_Francia
+       0   _ | F | r | a | n | c | i | a
+      10   _ | F | r | a | n | c | i | a
+     100   _ | F | r | an | ci | a
+   1.000   _F | ran | cia
+  10.000   _Francia
