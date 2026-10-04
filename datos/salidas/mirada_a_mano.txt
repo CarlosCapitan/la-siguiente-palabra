@@ -74,7 +74,7 @@ Semilla 20260914. Texto: el Quijote, 2.095.402 letras:
   tras 20.000   0  0  0  0  0  0  0  0  0  0  2  5 10 28 42 12
 
   «_» es un espacio.
-  apuesta por la siguiente: al empezar «á», al final « ».
+  lo más probable detrás: al empezar «á», al final « ».
   en el Quijote viene detrás: «,».
   reparte entre: al empezar 16,0 letras; al final 4,4.
 

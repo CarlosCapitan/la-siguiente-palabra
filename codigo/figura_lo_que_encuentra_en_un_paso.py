@@ -59,7 +59,7 @@ def leer(ruta=SALIDA):
 
 def dibujar(filas, cada_ultimo, paleta, ruta):
     L = Lienzo("Lo que se encuentra en un paso",
-               "En un paso adivina todas las letras de lo que lee y se corrige por todas a la vez.\n"
+               "En un paso saca su lista para cada letra de lo que lee y se corrige por todas a la vez.\n"
                "Cada punto: una vez que, en ese paso, se encuentra con lo que enseña el peldaño.",
                paleta, alto=ALTO)
     p, ax = L.p, L.ax

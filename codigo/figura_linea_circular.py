@@ -31,7 +31,7 @@ ESTACIONES = [("Se rompe", "el texto, en piezas", None),
               ("Números", "{} números en cada lista", "números por trozo"),
               ("Capas", "{} capas de mirar y mezclar", "rondas, una detrás de otra"),
               ("Lista", "{} probabilidades", "trozos posibles en la salida"),
-              ("Se elige uno", "y se pega al texto", None)]
+              ("Se selecciona uno", "y se pega al texto", None)]
 
 # ==========================================================
 
