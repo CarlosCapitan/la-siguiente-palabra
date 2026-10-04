@@ -1,0 +1,85 @@
+modelo,condicion,k,tokens_recalculados,repeticion,tiempo_ms
+7B sin comprimir,cambio al 75 %,5625,2375,0,3442.134
+7B sin comprimir,cambio al 75 %,5625,2375,1,3413.381
+7B sin comprimir,cambio al 75 %,5625,2375,2,3405.548
+7B sin comprimir,cambio al 75 %,5625,2375,3,3389.809
+7B sin comprimir,cambio al 75 %,5625,2375,4,3430.181
+7B sin comprimir,cambio al 75 %,5625,2375,5,3397.881
+7B sin comprimir,sin caché,,8000,0,10216.073
+7B sin comprimir,sin caché,,8000,1,10235.066
+7B sin comprimir,sin caché,,8000,2,10248.141
+7B sin comprimir,sin caché,,8000,3,10195.242
+7B sin comprimir,sin caché,,8000,4,10293.401
+7B sin comprimir,sin caché,,8000,5,10191.155
+7B sin comprimir,cambio al 25 %,1875,6125,0,8093.909
+7B sin comprimir,cambio al 25 %,1875,6125,1,8086.818
+7B sin comprimir,cambio al 25 %,1875,6125,2,8152.920
+7B sin comprimir,cambio al 25 %,1875,6125,3,8108.989
+7B sin comprimir,cambio al 25 %,1875,6125,4,8077.178
+7B sin comprimir,cambio al 25 %,1875,6125,5,8099.702
+7B sin comprimir,cambio al 95 %,7125,875,0,1320.014
+7B sin comprimir,cambio al 95 %,7125,875,1,1370.588
+7B sin comprimir,cambio al 95 %,7125,875,2,1335.862
+7B sin comprimir,cambio al 95 %,7125,875,3,1339.440
+7B sin comprimir,cambio al 95 %,7125,875,4,1389.863
+7B sin comprimir,cambio al 95 %,7125,875,5,1349.509
+7B sin comprimir,cambio al 50 %,3750,4250,0,5805.892
+7B sin comprimir,cambio al 50 %,3750,4250,1,5864.323
+7B sin comprimir,cambio al 50 %,3750,4250,2,5838.293
+7B sin comprimir,cambio al 50 %,3750,4250,3,5791.294
+7B sin comprimir,cambio al 50 %,3750,4250,4,5772.686
+7B sin comprimir,cambio al 50 %,3750,4250,5,5800.411
+7B sin comprimir,cambio al 0 %,0,8000,0,10240.944
+7B sin comprimir,cambio al 0 %,0,8000,1,10208.109
+7B sin comprimir,cambio al 0 %,0,8000,2,10221.183
+7B sin comprimir,cambio al 0 %,0,8000,3,10201.866
+7B sin comprimir,cambio al 0 %,0,8000,4,10193.757
+7B sin comprimir,cambio al 0 %,0,8000,5,10260.962
+7B sin comprimir,solo añadir,,500,0,780.976
+7B sin comprimir,solo añadir,,500,1,782.144
+7B sin comprimir,solo añadir,,500,2,776.590
+7B sin comprimir,solo añadir,,500,3,782.289
+7B sin comprimir,solo añadir,,500,4,774.755
+7B sin comprimir,solo añadir,,500,5,784.116
+32B comprimido,cambio al 75 %,5625,2375,0,17127.128
+32B comprimido,cambio al 75 %,5625,2375,1,16584.121
+32B comprimido,cambio al 75 %,5625,2375,2,17177.358
+32B comprimido,cambio al 75 %,5625,2375,3,17009.727
+32B comprimido,cambio al 75 %,5625,2375,4,16876.195
+32B comprimido,cambio al 75 %,5625,2375,5,16936.607
+32B comprimido,sin caché,,8000,0,53244.619
+32B comprimido,sin caché,,8000,1,53380.866
+32B comprimido,sin caché,,8000,2,53460.442
+32B comprimido,sin caché,,8000,3,53594.051
+32B comprimido,sin caché,,8000,4,53649.863
+32B comprimido,sin caché,,8000,5,53564.661
+32B comprimido,cambio al 25 %,1875,6125,0,41844.423
+32B comprimido,cambio al 25 %,1875,6125,1,41807.737
+32B comprimido,cambio al 25 %,1875,6125,2,41757.221
+32B comprimido,cambio al 25 %,1875,6125,3,47523.546
+32B comprimido,cambio al 25 %,1875,6125,4,62666.139
+32B comprimido,cambio al 25 %,1875,6125,5,72417.728
+32B comprimido,cambio al 95 %,7125,875,0,6735.461
+32B comprimido,cambio al 95 %,7125,875,1,7235.875
+32B comprimido,cambio al 95 %,7125,875,2,6544.944
+32B comprimido,cambio al 95 %,7125,875,3,7442.377
+32B comprimido,cambio al 95 %,7125,875,4,6993.371
+32B comprimido,cambio al 95 %,7125,875,5,6649.908
+32B comprimido,cambio al 50 %,3750,4250,0,29711.266
+32B comprimido,cambio al 50 %,3750,4250,1,29557.986
+32B comprimido,cambio al 50 %,3750,4250,2,29409.628
+32B comprimido,cambio al 50 %,3750,4250,3,29267.261
+32B comprimido,cambio al 50 %,3750,4250,4,29138.005
+32B comprimido,cambio al 50 %,3750,4250,5,29108.077
+32B comprimido,cambio al 0 %,0,8000,0,52685.332
+32B comprimido,cambio al 0 %,0,8000,1,52513.768
+32B comprimido,cambio al 0 %,0,8000,2,52552.152
+32B comprimido,cambio al 0 %,0,8000,3,52573.791
+32B comprimido,cambio al 0 %,0,8000,4,54235.911
+32B comprimido,cambio al 0 %,0,8000,5,53657.125
+32B comprimido,solo añadir,,500,0,3790.602
+32B comprimido,solo añadir,,500,1,3817.041
+32B comprimido,solo añadir,,500,2,3724.493
+32B comprimido,solo añadir,,500,3,4184.715
+32B comprimido,solo añadir,,500,4,3750.893
+32B comprimido,solo añadir,,500,5,3831.213
