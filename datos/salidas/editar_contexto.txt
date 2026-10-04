@@ -1,0 +1,135 @@
+Medido el 2026-10-04 en macOS-26.6.2-arm64-arm-64bit.
+máquina: Apple M4 Max, 36 GB de memoria
+macOS 26.6.2; Python 3.12.14
+mlx 0.32.2; mlx-lm 0.31.3
+GPU (Metal): sí; dispositivo de MLX: Device(gpu, 0)
+swap en uso al empezar: 0,0 GB
+
+constantes:
+  texto: ../datos/quijote.txt, desde «En un lugar de la Mancha»
+  tokens viejos 7.500, nuevos 500, total 8.000
+  posiciones del cambio: 0 %, 25 %, 50 %, 75 %, 95 %
+  sustituto « casa», reserva « mesa»
+  repeticiones 5 (y una de calentamiento), semilla 2026
+  prefilado en trozos de 2.048 tokens (el de mlx-lm)
+  7B sin comprimir: mlx-community/Qwen2.5-7B-Instruct-bf16
+  32B comprimido: mlx-community/Qwen2.5-32B-Instruct-4bit
+
+--- 7B sin comprimir (mlx-community/Qwen2.5-7B-Instruct-bf16) ---
+
+PARTE 1: lo que cuesta cada turno (7B sin comprimir)
+
+condición              tokens  tiempo,  mínimo,  máximo,  veces el
+                 recalculados  mediana    en ms    en ms  coste de
+                                 en ms                    «añadir»
+------------------------------------------------------------------
+solo añadir               500      806      802      807       1,0
+cambio al 0 %           8.000   10.522   10.484   10.606      13,1
+cambio al 25 %          6.125    7.848    7.825    7.858       9,7
+cambio al 50 %          4.250    5.958    5.944    5.988       7,4
+cambio al 75 %          2.375    3.347    3.338    3.394       4,2
+cambio al 95 %            875    1.402    1.394    1.452       1,7
+sin caché               8.000   10.005    9.936   10.018      12,4
+
+tiempo: mediana de 5 repeticiones, en milisegundos (ms).
+mínimo, máximo: la más rápida y la más lenta de esas repeticiones.
+tokens recalculados: los que el modelo vuelve a calcular.
+«solo añadir»: se añaden tokens al final; no se cambia ninguno.
+«cambio al N %»: se cambia un token al N % del texto viejo.
+«sin caché»: calcular los 8.000 tokens desde cero.
+veces el coste de «añadir»: el tiempo entre el de «solo añadir».
+
+PARTE 2: qué pasaría si no se recalculara (7B sin comprimir)
+
+posición   palabra siguiente más probable, y su probabilidad
+del cambio original        bien calculada  caché vieja
+---------------------------------------------------------
+0 %        _le     30,6 %  _le     30,5 %  _le     30,7 %
+25 %       _le     30,6 %  _le     30,3 %  _le     30,8 %
+50 %       _le     30,6 %  _le     30,9 %  _le     30,5 %
+75 %       _le     30,6 %  _le     30,7 %  _le     31,1 %
+95 %       _le     30,6 %  _le     28,4 %  _le     30,9 %
+
+posición   variación total de la predicción
+del cambio        bien calculada            caché vieja
+               frente a original    frente a bien calc.
+-------------------------------------------------------
+0 %                       0,0235                 0,0235
+25 %                      0,0157                 0,0191
+50 %                      0,0116                 0,0126
+75 %                      0,0104                 0,0143
+95 %                      0,0273                 0,0309
+
+«_»: marca un espacio delante de la palabra; «…», que se cortó.
+probabilidad: la que da el modelo a esa palabra, en %.
+variación total: la mitad de la suma de las diferencias entre
+dos reparticiones de probabilidad: 0 si son iguales, 1 si no
+tienen nada en común.
+«original»: el texto sin cambiar.
+«bien calculada»: texto cambiado, recalculado desde el cambio.
+«caché vieja»: solo se recalcula el token cambiado; lo que viene
+detrás se deja como estaba.
+
+memoria pico de la GPU con este modelo: 15,2 GB
+swap en uso al acabar con este modelo: 0,0 GB
+
+
+--- 32B comprimido (mlx-community/Qwen2.5-32B-Instruct-4bit) ---
+
+PARTE 1: lo que cuesta cada turno (32B comprimido)
+
+condición              tokens  tiempo,  mínimo,  máximo,  veces el
+                 recalculados  mediana    en ms    en ms  coste de
+                                 en ms                    «añadir»
+------------------------------------------------------------------
+solo añadir               500    3.895    3.752    6.273       1,0
+cambio al 0 %           8.000   52.465   51.591   55.363      13,5
+cambio al 25 %          6.125   41.128   41.064   41.677      10,6
+cambio al 50 %          4.250   28.766   28.591   29.019       7,4
+cambio al 75 %          2.375   16.590   16.164   16.721       4,3
+cambio al 95 %            875    6.394    6.380    8.151       1,6
+sin caché               8.000   52.367   52.264   56.408      13,4
+
+tiempo: mediana de 5 repeticiones, en milisegundos (ms).
+mínimo, máximo: la más rápida y la más lenta de esas repeticiones.
+tokens recalculados: los que el modelo vuelve a calcular.
+«solo añadir»: se añaden tokens al final; no se cambia ninguno.
+«cambio al N %»: se cambia un token al N % del texto viejo.
+«sin caché»: calcular los 8.000 tokens desde cero.
+veces el coste de «añadir»: el tiempo entre el de «solo añadir».
+
+PARTE 2: qué pasaría si no se recalculara (32B comprimido)
+
+posición   palabra siguiente más probable, y su probabilidad
+del cambio original        bien calculada  caché vieja
+---------------------------------------------------------
+0 %        _le     21,6 %  _le     20,9 %  _le     21,5 %
+25 %       _le     21,6 %  _le     21,6 %  _le     21,6 %
+50 %       _le     21,6 %  _le     21,6 %  _le     21,6 %
+75 %       _le     21,6 %  _le     21,5 %  _le     21,6 %
+95 %       _le     21,6 %  _le     21,1 %  _le     21,6 %
+
+posición   variación total de la predicción
+del cambio        bien calculada            caché vieja
+               frente a original    frente a bien calc.
+-------------------------------------------------------
+0 %                       0,0113                 0,0101
+25 %                      0,0017                 0,0016
+50 %                      0,0027                 0,0032
+75 %                      0,0034                 0,0042
+95 %                      0,0103                 0,0110
+
+«_»: marca un espacio delante de la palabra; «…», que se cortó.
+probabilidad: la que da el modelo a esa palabra, en %.
+variación total: la mitad de la suma de las diferencias entre
+dos reparticiones de probabilidad: 0 si son iguales, 1 si no
+tienen nada en común.
+«original»: el texto sin cambiar.
+«bien calculada»: texto cambiado, recalculado desde el cambio.
+«caché vieja»: solo se recalcula el token cambiado; lo que viene
+detrás se deja como estaba.
+
+memoria pico de la GPU con este modelo: 20,1 GB
+swap en uso al acabar con este modelo: 4,4 GB
+
+Escrito ../datos/salidas/editar_contexto.csv
