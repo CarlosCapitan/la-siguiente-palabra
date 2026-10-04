@@ -15,8 +15,14 @@ junta   pareja          pieza nueva       veces
    11   «_» + «p»       «_p»             23.748
    12   «e» + «r»       «er»             23.683
 
-se empieza con 91 piezas de una letra; con 10.000 juntas, la caja
-tiene 10.091 piezas
+se empieza con 91 piezas de una letra:
+     1   el espacio
+    24   minúsculas
+    25   mayúsculas
+    16   letras con tilde, diéresis o eñe
+     8   cifras
+    17   signos
+con 10.000 juntas, la caja tiene 10.091 piezas
 
 
 UNA PALABRA, SEGÚN CUÁNTAS JUNTAS HAY EN LA CAJA
@@ -34,3 +40,14 @@ _Francia
      100   _ | F | r | an | ci | a
    1.000   _F | ran | cia
   10.000   _Francia
+
+
+CUÁNTAS JUNTAS CABEN EN EL QUIJOTE
+con 35.246 juntas, cada palabra del Quijote es ya una sola
+pieza, y no queda ninguna pareja que soldar
+
+_murciélago, de 10.000 juntas en adelante
+  10.000   _mur | ci | é | la | go
+  10.229   _mur | ci | éla | go
+  30.571   _murci | éla | go
+  30.572   _murciéla | go
