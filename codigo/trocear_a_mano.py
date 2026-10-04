@@ -139,15 +139,61 @@ def tabla(juntas, letras):
     for k, (a, b, n) in enumerate(juntas[:PRIMERAS], 1):
         par = f"«{a_la_vista(a)}» + «{a_la_vista(b)}»"
         lin.append(f"{k:>5}   {par:<16}{'«' + a_la_vista(a + b) + '»':<14}{miles(n):>9}")
-    lin += ["", f"se empieza con {letras} piezas de una letra; con "
-                f"{miles(len(juntas))} juntas, la caja", f"tiene {miles(letras + len(juntas))} piezas"]
+    total = sum(n for _, n in letras)
+    lin += ["", f"se empieza con {total} piezas de una letra:"]
+    lin += [f"{n:>6}   {q}" for q, n in letras]
+    lin += [f"con {miles(JUNTAS)} juntas, la caja tiene {miles(total + JUNTAS)} piezas"]
+    todas = juntas
+    juntas = juntas[:JUNTAS]
     lin += ["", "", "UNA PALABRA, SEGÚN CUÁNTAS JUNTAS HAY EN LA CAJA"]
     for w in PALABRAS:
         lin += ["", a_la_vista(w)]
         for m in MOMENTOS:
             s = trocear(w, juntas[:m])
             lin.append(f"{miles(m):>8}   " + " | ".join(a_la_vista(t) for t in s))
+    lin += ["", "", "CUÁNTAS JUNTAS CABEN EN EL QUIJOTE",
+            f"con {miles(len(todas))} juntas, cada palabra del Quijote es ya una sola",
+            "pieza, y no queda ninguna pareja que soldar", "",
+            f"{a_la_vista(PALABRAS[0])}, de {miles(JUNTAS)} juntas en adelante"]
+    for m, s in cambios(PALABRAS[0], todas, JUNTAS):
+        lin.append(f"{miles(m):>8}   " + " | ".join(a_la_vista(t) for t in s))
     return comprobar_ancho(lin, ANCHO_CAJA)
+
+
+def cambios(w, juntas, desde):
+    """Cada número de juntas, de `desde` en adelante, en el que la palabra pierde un corte."""
+    fuera = [(desde, trocear(w, juntas[:desde]))]
+    while len(fuera[-1][1]) > 1:
+        objetivo = len(fuera[-1][1]) - 1
+        if len(trocear(w, juntas)) > objetivo:
+            break
+        lo, hi = fuera[-1][0], len(juntas)
+        while lo < hi:
+            m = (lo + hi) // 2
+            if len(trocear(w, juntas[:m])) <= objetivo:
+                hi = m
+            else:
+                lo = m + 1
+        fuera.append((lo, trocear(w, juntas[:lo])))
+    return fuera
+
+
+def composicion(cuenta):
+    """Las piezas de una letra con que se empieza, por clases."""
+    todas = {ch for w in cuenta for ch in w}
+    clases = [("el espacio", lambda c: c == " "),
+              ("minúsculas", lambda c: "a" <= c <= "z"),
+              ("mayúsculas", lambda c: "A" <= c <= "Z"),
+              ("letras con tilde, diéresis o eñe", lambda c: c.isalpha() and not c.isascii()),
+              ("cifras", lambda c: c.isdigit()),
+              ("signos", lambda c: True)]
+    fuera, quedan = [], set(todas)
+    for nombre, es in clases:
+        estas = {c for c in quedan if es(c)}
+        quedan -= estas
+        fuera.append((nombre, len(estas)))
+    assert not quedan and sum(n for _, n in fuera) == len(todas), "una letra se quedó sin clase"
+    return fuera
 
 
 def guardar(juntas, ruta):
@@ -222,9 +268,11 @@ def main():
     if p.parse_args().selftest:
         return selftest()
     cuenta = palabras(cargar_corpus(CORPUS))
-    letras = len({ch for w in cuenta for ch in w})
-    juntas = aprender(cuenta, JUNTAS)
-    assert len(juntas) == JUNTAS, f"Se esperaban {JUNTAS} juntas; salieron {len(juntas)}"
+    letras = composicion(cuenta)
+    juntas = aprender(cuenta, 10 ** 9)            # hasta que no quede ninguna pareja que soldar
+    assert len(juntas) > JUNTAS, f"Se esperaban más de {JUNTAS} juntas; salieron {len(juntas)}"
+    assert all(len(trocear(w, juntas)) == 1 for w in list(cuenta)[:3000]), \
+        "Se esperaba que, sin parejas que soldar, cada palabra fuera una sola pieza"
     for l in tabla(juntas, letras):
         print(l)
     guardar(juntas, SALIDA_CSV)
