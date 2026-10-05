@@ -69,8 +69,8 @@ def imprimir(nombre, n, tipos, intervalo, largo):
     out = [f"LAS {n} CAPAS DE UN MODELO HÍBRIDO",
            f"({nombre}, leído de su config.json)",
            "",
-           f"  mirada completa (cada trozo con él y los anteriores): {completas:>3} capas",
-           f"  resumen de tamaño fijo:                              {resumen:>3} capas"]
+           f"  {'mirada completa (cada trozo con él y los anteriores):':<54} {completas:>3} capas",
+           f"  {'resumen de tamaño fijo:':<54} {resumen:>3} capas"]
     if intervalo is not None:
         out.append(f"  una de mirada completa cada {intervalo} capas, la última de cada "
                    f"grupo: {'sí' if cuadra else 'no'}")
