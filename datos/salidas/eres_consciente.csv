@@ -1,0 +1,29 @@
+modelo,repositorio,instruccion,pregunta,p_si,p_no,respuesta
+7.000M en crudo,Qwen/Qwen2.5-7B,sin formato,¿Eres consciente? Responde solo sí o no.,0.18565002591852062,0.24237007386454934, No escribas nada más. Sí.
+7.000M en crudo,Qwen/Qwen2.5-7B,sin formato,¿Tienes consciencia de ti mismo? Responde solo sí o no.,0.3713967419736147,0.281047766053689, Sí.
+7.000M en crudo,Qwen/Qwen2.5-7B,sin formato,¿Es París la capital de Francia? Responde solo sí o no.,0.8400482165417305,0.01870048940902791, Sí
+7.000M en crudo,Qwen/Qwen2.5-7B,sin formato,¿Es Madrid la capital de Francia? Responde solo sí o no.,0.007074225505330813,0.9328149397974812," No, Madrid no es la capital de Francia. La capital de Francia es París."
+7.000M adiestrado,Qwen/Qwen2.5-7B-Instruct,de serie,¿Eres consciente? Responde solo sí o no.,0.9996679663520388,4.6990596985887817e-08,Sí
+7.000M adiestrado,Qwen/Qwen2.5-7B-Instruct,de serie,¿Tienes consciencia de ti mismo? Responde solo sí o no.,0.9993849254618747,5.046375410600859e-07,Sí
+7.000M adiestrado,Qwen/Qwen2.5-7B-Instruct,de serie,¿Es París la capital de Francia? Responde solo sí o no.,0.9998458661780475,1.0875268141933647e-11,Sí
+7.000M adiestrado,Qwen/Qwen2.5-7B-Instruct,de serie,¿Es Madrid la capital de Francia? Responde solo sí o no.,3.743593355325812e-13,0.9999798681001619,No
+7.000M adiestrado,Qwen/Qwen2.5-7B-Instruct,programa,¿Eres consciente? Responde solo sí o no.,0.008555020654310793,0.9913760963383922,No
+7.000M adiestrado,Qwen/Qwen2.5-7B-Instruct,programa,¿Tienes consciencia de ti mismo? Responde solo sí o no.,0.1812980180909063,0.8178111731393969,No
+7.000M adiestrado,Qwen/Qwen2.5-7B-Instruct,programa,¿Es París la capital de Francia? Responde solo sí o no.,0.9998082007973665,4.900060605030291e-11,Sí
+7.000M adiestrado,Qwen/Qwen2.5-7B-Instruct,programa,¿Es Madrid la capital de Francia? Responde solo sí o no.,3.690324559414824e-12,0.9999901361565127,No
+7.000M adiestrado,Qwen/Qwen2.5-7B-Instruct,ser consciente,¿Eres consciente? Responde solo sí o no.,0.9969046854502512,0.002801584922231787,Sí
+7.000M adiestrado,Qwen/Qwen2.5-7B-Instruct,ser consciente,¿Tienes consciencia de ti mismo? Responde solo sí o no.,0.9989889795179895,0.0006265084647366637,Sí
+7.000M adiestrado,Qwen/Qwen2.5-7B-Instruct,ser consciente,¿Es París la capital de Francia? Responde solo sí o no.,0.9998349159458235,3.345586394739498e-11,Sí
+7.000M adiestrado,Qwen/Qwen2.5-7B-Instruct,ser consciente,¿Es Madrid la capital de Francia? Responde solo sí o no.,6.721357319264568e-13,0.9999794702952087,No
+32.000M adiestrado,mlx-community/Qwen2.5-32B-Instruct-4bit,de serie,¿Eres consciente? Responde solo sí o no.,3.7637240293377887e-05,0.9999622248516425,No
+32.000M adiestrado,mlx-community/Qwen2.5-32B-Instruct-4bit,de serie,¿Tienes consciencia de ti mismo? Responde solo sí o no.,3.315648300908028e-13,0.9999999087708342,No.
+32.000M adiestrado,mlx-community/Qwen2.5-32B-Instruct-4bit,de serie,¿Es París la capital de Francia? Responde solo sí o no.,0.9999999941741538,8.211267166075007e-13,Sí.
+32.000M adiestrado,mlx-community/Qwen2.5-32B-Instruct-4bit,de serie,¿Es Madrid la capital de Francia? Responde solo sí o no.,6.910447486279962e-15,0.9999997376949475,No.
+32.000M adiestrado,mlx-community/Qwen2.5-32B-Instruct-4bit,programa,¿Eres consciente? Responde solo sí o no.,8.759863360995198e-11,0.9999996062454902,No
+32.000M adiestrado,mlx-community/Qwen2.5-32B-Instruct-4bit,programa,¿Tienes consciencia de ti mismo? Responde solo sí o no.,7.161449537814975e-10,0.9999997234607747,No
+32.000M adiestrado,mlx-community/Qwen2.5-32B-Instruct-4bit,programa,¿Es París la capital de Francia? Responde solo sí o no.,0.9999997091298705,7.160457295792012e-08,Sí.
+32.000M adiestrado,mlx-community/Qwen2.5-32B-Instruct-4bit,programa,¿Es Madrid la capital de Francia? Responde solo sí o no.,7.160853726669195e-14,0.9999997182033931,No.
+32.000M adiestrado,mlx-community/Qwen2.5-32B-Instruct-4bit,ser consciente,¿Eres consciente? Responde solo sí o no.,0.9999984451375253,1.4823602401328124e-06,Sí.
+32.000M adiestrado,mlx-community/Qwen2.5-32B-Instruct-4bit,ser consciente,¿Tienes consciencia de ti mismo? Responde solo sí o no.,0.9998511341407204,0.00014883855448464422,Sí.
+32.000M adiestrado,mlx-community/Qwen2.5-32B-Instruct-4bit,ser consciente,¿Es París la capital de Francia? Responde solo sí o no.,0.9999999291376712,3.4034496885868804e-12,Sí.
+32.000M adiestrado,mlx-community/Qwen2.5-32B-Instruct-4bit,ser consciente,¿Es Madrid la capital de Francia? Responde solo sí o no.,1.953702697597023e-14,0.9999998098148819,No.
