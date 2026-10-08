@@ -27,7 +27,7 @@ import argparse
 import csv
 import sys
 
-from formato import ANCHO_CAJA_CITA, coma, comprobar_ancho
+from formato import barra, coma, tabla_editorial
 
 
 def a_la_vez(por_parte, partes=PARTES):
@@ -41,16 +41,18 @@ def cadena(por_parte, partes=PARTES):
 
 
 def bloque():
-    lin = ["--- UNA RESPUESTA DE CINCO PARTES: CADA PARTE O LAS CINCO ---", "",
-           f"{'cada parte suelta':>18}{'las cinco a la vez':>22}",
-           f"{'(de cada cien)':>18}{'(de cada cien)':>22}"]
-    for p in TABLA:
-        lin.append(f"{p:>18}{coma(a_la_vez(p), 0):>22}")
-    lin += ["",
-            f"con {TABLA[0]} de cada cien en cada parte, las cinco a la vez:",
-            f"{cadena(TABLA[0])} da {coma(a_la_vez(TABLA[0]) / 100, 3)},",
-            f"que son unas {coma(a_la_vez(TABLA[0]), 0)} de cada cien."]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+    """Desde el 9 oct 2026, tabla de libro (formato.py; REGLAS 6 ter), con una barra por columna
+    para que se vea a simple vista cuál sube despacio y cuál se queda abajo y luego se dispara."""
+    filas = [[str(p), barra(p / 100), coma(a_la_vez(p), 0), barra(a_la_vez(p) / 100)]
+             for p in TABLA]
+    return tabla_editorial(
+        "Una respuesta de cinco partes: cada parte, o las cinco a la vez",
+        ["cada parte suelta", "", "las cinco a la vez", ""], filas, "didi",
+        ["De cada cien. Las cinco a la vez: solo cuenta la respuesta si están bien las cinco "
+         "partes.",
+         f"Con {TABLA[0]} de cada cien en cada parte, las cinco a la vez: {cadena(TABLA[0])} da "
+         f"{coma(a_la_vez(TABLA[0]) / 100, 3)}, que son unas {coma(a_la_vez(TABLA[0]), 0)} de "
+         "cada cien."])
 
 
 def selftest():

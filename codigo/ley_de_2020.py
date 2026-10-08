@@ -50,7 +50,7 @@ MODELOS_2022 = [                     # (nombre, números, trozos de texto leído
 import argparse
 import sys
 
-from formato import ANCHO_CAJA_CITA, coma, comprobar_ancho, miles
+from formato import barra, coma, miles, tabla_editorial
 
 
 def queda(veces, exponente=EXPONENTE):
@@ -66,40 +66,37 @@ def en_palabras(n):
 
 
 def bloque_ley():
-    lin = ["--- 1. LA LEY DE 2020: CUÁNTO BAJA EL ERROR AL CRECER ---", "",
-           f"{'tamaño, en veces el primero':>28}{'lo mal que lo hace':>24}",
-           f"{'':>28}{'(el primero: 100)':>24}"]
-    for t in TAMANOS:
-        lin.append(f"{miles(t):>28}{coma(queda(t), 0):>24}")
+    """Desde el 9 oct 2026, tabla de libro (formato.py; REGLAS 6 ter)."""
     tramo = MEDIDO_MAYOR // MEDIDO_MENOR
-    lin += ["",
-            f"doblar: de 100 a {coma(queda(2), 1)}; se le quita un {coma(100 - queda(2), 0)} %.",
-            f"por diez: de 100 a {coma(queda(10), 1)}; se le quita un {coma(100 - queda(10), 0)} %.",
-            "",
-            "lo que midieron en tamaño:",
-            f"de {miles(MEDIDO_MENOR)} números a {miles(MEDIDO_MAYOR // 10 ** 6)} millones, {miles(tramo)} veces",
-            f"más; en ese tramo, de 100 a {coma(queda(tramo), 1)}.",
-            f"en cálculo, el tramo medido es de {miles(10 ** ORDENES_CALCULO)} de veces."]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+    filas = [[miles(t), coma(queda(t), 0), barra(queda(t) / 100)] for t in TAMANOS]
+    print("--- 1. LA LEY DE 2020: CUÁNTO BAJA EL ERROR AL CRECER ---\n")
+    return tabla_editorial(
+        "La ley de 2020: cuánto baja el error al crecer",
+        ["tamaño, en veces el primero", "lo mal que lo hace", ""], filas, "ddi",
+        ["Lo mal que lo hace: el del primero vale 100.",
+         f"Doblar: de 100 a {coma(queda(2), 1)}; se le quita un {coma(100 - queda(2), 0)} %. Por "
+         f"diez: de 100 a {coma(queda(10), 1)}; se le quita un {coma(100 - queda(10), 0)} %.",
+         f"Lo que midieron en tamaño: de {miles(MEDIDO_MENOR)} números a "
+         f"{miles(MEDIDO_MAYOR // 10 ** 6)} millones, {miles(tramo)} veces más; en ese tramo, de "
+         f"100 a {coma(queda(tramo), 1)}. En cálculo, el tramo medido es de "
+         f"{miles(10 ** ORDENES_CALCULO)} de veces."])
 
 
 def bloque_2022():
-    lin = ["--- 2. LA RECETA DE 2022: TAMAÑO Y TEXTO ---", "",
-           f"{'modelo':<11}{'números':>18}{'trozos de texto':>18}{'trozos':>11}",
-           f"{'':<11}{'':>18}{'leídos':>18}{'por número':>11}"]
-    for n, num, texto in MODELOS_2022:
-        lin.append(f"{n:<11}{en_palabras(num):>18}{en_palabras(texto):>18}{coma(texto / num, 1):>11}")
     (g, ng, tg), (c, nc, tc) = MODELOS_2022
     coste = (nc * tc) / (ng * tg)
-    lin += ["",
-            f"el de {c} tiene {coma(ng / nc, 0)} veces menos números que el de",
-            f"{g}, y leyó {coma(tc / tg, 1)} veces más texto.",
-            "lo que cuesta entrenar va como números por texto leído:",
-            f"una cuarta parte por {coma(tc / tg, 1)} veces da {coma(coste, 2)}: más o menos lo",
-            "mismo (el artículo dice que gastaron el mismo cálculo).",
-            "«billones», en castellano: millones de millones.",
-            "«M»: millones de números."]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+    filas = [[n, en_palabras(num), en_palabras(texto), coma(texto / num, 1)]
+             for n, num, texto in MODELOS_2022]
+    print("--- 2. LA RECETA DE 2022: TAMAÑO Y TEXTO ---\n")
+    return tabla_editorial(
+        "La receta de 2022: tamaño y texto",
+        ["modelo", "números", "trozos de texto leídos", "trozos por número"], filas, "iddd",
+        [f"El de {c} tiene {coma(ng / nc, 0)} veces menos números que el de {g}, y leyó "
+         f"{coma(tc / tg, 1)} veces más texto.",
+         f"Lo que cuesta entrenar va como números por texto leído: una cuarta parte por "
+         f"{coma(tc / tg, 1)} veces da {coma(coste, 2)}, más o menos lo mismo (el artículo dice "
+         "que gastaron el mismo cálculo).",
+         "Billones, en castellano: millones de millones. M: millones de números."])
 
 
 def selftest():
