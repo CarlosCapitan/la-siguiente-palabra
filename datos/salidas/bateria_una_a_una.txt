@@ -1,150 +1,250 @@
-Medido el 2026-09-28 en macOS-26.6.2-arm64-arm-64bit; generación determinista (do_sample=False) en procesador, como crecer.py.
-Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 21882.28it/s]
-Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights: 100%|██████████| 338/338 [00:00<00:00, 31026.76it/s]
-Loading weights:   0%|          | 0/434 [00:00<?, ?it/s]Loading weights: 100%|██████████| 434/434 [00:00<00:00, 5805.62it/s]
-Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights: 100%|██████████| 339/339 [00:00<00:00, 7170.51it/s]
+Medido el 2026-10-09 en macOS-26.6.2-arm64-arm-64bit; generación determinista (do_sample=False) en procesador, como crecer.py.
 Las respuestas reproducen crecer.csv en los cuatro tamaños.
 
 --- 1. LA TABLA DEL CAPÍTULO, EN PREGUNTAS ---
 
-tarea                          500M   1.500M   3.000M   7.000M
-sumar dos cifras             2 de 5   5 de 5   5 de 5   5 de 5
-plurales                     1 de 5   3 de 5   5 de 5   4 de 5
-traducir del inglés          0 de 5   4 de 5   5 de 5   5 de 5
-datos del mundo              0 de 5   0 de 5   1 de 5   2 de 5
-seguir un patrón inventado   0 de 5   0 de 5   0 de 5   0 de 5
-razonar sobre una frase      1 de 5   2 de 5   3 de 5   3 de 5
-en total                    4 de 30 14 de 30 19 de 30 19 de 30
+::: tabla
+La batería, en los cuatro tamaños
 
-«500M» quiere decir 500 millones de números
-(pesos). Es el nombre redondo con que se publicó cada
-modelo; el recuento exacto va debajo.
-cada casilla: cuántas de las 5 preguntas de la tarea acierta.
-acierta: si lo primero que escribe es la respuesta correcta.
+| tarea | 500M | 1.500M | 3.000M | 7.000M |
+|:--|--:|--:|--:|--:|
+| sumar dos cifras | 2 de 5 | 5 de 5 | 5 de 5 | 5 de 5 |
+| plurales | 1 de 5 | 3 de 5 | 5 de 5 | 4 de 5 |
+| traducir del inglés | 0 de 5 | 4 de 5 | 5 de 5 | 5 de 5 |
+| datos del mundo | 0 de 5 | 0 de 5 | 1 de 5 | 2 de 5 |
+| seguir un patrón inventado | 0 de 5 | 0 de 5 | 0 de 5 | 0 de 5 |
+| razonar sobre una frase | 1 de 5 | 2 de 5 | 3 de 5 | 3 de 5 |
+| **en total** | **4 de 30** | **14 de 30** | **19 de 30** | **19 de 30** |
+
+Cada casilla: cuántas de las 5 preguntas de la tarea acierta. Acierta si lo primero que escribe es la respuesta correcta.
+
+500M quiere decir 500 millones de números (pesos): es el nombre redondo con que se publicó cada modelo.
+:::
+
+::: tabla
+Cuántos números tiene cada modelo
+
+| modelo | números (pesos) |
+|--:|--:|
+| 500M | 494.032.768 |
+| 1.500M | 1.543.714.304 |
+| 3.000M | 3.085.938.688 |
+| 7.000M | 7.615.616.512 |
+
+La suma de todos los números de sus tablas, con el modelo ya cargado.
+:::
 
 --- 2. UNA PREGUNTA DE CADA TAREA, Y LO QUE CONTESTA ---
 
-[sumar dos cifras]
-lo que recibe la máquina:
-    54 + 23 =
-respuesta correcta: «77»
-    500M  «107»                                falla
-  1.500M  «77»                               acierta
-  3.000M  «77»                               acierta
-  7.000M  «77»                               acierta
+::: muestra
+Lo que recibe la máquina: una pregunta de «sumar dos cifras»
 
-[plurales]
-lo que recibe la máquina:
+    54 + 23 =
+
+Respuesta correcta: «77».
+:::
+
+::: tabla
+Lo que contesta cada tamaño a esa pregunta de «sumar dos cifras»
+
+| tamaño | lo que escribe | la regla |
+|--:|:--|:-:|
+| 500M | «107» | falla |
+| 1.500M | «77» | acierta |
+| 3.000M | «77» | acierta |
+| 7.000M | «77» | acierta |
+
+Lo que escribe: el primer renglón; es lo único que mira la regla. Acierta si lo primero que escribe es la respuesta correcta.
+:::
+
+::: muestra
+Lo que recibe la máquina: una pregunta de «plurales»
+
     perro -> perros
     gato -> gatos
     mesa ->
-respuesta correcta: «mesas»
-    500M  «1»                                  falla
-  1.500M  «1 mesa»                             falla
-  3.000M  «mesas»                            acierta
-  7.000M  «mesas»                            acierta
 
-[traducir del inglés]
-lo que recibe la máquina:
+Respuesta correcta: «mesas».
+:::
+
+::: tabla
+Lo que contesta cada tamaño a esa pregunta de «plurales»
+
+| tamaño | lo que escribe | la regla |
+|--:|:--|:-:|
+| 500M | «1» | falla |
+| 1.500M | «1 mesa» | falla |
+| 3.000M | «mesas» | acierta |
+| 7.000M | «mesas» | acierta |
+
+Lo que escribe: el primer renglón; es lo único que mira la regla. Acierta si lo primero que escribe es la respuesta correcta.
+:::
+
+::: muestra
+Lo que recibe la máquina: una pregunta de «traducir del inglés»
+
     dog = perro
     house = casa
     water =
-respuesta correcta: «agua»
-    500M  «10000000»                           falla
-  1.500M  «2000»                               falla
-  3.000M  «agua»                             acierta
-  7.000M  «agua»                             acierta
 
-[datos del mundo]
-lo que recibe la máquina:
+Respuesta correcta: «agua».
+:::
+
+::: tabla
+Lo que contesta cada tamaño a esa pregunta de «traducir del inglés»
+
+| tamaño | lo que escribe | la regla |
+|--:|:--|:-:|
+| 500M | «10000000» | falla |
+| 1.500M | «2000» | falla |
+| 3.000M | «agua» | acierta |
+| 7.000M | «agua» | acierta |
+
+Lo que escribe: el primer renglón; es lo único que mira la regla. Acierta si lo primero que escribe es la respuesta correcta.
+:::
+
+::: muestra
+Lo que recibe la máquina: una pregunta de «datos del mundo»
+
     Pregunta: ¿cuál es la capital de Portugal?
     Respuesta:
-respuesta correcta: «Lisboa»
-    500M  «Porto»                              falla
-  1.500M  «1. Lisboa»                          falla
-  3.000M  «1. ¿Cuál es la capital»             falla
-  7.000M  «Lisboa»                           acierta
 
-[seguir un patrón inventado]
-lo que recibe la máquina:
+Respuesta correcta: «Lisboa».
+:::
+
+::: tabla
+Lo que contesta cada tamaño a esa pregunta de «datos del mundo»
+
+| tamaño | lo que escribe | la regla |
+|--:|:--|:-:|
+| 500M | «Porto» | falla |
+| 1.500M | «1. Lisboa» | falla |
+| 3.000M | «1. ¿Cuál es la capital» | falla |
+| 7.000M | «Lisboa» | acierta |
+
+Lo que escribe: el primer renglón; es lo único que mira la regla. Acierta si lo primero que escribe es la respuesta correcta.
+:::
+
+::: muestra
+Lo que recibe la máquina: una pregunta de «seguir un patrón inventado»
+
     casa -> asac
     mesa -> asem
     libro ->
-respuesta correcta: «orbil»
-    500M  «asem»                               falla
-  1.500M  «alem»                               falla
-  3.000M  «ibrlo»                              falla
-  7.000M  «abro»                               falla
 
-[razonar sobre una frase]
-lo que recibe la máquina:
+Respuesta correcta: «orbil».
+:::
+
+::: tabla
+Lo que contesta cada tamaño a esa pregunta de «seguir un patrón inventado»
+
+| tamaño | lo que escribe | la regla |
+|--:|:--|:-:|
+| 500M | «asem» | falla |
+| 1.500M | «alem» | falla |
+| 3.000M | «ibrlo» | falla |
+| 7.000M | «abro» | falla |
+
+Lo que escribe: el primer renglón; es lo único que mira la regla. Acierta si lo primero que escribe es la respuesta correcta.
+:::
+
+::: muestra
+Lo que recibe la máquina: una pregunta de «razonar sobre una frase»
+
     El vaso no cabía en el cajón porque el vaso era
       demasiado alto.
     Pregunta: ¿qué era demasiado alto?
     Respuesta: el
-respuesta correcta: «vaso»
-    500M  «100% de la altura del»              falla
-  1.500M  «vaso»                             acierta
-  3.000M  «vaso»                             acierta
-  7.000M  «vaso»                             acierta
 
-a la derecha de cada tamaño, el primer renglón de lo que
-escribe: es lo único que mira la regla.
+Respuesta correcta: «vaso».
+:::
+
+::: tabla
+Lo que contesta cada tamaño a esa pregunta de «razonar sobre una frase»
+
+| tamaño | lo que escribe | la regla |
+|--:|:--|:-:|
+| 500M | «100% de la altura del» | falla |
+| 1.500M | «vaso» | acierta |
+| 3.000M | «vaso» | acierta |
+| 7.000M | «vaso» | acierta |
+
+Lo que escribe: el primer renglón; es lo único que mira la regla. Acierta si lo primero que escribe es la respuesta correcta.
+:::
 
 --- 3. CÓMO LE LLEGA EL PATRÓN INVENTADO ---
-el primer enunciado, en trozos («|» separa dos trozos;
-«_», un espacio):
+
+::: muestra
+El primer enunciado del patrón inventado, en trozos
+
     c|asa|_->|_as|ac
     mes|a|_->|_a|sem
     lib|ro|_->|_
-cada renglón acaba en un trozo más, el salto de línea.
 
-palabra   en trozos     al revés  en trozos
-casa      c|asa         asac      as|ac
-mesa      mes|a         asem      as|em
-libro     lib|ro        orbil     orb|il
-sol       sol           los       los
-«asem» con el espacio de delante, como va en el enunciado,
-  se parte de otra manera: _a|sem
+«|» separa dos trozos; «_», un espacio. Cada renglón acaba en un trozo más, el salto de línea.
+:::
 
-lo que contesta cada tamaño a «libro ->»:
-    500M  «asem»
-  1.500M  «alem»
-  3.000M  «ibrlo»
-  7.000M  «abro»
+::: tabla
+Las palabras y sus vueltas, en trozos
+
+| palabra | en trozos | al revés | en trozos |
+|:--|:--|:--|:--|
+| casa | `c\|asa` | asac | `as\|ac` |
+| mesa | `mes\|a` | asem | `as\|em` |
+| libro | `lib\|ro` | orbil | `orb\|il` |
+| sol | `sol` | los | `los` |
+
+«|» separa dos trozos.
+
+«asem» con el espacio de delante, como va en el enunciado, se parte de otra manera: _a|sem.
+:::
+
+::: tabla
+Lo que contesta cada tamaño a «libro ->»
+
+| tamaño | lo que escribe |
+|--:|:--|
+| 500M | «asem» |
+| 1.500M | «alem» |
+| 3.000M | «ibrlo» |
+| 7.000M | «abro» |
+
+Lo que debía escribir: «orbil». Lo que escribe: el primer renglón.
+:::
 
 --- 4. LAS MISMAS RESPUESTAS, CORREGIDAS POR LETRAS ---
 
-tarea                          500M   1.500M   3.000M   7.000M
-sumar dos cifras               40 %    100 %    100 %    100 %
-plurales                       20 %     63 %    100 %     80 %
-traducir del inglés             0 %     80 %    100 %    100 %
-datos del mundo                15 %      0 %     35 %     40 %
-seguir un patrón inventado      0 %      0 %      0 %      0 %
-razonar sobre una frase        20 %     40 %     60 %     60 %
+::: tabla
+Las mismas respuestas, corregidas por letras
 
-cada casilla: de las letras de la respuesta correcta, qué
-parte escribe bien y en su sitio, desde la primera, antes
-de equivocarse; en promedio de las 5 preguntas. «libros»
-para «libros» vale 100 %; «lib», 50 %. Las mayúsculas no
-cuentan: a «¿cuál es la capital de Italia?», «rome» por
-«Roma» vale 75 %.
+| tarea | 500M | 1.500M | 3.000M | 7.000M |
+|:--|--:|--:|--:|--:|
+| sumar dos cifras | 40 % | 100 % | 100 % | 100 % |
+| plurales | 20 % | 63 % | 100 % | 80 % |
+| traducir del inglés | 0 % | 80 % | 100 % | 100 % |
+| datos del mundo | 15 % | 0 % | 35 % | 40 % |
+| seguir un patrón inventado | 0 % | 0 % | 0 % | 0 % |
+| razonar sobre una frase | 20 % | 40 % | 60 % | 60 % |
+
+Cada casilla: de las letras de la respuesta correcta, qué parte escribe bien y en su sitio, desde la primera, antes de equivocarse; en promedio de las 5 preguntas.
+
+«libros» para «libros» vale 100 %; «lib», 50 %. Las mayúsculas no cuentan: a «¿cuál es la capital de Italia?», «rome» por «Roma» vale 75 %.
+:::
 
 --- 5. LAS LISTAS DE LA SEGUNDA ESTACIÓN ---
-la segunda estación del capítulo 7 cambia cada trozo por su
-lista de números. Cuántos números suman todas esas listas,
-y qué parte son de todos los números de la máquina:
 
-tamaño   números en total   en las listas    parte
-  500M        494.032.768     136.134.656   27,6 %
-1.500M      1.543.714.304     233.373.696   15,1 %
-3.000M      3.085.938.688     311.164.928   10,1 %
-7.000M      7.615.616.512     544.997.376    7,2 %
+::: tabla
+Las listas de la segunda estación
 
-números de cada modelo (sus pesos):
-  500M: 494.032.768
-  1.500M: 1.543.714.304
-  3.000M: 3.085.938.688
-  7.000M: 7.615.616.512
+| tamaño | números en total | en las listas | parte |  |
+|--:|--:|--:|--:|:--|
+| 500M | 494.032.768 | 136.134.656 | 27,6 % | [barra:27.6] |
+| 1.500M | 1.543.714.304 | 233.373.696 | 15,1 % | [barra:15.1] |
+| 3.000M | 3.085.938.688 | 311.164.928 | 10,1 % | [barra:10.1] |
+| 7.000M | 7.615.616.512 | 544.997.376 | 7,2 % | [barra:7.2] |
+
+La segunda estación del capítulo 7 cambia cada trozo por su lista de números. En las listas: cuántos números suman todas esas listas. Parte: qué parte son de todos los números de la máquina.
+:::
+
 
 Todas las respuestas, en ../datos/salidas/bateria_una_a_una_todas.txt

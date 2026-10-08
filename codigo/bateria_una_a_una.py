@@ -48,7 +48,11 @@ import torch
 
 import crecer
 from crecer import ETIQUETA_TAMANO, MODELOS, TAREAS, TAREA_CONTROL, acierta, normalizar
-from formato import ANCHO_CAJA_CITA, comprobar_ancho, miles, pct
+from formato import (barra, miles, muestra_editorial, pct,
+                     tabla_editorial, trozo)
+
+# Desde el 9 oct 2026 los cinco bloques salen como tablas y muestras de libro (formato.py;
+# REGLAS 6 ter). Las respuestas y las cuentas no cambian.
 
 
 def primera_linea(respuesta):
@@ -118,115 +122,127 @@ def elegida(t, veredictos):
     return 0
 
 
-def bloque_tabla(usados, resp):
+NOTA_REGLA = "Acierta si lo primero que escribe es la respuesta correcta."
+
+
+def bloque_tabla(usados, resp, cuentas):
     etiquetas = [ETIQUETA_TAMANO[m] for m in usados]
-    lin = ["--- 1. LA TABLA DEL CAPÍTULO, EN PREGUNTAS ---", "",
-           f"{'tarea':<26}" + "".join(f"{e:>9}" for e in etiquetas)]
-    totales = {m: 0 for m in usados}
-    n_total = 0
+    filas, totales, n_total = [], {m: 0 for m in usados}, 0
     for t, items in TAREAS.items():
-        fila = f"{t:<26}"
+        fila = [t]
         for m in usados:
             a = sum(acierta(r, e) for r, (_, e) in zip(resp[m][t], items))
             totales[m] += a
-            fila += f"{f'{a} de {len(items)}':>9}"
+            fila.append(f"{a} de {len(items)}")
         n_total += len(items)
-        lin.append(fila)
-    lin.append(f"{'en total':<26}" + "".join(f"{f'{totales[m]} de {n_total}':>9}" for m in usados))
-    lin += ["",
-            f"«{etiquetas[0]}» quiere decir {etiquetas[0][:-1]} millones de números",
-            "(pesos). Es el nombre redondo con que se publicó cada",
-            "modelo; el recuento exacto va debajo.",
-            "cada casilla: cuántas de las 5 preguntas de la tarea acierta.",
-            "acierta: si lo primero que escribe es la respuesta correcta."]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+        filas.append(fila)
+    filas.append(["**en total**"] + [f"**{totales[m]} de {n_total}**" for m in usados])
+    out = ["--- 1. LA TABLA DEL CAPÍTULO, EN PREGUNTAS ---", ""]
+    out += tabla_editorial(
+        "La batería, en los cuatro tamaños", ["tarea"] + etiquetas, filas,
+        "i" + "d" * len(etiquetas),
+        ["Cada casilla: cuántas de las 5 preguntas de la tarea acierta. " + NOTA_REGLA,
+         f"{etiquetas[0]} quiere decir {etiquetas[0][:-1]} millones de números (pesos): es el "
+         "nombre redondo con que se publicó cada modelo."])
+    out += [""] + tabla_editorial(
+        "Cuántos números tiene cada modelo", ["modelo", "números (pesos)"],
+        [[ETIQUETA_TAMANO[m], miles(cuentas[m][0])] for m in usados], "dd",
+        ["La suma de todos los números de sus tablas, con el modelo ya cargado."])
+    return out
 
 
 def bloque_ejemplos(usados, resp):
-    lin = ["--- 2. UNA PREGUNTA DE CADA TAREA, Y LO QUE CONTESTA ---"]
+    out = ["--- 2. UNA PREGUNTA DE CADA TAREA, Y LO QUE CONTESTA ---"]
     ver = {m: {t: [acierta(r, e) for r, (_, e) in zip(resp[m][t], TAREAS[t])] for t in TAREAS}
            for m in usados}
     for t, items in TAREAS.items():
         i = elegida(t, ver)
         p, e = items[i]
-        lin += ["", f"[{t}]", "lo que recibe la máquina:"] + enunciado_en_renglones(p)
-        lin.append(f"respuesta correcta: «{e}»")
-        for m in usados:
-            r = primera_linea(resp[m][t][i]).strip()
-            nota = "acierta" if ver[m][t][i] else "falla"
-            lin.append(f"  {ETIQUETA_TAMANO[m]:>6}  {'«' + recorte(r) + '»':<34}{nota:>8}")
-    lin += ["", "a la derecha de cada tamaño, el primer renglón de lo que",
-            "escribe: es lo único que mira la regla."]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+        out += [""] + muestra_editorial(
+            f"Lo que recibe la máquina: una pregunta de «{t}»",
+            [l[4:] for l in enunciado_en_renglones(p)], [f"Respuesta correcta: «{e}»."])
+        filas = [[ETIQUETA_TAMANO[m], f"«{recorte(primera_linea(resp[m][t][i]).strip())}»",
+                  "acierta" if ver[m][t][i] else "falla"] for m in usados]
+        out += [""] + tabla_editorial(
+            f"Lo que contesta cada tamaño a esa pregunta de «{t}»",
+            ["tamaño", "lo que escribe", "la regla"], filas, "dic",
+            ["Lo que escribe: el primer renglón; es lo único que mira la regla. " + NOTA_REGLA])
+    return out
 
 
 def bloque_troceado(tok, usados, resp):
     items = TAREAS[TAREA_PATRON]
     p, e = items[0]
-    lin = ["--- 3. CÓMO LE LLEGA EL PATRÓN INVENTADO ---",
-           "el primer enunciado, en trozos («|» separa dos trozos;",
-           "«_», un espacio):"]
+    out = ["--- 3. CÓMO LE LLEGA EL PATRÓN INVENTADO ---", ""]
     t = trozos(tok, p)
-    renglon = []
+    renglones, renglon = [], []
     for x in t:
         assert "\n" not in x or x == "\n", f"se esperaba el salto de línea como trozo aparte: {x!r}"
         if x == "\n":
-            lin.append("    " + "|".join(visible(y) for y in renglon))
+            renglones.append("|".join(visible(y) for y in renglon))
             renglon = []
         else:
             renglon.append(x)
-    lin.append("    " + "|".join(visible(y) for y in renglon))
-    lin += ["cada renglón acaba en un trozo más, el salto de línea.", "",
-            f"{'palabra':<10}{'en trozos':<14}{'al revés':<10}{'en trozos':<14}"]
+    renglones.append("|".join(visible(y) for y in renglon))
+    out += muestra_editorial(
+        "El primer enunciado del patrón inventado, en trozos", renglones,
+        ["«|» separa dos trozos; «_», un espacio. Cada renglón acaba en un trozo más, el salto "
+         "de línea."])
+    filas = []
     for pal, rev in [("casa", "asac"), ("mesa", "asem")] + \
             [(pp.split("\n")[-1].split(" ")[0], ee) for pp, ee in items
              if pp.split("\n")[-1].split(" ")[0] in PALABRAS_TABLA]:
         assert pal[::-1] == rev, f"se esperaba que «{rev}» fuera «{pal}» al revés"
-        lin.append(f"{pal:<10}{'|'.join(trozos(tok, pal)):<14}{rev:<10}{'|'.join(trozos(tok, rev)):<14}")
+        filas.append([pal, trozo("|".join(trozos(tok, pal))), rev,
+                      trozo("|".join(trozos(tok, rev)))])
+    notas = ["«|» separa dos trozos."]
     # En el enunciado, lo que va detrás de «->» lleva un espacio delante, y el espacio cambia el
     # troceado: «asem» sola es «as|em», y « asem» es «_a|sem». Se dice, para que el lector no vea
     # dos troceados de la misma palabra sin saber por qué.
     for rev in ("asac", "asem"):
         solo, con = trozos(tok, rev), trozos(tok, " " + rev)
         if [visible(x) for x in con] != ["_" + solo[0]] + solo[1:]:
-            lin.append(f"«{rev}» con el espacio de delante, como va en el enunciado,")
-            lin.append(f"  se parte de otra manera: {'|'.join(visible(x) for x in con)}")
-    lin += ["", f"lo que contesta cada tamaño a «{p.split(chr(10))[-1].strip()}»:"]
-    for m in usados:
-        lin.append(f"  {ETIQUETA_TAMANO[m]:>6}  «{recorte(primera_linea(resp[m][TAREA_PATRON][0]).strip())}»")
-    return comprobar_ancho([l.rstrip() for l in lin], ANCHO_CAJA_CITA)
+            notas.append(f"«{rev}» con el espacio de delante, como va en el enunciado, se parte "
+                         f"de otra manera: {'|'.join(visible(x) for x in con)}.")
+    out += [""] + tabla_editorial(
+        "Las palabras y sus vueltas, en trozos",
+        ["palabra", "en trozos", "al revés", "en trozos"], filas, "iiii", notas)
+    pregunta = p.split(chr(10))[-1].strip()
+    out += [""] + tabla_editorial(
+        f"Lo que contesta cada tamaño a «{pregunta}»", ["tamaño", "lo que escribe"],
+        [[ETIQUETA_TAMANO[m], f"«{recorte(primera_linea(resp[m][TAREA_PATRON][0]).strip())}»"]
+         for m in usados], "di",
+        [f"Lo que debía escribir: «{e}». Lo que escribe: el primer renglón."])
+    return out
 
 
 def bloque_por_letras(usados, resp):
     etiquetas = [ETIQUETA_TAMANO[m] for m in usados]
-    lin = ["--- 4. LAS MISMAS RESPUESTAS, CORREGIDAS POR LETRAS ---", "",
-           f"{'tarea':<26}" + "".join(f"{e:>9}" for e in etiquetas)]
+    filas = []
     for t, items in TAREAS.items():
-        fila = f"{t:<26}"
-        for m in usados:
-            v = sum(por_letras(r, e) for r, (_, e) in zip(resp[m][t], items)) / len(items)
-            fila += f"{pct(v, 0):>9}"
-        lin.append(fila)
-    lin += ["",
-            "cada casilla: de las letras de la respuesta correcta, qué",
-            "parte escribe bien y en su sitio, desde la primera, antes",
-            "de equivocarse; en promedio de las 5 preguntas. «libros»",
-            "para «libros» vale 100 %; «lib», 50 %. Las mayúsculas no",
-            "cuentan: a «¿cuál es la capital de Italia?», «rome» por",
-            "«Roma» vale 75 %."]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+        filas.append([t] + [pct(sum(por_letras(r, e) for r, (_, e) in zip(resp[m][t], items))
+                                / len(items), 0) for m in usados])
+    return ["--- 4. LAS MISMAS RESPUESTAS, CORREGIDAS POR LETRAS ---", ""] + tabla_editorial(
+        "Las mismas respuestas, corregidas por letras", ["tarea"] + etiquetas, filas,
+        "i" + "d" * len(etiquetas),
+        ["Cada casilla: de las letras de la respuesta correcta, qué parte escribe bien y en su "
+         "sitio, desde la primera, antes de equivocarse; en promedio de las 5 preguntas.",
+         "«libros» para «libros» vale 100 %; «lib», 50 %. Las mayúsculas no cuentan: a «¿cuál "
+         "es la capital de Italia?», «rome» por «Roma» vale 75 %."])
 
 
 def bloque_primera_estacion(usados, cuentas):
-    lin = ["--- 5. LAS LISTAS DE LA SEGUNDA ESTACIÓN ---",
-           "la segunda estación del capítulo 7 cambia cada trozo por su",
-           "lista de números. Cuántos números suman todas esas listas,",
-           "y qué parte son de todos los números de la máquina:", "",
-           f"{'tamaño':>6}{'números en total':>19}{'en las listas':>16}{'parte':>9}"]
+    filas = []
     for m in usados:
         total, tabla = cuentas[m]
-        lin.append(f"{ETIQUETA_TAMANO[m]:>6}{miles(total):>19}{miles(tabla):>16}{pct(tabla / total, 1):>9}")
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+        filas.append([ETIQUETA_TAMANO[m], miles(total), miles(tabla), pct(tabla / total, 1),
+                      barra(tabla / total)])
+    return ["--- 5. LAS LISTAS DE LA SEGUNDA ESTACIÓN ---", ""] + tabla_editorial(
+        "Las listas de la segunda estación",
+        ["tamaño", "números en total", "en las listas", "parte", ""], filas, "ddddi",
+        ["La segunda estación del capítulo 7 cambia cada trozo por su lista de números. En las "
+         "listas: cuántos números suman todas esas listas. Parte: qué parte son de todos los "
+         "números de la máquina."])
 
 
 def selftest():
@@ -296,14 +312,11 @@ def main():
         del modelo
     print("Las respuestas reproducen crecer.csv en los cuatro tamaños.\n")
 
-    for bloque in (bloque_tabla(usados, resp), bloque_ejemplos(usados, resp),
+    for bloque in (bloque_tabla(usados, resp, cuentas), bloque_ejemplos(usados, resp),
                    bloque_troceado(tok_patron, usados, resp), bloque_por_letras(usados, resp),
                    bloque_primera_estacion(usados, cuentas)):
         print("\n".join(bloque))
         print()
-    print("números de cada modelo (sus pesos):")
-    for m in usados:
-        print(f"  {ETIQUETA_TAMANO[m]}: {miles(cuentas[m][0])}")
 
     with open(SALIDA_TODAS, "w", encoding="utf-8") as fh:
         for t, items in TAREAS.items():

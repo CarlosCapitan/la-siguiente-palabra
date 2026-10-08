@@ -30,8 +30,8 @@ import sys
 
 import crecer
 from crecer import ETIQUETA_TAMANO, MODELOS, TAREAS, TAREA_CONTROL, acierta
-from crudo_o_adiestrado_una_a_una import lista, prob_palabra, visible
-from formato import ANCHO_CAJA_CITA, comprobar_ancho, miles, pct
+from crudo_o_adiestrado_una_a_una import lista, partes_palabra, visible
+from formato import miles, pct, tabla_editorial, trozo
 
 
 def medir(tok, modelo, items=None):
@@ -45,7 +45,10 @@ def medir(tok, modelo, items=None):
         # maneras de escribir París en el capítulo 12. El puesto es el mejor de los dos.
         total, puesto = 0.0, None
         for forma in (e, " " + e):
-            v, (_, pu) = prob_palabra(tok, modelo, ids, forma)
+            # prob_palabra desapareció de crudo_o_adiestrado_una_a_una.py el 8 oct 2026; la misma
+            # cuenta sale de partes_palabra: la palabra entera y el puesto de su primer trozo.
+            partes, v = partes_palabra(tok, modelo, ids, forma)
+            pu = partes[0][2]
             total += v
             puesto = pu if puesto is None else min(puesto, pu)
         pl = lista(modelo, ids)
@@ -55,25 +58,34 @@ def medir(tok, modelo, items=None):
 
 
 def bloque(usados, res):
+    """Desde el 9 oct 2026, dos tablas de libro (formato.py; REGLAS 6 ter): la probabilidad de la
+    palabra buena y, debajo, lo que cada tamaño pone primero en su lista."""
     et = [ETIQUETA_TAMANO[m] for m in usados]
-    lin = ["--- LA TRADUCCIÓN POR DENTRO ---",
-           "cuánta probabilidad da cada tamaño a la palabra buena,",
-           "entera, justo donde tiene que escribirla (de cada cien):", "",
-           f"{'palabra':<14}" + "".join(f"{e:>11}" for e in et)]
+    filas = []
     for k, (p, e) in enumerate(TAREAS[TAREA]):
-        lin.append(f"{e:<14}" + "".join(f"{pct(res[m][k][1], 1):>11}" for m in usados))
+        filas.append([e] + [pct(res[m][k][1], 1) for m in usados])
     medias = [sum(r[1] for r in res[m]) / len(res[m]) for m in usados]
-    lin.append(f"{'media':<14}" + "".join(f"{pct(v, 1):>11}" for v in medias))
-    lin += ["", "lo que pone primero cada tamaño en su lista, y con cuánto:"]
+    filas.append(["**media**"] + [f"**{pct(v, 1)}**" for v in medias])
+    t1 = tabla_editorial(
+        "La traducción por dentro", ["palabra"] + et, filas, "i" + "d" * len(et),
+        ["Cuánta probabilidad da cada tamaño a la palabra buena, entera, justo donde tiene que "
+         "escribirla (de cada cien).",
+         "La palabra buena, con espacio delante o sin él (las dos valen para la regla del "
+         "capítulo); si tiene varios trozos, su probabilidad es la del primero por la de los "
+         "siguientes."])
+    filas = []
     for k, (p, e) in enumerate(TAREAS[TAREA]):
-        lin.append(f"«{p.split(chr(10))[-1].strip()}»")
-        for m in usados:
+        for j, m in enumerate(usados):
             _, _, puesto, top, v = res[m][k]
-            lin.append(f"  {ETIQUETA_TAMANO[m]:>6}: «{visible(top)}», {pct(v, 1)}; «{e}» en el puesto {miles(puesto)}")
-    lin += ["", "la palabra buena, con espacio delante o sin él (las dos",
-            "valen para la regla del capítulo); si tiene varios trozos,",
-            "su probabilidad es la del primero por la de los siguientes."]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA), medias
+            filas.append([f"«{p.split(chr(10))[-1].strip()}»" if j == 0 else "",
+                          ETIQUETA_TAMANO[m], trozo(visible(top)), pct(v, 1), miles(puesto)])
+    t2 = tabla_editorial(
+        "Lo que pone primero cada tamaño en su lista",
+        ["enunciado", "tamaño", "primero", "con cuánto", "puesto de la buena"], filas, "irirr"
+        .replace("r", "d"),
+        ["«_»: un espacio. Puesto de la buena: el del primer trozo de la palabra buena en la "
+         "lista, de más a menos probable; con espacio delante o sin él, el mejor de los dos."])
+    return [t1, t2], medias
 
 
 def selftest():
@@ -127,8 +139,10 @@ def main():
         usados.append(m)
         del modelo
     print()
-    lin, _ = bloque(usados, res)
-    print("\n".join(lin))
+    tablas, _ = bloque(usados, res)
+    for t in tablas:
+        print("\n".join(t))
+        print()
 
 
 if __name__ == "__main__":
