@@ -30,10 +30,15 @@ FIGURA = "!["
 TITULO = "#"
 DESTACADO = ":::"
 TABLA = "|"
+# Las figuras cuya conclusión va en el párrafo de justo antes, declaradas una a una con su motivo
+# (regla 9 bis). Solo figuras: a un bloque de salida se le exige siempre prosa detrás.
+EXCEPCIONES = "../../libro-ia-libro/notas/CONCLUSION-ANTES.md"   # relativo a este programa
 
 # ==========================================================
 
 import argparse
+import os
+import re
 import sys
 
 
@@ -53,7 +58,32 @@ def tipo(linea):
     return "prosa"
 
 
-def huecos(texto):
+def figura_de(linea):
+    """El nombre del fichero de una línea de figura: «![…](figuras/x.png)» -> «x.png»."""
+    m = re.search(r"\]\(([^)]+)\)", linea)
+    assert m, f"Se esperaba una figura con su fichero entre paréntesis; se encontró {linea!r}"
+    return os.path.basename(m.group(1))
+
+
+def leer_excepciones(ruta=None):
+    """Las figuras declaradas, de las líneas «figura.png | motivo». Revienta si alguna no trae
+    motivo: declarar una excepción es un acto consciente, y el motivo es la prueba."""
+    if ruta is None:
+        ruta = os.path.join(os.path.dirname(os.path.abspath(__file__)), EXCEPCIONES)
+    if not os.path.exists(ruta):
+        return frozenset()
+    figs = set()
+    for l in open(ruta, encoding="utf-8"):
+        # las líneas sangradas son el ejemplo del formato, no una excepción
+        if (not l.startswith(" ") and l.count("|") == 1
+                and l.split("|")[0].strip().endswith(".png")):
+            fig, motivo = (x.strip() for x in l.split("|"))
+            assert motivo, f"Se esperaba un motivo para la excepción de {fig}; no lo hay"
+            figs.add(fig)
+    return frozenset(figs)
+
+
+def huecos(texto, excepciones=frozenset()):
     """Devuelve [(línea, qué, qué viene detrás)] de cada bloque o figura tras el que no llega prosa
     antes de un título o del final. Un bloque o una figura seguidos de otro bloque o figura no son
     un fallo por sí mismos: se mira el último de la racha."""
@@ -70,6 +100,11 @@ def huecos(texto):
         j = i
         while j < n and tipos[j] in ("bloque", "figura", "blanca", "marca", "tabla"):
             j += 1
+        racha = [k for k in range(i, j) if tipos[k] in ("bloque", "figura")]
+        if (len(racha) == 1 and tipos[racha[0]] == "figura"
+                and figura_de(lineas[racha[0]]) in excepciones):
+            i = j
+            continue
         if j == n:
             fallos.append((inicio + 1, que, "el final del fichero"))
         elif tipos[j] == "titulo":
@@ -105,12 +140,16 @@ def selftest():
 
     # 3. INVARIANTE — bloque seguido de figura y de la prosa detrás vale (la prosa cubre las dos);
     #    un destacado cuenta como prosa; y una tabla de barras sola no es un bloque.
+    decl = frozenset({"f.png"})
     casos = {
         "bloque, figura y prosa": ("    T\n\n![F.](f.png)\n\nLo que muestran.\n", 0),
         "bloque y destacado": ("    T\n\n::: destacado\nLa frase.\n:::\n\n## Dos\n", 0),
         "tabla de barras y título": ("| a | b |\n|---|---|\n\n## Dos\n", 0),
+        "figura declarada y título": ("Antes.\n\n![F.](figuras/f.png)\n\n## Dos\n", 0),
+        "figura sin declarar y título": ("Antes.\n\n![G.](figuras/g.png)\n\n## Dos\n", 1),
+        "bloque, figura declarada y título": ("    T\n\n![F.](figuras/f.png)\n\n## Dos\n", 1),
     }
-    malos = [k for k, (t, esperado) in casos.items() if len(huecos(t)) != esperado]
+    malos = [k for k, (t, esperado) in casos.items() if len(huecos(t, decl)) != esperado]
     print(f"[3] invariante        {len(casos)} casos de forma: "
           f"{'todos bien' if not malos else 'MAL en ' + ', '.join(malos)}")
     if malos:
@@ -135,9 +174,10 @@ def main():
         sys.exit(0 if selftest() else 1)
     assert args.capitulos, "Se esperaba al menos un capítulo; no se ha dado ninguno"
     total = 0
+    excepciones = leer_excepciones()
     for ruta in args.capitulos:
         with open(ruta, encoding="utf-8") as fh:
-            h = huecos(fh.read())
+            h = huecos(fh.read(), excepciones)
         for linea, que, detras in h:
             print(f"FALLA: {ruta.split('/')[-1]} línea {linea}: un{'a' if que == 'figura' else ''} "
                   f"{que} sin prosa detrás; llega {detras}")
@@ -146,7 +186,8 @@ def main():
         print(f"\n{total} hueco(s): falta la conclusión en palabras (regla 9 bis).")
         sys.exit(1)
     print(f"PASA: {len(args.capitulos)} fichero(s); detrás de cada bloque y de cada figura hay "
-          f"prosa (regla 9 bis). Que diga la conclusión se mira al leer.")
+          f"prosa (regla 9 bis), salvo {len(excepciones)} figura(s) declarada(s) con la "
+          f"conclusión justo antes. Que diga la conclusión se mira al leer.")
 
 
 if __name__ == "__main__":
