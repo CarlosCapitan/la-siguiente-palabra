@@ -89,6 +89,17 @@ def huecos(texto, excepciones=frozenset()):
     un fallo por sí mismos: se mira el último de la racha."""
     lineas = texto.split("\n")
     tipos = [tipo(l) for l in lineas]
+    # Un bloque «::: tabla» o «::: muestra» (formato.py) es un bloque entero, de la marca de
+    # apertura a la de cierre: su título y su nota son del programa, no la prosa del libro.
+    dentro = False
+    for k, l in enumerate(lineas):
+        if l.strip() in ("::: tabla", "::: muestra"):
+            dentro = True
+            tipos[k] = "bloque"
+        elif dentro:
+            tipos[k] = "bloque"
+            if l.strip() == ":::":
+                dentro = False
     fallos = []
     i, n = 0, len(lineas)
     while i < n:
@@ -147,6 +158,9 @@ def selftest():
         "tabla de barras y título": ("| a | b |\n|---|---|\n\n## Dos\n", 0),
         "figura declarada y título": ("Antes.\n\n![F.](figuras/f.png)\n\n## Dos\n", 0),
         "figura sin declarar y título": ("Antes.\n\n![G.](figuras/g.png)\n\n## Dos\n", 1),
+        "tabla editorial y título": ("Antes.\n\n::: tabla\nTítulo\n\n| a |\n|--|\n| 1 |\n\n"
+                                     "Nota.\n:::\n\n## Dos\n", 1),
+        "tabla editorial y prosa": ("::: tabla\nTítulo\n\n| a |\n|--|\n| 1 |\n:::\n\nY dice.\n", 0),
         "bloque, figura declarada y título": ("    T\n\n![F.](figuras/f.png)\n\n## Dos\n", 1),
     }
     malos = [k for k, (t, esperado) in casos.items() if len(huecos(t, decl)) != esperado]

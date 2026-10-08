@@ -2,19 +2,22 @@
 """
 Capítulo 12 — crudo o adiestrado, pregunta a pregunta (L24, hallazgos D17, D18 y D21).
 
-`crudo_o_adiestrado.py` imprime lo que cita el capítulo: las dos listas de «La capital de
-Francia es», la pregunta directa y la batería en tres columnas. Faltan tres cosas para que el
-lector no tenga que imaginar nada, y las mide este programa con los MISMOS modelos, las MISMAS
-funciones (las importa, no las copia) y la MISMA regla:
+`crudo_o_adiestrado.py` mide lo que cuenta el capítulo. Este programa, con los MISMOS modelos,
+las MISMAS funciones (las importa, no las copia) y la MISMA regla, saca lo que el lector necesita
+ver paso a paso, ya en tablas de libro (formato.py, tabla_editorial):
 
-  1. París en las dos listas: cuánto tiene la palabra entera, en crudo y adiestrado, y qué es
-     la fila «___».
-  2. Nápoles: qué lista tiene la máquina pequeña justo antes de escribir «Nápoles».
-  3. Una pregunta de la batería tal como la recibe la máquina en cada columna (con su formato
-     de conversación entero), lo que contesta y si la regla la aprueba; y la tabla de las tres
-     columnas contada en preguntas, comprobada contra la del capítulo.
+  1. La lista de «La capital de Francia es», en crudo y adiestrado, y dónde está París en cada
+     una: el primer trozo, el segundo sabiendo el primero, la palabra entera (uno por otro) y la
+     forma sin tilde, de un solo trozo.
+  2. La pregunta sola, en crudo: la lista justo antes de escribir la ciudad, las tres ciudades
+     enteras y lo que escribe. En la pequeña sale Nápoles.
+  3. La batería del capítulo 11 en tres columnas (crudo, adiestrado, adiestrado con su formato),
+     comprobada contra la de crudo_o_adiestrado.csv.
+  4. Una pregunta de la batería en las tres columnas: lo que recibe cada una y lo que escribe.
 
-No toca `crudo_o_adiestrado.py` ni su salida.
+Cambio del 8 de octubre de 2026 (Carlos: «volcamos directamente la salida del script; esas
+líneas con todo seguido no ayudan»): las mismas cuentas, y además la probabilidad del segundo
+trozo de «París», que antes no se imprimía; todo sale en tablas con título y nota.
 
 Uso:
     python crudo_o_adiestrado_una_a_una.py --selftest
@@ -24,12 +27,13 @@ Uso:
 # ======================= CONSTANTES =======================
 
 CSV_TABLA = "crudo_o_adiestrado.csv"      # donde lo deja crudo_o_adiestrado.py
-PALABRAS = [" París", " Paris"]           # con tilde (dos trozos) y sin tilde (uno)
-BUSCADA_NAPOLES = "Nápoles"
+PARIS = [(" París", "«París», con tilde"), (" Paris", "«Paris», sin tilde")]
+CIUDADES = [" París", " Nápoles", " Roma"]
 EJEMPLOS = [("datos del mundo", 0), ("sumar dos cifras", 0)]   # (tarea, pregunta)
-ANCHO_RENGLON = 54
 ANCHO_RESPUESTA = 34
+ANCHO_RENGLON = 56     # un renglón más largo de lo que recibe la máquina se parte aquí
 TOLERANCIA = 1e-9
+NOMBRE = {"500M": "500 millones", "7.000M": "7.000 millones"}
 
 # ==========================================================
 
@@ -44,15 +48,18 @@ import torch
 
 import crecer
 import crudo_o_adiestrado as cap12
-from crecer import ETIQUETA_TAMANO, TAREAS, TAREA_CONTROL, acierta
-from formato import ANCHO_CAJA_CITA, comprobar_ancho, miles, pct, tabla_de_probabilidades
+from crecer import ETIQUETA_TAMANO, TAREAS, acierta
+from formato import barra, miles, muestra_editorial, pct, tabla_editorial, trozo
 
+
+# --------------------------- las cuentas ---------------------------
 
 def lista(modelo, ids):
     with torch.no_grad():
         logits = modelo(torch.tensor([ids])).logits[0, -1]
     p = torch.softmax(logits.float(), dim=-1)
-    assert abs(float(p.sum()) - 1.0) < 1e-3, f"la lista no suma uno: {float(p.sum())}"
+    assert abs(float(p.sum()) - 1.0) < 1e-3, (
+        f"Se esperaba una lista que sumara uno; suma {float(p.sum())}")
     return p
 
 
@@ -60,89 +67,136 @@ def puesto(p, i):
     return int((p > p[i]).sum()) + 1
 
 
-def prob_palabra(tok, modelo, ids, palabra):
-    """La palabra entera detrás de `ids`: la del primer trozo por la del segundo, etc."""
-    total, primero = 1.0, None
-    for i in tok(palabra)["input_ids"]:
-        p = lista(modelo, ids)
-        total *= float(p[i])
-        if primero is None:
-            primero = (tok.decode([i]), puesto(p, i))
-        ids = ids + [i]
-    return total, primero
-
-
 def visible(t):
     return t.replace(" ", "_")
 
 
-def clave_de_rayas(pares):
-    """Una línea por cada trozo de la lista que lleva rayas bajas de verdad: sin ella, el
-    lector lee «___» como tres espacios, porque «_» es como el libro dibuja un espacio."""
-    lin = []
+def partes_palabra(tok, modelo, ids, palabra):
+    """La palabra detrás de `ids`, trozo a trozo: [(trozo, probabilidad sabiendo los de antes,
+    puesto en su lista)], y la palabra entera, que es el producto."""
+    partes, total = [], 1.0
+    for i in tok(palabra)["input_ids"]:
+        p = lista(modelo, ids)
+        partes.append((tok.decode([i]), float(p[i]), puesto(p, i)))
+        total *= float(p[i])
+        ids = ids + [i]
+    return partes, total
+
+
+def primeros(tok, p, n=cap12.TOP_N):
+    top = torch.topk(p, n)
+    return [(tok.decode([int(i)]), float(v)) for v, i in zip(top.values, top.indices)]
+
+
+def p_txt(x):
+    """Un porcentaje para la tabla: un decimal, o «menos de 0,1 %» si no llega."""
+    return pct(x, 1) if x >= 0.0005 else "menos de 0,1 %"
+
+
+def rayas(pares):
+    """Nota para los trozos con rayas bajas de verdad: «_» es como el libro dibuja un espacio,
+    y sin la nota «___» se leería como tres espacios."""
+    out = []
     for w, _ in pares:
         n = w.count("_")
         if n:
             ante = "un espacio y " if w.startswith(" ") else ""
-            lin.append(f"«{visible(w)}»: {ante}{n} raya{'s' if n > 1 else ''} baja{'s' if n > 1 else ''}, «{'_' * n}».")
-    return lin
+            out.append(f"{trozo(visible(w))}: {ante}{n} raya{'s' if n > 1 else ''} "
+                       f"baja{'s' if n > 1 else ''}.")
+    return out
 
 
-def lineas_paris(titulo, tok, mod):
-    """La lista de «La capital de Francia es» de un modelo, con París entera debajo."""
+# --------------------------- 1. dónde está París ---------------------------
+
+def lista_y_paris(tok, mod):
     ids = tok(cap12.FRASE_CAP7)["input_ids"]
     p = lista(mod, ids)
-    top = torch.topk(p, cap12.TOP_N)
-    pares = [(tok.decode([int(i)]), float(v)) for v, i in zip(top.values, top.indices)]
-    lin = ["", f"{titulo}:"] + tabla_de_probabilidades([(visible(w), v) for w, v in pares], decimales=1)
-    suma = 0.0
-    for pal in PALABRAS:
-        total, (t1, pu) = prob_palabra(tok, mod, ids, pal)
-        n = len(tok(pal)["input_ids"])
-        suma += total
-        lin.append(f"«{pal.strip()}» entera ({n} trozo{'s' if n > 1 else ''}): {pct(total, 2)}; "
-                   f"«{visible(t1)}», puesto {miles(pu)}")
-    lin.append(f"las dos maneras juntas: {pct(suma, 1)}")
-    return lin + clave_de_rayas(pares)
+    pares = primeros(tok, p)
+    paris = {w: partes_palabra(tok, mod, ids, w) for w, _ in PARIS}
+    return pares, paris
 
 
-def bloque_paris(partes):
-    lin = [f"--- 1. «{cap12.FRASE_CAP7}»: DÓNDE ESTÁ PARÍS ---"]
-    for x in partes:
-        lin += x
-    lin += ["", "«_» delante de un trozo es un espacio. El puesto es el del",
-            "primer trozo en la lista entera, de más a menos probable."]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+def tabla_lista(pares, titulo, quien):
+    filas = [[trozo(visible(w)), pct(v, 1), barra(v)] for w, v in pares]
+    notas = [quien,
+             f"{trozo('_')} marca el espacio que va pegado delante del trozo. Son los "
+             f"{len(pares)} trozos más probables de toda la lista."] + rayas(pares)
+    return tabla_editorial(titulo, ["trozo siguiente", "probabilidad", ""], filas, "idi", notas)
 
 
-def bloque_napoles(tok, mod, etiqueta):
-    """Genera la pregunta directa y se para justo antes del trozo que empieza la ciudad."""
+def tabla_paris(datos, etiqueta):
+    """datos: [(rótulo de columna, {palabra: (partes, total)})]."""
+    tilde, sin = PARIS[0][0], PARIS[1][0]
+    cols = [d for _, d in datos]
+    assert len(cols[0][tilde][0]) == 2 and len(cols[0][sin][0]) == 1, (
+        "Se esperaba «París» en dos trozos y «Paris» en uno")
+    (t1, _, _), (t2, _, _) = cols[0][tilde][0]
+    filas = [
+        [f"primer trozo de «París», {trozo(visible(t1))}"] + [p_txt(d[tilde][0][0][1]) for d in cols],
+        ["su puesto en la lista"] + [miles(d[tilde][0][0][2]) for d in cols],
+        [f"segundo trozo, {trozo(visible(t2))}, detrás del primero"]
+        + [p_txt(d[tilde][0][1][1]) for d in cols],
+        ["«París» entera: el primero por el segundo"] + [p_txt(d[tilde][1]) for d in cols],
+        [f"«Paris» sin tilde, un solo trozo, {trozo(visible(cols[0][sin][0][0][0]))}"]
+        + [p_txt(d[sin][1]) for d in cols],
+        ["su puesto en la lista"] + [miles(d[sin][0][0][2]) for d in cols],
+        ["**las dos maneras juntas**"] + [f"**{p_txt(d[tilde][1] + d[sin][1])}**" for d in cols],
+    ]
+    notas = [f"Modelo de {NOMBRE[etiqueta]}, antes y después del adiestramiento, con la "
+             "frase tal cual, sin nada más.",
+             "Una palabra de dos trozos sale si sale el primero y, detrás de él, el segundo: "
+             "su probabilidad es la del primero por la del segundo.",
+             "El puesto es el del trozo en la lista entera, de más a menos probable."]
+    return tabla_editorial("Dónde está «París» detrás de «La capital de Francia es»",
+                           [""] + [r for r, _ in datos], filas, "idd", notas)
+
+
+# --------------------------- 2. la pregunta sola ---------------------------
+
+def pregunta_sola(tok, mod):
+    """Escribe la respuesta a la pregunta sola y se para justo antes del trozo que empieza la
+    ciudad. Devuelve (lo que lleva escrito, la lista ahí, las ciudades, lo que escribe)."""
     ids = tok(cap12.PREGUNTA)["input_ids"]
     with torch.no_grad():
         salida = mod.generate(torch.tensor([ids]), max_new_tokens=cap12.MAX_NUEVOS,
                               do_sample=False, pad_token_id=tok.eos_token_id)
     nuevos = salida[0, len(ids):].tolist()
-    texto_completo = tok.decode(nuevos, skip_special_tokens=True)
+    entero = tok.decode(nuevos, skip_special_tokens=True).strip()
     corte = None
     for k in range(1, len(nuevos)):
         if tok.decode(nuevos[:k]).strip().endswith("Francia es"):
             corte = k
             break
-    assert corte is not None, f"no se encontró la ciudad en {texto_completo!r}"
-    p = lista(mod, ids + nuevos[:corte])
-    top = torch.topk(p, cap12.TOP_N)
-    pares = [(tok.decode([int(i)]), float(v)) for v, i in zip(top.values, top.indices)]
-    lin = [f"--- 2. {etiqueta}, EN CRUDO, JUSTO ANTES DE LA CIUDAD ---",
-           f"pregunta: «{cap12.PREGUNTA}»",
-           f"lo que lleva escrito: «{tok.decode(nuevos[:corte]).strip()}»",
-           "lo que puede venir ahora:"]
-    lin += tabla_de_probabilidades([(visible(w), v) for w, v in pares], decimales=1)
-    for pal in (" París", " Nápoles", " Roma"):
-        total, (t1, pu) = prob_palabra(tok, mod, ids + nuevos[:corte], pal)
-        lin.append(f"«{pal.strip()}» entera: {pct(total, 2)}; «{visible(t1)}», puesto {miles(pu)}")
-    lin.append(f"lo que escribe entero: «{texto_completo.strip()}»")
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+    assert corte is not None, f"Se esperaba «Francia es» en lo que escribe; escribe {entero!r}"
+    delante = ids + nuevos[:corte]
+    p = lista(mod, delante)
+    ciudades = {c: partes_palabra(tok, mod, delante, c) for c in CIUDADES}
+    return tok.decode(nuevos[:corte]).strip(), primeros(tok, p), ciudades, entero
 
+
+def tablas_pregunta_sola(etiqueta, llevado, pares, ciudades, entero):
+    t1 = tabla_editorial(
+        f"La pregunta sola, en crudo: lo que puede venir detrás de «{llevado}»",
+        ["trozo siguiente", "probabilidad", ""],
+        [[trozo(visible(w)), pct(v, 1), barra(v)] for w, v in pares], "idi",
+        [f"Modelo de {NOMBRE[etiqueta]}, sin adiestrar. Recibe «{cap12.PREGUNTA}» y escribe, "
+         f"trozo a trozo, «{llevado}»: ésta es la lista justo antes de la ciudad.",
+         f"Lo que escribe entero, cogiendo cada vez el trozo más probable: «{entero}»",
+         f"{trozo('_')} marca el espacio que va pegado delante del trozo."] + rayas(pares))
+    filas = []
+    for c in CIUDADES:
+        partes, total = ciudades[c]
+        filas.append([c.strip(), " + ".join(trozo(visible(t)) for t, _, _ in partes),
+                      p_txt(total), miles(partes[0][2])])
+    t2 = tabla_editorial(
+        f"Las tres ciudades enteras, en ese mismo punto ({etiqueta})",
+        ["ciudad", "en trozos", "la palabra entera", "puesto del primer trozo"], filas, "iidd",
+        ["La palabra entera es el primer trozo por el segundo, y así hasta el último, cada uno "
+         "sabiendo los de antes."])
+    return t1, t2
+
+
+# --------------------------- 3 y 4. la batería ---------------------------
 
 def responder(tok, mod, con_formato):
     """Las respuestas a la batería, exactamente como las da crudo_o_adiestrado.py."""
@@ -159,7 +213,8 @@ def leer_tabla(ruta=CSV_TABLA):
 
 
 def aciertos(resp):
-    return {t: sum(acierta(r, e) for r, (_, e) in zip(resp[t], items)) for t, items in TAREAS.items()}
+    return {t: sum(acierta(r, e) for r, (_, e) in zip(resp[t], items))
+            for t, items in TAREAS.items()}
 
 
 def comprobar(etiqueta, columnas, tabla):
@@ -171,62 +226,72 @@ def comprobar(etiqueta, columnas, tabla):
                 f"{a} de {len(TAREAS[t])} frente a {esperado:.3f}")
 
 
-def bloque_tabla(etiqueta, columnas):
-    lin = [f"--- 3. LA BATERÍA EN TRES COLUMNAS, EN PREGUNTAS ({etiqueta}) ---", "",
-           f"{'tarea':<26}{'crudo':>9}{'adiestrado':>12}{'con formato':>13}"]
-    tot = [0, 0, 0]
+COLUMNAS = ["en crudo", "adiestrado", "adiestrado, con su formato"]
+
+
+def tabla_bateria(etiqueta, columnas):
+    filas, tot = [], [0, 0, 0]
     for t in TAREAS:
-        fila = f"{t:<26}"
-        for j, (resp, w) in enumerate(zip(columnas, (9, 12, 13))):
+        fila = [t]
+        for j, resp in enumerate(columnas):
             a = aciertos(resp)[t]
             tot[j] += a
-            fila += f"{f'{a} de {len(TAREAS[t])}':>{w}}"
-        lin.append(fila)
+            fila.append(f"{a} de {len(TAREAS[t])}")
+        filas.append(fila)
     n = sum(len(v) for v in TAREAS.values())
-    lin.append(f"{'en total':<26}" + "".join(f"{f'{a} de {n}':>{w}}" for a, w in zip(tot, (9, 12, 13))))
-    lin += ["",
-            "cada casilla: cuántas de las 5 preguntas de la tarea acierta.",
-            f"las tres columnas, el mismo tamaño: {etiqueta}.",
-            "crudo: sin adiestrar, con el enunciado tal cual.",
-            "adiestrado: el mismo ya adiestrado, enunciado tal cual.",
-            "con formato: el adiestrado, con su formato de conversación.",
-            "acierta: si lo primero que escribe es la respuesta correcta."]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+    filas.append(["**en total**"] + [f"**{a} de {n}**" for a in tot])
+    return tabla_editorial(
+        f"La batería del capítulo 11, en las tres columnas ({etiqueta})",
+        ["tarea"] + COLUMNAS, filas, "iddd",
+        [f"Cada casilla: cuántas de las 5 preguntas de la tarea acierta. Las tres columnas son "
+         f"el mismo modelo, de {NOMBRE[etiqueta]}.",
+         "En crudo: sin adiestrar, con el enunciado tal cual. Adiestrado: el mismo, ya "
+         "adiestrado, con el mismo enunciado. Con su formato: el enunciado va dentro del "
+         "formato de conversación, como lo usa quien habla con él.",
+         "Acierta si lo primero que escribe es la respuesta correcta."])
 
 
-def renglones(texto, sangria="    "):
-    lin = []
-    for r in texto.split("\n"):
+def renglones(texto):
+    """El texto en renglones que caben; el que se parte sigue con dos espacios delante."""
+    out = []
+    for r in texto.rstrip("\n").split("\n"):
         partes = textwrap.wrap(r, ANCHO_RENGLON) or [""]
-        lin.append(sangria + partes[0])
-        lin += [sangria + "  " + x for x in partes[1:]]
-    return lin
+        out.append(partes[0])
+        out += ["  " + x for x in partes[1:]]
+    return out
 
 
-def bloque_tres_maneras(tok_b, tok_i, columnas, etiqueta):
-    lin = [f"--- 4. LA MISMA PREGUNTA EN LAS TRES COLUMNAS ({etiqueta}) ---"]
+def tablas_una_pregunta(tok_i, columnas, etiqueta):
+    out = []
     for tarea, i in EJEMPLOS:
         p, e = TAREAS[tarea][i]
-        lin += ["", f"[{tarea}, pregunta {i + 1}]", f"respuesta correcta: «{e}»"]
-        for j, (titulo, texto) in enumerate((
-                ("crudo: recibe el enunciado tal cual", p),
-                ("adiestrado: recibe el mismo enunciado tal cual", p),
-                ("con formato: recibe esto", cap12.con_formato(tok_i, p)))):
-            if j == 1:
-                lin.append(f"{titulo}")
-            else:
-                lin.append(f"{titulo}:")
-                lin += renglones(texto.rstrip("\n"))
+        filas = []
+        for j, recibe in enumerate(("el enunciado tal cual", "el mismo enunciado tal cual",
+                                    "el enunciado dentro de su formato")):
             r = columnas[j][tarea][i]
             primera = r.split("\n")[0].strip()
             if len(primera) > ANCHO_RESPUESTA:
                 primera = primera[:ANCHO_RESPUESTA - 1] + "…"
-            nota = "acierta" if acierta(r, e) else "falla"
-            lin.append(f"  contesta «{primera}»: {nota}")
-    lin += ["", "La regla mira el primer renglón de lo que contesta y",
-            "acierta si empieza por la respuesta correcta."]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+            filas.append([COLUMNAS[j], recibe, f"«{primera}»",
+                          "acierta" if acierta(r, e) else "falla"])
+        out.append(tabla_editorial(
+            f"Una pregunta de «{tarea}» en las tres columnas ({etiqueta})",
+            ["columna", "recibe", "lo que escribe", "la regla"], filas, "iiii",
+            [f"Respuesta correcta: «{e}». La regla mira el primer renglón de lo que escribe y "
+             "acierta si empieza por la respuesta correcta."]))
+        out.append(muestra_editorial(
+            f"El enunciado de «{tarea}», tal cual", renglones(p),
+            ["Así lo reciben las dos primeras columnas."]))
+        formato = renglones(cap12.con_formato(tok_i, p))
+        out.append(muestra_editorial(
+            f"El mismo enunciado, dentro del formato de conversación", formato,
+            ["Así lo recibe la tercera columna. «<|im_start|>» y «<|im_end|>» marcan dónde "
+             "empieza y dónde acaba cada parte; «system», «user» y «assistant» dicen de quién "
+             "es: la instrucción de serie, quien pregunta y la máquina."]))
+    return out
 
+
+# --------------------------- selftest ---------------------------
 
 def cargar_pareja(base, instruido):
     tok_b, mod_b = cap12.cargar(base)
@@ -242,29 +307,38 @@ def selftest():
     # 1. TEST NULO — una palabra que no tiene nada que ver con la frase tiene una probabilidad
     #    minúscula, y la suma de las dos Parises no pasa del cien por cien.
     ids = tok_b(cap12.FRASE_CAP7)["input_ids"]
-    nada, _ = prob_palabra(tok_b, mod_b, ids, " hipopótamo")
-    paris = sum(prob_palabra(tok_b, mod_b, ids, w)[0] for w in PALABRAS)
-    print(f"[1] test nulo         «hipopótamo» detrás de la frase: {pct(nada, 4)}; París, las dos: {pct(paris, 2)}")
+    _, nada = partes_palabra(tok_b, mod_b, ids, " hipopótamo")
+    paris = sum(partes_palabra(tok_b, mod_b, ids, w)[1] for w, _ in PARIS)
+    print(f"[1] test nulo         «hipopótamo» detrás de la frase: {pct(nada, 4)}; "
+          f"París, las dos: {pct(paris, 2)}")
     if nada > 0.001 or paris > 1:
         fallos.append("test nulo: una palabra ajena sale probable, o las probabilidades pasan de uno")
 
     # 2. SEÑAL IMPLANTADA — detrás de «La capital de Francia es la ciudad de», el crudo pone
-    #    París la primera (capítulo 7, M7-2): la cuenta de la palabra entera tiene que verlo.
+    #    París la primera (capítulo 7): la cuenta tiene que verlo, y la palabra entera tiene que
+    #    ser exactamente el primer trozo por el segundo.
     ids2 = tok_b(cap12.FRASE_CAP7 + " la ciudad de")["input_ids"]
-    v, (_, pu) = prob_palabra(tok_b, mod_b, ids2, " París")
-    print(f"[2] señal implantada  «París» tras «…la ciudad de»: {pct(v, 2)}, puesto {pu}")
-    if pu != 1:
-        fallos.append(f"señal implantada: París no sale la primera tras «la ciudad de» (puesto {pu})")
+    partes, v = partes_palabra(tok_b, mod_b, ids2, " París")
+    producto = 1.0
+    for _, q, _ in partes:
+        producto *= q
+    print(f"[2] señal implantada  «París» tras «…la ciudad de»: {pct(v, 2)}, puesto "
+          f"{partes[0][2]}; en {len(partes)} trozos, producto igual: "
+          f"{'sí' if abs(producto - v) < TOLERANCIA else 'NO'}")
+    if partes[0][2] != 1 or abs(producto - v) >= TOLERANCIA:
+        fallos.append("señal implantada: París no sale la primera, o la palabra entera no es el producto")
 
     # 3. INVARIANTE — las respuestas de aquí reproducen la batería de crudo_o_adiestrado.csv.
-    cols = [responder(tok_b, mod_b, False), responder(tok_i, mod_i, False), responder(tok_i, mod_i, True)]
+    cols = [responder(tok_b, mod_b, False), responder(tok_i, mod_i, False),
+            responder(tok_i, mod_i, True)]
     try:
         comprobar(ETIQUETA_TAMANO[base], cols, leer_tabla())
         igual = True
     except AssertionError as e:
         igual = False
         fallos.append(f"invariante: {e}")
-    print(f"[3] invariante        {ETIQUETA_TAMANO[base]} reproduce {CSV_TABLA}: {'sí' if igual else 'NO'}")
+    print(f"[3] invariante        {ETIQUETA_TAMANO[base]} reproduce {CSV_TABLA}: "
+          f"{'sí' if igual else 'NO'}")
     print()
     if fallos:
         for f in fallos:
@@ -274,6 +348,13 @@ def selftest():
     return 0
 
 
+# --------------------------- principal ---------------------------
+
+def imprimir(bloques):
+    for b in bloques:
+        print("\n".join(b) + "\n")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--selftest", action="store_true")
@@ -281,29 +362,35 @@ def main():
     if args.selftest:
         sys.exit(selftest())
     print(f"Medido el {datetime.date.today()} en {platform.platform()}; generación determinista "
-          "(do_sample=False), como crudo_o_adiestrado.py.")
+          "(do_sample=False), como crudo_o_adiestrado.py.\n")
     tabla = leer_tabla()
     for base, instruido in cap12.PAREJAS:
         etiqueta = ETIQUETA_TAMANO[base]
-        print(f"\n{'=' * 60}\nTAMAÑO {etiqueta}\n{'=' * 60}\n")
+        print(f"{'=' * 60}\nTAMAÑO {etiqueta}\n{'=' * 60}\n")
         # Uno detrás de otro, no los dos a la vez: dos de siete mil millones no caben juntos
         # en la memoria del portátil con lo demás que hay en marcha.
         tok_b, mod_b = cap12.cargar(base)
-        paris = [lineas_paris("en crudo", tok_b, mod_b)]
-        napoles = bloque_napoles(tok_b, mod_b, etiqueta)
+        pares_b, paris_b = lista_y_paris(tok_b, mod_b)
+        sola = pregunta_sola(tok_b, mod_b)
         cols = [responder(tok_b, mod_b, False)]
         del mod_b
         tok_i, mod_i = cap12.cargar(instruido)
-        paris.append(lineas_paris("adiestrado, enunciado tal cual", tok_i, mod_i))
+        pares_i, paris_i = lista_y_paris(tok_i, mod_i)
         cols += [responder(tok_i, mod_i, False), responder(tok_i, mod_i, True)]
         del mod_i
         comprobar(etiqueta, cols, tabla)
-        if etiqueta == "7.000M":
-            print("\n".join(bloque_paris(paris)) + "\n")
-        print("\n".join(napoles) + "\n")
+        imprimir([
+            tabla_lista(pares_b, "Lo que puede venir detrás de «La capital de Francia es», "
+                                 "en crudo", f"Modelo de {NOMBRE[etiqueta]}, sin adiestrar, "
+                                 "con la frase tal cual, sin nada más."),
+            tabla_lista(pares_i, "Lo mismo, en la versión adiestrada",
+                        f"Modelo de {NOMBRE[etiqueta]}, adiestrado, con exactamente la misma "
+                        "frase: sin pregunta y sin formato de conversación."),
+            tabla_paris([("en crudo", paris_b), ("adiestrado", paris_i)], etiqueta),
+            *tablas_pregunta_sola(etiqueta, *sola),
+        ])
         print(f"(las respuestas reproducen la batería de {CSV_TABLA})\n")
-        print("\n".join(bloque_tabla(etiqueta, cols)) + "\n")
-        print("\n".join(bloque_tres_maneras(tok_b, tok_i, cols, etiqueta)))
+        imprimir([tabla_bateria(etiqueta, cols), *tablas_una_pregunta(tok_i, cols, etiqueta)])
 
 
 if __name__ == "__main__":

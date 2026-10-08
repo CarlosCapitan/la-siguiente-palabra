@@ -117,6 +117,29 @@ def parece_salida_de_maquina(lineas):
     return False
 
 
+def titulos_y_notas(lineas, salida_lineas):
+    """Los renglones de título y de nota de los bloques «::: tabla» y «::: muestra» que no
+    están, tal cual, en la salida (formato.py, tabla_editorial y muestra_editorial).
+
+    Sus filas de tabla y su texto sangrado ya se comprueban como cualquier otra tabla o
+    bloque. El título y la nota también los escribe el programa, y un título retocado a mano
+    cambia lo que el lector cree que está mirando."""
+    perdidos, dentro, n = [], False, 0
+    conjunto = set(salida_lineas)
+    for l in lineas:
+        if re.match(r'^:::\s*(tabla|muestra)\s*$', l):
+            dentro, n = True, n + 1
+            continue
+        if dentro and l.strip() == ':::':
+            dentro = False
+            continue
+        if dentro and l.strip() and not l.startswith('|') and not l.startswith('    '):
+            t = normalizar(quitar_marcado(l)).strip()
+            if t not in conjunto:
+                perdidos.append(t)
+    return n, perdidos
+
+
 def selftest():
     """Tres pruebas sobre lo único que este verificador decide de verdad: si una fila de
     tabla del libro está o no en la salida del programa."""
@@ -215,12 +238,26 @@ def selftest():
     if not copiada or retocada:
         fallos.append("la clave: la línea que explica una columna se copia literal o no vale")
 
+    # 8. EL TÍTULO Y LA NOTA DE UNA TABLA EDITORIAL — se copian literales, como las filas.
+    sal = [normalizar(x).strip() for x in ("Lo que puede venir detrás de «La capital»",
+                                            "Modelo de 7.000 millones, en crudo.")]
+    bien = ["::: tabla", "Lo que puede venir detrás de «La capital»", "", "| a | b |",
+            "|:--|--:|", "| x | 1 |", "", "Modelo de 7.000 millones, en crudo.", ":::"]
+    mal = list(bien)
+    mal[7] = "Modelo de 7.000 millones, adiestrado."
+    nb, pb = titulos_y_notas(bien, sal)
+    nm, pm = titulos_y_notas(mal, sal)
+    print(f"[8] tabla editorial   título y nota copiados: {'pasan' if not pb else 'NO PASAN'}; "
+          f"nota retocada: {'PASA (mal)' if not pm else 'no pasa'}")
+    if pb or not pm or nb != 1:
+        fallos.append("tabla editorial: el título y la nota se copian literales o no valen")
+
     print()
     if fallos:
         for f in fallos:
             print("FALLA:", f)
         return 1
-    print("SELFTEST: las siete pruebas pasan.")
+    print("SELFTEST: las ocho pruebas pasan.")
     return 0
 
 
@@ -245,7 +282,9 @@ assert salida.strip(), "no me has dado ninguna salida contra la que comparar"
 # números vinieran de tres sitios distintos.
 for f in sys.argv[2:]:
     for l in io.open(f, encoding='utf-8'):
-        l = normalizar(l).strip()
+        # Sin las comillas de monoespaciado (formato.py, trozo): en la fila del libro tampoco
+        # cuentan, y una celda «`_Par` + `ís`» se compara como «_Par + ís».
+        l = normalizar(quitar_marcado(l)).strip()
         if l:
             lineas_salida.append(l)
 
@@ -383,11 +422,16 @@ for cabecera, datos in tablas_del_capitulo(lineas_crudas):
           "  rebautizarla, y mucho menos ponerle una unidad.")
     fallos += 1
 
+divs, perdidos = titulos_y_notas(lineas_crudas, lineas_salida)
+for t in perdidos:
+    print(f"TÍTULO O NOTA NO LITERAL: «{t[:60]}…»")
+    fallos += 1
+
 # Un capítulo puede no enseñar ni un dato medido —el prólogo no enseña ninguno— y eso no es un
 # fallo. El fallo es que el capítulo SÍ traiga bloques o tablas y no se reconozca ninguno: ahí el
 # formato ha cambiado y este verificador habría pasado a aprobar sin mirar. Antes los dos casos
 # daban el mismo error, y el aviso que importa quedaba escondido detrás del que no importa.
-if not (comprobados or filas or cabeceras or de_autor):
+if not (comprobados or filas or cabeceras or de_autor or divs):
     assert not parece_salida_de_maquina(crudo.splitlines()), (
         f"{capitulo} trae bloques o filas con cifras y no he reconocido ninguno: el formato ha "
         "cambiado y desde ahora este verificador estaría aprobando el capítulo sin mirar nada")
@@ -396,6 +440,6 @@ if not (comprobados or filas or cabeceras or de_autor):
 
 print(f"{comprobados} citas de máquina comprobadas ({recompuestos} recortadas), "
       f"{de_autor} bloques declarados del autor, {filas} filas de tabla con números, "
-      f"{cabeceras} filas de rótulos")
+      f"{cabeceras} filas de rótulos, {divs} tablas o muestras editoriales")
 print("FALLA" if fallos else "PASA: todas las citas de máquina son literales")
 sys.exit(1 if fallos else 0)
