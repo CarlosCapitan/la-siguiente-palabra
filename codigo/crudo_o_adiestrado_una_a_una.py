@@ -226,7 +226,10 @@ def comprobar(etiqueta, columnas, tabla):
                 f"{a} de {len(TAREAS[t])} frente a {esperado:.3f}")
 
 
-COLUMNAS = ["en crudo", "adiestrado", "adiestrado, con su formato"]
+# La tercera se rotula «con su formato», no «adiestrado, con su formato»: el rótulo largo partía
+# la cabecera de la tabla en dos renglones (revisión del PDF, 8 oct 2026). Que también es la
+# adiestrada lo dice la nota de la tabla.
+COLUMNAS = ["en crudo", "adiestrado", "con su formato"]
 
 
 def tabla_bateria(etiqueta, columnas):
@@ -266,8 +269,9 @@ def tablas_una_pregunta(tok_i, columnas, etiqueta):
     for tarea, i in EJEMPLOS:
         p, e = TAREAS[tarea][i]
         filas = []
-        for j, recibe in enumerate(("el enunciado tal cual", "el mismo enunciado tal cual",
-                                    "el enunciado dentro de su formato")):
+        # Celdas cortas: con «el enunciado tal cual» y parecidos, la columna se partía en tres
+        # renglones por fila (revisión del PDF, 8 oct 2026). «el enunciado» pasa al rótulo.
+        for j, recibe in enumerate(("tal cual", "tal cual", "dentro de su formato")):
             r = columnas[j][tarea][i]
             primera = r.split("\n")[0].strip()
             if len(primera) > ANCHO_RESPUESTA:
@@ -276,7 +280,7 @@ def tablas_una_pregunta(tok_i, columnas, etiqueta):
                           "acierta" if acierta(r, e) else "falla"])
         out.append(tabla_editorial(
             f"Una pregunta de «{tarea}» en las tres columnas ({etiqueta})",
-            ["columna", "recibe", "lo que escribe", "la regla"], filas, "iiii",
+            ["columna", "recibe el enunciado", "lo que escribe", "la regla"], filas, "iiii",
             [f"Respuesta correcta: «{e}». La regla mira el primer renglón de lo que escribe y "
              "acierta si empieza por la respuesta correcta."]))
         out.append(muestra_editorial(
