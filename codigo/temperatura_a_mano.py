@@ -43,7 +43,10 @@ import sys
 import unicodedata
 from pathlib import Path
 
-from formato import ANCHO_CAJA_CITA, coma, comprobar_ancho, miles
+from formato import barra, coma, miles, tabla_editorial
+
+# Desde el 8 oct 2026 las tres tablas del libro (la urna, las puntuaciones y las veinte tiradas)
+# salen como tablas de libro (formato.py, tabla_editorial; REGLAS 6 ter). Las cuentas no cambian.
 
 AQUI = Path(__file__).resolve().parent
 
@@ -126,21 +129,21 @@ def parte_urna(filas):
     frase, modelo, logits, pos = logits_cap7()
     print(f"--- 1. EL SORTEO DEL CAPÍTULO 7 A CUATRO TEMPERATURAS ---")
     print(f"modelo: {modelo} (el del capítulo 7)")
-    lineas = [f"«{frase}» -> ¿qué trozo viene?",
-              "papeletas de cada cien:",
-              "",
-              f"{'temperatura':<12}{'«la»':>8}{'«una»':>8}{'«un»':>8}{'otros':>9}"]
+    tabla = []
     for t in TEMPERATURAS:
         r = reparto(logits, pos, t)
         e = en_papeletas(r)
-        lineas.append(f"{coma(t, 1):<12}" + "".join(f"{coma(100 * x, 1):>8}" for x in r[:3])
-                      + f"{coma(100 * r[3], 1):>9}")
+        tabla.append([coma(t, 1)] + [coma(100 * x, 1) for x in r[:3]] + [coma(100 * r[3], 1),
+                                                                         barra(r[3])])
         filas.append(["urna", f"{t:.1f}"] + [f"{x:.6f}" for x in r] + [str(x) for x in e])
-    lineas += ["",
-               "«otros»: todos los demás trozos posibles juntos.",
-               "a temperatura 0 no hay sorteo: gana siempre el favorito."]
-    for l in comprobar_ancho(lineas, ANCHO_CAJA_CITA):
-        print(l)
+    print()
+    print("\n".join(tabla_editorial(
+        f"Las papeletas de «{frase}» a cuatro temperaturas",
+        ["temperatura", "«la»", "«una»", "«un»", "otros", ""], tabla, "cddddi",
+        ["Papeletas de cada cien que lleva cada trozo. Otros: todos los demás trozos posibles "
+         "juntos; la barra es su parte.",
+         f"Modelo de 500 millones, sin adiestrar ({modelo}), el del capítulo 7. A temperatura 0 "
+         "no hay sorteo: gana siempre el favorito."])))
     print("\nlas mismas, redondeadas a papeletas enteras (para la figura):")
     for t in TEMPERATURAS:
         e = en_papeletas(reparto(logits, pos, t))
@@ -192,23 +195,19 @@ def tabla_de_tiradas(resumen, n):
     """La tabla resumen de las tiradas. Se imprime al final de la parte 2 y, sin volver a
     ejecutar el modelo, con --solo-tabla, leyéndola del CSV (primera versión: el rótulo decía
     «se quedan en el castellano», que es más de lo que se mide; se cambió el 28 de septiembre)."""
-    lineas = ["",
-              f"de las {n} tiradas de cada temperatura:",
-              "",
-              f"{'temperatura':<13}{'solo letras':>14}{'acaban en':>12}{'distintas':>11}",
-              f"{'':<13}{'latinas':>14}{'bucle':>12}{'entre sí':>11}"]
-    for t, dentro, bucle, distintas, _ in resumen:
-        lineas.append(f"{coma(t, 1):<13}{f'{dentro} de {n}':>14}{f'{bucle} de {n}':>12}"
-                      f"{distintas:>11}")
-    lineas += ["",
-               "«solo letras latinas»: de principio a fin, todas sus letras",
-               "son de nuestro alfabeto (puede haber palabras de otro",
-               "idioma que lo use, como el inglés).",
-               "«acaban en bucle»: repiten al final la misma frase tres veces.",
-               "«distintas entre sí»: cuántas de las tiradas no son iguales.",
-               "a temperatura 0 no hay sorteo: las tiradas salen iguales."]
-    for l in comprobar_ancho(lineas, ANCHO_CAJA_CITA):
-        print(l)
+    filas = [[coma(t, 1), f"{dentro} de {n}", f"{bucle} de {n}", str(distintas)]
+             for t, dentro, bucle, distintas, _ in resumen]
+    print()
+    print("\n".join(tabla_editorial(
+        f"Las {n} tiradas de cada temperatura",
+        ["temperatura", "solo letras latinas", "acaban en bucle", "distintas entre sí"], filas,
+        "cddd",
+        ["Solo letras latinas: de principio a fin, todas sus letras son de nuestro alfabeto "
+         "(puede haber palabras de otro idioma que lo use, como el inglés).",
+         "Acaban en bucle: repiten al final la misma frase tres veces. Distintas entre sí: "
+         "cuántas de las tiradas no son iguales.",
+         "Modelo de 7.000 millones, adiestrado y sin comprimir, el del capítulo 12. A temperatura "
+         "0 no hay sorteo: las tiradas salen iguales."])))
 
 
 def tabla_desde_csv():
@@ -239,23 +238,22 @@ def parte_puntuaciones():
     medio = int(np.argsort(logits)[len(logits) // 2])
     print("--- 3. CÓMO SE REHACE LA LISTA: LAS PUNTUACIONES ---")
     print(f"modelo: {modelo} (el del capítulo 7)")
-    lineas = [f"«{frase}»: la puntuación de cada trozo,",
-              "dividida entre la temperatura antes de pasarla a fuerza.",
-              "",
-              f"{'temperatura':<13}{'«la»':>9}{'«una»':>9}{'uno del':>10}{'«la», en veces':>17}",
-              f"{'':<13}{'':>9}{'':>9}{'medio':>10}{'uno del medio':>17}"]
+    filas = []
     for t in TEMPERATURAS[1:]:
         la, una, md = (float(logits[i]) / t for i in (pos[0], pos[1], medio))
-        lineas.append(f"{coma(t, 1):<13}{coma(la, 2):>9}{coma(una, 2):>9}{coma(md, 2):>10}"
-                      f"{miles(round(float(np.exp(la - md)))):>17}")
-    lineas += ["",
-               "«uno del medio»: el trozo que queda en medio de la lista",
-               f"de los {len(logits):,} ordenados por puntuación.".replace(",", "."),
-               "««la», en veces uno del medio»: la fuerza de «la» entre la",
-               "de ese trozo (cada punto de diferencia, por 2,72).",
-               "a temperatura 0 no se divide: se selecciona el favorito."]
-    for l in comprobar_ancho(lineas, ANCHO_CAJA_CITA):
-        print(l)
+        filas.append([coma(t, 1), coma(la, 2), coma(una, 2), coma(md, 2),
+                      miles(round(float(np.exp(la - md))))])
+    print()
+    print("\n".join(tabla_editorial(
+        f"Las puntuaciones de «{frase}», divididas entre la temperatura",
+        ["temperatura", "puntuación: «la»", "puntuación: «una»", "puntuación: uno del medio",
+         "«la», en veces el del medio"], filas, "cdddd",
+        [f"Uno del medio: el trozo que queda en medio de la lista de los {miles(len(logits))} "
+         "ordenados por puntuación.",
+         "«La», en veces el del medio: la fuerza de «la» entre la de ese trozo (cada punto de "
+         "diferencia, por 2,72).",
+         f"Modelo de 500 millones, sin adiestrar ({modelo}). A temperatura 0 no se divide: se "
+         "selecciona el favorito."])))
 
 
 def selftest():

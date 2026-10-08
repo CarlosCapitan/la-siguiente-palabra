@@ -21,7 +21,9 @@ Uso:
 
 CSV_COMPRIMIR = "../datos/salidas/comprimir.csv"
 TXT_CAP12 = "../datos/salidas/crudo_o_adiestrado_una_a_una.txt"
-BLOQUE_CAP12 = "--- 3. LA BATERÍA EN TRES COLUMNAS, EN PREGUNTAS (7.000M) ---"
+# Desde el 8 oct 2026 crudo_o_adiestrado_una_a_una.py imprime la batería como tabla de libro;
+# se lee de ahí, por su título.
+BLOQUE_CAP12 = "La batería del capítulo 11, en las tres columnas (7.000M)"
 POR_TAREA = 5
 TAREAS = ["sumar dos cifras", "plurales", "traducir del inglés", "datos del mundo",
           "seguir un patrón inventado", "razonar sobre una frase"]
@@ -35,7 +37,7 @@ import re
 import sys
 from pathlib import Path
 
-from formato import ANCHO_CAJA, comprobar_ancho
+from formato import tabla_editorial
 
 AQUI = Path(__file__).resolve().parent
 
@@ -60,47 +62,46 @@ def leer_comprimir(ruta):
 def leer_cap12(ruta):
     texto = Path(ruta).read_text(encoding="utf-8")
     assert texto.count(BLOQUE_CAP12) == 1, f"se esperaba el bloque «{BLOQUE_CAP12}» una vez en {ruta}"
-    tramo = texto.split(BLOQUE_CAP12, 1)[1]
+    tramo = texto.split(BLOQUE_CAP12, 1)[1].split("\n:::\n", 1)[0]
     adiestrado = {}
     for t in TAREAS:
-        m = re.search(rf"^{re.escape(t)}\s+(\d) de 5\s+(\d) de 5\s+(\d) de 5\s*$", tramo, re.M)
+        m = re.search(rf"^\| {re.escape(t)} \| (\d) de 5 \| (\d) de 5 \| (\d) de 5 \|$", tramo,
+                      re.M)
         assert m, f"no encuentro la fila «{t}» en el bloque del 7.000M de {ruta}"
         adiestrado[t] = int(m.group(2))            # columnas: crudo, adiestrado, con formato
     return adiestrado
 
 
-# Rótulos de las columnas tal como los escribe el libro (segunda vuelta, 28 de septiembre de 2026):
-# las tablas del capítulo 13 son tablas de texto, no bloques de consola, y sus rótulos y su clave
-# tienen que salir de aquí, no de la salida vieja en porcentajes de `comprimir_a_la_vista.py`.
-ROTULOS_1 = ["7.000M sin comprimir", "7.000M comprimido", "32.000M comprimido"]
+# Desde el 8 oct 2026, tablas de libro (formato.py, tabla_editorial; REGLAS 6 ter). En la primera,
+# «7.000M: sin comprimir» lo parte el filtro del libro en dos pisos: el tamaño arriba, abarcando
+# sus columnas, y la copia debajo.
+ROTULOS_1 = ["7.000M: sin comprimir", "7.000M: comprimido", "32.000M: comprimido"]
 ROTULOS_2 = ["cap. 12, adiestrado", "cap. 13, sin comprimir", "¿cambia?"]
 
 
 def bloques(a, c12):
-    """Las dos tablas, con los rótulos del libro, una fila por línea, y la clave de cada una
-    (esta sí, en líneas que caben en un bloque del libro)."""
-    L = ["1. LA BATERÍA CON TRES MÁQUINAS, EN PREGUNTAS", "",
-         f"{'tarea':<28}" + "".join(f"{r:>24}" for r in ROTULOS_1)]
-    for t in TAREAS:
-        L.append(f"{t:<28}" + "".join(f"{f'{x} de 5':>24}" for x in a[t]))
+    """Las dos tablas, con su título y su nota."""
+    filas = [[t] + [f"{x} de 5" for x in a[t]] for t in TAREAS]
     tot = [sum(a[t][k] for t in TAREAS) for k in range(3)]
-    L.append(f"{'en total':<28}" + "".join(f"{f'{x} de 30':>24}" for x in tot))
-    L += [""] + comprobar_ancho([
-        "    «7.000M», «32.000M»: millones de números (nominal).",
-        "    «comprimido»: guardado con menos detalle en cada número;",
-        "    «sin comprimir»: tal como salió del entrenamiento.",
-        "    las tres máquinas están adiestradas (capítulo 12)."], ANCHO_CAJA)
-    L += ["", "2. LA MISMA MÁQUINA EN LOS CAPÍTULOS 12 Y 13", "",
-          f"{'tarea':<28}" + "".join(f"{r:>24}" for r in ROTULOS_2)]
+    filas.append(["**en total**"] + [f"**{x} de 30**" for x in tot])
+    t1 = tabla_editorial(
+        "La batería del capítulo 11 con tres máquinas", ["tarea"] + ROTULOS_1, filas, "iddd",
+        ["Cada casilla: cuántas de las 5 preguntas de la tarea acierta. 7.000M, 32.000M: "
+         "millones de números (nominal).",
+         "Comprimido: guardado con menos detalle en cada número. Sin comprimir: tal como salió "
+         "del entrenamiento. Las tres máquinas están adiestradas (capítulo 12)."])
+    filas = []
     for t in TAREAS:
         x, y = c12[t], a[t][0]
-        L.append(f"{t:<28}{f'{x} de 5':>24}{f'{y} de 5':>24}{('sí' if x != y else 'no'):>24}")
+        filas.append([t, f"{x} de 5", f"{y} de 5", "sí" if x != y else "no"])
     t12, t13 = sum(c12.values()), tot[0]
-    L.append(f"{'en total':<28}{f'{t12} de 30':>24}{f'{t13} de 30':>24}")
-    L += [""] + comprobar_ancho([
-        "    cap. 12: 7.000M adiestrado, con el programa de uso general.",
-        "    cap. 13: 7.000M sin comprimir, con el programa de Apple."], ANCHO_CAJA)
-    return L, tot, (t12, t13)
+    filas.append(["**en total**", f"**{t12} de 30**", f"**{t13} de 30**", ""])
+    t2 = tabla_editorial(
+        "La misma máquina en los capítulos 12 y 13", ["tarea"] + ROTULOS_2, filas, "iddc",
+        ["Las dos columnas son el modelo de 7.000M adiestrado y sin comprimir, con la misma "
+         "batería y la misma regla.",
+         "Cap. 12: con el programa de uso general. Cap. 13: con el programa de Apple."])
+    return [t1, t2], tot, (t12, t13)
 
 
 def selftest():
@@ -158,9 +159,10 @@ def main():
     if codigo or args.selftest:
         sys.exit(codigo)
     print()
-    L, _, _ = bloques(leer_comprimir(AQUI / CSV_COMPRIMIR), leer_cap12(AQUI / TXT_CAP12))
-    for l in L:
-        print(l)
+    tablas, _, _ = bloques(leer_comprimir(AQUI / CSV_COMPRIMIR), leer_cap12(AQUI / TXT_CAP12))
+    for t in tablas:
+        print("\n".join(t))
+        print()
 
 
 if __name__ == "__main__":

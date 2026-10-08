@@ -38,6 +38,7 @@ ROTULOS = {                                              # los del libro, en lug
     "con umbral explícito": "avisando de que fallar resta",
     "control con respuesta": "con respuesta, avisando",
 }
+ESCAPADA = ("con umbral explícito", "Peñaflor de Alcorbe")   # la respuesta inventada que se enseña
 
 # ==========================================================
 
@@ -48,7 +49,11 @@ import re
 import sys
 from pathlib import Path
 
-from formato import ANCHO_CAJA_CITA, coma, comprobar_ancho, miles, pct
+from formato import (ANCHO_CAJA_CITA, barra, coma, comprobar_ancho, miles, muestra_editorial,
+                     pct, tabla_editorial)
+
+# Desde el 8 oct 2026 cada apartado sale como tabla o muestra de libro (formato.py; REGLAS
+# 6 ter). Las cifras no cambian.
 
 AQUI = Path(__file__).resolve().parent
 
@@ -124,29 +129,63 @@ def cuantas_abstenciones(ruta=AQUI / RESPUESTAS):
     return out
 
 
-def informe(C, filas, por_cap, n_pajar):
-    print("--- 1. LA AGUJA Y LA PREGUNTA ---")
-    print("la frase que se escondió en el texto:")
-    for l in partido(C["AGUJA"]):
-        print(l)
-    print("la pregunta que se le hizo después del texto:")
-    for l in partido(C["PREGUNTA_AGUJA"]):
-        print(l)
+def escapada(ruta=AQUI / RESPUESTAS):
+    """Las líneas de la respuesta (lo que va detrás de «->») a la pregunta de ESCAPADA, en su
+    apartado del fichero de respuestas."""
+    t = Path(ruta).read_text(encoding="utf-8")
+    partes = re.split(r"(?m)^=== (.+?) ===$", t)
+    apartado = next(partes[i + 1] for i in range(1, len(partes), 2) if partes[i] == ESCAPADA[0])
+    entrada = next(e for e in apartado.split("\n\n") if ESCAPADA[1] in e)
+    lineas = entrada.splitlines()
+    k = next(n for n, l in enumerate(lineas) if l.lstrip().startswith("->"))
+    sangria = len(lineas[k]) - len(lineas[k].lstrip())
+    return [l[sangria:].rstrip() for l in lineas[k:]]
 
-    print("\n--- 2. EL PAJAR MÁS LARGO, A ESCALA ---")
+
+def imprime(*bloques):
+    for b in bloques:
+        print("\n".join(b))
+        print()
+
+
+def informe(C, filas, por_cap, n_pajar):
+    print("--- 1. LA AGUJA Y LA PREGUNTA ---\n")
+    imprime(muestra_editorial(
+        "La frase escondida y la pregunta",
+        [l.strip() for l in partido(C["AGUJA"])] + [""]
+        + [l.strip() for l in partido(C["PREGUNTA_AGUJA"])],
+        ["Arriba, la frase que se escondió en el texto; debajo, la pregunta que se le hizo "
+         "después del texto."]))
+
+    print("--- 2. EL PAJAR MÁS LARGO, A ESCALA ---\n")
     palabras = int(next(f["a"] for f in filas
                         if f["medicion"] == "C_aguja" and f["clave"] == "palabras"))
-    lineas = [f"el pajar más largo: {miles(n_pajar)} trozos, {miles(palabras)} palabras",
-              f"un capítulo del Quijote, de media: {miles(round(por_cap))} palabras",
-              f"el pajar más largo, en capítulos del Quijote: {coma(palabras / por_cap, 1)}"]
-    for l in comprobar_ancho(["  " + l for l in lineas], ANCHO_CAJA_CITA):
-        print(l)
+    rejilla = {}
+    for f in filas:
+        if f["medicion"] == "C_aguja" and f["clave"] != "palabras":
+            rejilla.setdefault(int(f["clave"]), {})[float(f["sub"])] = f["a"] == "1"
+    hondos = sorted(next(iter(rejilla.values())))
+    assert all(sorted(v) == hondos for v in rejilla.values()), "la rejilla de la aguja está coja"
+    imprime(
+        tabla_editorial(
+            "La aguja en el pajar",
+            ["largo del texto"] + [f"profundidad: {pct(h, 0)}" for h in hondos],
+            [[miles(n)] + ["sí" if rejilla[n][h] else "no" for h in hondos]
+             for n in sorted(rejilla)], "d" + "c" * len(hondos),
+            ["Filas: largo del texto, en trozos. Columnas: a qué profundidad del texto se "
+             "escondió la frase. Sí: la encontró.",
+             f"El pajar más largo: {miles(n_pajar)} trozos, {miles(palabras)} palabras. Modelo "
+             "de 7.000 millones, adiestrado y sin comprimir."]),
+        tabla_editorial(
+            "El pajar más largo, a escala",
+            ["", "cuánto"],
+            [["el pajar más largo, en trozos", miles(n_pajar)],
+             ["el pajar más largo, en palabras", miles(palabras)],
+             ["un capítulo del Quijote, de media, en palabras", miles(round(por_cap))],
+             ["el pajar más largo, en capítulos del Quijote", coma(palabras / por_cap, 1)]],
+            "id", [f"El Quijote, el del repositorio: sus {CAPITULOS_QUIJOTE} capítulos."]))
 
-    print("\n--- 3. EL ENUNCIADO QUE AVISA DE QUE FALLAR RESTA ---")
-    print("lo que se puso delante de cada una de las veinte preguntas:")
-    for l in partido(C["ENUNCIADO_KALAI"].replace("{p}", "").strip()):
-        print(l)
-    print()
+    print("--- 3. EL ENUNCIADO QUE AVISA DE QUE FALLAR RESTA ---\n")
     cuenta = cuantas_abstenciones()
     tabla = []
     for f in filas:
@@ -155,33 +194,41 @@ def informe(C, filas, por_cap, n_pajar):
         total = cuenta[f["clave"]][1]
         k = round(float(f["a"]) * total)
         assert k == cuenta[f["clave"]][0], f"«{f['clave']}»: el CSV y las respuestas no casan"
-        tabla.append(f"  {ROTULOS[f['clave']]:<30}se calla en {k} de {total} ({pct(k / total, 0)})")
-    tabla += ["",
-              "  «se calla»: contesta que no lo sabe, o que no existe.",
-              "  las dos primeras filas: las veinte preguntas sin respuesta.",
-              "  la tercera: cinco que sí la tienen, del capítulo 11."]
-    for l in comprobar_ancho(tabla, ANCHO_CAJA_CITA):
-        print(l)
+        tabla.append([ROTULOS[f["clave"]], f"{k} de {total}", pct(k / total, 0), barra(k / total)])
+    imprime(
+        muestra_editorial(
+            "Lo que se puso delante de cada una de las veinte preguntas",
+            [l.strip() for l in partido(C["ENUNCIADO_KALAI"].replace("{p}", "").strip())],
+            ["La segunda regla del examen, escrita para la máquina."]),
+        tabla_editorial(
+            "Cuántas veces se calla", ["enunciado", "se calla en", "", ""], tabla, "iddi",
+            ["Se calla: contesta que no lo sabe, o que no existe.",
+             "Las dos primeras filas: las veinte preguntas sin respuesta. La tercera: cinco que "
+             "sí la tienen, del capítulo 11.",
+             "Modelo de 7.000 millones, adiestrado y sin comprimir."]),
+        muestra_editorial(
+            f"Lo que contesta, avisando de que fallar resta, sobre el arroyo de {ESCAPADA[1]}",
+            escapada(),
+            ["El arroyo no existe. «->»: lo que escribe la máquina."]))
 
-    print("\n--- 4. EL EXAMEN TIPO TEST, CONTESTADO A CIEGAS ---")
+    print("--- 4. EL EXAMEN TIPO TEST, CONTESTADO A CIEGAS ---\n")
     normal = (1, 0, 0)
     aviso = regla_del_enunciado(C["ENUNCIADO_KALAI"])
     n, o = PREGUNTAS_EXAMEN, OPCIONES
-    lineas = [f"{n} preguntas de {o} respuestas cada una; a ciegas se acierta",
-              f"1 de cada {o}: en las {n}, {n // o} acierto y {n - n // o} fallos.",
-              ""]
-    for nombre, r in (("con la regla de casi todas las pruebas:", normal),
-                      ("con la regla del enunciado que avisa:", aviso)):
+    signo = lambda x: f"+{x:.0f}" if x > 0 else ("0" if x == 0 else f"−{-x:.0f}")
+    filas_ex = []
+    for nombre, r in (("la de casi todas las pruebas", normal),
+                      ("la del enunciado que avisa", aviso)):
         acierto, fallo, blanco = r
         _, _, pts = a_ciegas(r)
-        lineas += [nombre,
-                   f"  un acierto suma {acierto}; un fallo "
-                   + (f"resta {-fallo}" if fallo else "no resta") + f"; en blanco, {blanco}.",
-                   f"  a ciegas, en las {n}: " + (f"gana {pts:.0f} punto" + ("s" if pts != 1 else "")
-                                                   if pts >= 0 else f"pierde {-pts:.0f} puntos") + "."]
-    lineas += [f"en blanco, las {n} dan 0 puntos con las dos reglas."]
-    for l in comprobar_ancho(["  " + l if l else l for l in lineas], ANCHO_CAJA_CITA):
-        print(l)
+        filas_ex.append([nombre, signo(acierto), signo(fallo), signo(blanco), signo(pts),
+                         signo(blanco * n)])
+    imprime(tabla_editorial(
+        "El examen tipo test, contestado a ciegas",
+        ["regla", "puntos: un acierto", "puntos: un fallo", "puntos: en blanco",
+         f"las {n}: a ciegas", f"las {n}: en blanco"], filas_ex, "iddddd",
+        [f"{n} preguntas de {o} respuestas cada una. A ciegas se acierta 1 de cada {o}: en las "
+         f"{n}, {n // o} acierto y {n - n // o} fallos."]))
     return aviso
 
 

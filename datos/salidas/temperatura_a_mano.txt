@@ -1,17 +1,21 @@
-Medido el 2026-09-28 en macOS-26.6.2-arm64-arm-64bit.
+Medido el 2026-10-09 en macOS-26.6.2-arm64-arm-64bit.
 --- 1. EL SORTEO DEL CAPÍTULO 7 A CUATRO TEMPERATURAS ---
 modelo: Qwen/Qwen2.5-0.5B (el del capítulo 7)
-«La capital de Francia es» -> ¿qué trozo viene?
-papeletas de cada cien:
 
-temperatura     «la»   «una»    «un»    otros
-0,0            100,0     0,0     0,0      0,0
-1,0             17,5    12,8    11,5     58,2
-1,3              6,4     5,0     4,6     84,0
-1,8              1,2     1,0     0,9     96,9
+::: tabla
+Las papeletas de «La capital de Francia es» a cuatro temperaturas
 
-«otros»: todos los demás trozos posibles juntos.
-a temperatura 0 no hay sorteo: gana siempre el favorito.
+| temperatura | «la» | «una» | «un» | otros |  |
+|:-:|--:|--:|--:|--:|:--|
+| 0,0 | 100,0 | 0,0 | 0,0 | 0,0 | [barra:0.0] |
+| 1,0 | 17,5 | 12,8 | 11,5 | 58,2 | [barra:58.2] |
+| 1,3 | 6,4 | 5,0 | 4,6 | 84,0 | [barra:84.0] |
+| 1,8 | 1,2 | 1,0 | 0,9 | 96,9 | [barra:96.9] |
+
+Papeletas de cada cien que lleva cada trozo. Otros: todos los demás trozos posibles juntos; la barra es su parte.
+
+Modelo de 500 millones, sin adiestrar (Qwen/Qwen2.5-0.5B), el del capítulo 7. A temperatura 0 no hay sorteo: gana siempre el favorito.
+:::
 
 las mismas, redondeadas a papeletas enteras (para la figura):
   0,0          100     0     0     0
@@ -112,19 +116,21 @@ trozos por tirada: 70; semillas: 20260914 a 20260933, una por tirada
     19 [FUERA ] En la rotura inbibidences fireworks compliance khuyến realize vuelApis
     20 [FUERA ] Film missionary perfectisse]", Granny king jet decide presence hồiitat
 
-de las 20 tiradas de cada temperatura:
+::: tabla
+Las 20 tiradas de cada temperatura
 
-temperatura    se quedan en   acaban en  distintas
-              el castellano       bucle   entre sí
-0,0                20 de 20     0 de 20          1
-1,0                18 de 20     0 de 20         20
-1,3                 9 de 20     0 de 20         20
-1,8                 0 de 20     0 de 20         20
+| temperatura | solo letras latinas | acaban en bucle | distintas entre sí |
+|:-:|--:|--:|--:|
+| 0,0 | 20 de 20 | 0 de 20 | 1 |
+| 1,0 | 18 de 20 | 0 de 20 | 20 |
+| 1,3 | 9 de 20 | 0 de 20 | 20 |
+| 1,8 | 0 de 20 | 0 de 20 | 20 |
 
-«se quedan en el castellano»: todas sus letras son del
-alfabeto latino, de principio a fin.
-«acaban en bucle»: repiten al final la misma frase tres veces.
-«distintas entre sí»: cuántas de las tiradas no son iguales.
-a temperatura 0 no hay sorteo: las tiradas salen iguales.
+Solo letras latinas: de principio a fin, todas sus letras son de nuestro alfabeto (puede haber palabras de otro idioma que lo use, como el inglés).
+
+Acaban en bucle: repiten al final la misma frase tres veces. Distintas entre sí: cuántas de las tiradas no son iguales.
+
+Modelo de 7.000 millones, adiestrado y sin comprimir, el del capítulo 12. A temperatura 0 no hay sorteo: las tiradas salen iguales.
+:::
 
 Escrito ../datos/salidas/temperatura_a_mano.csv

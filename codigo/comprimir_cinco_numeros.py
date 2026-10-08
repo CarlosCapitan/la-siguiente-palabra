@@ -39,7 +39,9 @@ import json
 import os
 import sys
 
-from formato import ANCHO_CAJA_CITA, coma, comprobar_ancho, miles
+from formato import coma, miles, tabla_editorial
+
+# Desde el 8 oct 2026 las dos partes salen como tablas de libro (formato.py; REGLAS 6 ter).
 
 
 def carpeta(repo):
@@ -115,46 +117,52 @@ def cuantos_numeros(repo):
     return total
 
 
+def imprime(*bloques):
+    for b in bloques:
+        print("\n".join(b))
+        print()
+
+
 def informe():
     import mlx.core as mx
     w0, antes = originales()
     w1, despues, q = comprimidos()
     print("--- 1. CINCO NÚMEROS, ANTES Y DESPUÉS DE COMPRIMIR ---")
     print(f"máquina: {SIN_COMPRIMIR_7} y {COMPRIMIDO_7}")
-    print(f"tabla: {TABLA}, fila 1, números 1 a {CUANTOS}")
-    lineas = [f"{'':<4}{'sin comprimir':>16}{'comprimido':>14}{'diferencia':>14}"]
-    for k, (a, b) in enumerate(zip(antes, despues), 1):
-        lineas.append(f"{k:<4}{coma(a, 6):>16}{coma(b, 6):>14}{coma(b - a, 6):>14}")
+    print(f"tabla: {TABLA}, fila 1, números 1 a {CUANTOS}\n")
     grupo0 = w0[0, :q["group_size"]].astype(mx.float32).tolist()
     grupo1 = w1[0, :q["group_size"]].astype(mx.float32).tolist()
-    lineas += ["",
-               f"en el primer grupo de {q['group_size']} números de esa fila:",
-               f"  valores distintos sin comprimir: {len(set(grupo0))}",
-               f"  valores distintos comprimido:    {len(set(grupo1))}",
-               f"comprimido, cada número toma uno de {2 ** q['bits']} valores posibles,",
-               f"los mismos para los {q['group_size']} de su grupo; lo perdido no vuelve."]
-    for l in comprobar_ancho(["  " + l if l else l for l in lineas], ANCHO_CAJA_CITA):
-        print(l)
+    imprime(
+        tabla_editorial(
+            "Cinco números, antes y después de comprimir",
+            ["número", "sin comprimir", "comprimido", "diferencia"],
+            [[str(k), coma(a, 6), coma(b, 6), coma(b - a, 6)]
+             for k, (a, b) in enumerate(zip(antes, despues), 1)], "cddd",
+            [f"Los {CUANTOS} primeros números de la primera fila de una tabla de la primera "
+             "capa, en las dos copias del modelo de 7.000 millones adiestrado.",
+             "Diferencia: el comprimido menos el sin comprimir."]),
+        tabla_editorial(
+            f"Valores distintos en el primer grupo de {q['group_size']} números de esa fila",
+            ["sin comprimir", "comprimido"], [[str(len(set(grupo0))), str(len(set(grupo1)))]],
+            "dd",
+            [f"Comprimido, cada número toma uno de {2 ** q['bits']} valores posibles, los mismos "
+             f"para los {q['group_size']} de su grupo; lo perdido no vuelve."]))
 
-    print("\n--- 2. LO QUE OCUPA CADA COPIA ---")
+    print("--- 2. LO QUE OCUPA CADA COPIA ---\n")
     n32 = cuantos_numeros(COMPRIMIDO_32)
     n7 = cuantos_numeros(COMPRIMIDO_7)
     filas = [("7.000M sin comprimir", tamano(SIN_COMPRIMIR_7), "medido"),
              ("7.000M comprimido", tamano(COMPRIMIDO_7), "medido"),
              ("32.000M sin comprimir", n32 * BYTES_SIN_COMPRIMIR, "calculado"),
              ("32.000M comprimido", tamano(COMPRIMIDO_32), "medido")]
-    lineas = [f"{'copia':<24}{'ocupa':>12}{'':>4}{'cómo':<10}"]
-    for nombre, b, como in filas:
-        lineas.append(f"{nombre:<24}{coma(b / GB, 1) + ' GB':>12}{'':>4}{como:<10}")
-    lineas += ["",
-               f"memoria del portátil: {MEMORIA_PORTATIL_GB} GB, para todo.",
-               f"números de la de 32.000M: {miles(n32)}",
-               f"números de la de 7.000M:  {miles(n7)}",
-               "«medido»: lo que ocupan sus ficheros en el disco.",
-               f"«calculado»: sus números por {BYTES_SIN_COMPRIMIR} bytes cada uno, como la",
-               "de 7.000M sin comprimir."]
-    for l in comprobar_ancho(["  " + l if l else l for l in lineas], ANCHO_CAJA_CITA):
-        print(l)
+    imprime(tabla_editorial(
+        "Lo que ocupa cada copia",
+        ["copia", "ocupa", "cómo"],
+        [[nombre, coma(b / GB, 1) + " GB", como] for nombre, b, como in filas], "idi",
+        [f"Memoria del portátil: {MEMORIA_PORTATIL_GB} GB, para todo.",
+         f"Números de la de 32.000M: {miles(n32)}. Números de la de 7.000M: {miles(n7)}.",
+         "Medido: lo que ocupan sus ficheros en el disco. Calculado: sus números por "
+         f"{BYTES_SIN_COMPRIMIR} bytes cada uno, como la de 7.000M sin comprimir."]))
 
 
 def selftest():

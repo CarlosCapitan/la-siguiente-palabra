@@ -1,30 +1,50 @@
-Medido el 2026-09-28 en macOS-26.6.2-arm64-arm-64bit.
+Medido el 2026-10-09 en macOS-26.6.2-arm64-arm-64bit.
 --- 1. CINCO NÚMEROS, ANTES Y DESPUÉS DE COMPRIMIR ---
 máquina: mlx-community/Qwen2.5-7B-Instruct-bf16 y mlx-community/Qwen2.5-7B-Instruct-4bit
 tabla: model.layers.0.self_attn.q_proj, fila 1, números 1 a 5
-         sin comprimir    comprimido    diferencia
-  1          -0,000057      0,000000      0,000057
-  2          -0,005127     -0,004059      0,001068
-  3           0,016602      0,016235     -0,000366
-  4           0,002258      0,004059      0,001801
-  5          -0,003265     -0,004059     -0,000793
 
-  en el primer grupo de 64 números de esa fila:
-    valores distintos sin comprimir: 59
-    valores distintos comprimido:    14
-  comprimido, cada número toma uno de 16 valores posibles,
-  los mismos para los 64 de su grupo; lo perdido no vuelve.
+::: tabla
+Cinco números, antes y después de comprimir
+
+| número | sin comprimir | comprimido | diferencia |
+|:-:|--:|--:|--:|
+| 1 | -0,000057 | 0,000000 | 0,000057 |
+| 2 | -0,005127 | -0,004059 | 0,001068 |
+| 3 | 0,016602 | 0,016235 | -0,000366 |
+| 4 | 0,002258 | 0,004059 | 0,001801 |
+| 5 | -0,003265 | -0,004059 | -0,000793 |
+
+Los 5 primeros números de la primera fila de una tabla de la primera capa, en las dos copias del modelo de 7.000 millones adiestrado.
+
+Diferencia: el comprimido menos el sin comprimir.
+:::
+
+::: tabla
+Valores distintos en el primer grupo de 64 números de esa fila
+
+| sin comprimir | comprimido |
+|--:|--:|
+| 59 | 14 |
+
+Comprimido, cada número toma uno de 16 valores posibles, los mismos para los 64 de su grupo; lo perdido no vuelve.
+:::
 
 --- 2. LO QUE OCUPA CADA COPIA ---
-  copia                          ocupa    cómo      
-  7.000M sin comprimir         15,2 GB    medido    
-  7.000M comprimido             4,3 GB    medido    
-  32.000M sin comprimir        65,3 GB    calculado 
-  32.000M comprimido           18,4 GB    medido    
 
-  memoria del portátil: 36 GB, para todo.
-  números de la de 32.000M: 32.640.013.312
-  números de la de 7.000M:  7.615.616.512
-  «medido»: lo que ocupan sus ficheros en el disco.
-  «calculado»: sus números por 2 bytes cada uno, como la
-  de 7.000M sin comprimir.
+::: tabla
+Lo que ocupa cada copia
+
+| copia | ocupa | cómo |
+|:--|--:|:--|
+| 7.000M sin comprimir | 15,2 GB | medido |
+| 7.000M comprimido | 4,3 GB | medido |
+| 32.000M sin comprimir | 65,3 GB | calculado |
+| 32.000M comprimido | 18,4 GB | medido |
+
+Memoria del portátil: 36 GB, para todo.
+
+Números de la de 32.000M: 32.640.013.312. Números de la de 7.000M: 7.615.616.512.
+
+Medido: lo que ocupan sus ficheros en el disco. Calculado: sus números por 2 bytes cada uno, como la de 7.000M sin comprimir.
+:::
+

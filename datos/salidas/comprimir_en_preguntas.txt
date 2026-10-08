@@ -5,32 +5,39 @@
 
 SELFTEST: las tres pruebas pasan.
 
-1. LA BATERÍA CON TRES MÁQUINAS, EN PREGUNTAS
+::: tabla
+La batería del capítulo 11 con tres máquinas
 
-tarea                           7.000M sin comprimir       7.000M comprimido      32.000M comprimido
-sumar dos cifras                              3 de 5                  3 de 5                  5 de 5
-plurales                                      3 de 5                  5 de 5                  4 de 5
-traducir del inglés                           4 de 5                  4 de 5                  4 de 5
-datos del mundo                               1 de 5                  1 de 5                  0 de 5
-seguir un patrón inventado                    0 de 5                  0 de 5                  3 de 5
-razonar sobre una frase                       3 de 5                  4 de 5                  3 de 5
-en total                                    14 de 30                17 de 30                19 de 30
+| tarea | 7.000M: sin comprimir | 7.000M: comprimido | 32.000M: comprimido |
+|:--|--:|--:|--:|
+| sumar dos cifras | 3 de 5 | 3 de 5 | 5 de 5 |
+| plurales | 3 de 5 | 5 de 5 | 4 de 5 |
+| traducir del inglés | 4 de 5 | 4 de 5 | 4 de 5 |
+| datos del mundo | 1 de 5 | 1 de 5 | 0 de 5 |
+| seguir un patrón inventado | 0 de 5 | 0 de 5 | 3 de 5 |
+| razonar sobre una frase | 3 de 5 | 4 de 5 | 3 de 5 |
+| **en total** | **14 de 30** | **17 de 30** | **19 de 30** |
 
-    «7.000M», «32.000M»: millones de números (nominal).
-    «comprimido»: guardado con menos detalle en cada número;
-    «sin comprimir»: tal como salió del entrenamiento.
-    las tres máquinas están adiestradas (capítulo 12).
+Cada casilla: cuántas de las 5 preguntas de la tarea acierta. 7.000M, 32.000M: millones de números (nominal).
 
-2. LA MISMA MÁQUINA EN LOS CAPÍTULOS 12 Y 13
+Comprimido: guardado con menos detalle en cada número. Sin comprimir: tal como salió del entrenamiento. Las tres máquinas están adiestradas (capítulo 12).
+:::
 
-tarea                            cap. 12, adiestrado  cap. 13, sin comprimir                ¿cambia?
-sumar dos cifras                              5 de 5                  3 de 5                      sí
-plurales                                      3 de 5                  3 de 5                      no
-traducir del inglés                           4 de 5                  4 de 5                      no
-datos del mundo                               1 de 5                  1 de 5                      no
-seguir un patrón inventado                    0 de 5                  0 de 5                      no
-razonar sobre una frase                       4 de 5                  3 de 5                      sí
-en total                                    17 de 30                14 de 30
+::: tabla
+La misma máquina en los capítulos 12 y 13
 
-    cap. 12: 7.000M adiestrado, con el programa de uso general.
-    cap. 13: 7.000M sin comprimir, con el programa de Apple.
+| tarea | cap. 12, adiestrado | cap. 13, sin comprimir | ¿cambia? |
+|:--|--:|--:|:-:|
+| sumar dos cifras | 5 de 5 | 3 de 5 | sí |
+| plurales | 3 de 5 | 3 de 5 | no |
+| traducir del inglés | 4 de 5 | 4 de 5 | no |
+| datos del mundo | 1 de 5 | 1 de 5 | no |
+| seguir un patrón inventado | 0 de 5 | 0 de 5 | no |
+| razonar sobre una frase | 4 de 5 | 3 de 5 | sí |
+| **en total** | **17 de 30** | **14 de 30** |  |
+
+Las dos columnas son el modelo de 7.000M adiestrado y sin comprimir, con la misma batería y la misma regla.
+
+Cap. 12: con el programa de uso general. Cap. 13: con el programa de Apple.
+:::
+
