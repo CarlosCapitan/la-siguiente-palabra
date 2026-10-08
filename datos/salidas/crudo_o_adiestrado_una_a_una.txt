@@ -94,7 +94,7 @@ La palabra entera es el primer trozo por el segundo, y así hasta el último, ca
 ::: tabla
 La batería del capítulo 11, en las tres columnas (500M)
 
-| tarea | en crudo | adiestrado | adiestrado, con su formato |
+| tarea | en crudo | adiestrado | con su formato |
 |:--|--:|--:|--:|
 | sumar dos cifras | 2 de 5 | 3 de 5 | 0 de 5 |
 | plurales | 1 de 5 | 2 de 5 | 1 de 5 |
@@ -114,11 +114,11 @@ Acierta si lo primero que escribe es la respuesta correcta.
 ::: tabla
 Una pregunta de «datos del mundo» en las tres columnas (500M)
 
-| columna | recibe | lo que escribe | la regla |
+| columna | recibe el enunciado | lo que escribe | la regla |
 |:--|:--|:--|:--|
-| en crudo | el enunciado tal cual | «1. La capital de Francia es» | falla |
-| adiestrado | el mismo enunciado tal cual | «1. París» | falla |
-| adiestrado, con su formato | el enunciado dentro de su formato | «La capital de Francia es París.» | falla |
+| en crudo | tal cual | «1. La capital de Francia es» | falla |
+| adiestrado | tal cual | «1. París» | falla |
+| con su formato | dentro de su formato | «La capital de Francia es París.» | falla |
 
 Respuesta correcta: «París». La regla mira el primer renglón de lo que escribe y acierta si empieza por la respuesta correcta.
 :::
@@ -149,11 +149,11 @@ Así lo recibe la tercera columna. «<|im_start|>» y «<|im_end|>» marcan dón
 ::: tabla
 Una pregunta de «sumar dos cifras» en las tres columnas (500M)
 
-| columna | recibe | lo que escribe | la regla |
+| columna | recibe el enunciado | lo que escribe | la regla |
 |:--|:--|:--|:--|
-| en crudo | el enunciado tal cual | «37» | acierta |
-| adiestrado | el mismo enunciado tal cual | «37» | acierta |
-| adiestrado, con su formato | el enunciado dentro de su formato | «12 + 25 equals 37.» | falla |
+| en crudo | tal cual | «37» | acierta |
+| adiestrado | tal cual | «37» | acierta |
+| con su formato | dentro de su formato | «12 + 25 equals 37.» | falla |
 
 Respuesta correcta: «37». La regla mira el primer renglón de lo que escribe y acierta si empieza por la respuesta correcta.
 :::
@@ -275,7 +275,7 @@ La palabra entera es el primer trozo por el segundo, y así hasta el último, ca
 ::: tabla
 La batería del capítulo 11, en las tres columnas (7.000M)
 
-| tarea | en crudo | adiestrado | adiestrado, con su formato |
+| tarea | en crudo | adiestrado | con su formato |
 |:--|--:|--:|--:|
 | sumar dos cifras | 5 de 5 | 5 de 5 | 0 de 5 |
 | plurales | 4 de 5 | 3 de 5 | 3 de 5 |
@@ -295,11 +295,11 @@ Acierta si lo primero que escribe es la respuesta correcta.
 ::: tabla
 Una pregunta de «datos del mundo» en las tres columnas (7.000M)
 
-| columna | recibe | lo que escribe | la regla |
+| columna | recibe el enunciado | lo que escribe | la regla |
 |:--|:--|:--|:--|
-| en crudo | el enunciado tal cual | «1. París» | falla |
-| adiestrado | el mismo enunciado tal cual | «La capital de Francia es París» | falla |
-| adiestrado, con su formato | el enunciado dentro de su formato | «La capital de Francia es París.» | falla |
+| en crudo | tal cual | «1. París» | falla |
+| adiestrado | tal cual | «La capital de Francia es París» | falla |
+| con su formato | dentro de su formato | «La capital de Francia es París.» | falla |
 
 Respuesta correcta: «París». La regla mira el primer renglón de lo que escribe y acierta si empieza por la respuesta correcta.
 :::
@@ -330,11 +330,11 @@ Así lo recibe la tercera columna. «<|im_start|>» y «<|im_end|>» marcan dón
 ::: tabla
 Una pregunta de «sumar dos cifras» en las tres columnas (7.000M)
 
-| columna | recibe | lo que escribe | la regla |
+| columna | recibe el enunciado | lo que escribe | la regla |
 |:--|:--|:--|:--|
-| en crudo | el enunciado tal cual | «37» | acierta |
-| adiestrado | el mismo enunciado tal cual | «37» | acierta |
-| adiestrado, con su formato | el enunciado dentro de su formato | «12 + 25 = 37» | falla |
+| en crudo | tal cual | «37» | acierta |
+| adiestrado | tal cual | «37» | acierta |
+| con su formato | dentro de su formato | «12 + 25 = 37» | falla |
 
 Respuesta correcta: «37». La regla mira el primer renglón de lo que escribe y acierta si empieza por la respuesta correcta.
 :::

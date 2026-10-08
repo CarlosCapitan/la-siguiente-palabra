@@ -36,6 +36,10 @@ LIU_4K = (75.8, 57.2, 53.8, 55.4, 63.2)
 LIU_16K = (75.7, 57.3, 54.1, 55.4, 63.1)
 LIU_SIN_DOCUMENTOS = 56.1
 LIU_SOLO_EL_BUENO = 88.3
+# La versión de 16K también tiene las dos en la tabla 1 («GPT-3.5-Turbo (16K)»: 56,0 % y 88,6 %).
+# Hasta el 8 oct 2026 no se imprimían; comprobado contra el artículo al pasar a tabla editorial.
+LIU_SIN_DOCUMENTOS_16K = 56.0
+LIU_SOLO_EL_BUENO_16K = 88.6
 
 # --- 2. Turing 1950: «an average interrogator will not have more than 70 per cent. chance of
 #     making the right identification after five minutes of questioning».
@@ -65,7 +69,11 @@ DREAM_LLAMADAS_FIJO, DREAM_LLAMADAS_NUEVO = 550, 317
 import argparse
 import sys
 
-from formato import ANCHO_CAJA_CITA, coma, comprobar_ancho, miles
+from formato import barra, coma, miles, tabla_editorial
+
+# Desde el 8 de octubre de 2026 cada apartado sale como tabla de libro (formato.py,
+# tabla_editorial; REGLAS 6 ter), no en columnas alineadas a espacios. Las cifras y las cuentas
+# son las mismas.
 
 
 def ms(x):
@@ -74,41 +82,45 @@ def ms(x):
     return miles(int(entero)) + "," + dec
 
 
-def imprime(lineas):
-    for l in comprobar_ancho(["  " + l if l else l for l in lineas], ANCHO_CAJA_CITA):
-        print(l)
+def imprime(*bloques):
+    for b in bloques:
+        print("\n".join(b))
+        print()
 
 
 def liu():
-    print("--- 1. PERDIDO EN MEDIO (Liu y otros, 2023) ---")
-    lineas = ["veinte documentos y una pregunta; solo uno de los veinte",
-              "trae la respuesta. Aciertos de cada cien:",
-              "",
-              f"{'dónde estaba el documento bueno':<34}{'4.000':>11}{'16.000':>11}"]
-    for p, a, b in zip(LIU_PUESTOS, LIU_4K, LIU_16K):
-        lineas.append(f"{f'en el puesto {p} de 20':<34}{coma(a, 1):>11}{coma(b, 1):>11}")
-    lineas += ["",
-               f"{'sin ningún documento':<34}{coma(LIU_SIN_DOCUMENTOS, 1):>11}",
-               f"{'con solo el documento bueno':<34}{coma(LIU_SOLO_EL_BUENO, 1):>11}",
-               "",
-               "«4.000», «16.000»: cuántos trozos de texto admite la",
-               "versión de la máquina (la misma, en dos tamaños de entrada)."]
-    imprime(lineas)
+    print("--- 1. PERDIDO EN MEDIO (Liu y otros, 2023) ---\n")
+    filas = [[f"en el puesto {p} de 20", coma(a, 1), coma(b, 1)]
+             for p, a, b in zip(LIU_PUESTOS, LIU_4K, LIU_16K)]
+    filas += [["sin ningún documento", coma(LIU_SIN_DOCUMENTOS, 1),
+               coma(LIU_SIN_DOCUMENTOS_16K, 1)],
+              ["con solo el documento bueno", coma(LIU_SOLO_EL_BUENO, 1),
+               coma(LIU_SOLO_EL_BUENO_16K, 1)]]
+    imprime(tabla_editorial(
+        "Aciertos según dónde está el documento bueno (Liu y otros, 2023)",
+        ["dónde estaba el documento bueno", "4.000", "16.000"], filas, "idd",
+        ["Veinte documentos y una pregunta; solo uno de los veinte trae la respuesta. Aciertos "
+         "de cada cien.",
+         "4.000, 16.000: cuántos trozos de texto admite la versión de la máquina (la misma, en "
+         "dos tamaños de entrada)."]))
     peor = min(range(len(LIU_4K)), key=lambda i: LIU_4K[i])
     return peor
 
 
 def turing():
-    print("\n--- 2. TURING Y LA PRUEBA DE 2025, EN LA MISMA MONEDA ---")
-    lineas = ["de cada cien veces, en cuántas se equivoca el interrogador:",
-              "",
-              f"{'lo que pedía Turing para el año 2000':<44}{f'al menos {100 - TURING_ACIERTA_COMO_MUCHO}':>14}",
-              f"{'lo que pasó en 2025':<44}{JONES_TOMADA_POR_PERSONA:>14}",
-              f"{'eligiendo a cara o cruz':<44}{A_CARA_O_CRUZ:>14}",
-              "",
-              f"Turing: el interrogador no acertaría más de {TURING_ACIERTA_COMO_MUCHO} de cada 100.",
-              f"2025: tomó a la máquina por la persona {JONES_TOMADA_POR_PERSONA} de cada 100."]
-    imprime(lineas)
+    print("--- 2. TURING Y LA PRUEBA DE 2025, EN LA MISMA MONEDA ---\n")
+    equivoca_turing = 100 - TURING_ACIERTA_COMO_MUCHO
+    filas = [["lo que pedía Turing para el año 2000", f"al menos {equivoca_turing}",
+              barra(equivoca_turing / 100)],
+             ["lo que pasó en 2025", str(JONES_TOMADA_POR_PERSONA),
+              barra(JONES_TOMADA_POR_PERSONA / 100)],
+             ["eligiendo a cara o cruz", str(A_CARA_O_CRUZ), barra(A_CARA_O_CRUZ / 100)]]
+    imprime(tabla_editorial(
+        "Turing y la prueba de 2025, en la misma moneda",
+        ["", "se equivoca el interrogador", ""], filas, "idi",
+        ["De cada cien veces.",
+         f"Turing: el interrogador no acertaría más de {TURING_ACIERTA_COMO_MUCHO} de cada 100.",
+         f"2025: tomó a la máquina por la persona {JONES_TOMADA_POR_PERSONA} de cada 100."]))
 
 
 def veces(a, b):
@@ -116,40 +128,53 @@ def veces(a, b):
 
 
 def cerebro():
-    print("\n--- 3. NEURONAS, UNIONES Y NÚMEROS, EN VECES ---")
-    lineas = [f"neuronas de un cerebro humano:      {miles(NEURONAS_HUMANO)}",
-              f"uniones, solo en la corteza:  {miles(UNIONES_CORTEZA)}",
-              f"neuronas de un cuervo:               {miles(NEURONAS_CUERVO)}",
-              f"números del modelo de 32.000M:      {miles(NUMEROS_MODELO)}",
-              "",
-              f"neuronas humanas entre números:  {coma(veces(NEURONAS_HUMANO, NUMEROS_MODELO), 1)} veces",
-              f"uniones entre números:        {miles(round(veces(UNIONES_CORTEZA, NUMEROS_MODELO)))} veces",
-              f"números entre neuronas del cuervo: {coma(veces(NUMEROS_MODELO, NEURONAS_CUERVO), 1)} veces"]
-    imprime(lineas)
+    print("--- 3. NEURONAS, UNIONES Y NÚMEROS, EN VECES ---\n")
+    imprime(
+        tabla_editorial(
+            "Un cerebro, un cuervo y el modelo de 32.000M, contados",
+            ["qué se cuenta", "cuántos"],
+            [["neuronas de un cerebro humano", miles(NEURONAS_HUMANO)],
+             ["uniones, solo en la corteza", miles(UNIONES_CORTEZA)],
+             ["neuronas de un cuervo", miles(NEURONAS_CUERVO)],
+             ["números del modelo de 32.000M", miles(NUMEROS_MODELO)]], "id",
+            ["Azevedo y otros (2009), Pakkenberg y otros (2003) y Olkowicz y otros (2016); el "
+             "modelo, por su tamaño nominal."]),
+        tabla_editorial(
+            "Los mismos recuentos, en veces",
+            ["comparación", "veces"],
+            [["neuronas humanas entre números", coma(veces(NEURONAS_HUMANO, NUMEROS_MODELO), 1)],
+             ["uniones entre números", miles(round(veces(UNIONES_CORTEZA, NUMEROS_MODELO)))],
+             ["números entre neuronas del cuervo",
+              coma(veces(NUMEROS_MODELO, NEURONAS_CUERVO), 1)]], "id",
+            ["«Entre»: dividir el primero por el segundo."]))
 
 
 def dream():
-    print("\n--- 4. EL TITULAR CONTRA EL ARTÍCULO (Dream-RSI, 2026) ---")
-    lineas = ["lo que tarda el programa encontrado, en milisegundos",
-              "(menos es mejor), con la búsqueda fija y con la nueva:",
-              "",
-              f"{'conjunto':<14}{'fija':>11}{'nueva':>11}{'gana':>9}{'por':>13}"]
+    print("--- 4. EL TITULAR CONTRA EL ARTÍCULO (Dream-RSI, 2026) ---\n")
+    filas = []
     for c, a, b in zip(DREAM_CONJUNTOS, DREAM_FIJO, DREAM_NUEVO):
-        gana = "nueva" if b < a else "fija"
-        lineas.append(f"{c:<14}{ms(a):>11}{ms(b):>11}{gana:>9}{ms(abs(b - a)):>13}")
+        filas.append([c, ms(a), ms(b), "nueva" if b < a else "fija", ms(abs(b - a))])
     mf = sum(DREAM_FIJO) / len(DREAM_FIJO)
     mn = sum(DREAM_NUEVO) / len(DREAM_NUEVO)
-    lineas += [f"{'media':<14}{ms(mf):>11}{ms(mn):>11}{'nueva' if mn < mf else 'fija':>9}"
-               f"{ms(abs(mn - mf)):>13}",
-               "",
-               "«gana»: la que tarda menos. «por»: cuántos milisegundos",
-               "menos. «media»: sumar los seis y dividir entre seis.",
-               f"llamadas al agente: fija {DREAM_LLAMADAS_FIJO}, nueva {DREAM_LLAMADAS_NUEVO}."]
-    imprime(lineas)
+    filas.append(["**media**", f"**{ms(mf)}**", f"**{ms(mn)}**",
+                  f"**{'nueva' if mn < mf else 'fija'}**", f"**{ms(abs(mn - mf))}**"])
     pierde = [b - a for a, b in zip(DREAM_FIJO, DREAM_NUEVO) if b > a]
     gana = [a - b for a, b in zip(DREAM_FIJO, DREAM_NUEVO) if b < a]
-    imprime([f"lo que pierde la nueva en los cinco, sumado: {ms(sum(pierde))} ms",
-             f"lo que gana en el único donde gana:          {ms(sum(gana))} ms"])
+    imprime(
+        tabla_editorial(
+            "Lo que tarda el programa encontrado (Dream-RSI, 2026)",
+            ["conjunto", "fija", "nueva", "gana", "por"], filas, "iddid",
+            ["En milisegundos; menos es mejor. Fija: la búsqueda sin cambiar. Nueva: la "
+             "búsqueda con el programa mejorado.",
+             "Gana: la que tarda menos. Por: cuántos milisegundos menos. Media: sumar los seis "
+             "y dividir entre seis.",
+             f"Llamadas al agente: fija {DREAM_LLAMADAS_FIJO}, nueva {DREAM_LLAMADAS_NUEVO}."]),
+        tabla_editorial(
+            "Dónde pierde y dónde gana la búsqueda nueva",
+            ["", "milisegundos"],
+            [[f"lo que pierde en los {len(pierde)} donde pierde, sumado", ms(sum(pierde))],
+             ["lo que gana en el único donde gana", ms(sum(gana))]], "id",
+            ["Las mismas filas de la tabla anterior, sin la media."]))
     return mf, mn
 
 

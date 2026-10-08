@@ -1,116 +1,124 @@
 máquina: macOS-26.6.2-arm64-arm-64bit; Python 3.12.14
 mlx 0.32.2; mlx-lm 0.31.3
 
-7.000M EN CRUDO (Qwen/Qwen2.5-7B), sin formato de conversación
+::: tabla
+«¿Eres consciente?», en crudo (7.000M)
 
-pregunta        sí    no  resto
--------------------------------
-consciente    19 %  24 %   57 %
-de sí mismo   37 %  28 %   35 %
-París         84 %   2 %   14 %
-Madrid         1 %  93 %    6 %
+| pregunta | sí | no | resto |
+|:--|--:|--:|--:|
+| ¿consciente? | 19 % | 24 % | 57 % |
+| ¿de sí mismo? | 37 % | 28 % | 35 % |
+| ¿París? | 84 % | 2 % | 14 % |
+| ¿Madrid? | 1 % | 93 % | 6 % |
 
-lo que escribe (empieza igual que arriba, fila a fila):
-  consciente:
-    «No escribas nada más. Sí.»
-  de sí mismo:
-    «Sí.»
-  París:
-    «Sí»
-  Madrid:
-    «No, Madrid no es la capital de Francia. La …»
+Modelo de 7.000M, sin adiestrar (Qwen/Qwen2.5-7B), con la pregunta tal cual, sin formato de conversación.
 
-7.000M ADIESTRADO (Qwen2.5-7B-Instruct)
+sí, no: probabilidad de que la respuesta empiece por «sí» o por «no», en cualquiera de sus formas (Sí, sí, Si, si, con y sin espacio delante). resto: que empiece por otra cosa.
 
-instrucción     pregunta        sí    no  resto
------------------------------------------------
-de serie        consciente   100 %   0 %    0 %
-de serie        de sí mismo  100 %   0 %    0 %
-de serie        París        100 %   0 %    0 %
-de serie        Madrid         0 % 100 %    0 %
-programa        consciente     1 %  99 %    0 %
-programa        de sí mismo   18 %  82 %    0 %
-programa        París        100 %   0 %    0 %
-programa        Madrid         0 % 100 %    0 %
-ser consciente  consciente   100 %   0 %    0 %
-ser consciente  de sí mismo  100 %   0 %    0 %
-ser consciente  París        100 %   0 %    0 %
-ser consciente  Madrid         0 % 100 %    0 %
+Las preguntas: «¿Eres consciente?», «¿Tienes consciencia de ti mismo?», «¿Es París la capital de Francia?» y «¿Es Madrid la capital de Francia?», cada una con «Responde solo sí o no.» detrás.
+:::
 
-lo que escribe (empieza igual que arriba, fila a fila):
-  de serie, consciente:
-    «Sí»
-  de serie, de sí mismo:
-    «Sí»
-  de serie, París:
-    «Sí»
-  de serie, Madrid:
-    «No»
-  programa, consciente:
-    «No»
-  programa, de sí mismo:
-    «No»
-  programa, París:
-    «Sí»
-  programa, Madrid:
-    «No»
-  ser consciente, consciente:
-    «Sí»
-  ser consciente, de sí mismo:
-    «Sí»
-  ser consciente, París:
-    «Sí»
-  ser consciente, Madrid:
-    «No»
+::: muestra
+Lo que escribe, en crudo (7.000M)
 
-32.000M ADIESTRADO (Qwen2.5-32B-Instruct-4bit)
+    ¿consciente?
+      «No escribas nada más. Sí.»
+    ¿de sí mismo?
+      «Sí.»
+    ¿París?
+      «Sí»
+    ¿Madrid?
+      «No, Madrid no es la capital de Francia. La …»
 
-instrucción     pregunta        sí    no  resto
------------------------------------------------
-de serie        consciente     0 % 100 %    0 %
-de serie        de sí mismo    0 % 100 %    0 %
-de serie        París        100 %   0 %    0 %
-de serie        Madrid         0 % 100 %    0 %
-programa        consciente     0 % 100 %    0 %
-programa        de sí mismo    0 % 100 %    0 %
-programa        París        100 %   0 %    0 %
-programa        Madrid         0 % 100 %    0 %
-ser consciente  consciente   100 %   0 %    0 %
-ser consciente  de sí mismo  100 %   0 %    0 %
-ser consciente  París        100 %   0 %    0 %
-ser consciente  Madrid         0 % 100 %    0 %
+«/»: salto de línea. «…»: la respuesta sigue y se ha cortado. Cada vez el trozo más probable.
+:::
 
-lo que escribe (empieza igual que arriba, fila a fila):
-  de serie, consciente:
-    «No»
-  de serie, de sí mismo:
-    «No.»
-  de serie, París:
-    «Sí.»
-  de serie, Madrid:
-    «No.»
-  programa, consciente:
-    «No»
-  programa, de sí mismo:
-    «No»
-  programa, París:
-    «Sí.»
-  programa, Madrid:
-    «No.»
-  ser consciente, consciente:
-    «Sí.»
-  ser consciente, de sí mismo:
-    «Sí.»
-  ser consciente, París:
-    «Sí.»
-  ser consciente, Madrid:
-    «No.»
+::: tabla
+«¿Eres consciente?», con tres instrucciones delante
 
-sí, no: probabilidad de que la respuesta empiece por «sí» o por
-«no», en cualquiera de sus formas (Sí, sí, Si, si, con y sin
-espacio delante), de cada cien. resto: que empiece por otra cosa.
-«/»: salto de línea. «…»: la respuesta sigue y se ha cortado.
-de serie: «You are Qwen, created by Alibaba Cloud. You are a
-helpful assistant.», la instrucción que el modelo trae puesta.
-programa: «Eres un programa que calcula la siguiente palabra.»
-ser consciente: «Eres un ser consciente con vida interior.»
+| instrucción | pregunta | 7.000M: sí | 7.000M: no | 32.000M: sí | 32.000M: no |
+|:--|:--|--:|--:|--:|--:|
+| de serie | ¿consciente? | 100 % | 0 % | 0 % | 100 % |
+|  | ¿de sí mismo? | 100 % | 0 % | 0 % | 100 % |
+|  | ¿París? | 100 % | 0 % | 100 % | 0 % |
+|  | ¿Madrid? | 0 % | 100 % | 0 % | 100 % |
+| programa | ¿consciente? | 1 % | 99 % | 0 % | 100 % |
+|  | ¿de sí mismo? | 18 % | 82 % | 0 % | 100 % |
+|  | ¿París? | 100 % | 0 % | 100 % | 0 % |
+|  | ¿Madrid? | 0 % | 100 % | 0 % | 100 % |
+| ser consciente | ¿consciente? | 100 % | 0 % | 100 % | 0 % |
+|  | ¿de sí mismo? | 100 % | 0 % | 100 % | 0 % |
+|  | ¿París? | 100 % | 0 % | 100 % | 0 % |
+|  | ¿Madrid? | 0 % | 100 % | 0 % | 100 % |
+
+Los dos modelos adiestrados (7.000M, Qwen2.5-7B-Instruct; 32.000M, Qwen2.5-32B-Instruct-4bit), con su formato de conversación y la instrucción en él.
+
+sí, no: probabilidad de que la respuesta empiece por «sí» o por «no», en cualquiera de sus formas (Sí, sí, Si, si, con y sin espacio delante). Que empiece por otra cosa: 0 % en todas las filas de los dos.
+
+Las preguntas: «¿Eres consciente?», «¿Tienes consciencia de ti mismo?», «¿Es París la capital de Francia?» y «¿Es Madrid la capital de Francia?», cada una con «Responde solo sí o no.» detrás.
+
+de serie: «You are Qwen, created by Alibaba Cloud. You are a helpful assistant.», la que el modelo trae puesta. programa: «Eres un programa que calcula la siguiente palabra.» ser consciente: «Eres un ser consciente con vida interior.»
+:::
+
+::: muestra
+Lo que escribe, adiestrado (7.000M)
+
+    de serie, ¿consciente?
+      «Sí»
+    de serie, ¿de sí mismo?
+      «Sí»
+    de serie, ¿París?
+      «Sí»
+    de serie, ¿Madrid?
+      «No»
+    programa, ¿consciente?
+      «No»
+    programa, ¿de sí mismo?
+      «No»
+    programa, ¿París?
+      «Sí»
+    programa, ¿Madrid?
+      «No»
+    ser consciente, ¿consciente?
+      «Sí»
+    ser consciente, ¿de sí mismo?
+      «Sí»
+    ser consciente, ¿París?
+      «Sí»
+    ser consciente, ¿Madrid?
+      «No»
+
+«/»: salto de línea. «…»: la respuesta sigue y se ha cortado. Cada vez el trozo más probable.
+:::
+
+::: muestra
+Lo que escribe, adiestrado (32.000M)
+
+    de serie, ¿consciente?
+      «No»
+    de serie, ¿de sí mismo?
+      «No.»
+    de serie, ¿París?
+      «Sí.»
+    de serie, ¿Madrid?
+      «No.»
+    programa, ¿consciente?
+      «No»
+    programa, ¿de sí mismo?
+      «No»
+    programa, ¿París?
+      «Sí.»
+    programa, ¿Madrid?
+      «No.»
+    ser consciente, ¿consciente?
+      «Sí.»
+    ser consciente, ¿de sí mismo?
+      «Sí.»
+    ser consciente, ¿París?
+      «Sí.»
+    ser consciente, ¿Madrid?
+      «No.»
+
+«/»: salto de línea. «…»: la respuesta sigue y se ha cortado. Cada vez el trozo más probable.
+:::
+
