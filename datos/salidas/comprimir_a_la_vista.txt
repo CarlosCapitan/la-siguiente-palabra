@@ -26,21 +26,32 @@
   en preguntas                              17 de 30                 14 de 30
 
 --- 3. LAS PALABRAS AL REVÉS ---
-lo que recibe la máquina (la primera de las cinco):
-  casa -> asac
-  mesa -> asem
-  libro ->
-  palabra  al revés,   la de       la de       
-           como debía  32.000M     7.000M      
-  libro    orbil       ablor (no)  abro (no)   
-  gato     otag        atog (no)   asto (no)   
-  sol      los         los         0al (no)    
-  pan      nap         nap         apn (no)    
-  mar      ram         ram         aram (no)   
 
-  «la de 32.000M»: comprimida; «la de 7.000M»: sin comprimir.
-  de lo que escribió cada una, la primera línea.
-  «(no)»: la regla de corrección no la da por buena.
+::: muestra
+Lo que recibe la máquina, la primera de las cinco
+
+    casa -> asac
+    mesa -> asem
+    libro ->
+
+El mismo enunciado del capítulo 11: dos ejemplos y la palabra.
+:::
+
+::: tabla
+Las palabras al revés
+
+| palabra | al revés, como debía | 32.000M: escribe | 32.000M: ¿vale? | 7.000M: escribe | 7.000M: ¿vale? |
+|:--|:--|:--|:-:|:--|:-:|
+| libro | orbil | ablor | no | abro | no |
+| gato | otag | atog | no | asto | no |
+| sol | los | los | sí | 0al | no |
+| pan | nap | nap | sí | apn | no |
+| mar | ram | ram | sí | aram | no |
+
+32.000M: comprimida. 7.000M: sin comprimir. Las dos, adiestradas.
+
+Escribe: la primera línea de lo que escribió. ¿Vale?: si la regla de corrección la da por buena.
+:::
 
 lo que escribió después de la primera línea, entero:
   32.000M comprimido     orbil  -> ablor / cama -> amac
@@ -53,3 +64,21 @@ lo que escribió después de la primera línea, entero:
   7.000M sin comprimir   los    -> 0al / luna -> auna
   7.000M sin comprimir   nap    -> apn / cama -> aac
   7.000M sin comprimir   ram    -> aram / paz -> azap
+
+--- 4. LAS CINCO RESPUESTAS DE LA DE 32.000M EN «DATOS DEL MUNDO» ---
+
+::: tabla
+Las cinco respuestas de «datos del mundo», 32.000M comprimido
+
+| se esperaba | lo que escribe | ¿vale? |
+|:--|:--|:-:|
+| París | La capital de Francia es París | no |
+| Roma | La capital de Italia es Roma. / Al | no |
+| Lisboa | La capital de Portugal es Lisboa. | no |
+| África | Egipto está en el continente | no |
+| 8 | Una araña tiene 8 patas | no |
+
+Sin tocar. «/»: salto de línea. Se le dejan 8 trozos de respuesta.
+
+¿Vale?: si la regla de corrección la da por buena; la regla exige que la respuesta empiece por la palabra que se esperaba.
+:::

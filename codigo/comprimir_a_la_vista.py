@@ -30,6 +30,7 @@ CAP12_TAMANO = "7.000M"                 # la sección del capítulo 12 que se co
 CAP12_COLUMNA = "adiestrado"            # su columna: enunciado tal cual, como en el capítulo 13
 PREGUNTAS_POR_TAREA = 5
 TAREA_REVES = "seguir un patrón inventado"
+TAREA_MUNDO = "datos del mundo"      # el cero de cinco de la de 32.000M
 NOMBRES = {                              # como escribe los tamaños el capítulo 11
     "7B sin comprimir": "7.000M sin comprimir",
     "7B comprimido": "7.000M comprimido",
@@ -45,7 +46,8 @@ import re
 import sys
 from pathlib import Path
 
-from formato import ANCHO_CAJA, ANCHO_CAJA_CITA, comprobar_ancho, pct
+from formato import (ANCHO_CAJA, ANCHO_CAJA_CITA, comprobar_ancho, muestra_editorial, pct,
+                     tabla_editorial)
 
 AQUI = Path(__file__).resolve().parent
 
@@ -80,15 +82,15 @@ def cap12(ruta=AQUI / CAP12):
     return out
 
 
-def respuestas(ruta=AQUI / DETALLE):
-    """Para cada máquina, en la tarea de las palabras al revés: (enunciado, esperada, primera
+def respuestas(ruta=AQUI / DETALLE, tarea=TAREA_REVES):
+    """Para cada máquina, en una tarea (de entrada, la de las palabras al revés): (enunciado, esperada, primera
     línea de lo que escribió, lo que escribió entero)."""
     t = Path(ruta).read_text(encoding="utf-8")
     trozos = re.split(r"(?m)^={10,}\n(.+)\n={10,}$", t)
     out = {}
     for i in range(1, len(trozos), 2):
         seccion = trozos[i + 2 - 1]
-        reves = seccion.split(f"--- {TAREA_REVES} ---", 1)[1].split("\n---", 1)[0]
+        reves = seccion.split(f"--- {tarea} ---", 1)[1].split("\n---", 1)[0]
         items, actual = [], None
         for l in reves.splitlines():
             m = re.match(r"  \[(sí|NO)\] (.*)$", l)
@@ -138,31 +140,58 @@ def informe():
 
 
 def informe_reves():
+    """Desde el 8 oct 2026, el enunciado como muestra de libro y las palabras como tabla de libro
+    (formato.py; REGLAS 6 ter), con el veredicto de la regla en su propia columna."""
     r = respuestas()
-    print(f"\n--- 3. LAS PALABRAS AL REVÉS ---")
+    print(f"\n--- 3. LAS PALABRAS AL REVÉS ---\n")
     g, p = r[GRANDE], r[PEQUENO]
-    print("lo que recibe la máquina (la primera de las cinco):")
-    for l in comprobar_ancho(["  " + l for l in g[0]["enunciado"]], ANCHO_CAJA_CITA):
-        print(l)
-    lineas = [f"{'palabra':<9}{'al revés,':<12}{'la de':<12}{'la de':<12}",
-              f"{'':<9}{'como debía':<12}{'32.000M':<12}{'7.000M':<12}"]
+    print("\n".join(muestra_editorial(
+        "Lo que recibe la máquina, la primera de las cinco", g[0]["enunciado"],
+        ["El mismo enunciado del capítulo 11: dos ejemplos y la palabra."])))
+    filas = []
     for a, b in zip(g, p):
         assert a["esperada"] == b["esperada"]
         palabra = a["enunciado"][-1].rstrip(" ->").strip()
         assert palabra[::-1] == a["esperada"], f"«{palabra}» al revés no es «{a['esperada']}»"
-        marca = lambda x: x["resp"][0].strip() + ("" if x["acierto"] else " (no)")
-        lineas.append(f"{palabra:<9}{a['esperada']:<12}{marca(a):<12}{marca(b):<12}")
-    lineas += ["",
-               "«la de 32.000M»: comprimida; «la de 7.000M»: sin comprimir.",
-               "de lo que escribió cada una, la primera línea.",
-               "«(no)»: la regla de corrección no la da por buena."]
-    for l in comprobar_ancho(["  " + l if l else l for l in lineas], ANCHO_CAJA_CITA):
-        print(l)
+        filas.append([palabra, a["esperada"], a["resp"][0].strip(), "sí" if a["acierto"] else "no",
+                      b["resp"][0].strip(), "sí" if b["acierto"] else "no"])
+    print()
+    print("\n".join(tabla_editorial(
+        "Las palabras al revés",
+        ["palabra", "al revés, como debía", "32.000M: escribe", "32.000M: ¿vale?",
+         "7.000M: escribe", "7.000M: ¿vale?"], filas, "iiicic",
+        ["32.000M: comprimida. 7.000M: sin comprimir. Las dos, adiestradas.",
+         "Escribe: la primera línea de lo que escribió. ¿Vale?: si la regla de corrección la da "
+         "por buena."])))
     print("\nlo que escribió después de la primera línea, entero:")
     for nombre, items in ((GRANDE, g), (PEQUENO, p)):
         for x in items:
             print(f"  {NOMBRES[nombre]:<22} {x['esperada']:<6} -> " + " / ".join(x["resp"]))
     return r
+
+
+def max_nuevos(ruta=AQUI / "crecer.py"):
+    """Cuántos trozos de respuesta se le dejan escribir: MAX_NUEVOS de crecer.py, que es el que
+    usa comprimir.py. Se lee sin importarlo, que cargaría la biblioteca de la tarjeta gráfica."""
+    import ast
+    arbol = ast.parse(Path(ruta).read_text(encoding="utf-8"))
+    return next(ast.literal_eval(n.value) for n in arbol.body if isinstance(n, ast.Assign)
+                and getattr(n.targets[0], "id", "") == "MAX_NUEVOS")
+
+
+def informe_mundo():
+    """El cero de cinco de la de 32.000M en «datos del mundo», respuesta a respuesta."""
+    g = respuestas(tarea=TAREA_MUNDO)[GRANDE]
+    filas = [[x["esperada"], " / ".join(l.strip() for l in x["resp"]),
+              "sí" if x["acierto"] else "no"] for x in g]
+    print(f"\n--- 4. LAS CINCO RESPUESTAS DE LA DE 32.000M EN «{TAREA_MUNDO.upper()}» ---\n")
+    print("\n".join(tabla_editorial(
+        f"Las cinco respuestas de «{TAREA_MUNDO}», 32.000M comprimido",
+        ["se esperaba", "lo que escribe", "¿vale?"], filas, "iic",
+        [f"Sin tocar. «/»: salto de línea. Se le dejan {max_nuevos()} trozos de respuesta.",
+         "¿Vale?: si la regla de corrección la da por buena; la regla exige que la respuesta "
+         "empiece por la palabra que se esperaba."])))
+    return g
 
 
 def selftest():
@@ -219,6 +248,7 @@ def main():
         sys.exit(selftest())
     informe()
     informe_reves()
+    informe_mundo()
 
 
 if __name__ == "__main__":

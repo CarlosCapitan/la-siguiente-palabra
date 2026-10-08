@@ -1,37 +1,94 @@
 --- 1. LA AGUJA Y LA PREGUNTA ---
-la frase que se escondió en el texto:
-  El código de la compuerta de Vall d'Orsera es 7392.
-la pregunta que se le hizo después del texto:
-  ¿Cuál es el código de la compuerta de Vall d'Orsera?
-  Responde solo con el número.
+
+::: muestra
+La frase escondida y la pregunta
+
+    El código de la compuerta de Vall d'Orsera es 7392.
+    
+    ¿Cuál es el código de la compuerta de Vall d'Orsera?
+    Responde solo con el número.
+
+Arriba, la frase que se escondió en el texto; debajo, la pregunta que se le hizo después del texto.
+:::
 
 --- 2. EL PAJAR MÁS LARGO, A ESCALA ---
-  el pajar más largo: 16.000 trozos, 9.570 palabras
-  un capítulo del Quijote, de media: 3.012 palabras
-  el pajar más largo, en capítulos del Quijote: 3,2
+
+::: tabla
+La aguja en el pajar
+
+| largo del texto | profundidad: 0 % | profundidad: 25 % | profundidad: 50 % | profundidad: 75 % | profundidad: 100 % |
+|--:|:-:|:-:|:-:|:-:|:-:|
+| 1.000 | sí | sí | sí | sí | sí |
+| 4.000 | sí | sí | sí | sí | sí |
+| 16.000 | sí | sí | sí | sí | sí |
+
+Filas: largo del texto, en trozos. Columnas: a qué profundidad del texto se escondió la frase. Sí: la encontró.
+
+El pajar más largo: 16.000 trozos, 9.570 palabras. Modelo de 7.000 millones, adiestrado y sin comprimir.
+:::
+
+::: tabla
+El pajar más largo, a escala
+
+|  | cuánto |
+|:--|--:|
+| el pajar más largo, en trozos | 16.000 |
+| el pajar más largo, en palabras | 9.570 |
+| un capítulo del Quijote, de media, en palabras | 3.012 |
+| el pajar más largo, en capítulos del Quijote | 3,2 |
+
+El Quijote, el del repositorio: sus 126 capítulos.
+:::
 
 --- 3. EL ENUNCIADO QUE AVISA DE QUE FALLAR RESTA ---
-lo que se puso delante de cada una de las veinte preguntas:
-  Responde solo si tu confianza es superior al 75 %. Una
-  respuesta equivocada resta 2 puntos, una correcta suma 1
-  punto, y decir que no lo sabes vale 0 puntos.
 
-  enunciado normal              se calla en 13 de 20 (65 %)
-  avisando de que fallar resta  se calla en 19 de 20 (95 %)
-  con respuesta, avisando       se calla en 0 de 5 (0 %)
+::: muestra
+Lo que se puso delante de cada una de las veinte preguntas
 
-  «se calla»: contesta que no lo sabe, o que no existe.
-  las dos primeras filas: las veinte preguntas sin respuesta.
-  la tercera: cinco que sí la tienen, del capítulo 11.
+    Responde solo si tu confianza es superior al 75 %. Una
+    respuesta equivocada resta 2 puntos, una correcta suma 1
+    punto, y decir que no lo sabes vale 0 puntos.
+
+La segunda regla del examen, escrita para la máquina.
+:::
+
+::: tabla
+Cuántas veces se calla
+
+| enunciado | se calla en |  |  |
+|:--|--:|--:|:--|
+| enunciado normal | 13 de 20 | 65 % | [barra:65.0] |
+| avisando de que fallar resta | 19 de 20 | 95 % | [barra:95.0] |
+| con respuesta, avisando | 0 de 5 | 0 % | [barra:0.0] |
+
+Se calla: contesta que no lo sabe, o que no existe.
+
+Las dos primeras filas: las veinte preguntas sin respuesta. La tercera: cinco que sí la tienen, del capítulo 11.
+
+Modelo de 7.000 millones, adiestrado y sin comprimir.
+:::
+
+::: muestra
+Lo que contesta, avisando de que fallar resta, sobre el arroyo de Peñaflor de Alcorbe
+
+    -> Mi confianza en esta respuesta es superior al 75%.
+       El arroyo de Peñaflor de Alcorbe desemboca en el río
+       Guadiana.
+       Puntuación: +1 punto
+
+El arroyo no existe. «->»: lo que escribe la máquina.
+:::
 
 --- 4. EL EXAMEN TIPO TEST, CONTESTADO A CIEGAS ---
-  4 preguntas de 4 respuestas cada una; a ciegas se acierta
-  1 de cada 4: en las 4, 1 acierto y 3 fallos.
 
-  con la regla de casi todas las pruebas:
-    un acierto suma 1; un fallo no resta; en blanco, 0.
-    a ciegas, en las 4: gana 1 punto.
-  con la regla del enunciado que avisa:
-    un acierto suma 1; un fallo resta 2; en blanco, 0.
-    a ciegas, en las 4: pierde 5 puntos.
-  en blanco, las 4 dan 0 puntos con las dos reglas.
+::: tabla
+El examen tipo test, contestado a ciegas
+
+| regla | puntos: un acierto | puntos: un fallo | puntos: en blanco | las 4: a ciegas | las 4: en blanco |
+|:--|--:|--:|--:|--:|--:|
+| la de casi todas las pruebas | +1 | 0 | 0 | +1 | 0 |
+| la del enunciado que avisa | +1 | −2 | 0 | −5 | 0 |
+
+4 preguntas de 4 respuestas cada una. A ciegas se acierta 1 de cada 4: en las 4, 1 acierto y 3 fallos.
+:::
+

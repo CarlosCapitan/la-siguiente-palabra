@@ -47,7 +47,10 @@ import random
 import sys
 from pathlib import Path
 
-from formato import ANCHO_CAJA_CITA, coma, comprobar_ancho
+from formato import coma, muestra_editorial, tabla_editorial, trozo
+
+# Desde el 8 oct 2026 los tres pasos salen como tablas de libro (formato.py; REGLAS 6 ter).
+# Las cuentas no cambian.
 
 AQUI = Path(__file__).resolve().parent
 
@@ -123,70 +126,60 @@ def informe(R, tok, modelo):
     print(f"modelo: {R.MODELO}   dispositivo: {R.dispositivo()}")
 
     print("\n--- 1. QUÉ ES LA SORPRESA DE UN TROZO ---")
-    lineas = [f"{'papeletas de cada cien que le daba':<38}{'sorpresa':>10}",
-              f"{'al trozo que vino de verdad':<38}"]
-    for p in PAPELETAS_ESCALA:
-        cifra = coma(p, 1) if p < 1 else str(int(p))
-        lineas.append(f"{cifra:>10}{'':<28}{coma(sorpresa_de(p), 2):>10}")
-    lineas += ["",
-               "con cien papeletas, ninguna sorpresa. Cada vez que las",
-               f"papeletas se dividen entre dos, la sorpresa sube "
-               f"{coma(sorpresa_de(50), 2)};",
-               f"entre diez, sube {coma(sorpresa_de(10), 2)}.",
-               f"un caso: {coma(CASO_A_MANO, 1)} papeletas, entre las filas de 25 y de 10,",
-               f"muy cerca de 25: sorpresa {coma(sorpresa_de(CASO_A_MANO), 2)}."]
-    for l in comprobar_ancho(["  " + l if l else l for l in lineas], ANCHO_CAJA_CITA):
-        print(l)
+    filas = [[coma(p, 1) if p < 1 else str(int(p)), coma(sorpresa_de(p), 2)]
+             for p in PAPELETAS_ESCALA]
+    print()
+    print("\n".join(tabla_editorial(
+        "La sorpresa de un trozo",
+        ["papeletas de cada cien que le daba al trozo que vino", "sorpresa"], filas, "dd",
+        [f"Con cien papeletas, ninguna sorpresa. Cada vez que las papeletas se dividen entre dos, "
+         f"la sorpresa sube {coma(sorpresa_de(50), 2)}; entre diez, sube "
+         f"{coma(sorpresa_de(10), 2)}.",
+         f"Un caso: {coma(CASO_A_MANO, 1)} papeletas, entre las filas de 25 y de 10, muy cerca de "
+         f"25: sorpresa {coma(sorpresa_de(CASO_A_MANO), 2)}."])))
 
     todos = pares(R, tok, modelo)
     prefijo, humano, maquina = todos[PARRAFO]
     h = trozo_a_trozo(R, tok, modelo, prefijo, humano)
     m = trozo_a_trozo(R, tok, modelo, prefijo, maquina)
     print("\n--- 2. UN PÁRRAFO, TROZO A TROZO ---")
-    print(f"el arranque, igual para los dos ({R.ARRANQUE} trozos):")
     import textwrap
-    for l in comprobar_ancho(textwrap.wrap("«" + " ".join(tok.decode(prefijo[0]).split()) + "»",
-                                           ANCHO_CAJA_CITA - 2,
-                                           initial_indent="  ", subsequent_indent="  "),
-                             ANCHO_CAJA_CITA):
-        print(l)
-    lineas = [f"{'lo que escribió una persona':<28}   {'lo que escribió la máquina':<28}",
-              f"{'trozo':<14}{'papeletas':>11}   {'trozo':<14}{'papeletas':>11}"]
-    for (th, ph), (tm, pm) in list(zip(h, m))[:TROZOS_VISTOS]:
-        lineas.append(f"{visible(th):<14}{coma(100 * ph, 1):>11}   {visible(tm):<14}"
-                      f"{coma(100 * pm, 1):>11}")
-    lineas += ["",
-               "«papeletas»: de cada cien, las que la máquina daba a ese",
-               "trozo justo antes de que viniera. «_»: un espacio.",
-               f"son los {TROZOS_VISTOS} primeros trozos de cada texto; la sorpresa",
-               f"media de debajo es la del texto entero (la persona,",
-               f"{ids_h_largo(humano)} trozos; la máquina, {ids_h_largo(maquina)})."]
-    for l in comprobar_ancho(["  " + l if l else l for l in lineas], ANCHO_CAJA_CITA):
-        print(l)
-    print(f"  sorpresa media de este párrafo: persona {coma(media(h), 3)}; "
-          f"máquina {coma(media(m), 3)}")
+    print()
+    print("\n".join(muestra_editorial(
+        f"El arranque, igual para los dos ({R.ARRANQUE} trozos)",
+        textwrap.wrap("«" + " ".join(tok.decode(prefijo[0]).split()) + "»", 60),
+        ["El principio del primero de los ocho párrafos, de los trescientos libros."])))
+    filas = [[trozo(visible(th)), coma(100 * ph, 1), trozo(visible(tm)), coma(100 * pm, 1)]
+             for (th, ph), (tm, pm) in list(zip(h, m))[:TROZOS_VISTOS]]
+    print()
+    print("\n".join(tabla_editorial(
+        "Un párrafo, trozo a trozo",
+        ["una persona: trozo", "una persona: papeletas", "la máquina: trozo",
+         "la máquina: papeletas"], filas, "idid",
+        ["Papeletas: de cada cien, las que la máquina daba a ese trozo justo antes de que "
+         "viniera. «_»: un espacio.",
+         f"Son los {TROZOS_VISTOS} primeros trozos de cada texto. El texto entero: la persona, "
+         f"{ids_h_largo(humano)} trozos; la máquina, {ids_h_largo(maquina)}.",
+         f"Sorpresa media del texto entero: persona {coma(media(h), 3)}; máquina "
+         f"{coma(media(m), 3)}.",
+         f"Modelo de 7.000 millones, adiestrado y sin comprimir ({R.MODELO}), a temperatura 0."])))
 
     print("\n--- 3. LA MEDIA DE LOS OCHO PÁRRAFOS ---")
     sh = sum(media(trozo_a_trozo(R, tok, modelo, a, b)) for a, b, _ in todos) / len(todos)
     sm = sum(media(trozo_a_trozo(R, tok, modelo, a, c)) for a, _, c in todos) / len(todos)
-    lineas = [f"{'':<22}{'sorpresa':>12}{'papeletas':>14}",
-              f"{'':<22}{'media':>12}{'por trozo':>14}",
-              f"{'párrafo humano':<22}{coma(sh, 3):>12}{coma(papeletas_de(sh), 1):>14}",
-              f"{'párrafo de la máquina':<22}{coma(sm, 3):>12}{coma(papeletas_de(sm), 1):>14}",
-              "",
-              f"sorpresa: la del humano es {coma(sh / sm, 1)} veces la de la máquina.",
-              f"papeletas: las de la máquina son {coma(papeletas_de(sm) / papeletas_de(sh), 1)} veces "
-              f"las del humano.",
-              "",
-              "«papeletas por trozo»: la sorpresa media pasada otra vez",
-              "a papeletas de cada cien, con la tabla de arriba. No es",
-              "la media de las papeletas.",
-              f"{len(todos)} párrafos. La persona: {R.LARGO_B} trozos en cada uno.",
-              f"La máquina: entre {min(c.shape[1] for _, _, c in todos)} y "
-              f"{max(c.shape[1] for _, _, c in todos)}, porque a veces da",
-              "su texto por terminado antes."]
-    for l in comprobar_ancho(["  " + l if l else l for l in lineas], ANCHO_CAJA_CITA):
-        print(l)
+    filas = [["párrafo humano", coma(sh, 3), coma(papeletas_de(sh), 1)],
+             ["párrafo de la máquina", coma(sm, 3), coma(papeletas_de(sm), 1)],
+             ["humano entre máquina", f"{coma(sh / sm, 1)} veces", ""],
+             ["máquina entre humano", "", f"{coma(papeletas_de(sm) / papeletas_de(sh), 1)} veces"]]
+    print()
+    print("\n".join(tabla_editorial(
+        f"La media de los {len(todos)} párrafos",
+        ["", "sorpresa media", "papeletas por trozo"], filas, "idd",
+        ["Papeletas por trozo: la sorpresa media pasada otra vez a papeletas de cada cien, con "
+         "la tabla de la sorpresa. No es la media de las papeletas.",
+         f"{len(todos)} párrafos. La persona: {R.LARGO_B} trozos en cada uno. La máquina: entre "
+         f"{min(c.shape[1] for _, _, c in todos)} y {max(c.shape[1] for _, _, c in todos)}, "
+         "porque a veces da su texto por terminado antes."])))
     ch, cm = medias_del_capitulo()
     # Desde el 28 de septiembre, romper_la_maquina.py también cuenta con los trozos tal cual, así
     # que las dos medias tienen que coincidir; si no, revienta.
