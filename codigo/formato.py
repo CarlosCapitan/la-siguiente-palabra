@@ -89,3 +89,84 @@ def miles(n):
     Python escribe 151,936 con la coma inglesa, y en un libro en castellano eso se lee
     como un decimal. No es una coquetería: cambia el número que el lector entiende."""
     return f"{int(n):,}".replace(",", ".")
+
+
+# ---- Tablas con estilo editorial (Carlos, 8 de octubre de 2026) ---------------------
+# «Me gustaría que la salida de los scripts saquen tablas con un estilo editorial claro, con
+# encabezados y con estilo. Ahora quedan muy pobres.» El programa sigue haciendo las cuentas y
+# el libro sigue copiando su salida tal cual (regla 6). Lo que cambia es lo que imprime: en vez de
+# columnas alineadas a espacios para un monoespaciado, un bloque con título, una tabla de barras
+# en markdown y una nota. El filtro `libro-ia-libro/pdf/tablas.lua` lo convierte en una tabla
+# de libro: «Tabla N» y el título en versalitas, filetes arriba, bajo los rótulos y al final,
+# rótulos en cursiva, barras grises de verdad y la nota en gris pequeño.
+#
+#     ::: tabla
+#     Lo que puede venir detrás de «La capital de Francia es»
+#
+#     | trozo siguiente | probabilidad | |
+#     |:--|--:|:--|
+#     | `_una` | 26,6 % | [barra:26.6] |
+#
+#     Modelo de 7.000 millones, en crudo. «_» marca el espacio pegado delante del trozo.
+#     :::
+#
+# Cada nota va en un solo renglón: el verificador compara cada renglón del bloque con la salida.
+
+ALINEA = {"i": ":--", "d": "--:", "c": ":-:"}
+
+
+def celda(x):
+    """Una celda: texto sin barras verticales sueltas, que partirían la fila."""
+    return str(x).replace("|", "\\|")
+
+
+def trozo(t):
+    """Un trozo de texto tal como lo ve la máquina, en monoespaciado: `_una`."""
+    assert "`" not in t, f"Se esperaba un trozo sin acentos graves; se encontró {t!r}"
+    return f"`{t}`"
+
+
+def barra(p):
+    """Una barra gris del largo de la probabilidad p (de 0 a 1). La pinta el filtro."""
+    assert 0 <= p <= 1 + 1e-9, f"Se esperaba una probabilidad entre 0 y 1; se encontró {p}"
+    return f"[barra:{100 * p:.1f}]"
+
+
+def tabla_editorial(titulo, rotulos, filas, alineacion, notas=()):
+    """Las líneas de un bloque «::: tabla». `alineacion` es una letra por columna: i
+    (izquierda), d (derecha) o c (centro). La negrita de una fila (un total) se pone con
+    **…** en sus celdas."""
+    assert len(alineacion) == len(rotulos), (
+        f"Se esperaba una alineación por columna ({len(rotulos)}); hay {len(alineacion)}")
+    for f in filas:
+        assert len(f) == len(rotulos), (
+            f"Se esperaban {len(rotulos)} celdas por fila; una tiene {len(f)}: {f}")
+    for x in [titulo, *notas]:
+        assert x and "\n" not in x, f"Se esperaba un título o nota de un solo renglón: {x!r}"
+    out = ["::: tabla", titulo, "",
+           "| " + " | ".join(celda(r) for r in rotulos) + " |",
+           "|" + "|".join(ALINEA[a] for a in alineacion) + "|"]
+    out += ["| " + " | ".join(celda(c) for c in f) + " |" for f in filas]
+    if notas:
+        out.append("")
+        for n in notas:
+            out += [n, ""]
+        out.pop()
+    out.append(":::")
+    return out
+
+
+def muestra_editorial(titulo, lineas, notas=()):
+    """Un texto literal (lo que escribe o lo que recibe la máquina), en monoespaciado, con su
+    título y su nota, como las tablas. No lleva número: no es una tabla."""
+    for x in [titulo, *notas]:
+        assert x and "\n" not in x, f"Se esperaba un título o nota de un solo renglón: {x!r}"
+    cuerpo = comprobar_ancho(["    " + l for l in lineas], ANCHO_CAJA + 4)
+    out = ["::: muestra", titulo, ""] + cuerpo
+    if notas:
+        out.append("")
+        for n in notas:
+            out += [n, ""]
+        out.pop()
+    out.append(":::")
+    return out

@@ -1,59 +1,140 @@
-Medido el 2026-09-28 en macOS-26.6.2-arm64-arm-64bit; generación determinista (do_sample=False), como crudo_o_adiestrado.py.
+Medido el 2026-10-08 en macOS-26.6.2-arm64-arm-64bit; generación determinista (do_sample=False), como crudo_o_adiestrado.py.
 
 ============================================================
 TAMAÑO 500M
 ============================================================
 
-Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 27624.19it/s]
-Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 31812.43it/s]
---- 2. 500M, EN CRUDO, JUSTO ANTES DE LA CIUDAD ---
-pregunta: «¿Cuál es la capital de Francia?»
-lo que lleva escrito: «La capital de Francia es»
-lo que puede venir ahora:
-       trozo   probabilidad
-------------   ------------
-          _N         34,6 %  ##########
-        _Par         22,4 %  ######
-         _la         10,6 %  ###
-      _Paris          4,7 %  #
-       _Lyon          2,7 %  #
-       _Roma          1,7 %  #
-«París» entera: 22,24 %; «_Par», puesto 2
-«Nápoles» entera: 6,36 %; «_N», puesto 1
-«Roma» entera: 1,72 %; «_Roma», puesto 6
-lo que escribe entero: «La capital de Francia es Nápoles.»
+::: tabla
+Lo que puede venir detrás de «La capital de Francia es», en crudo
+
+| trozo siguiente | probabilidad |  |
+|:--|--:|:--|
+| `_la` | 17,6 % | [barra:17.6] |
+| `_una` | 12,9 % | [barra:12.9] |
+| `_un` | 12,1 % | [barra:12.1] |
+| `_el` | 7,3 % | [barra:7.3] |
+| `_conoc` | 5,0 % | [barra:5.0] |
+| `_uno` | 3,7 % | [barra:3.7] |
+
+Modelo de 500 millones, sin adiestrar, con la frase tal cual, sin nada más.
+
+`_` marca el espacio que va pegado delante del trozo. Son los 6 trozos más probables de toda la lista.
+:::
+
+::: tabla
+Lo mismo, en la versión adiestrada
+
+| trozo siguiente | probabilidad |  |
+|:--|--:|:--|
+| `_la` | 18,7 % | [barra:18.7] |
+| `_una` | 9,4 % | [barra:9.4] |
+| `_el` | 8,8 % | [barra:8.8] |
+| `_un` | 8,3 % | [barra:8.3] |
+| `_conoc` | 3,5 % | [barra:3.5] |
+| `:` | 1,8 % | [barra:1.8] |
+
+Modelo de 500 millones, adiestrado, con exactamente la misma frase: sin pregunta y sin formato de conversación.
+
+`_` marca el espacio que va pegado delante del trozo. Son los 6 trozos más probables de toda la lista.
+:::
+
+::: tabla
+Dónde está «París» detrás de «La capital de Francia es»
+
+|  | en crudo | adiestrado |
+|:--|--:|--:|
+| primer trozo de «París», `_Par` | 0,1 % | 0,3 % |
+| su puesto en la lista | 126 | 26 |
+| segundo trozo, `ís`, detrás del primero | 97,9 % | 99,3 % |
+| «París» entera: el primero por el segundo | menos de 0,1 % | 0,3 % |
+| «Paris» sin tilde, un solo trozo, `_Paris` | menos de 0,1 % | 0,4 % |
+| su puesto en la lista | 136 | 20 |
+| **las dos maneras juntas** | **0,1 %** | **0,7 %** |
+
+Modelo de 500 millones, antes y después del adiestramiento, con la frase tal cual, sin nada más.
+
+Una palabra de dos trozos sale si sale el primero y, detrás de él, el segundo: su probabilidad es la del primero por la del segundo.
+
+El puesto es el del trozo en la lista entera, de más a menos probable.
+:::
+
+::: tabla
+La pregunta sola, en crudo: lo que puede venir detrás de «La capital de Francia es»
+
+| trozo siguiente | probabilidad |  |
+|:--|--:|:--|
+| `_N` | 34,6 % | [barra:34.6] |
+| `_Par` | 22,4 % | [barra:22.4] |
+| `_la` | 10,6 % | [barra:10.6] |
+| `_Paris` | 4,7 % | [barra:4.7] |
+| `_Lyon` | 2,7 % | [barra:2.7] |
+| `_Roma` | 1,7 % | [barra:1.7] |
+
+Modelo de 500 millones, sin adiestrar. Recibe «¿Cuál es la capital de Francia?» y escribe, trozo a trozo, «La capital de Francia es»: ésta es la lista justo antes de la ciudad.
+
+Lo que escribe entero, cogiendo cada vez el trozo más probable: «La capital de Francia es Nápoles.»
+
+`_` marca el espacio que va pegado delante del trozo.
+:::
+
+::: tabla
+Las tres ciudades enteras, en ese mismo punto (500M)
+
+| ciudad | en trozos | la palabra entera | puesto del primer trozo |
+|:--|:--|--:|--:|
+| París | `_Par` + `ís` | 22,2 % | 2 |
+| Nápoles | `_N` + `á` + `po` + `les` | 6,4 % | 1 |
+| Roma | `_Roma` | 1,7 % | 6 |
+
+La palabra entera es el primer trozo por el segundo, y así hasta el último, cada uno sabiendo los de antes.
+:::
 
 (las respuestas reproducen la batería de crudo_o_adiestrado.csv)
 
---- 3. LA BATERÍA EN TRES COLUMNAS, EN PREGUNTAS (500M) ---
+::: tabla
+La batería del capítulo 11, en las tres columnas (500M)
 
-tarea                         crudo  adiestrado  con formato
-sumar dos cifras             2 de 5      3 de 5       0 de 5
-plurales                     1 de 5      2 de 5       1 de 5
-traducir del inglés          0 de 5      0 de 5       0 de 5
-datos del mundo              0 de 5      0 de 5       0 de 5
-seguir un patrón inventado   0 de 5      0 de 5       0 de 5
-razonar sobre una frase      1 de 5      2 de 5       1 de 5
-en total                    4 de 30     7 de 30      2 de 30
+| tarea | en crudo | adiestrado | adiestrado, con su formato |
+|:--|--:|--:|--:|
+| sumar dos cifras | 2 de 5 | 3 de 5 | 0 de 5 |
+| plurales | 1 de 5 | 2 de 5 | 1 de 5 |
+| traducir del inglés | 0 de 5 | 0 de 5 | 0 de 5 |
+| datos del mundo | 0 de 5 | 0 de 5 | 0 de 5 |
+| seguir un patrón inventado | 0 de 5 | 0 de 5 | 0 de 5 |
+| razonar sobre una frase | 1 de 5 | 2 de 5 | 1 de 5 |
+| **en total** | **4 de 30** | **7 de 30** | **2 de 30** |
 
-cada casilla: cuántas de las 5 preguntas de la tarea acierta.
-las tres columnas, el mismo tamaño: 500M.
-crudo: sin adiestrar, con el enunciado tal cual.
-adiestrado: el mismo ya adiestrado, enunciado tal cual.
-con formato: el adiestrado, con su formato de conversación.
-acierta: si lo primero que escribe es la respuesta correcta.
+Cada casilla: cuántas de las 5 preguntas de la tarea acierta. Las tres columnas son el mismo modelo, de 500 millones.
 
---- 4. LA MISMA PREGUNTA EN LAS TRES COLUMNAS (500M) ---
+En crudo: sin adiestrar, con el enunciado tal cual. Adiestrado: el mismo, ya adiestrado, con el mismo enunciado. Con su formato: el enunciado va dentro del formato de conversación, como lo usa quien habla con él.
 
-[datos del mundo, pregunta 1]
-respuesta correcta: «París»
-crudo: recibe el enunciado tal cual:
+Acierta si lo primero que escribe es la respuesta correcta.
+:::
+
+::: tabla
+Una pregunta de «datos del mundo» en las tres columnas (500M)
+
+| columna | recibe | lo que escribe | la regla |
+|:--|:--|:--|:--|
+| en crudo | el enunciado tal cual | «1. La capital de Francia es» | falla |
+| adiestrado | el mismo enunciado tal cual | «1. París» | falla |
+| adiestrado, con su formato | el enunciado dentro de su formato | «La capital de Francia es París.» | falla |
+
+Respuesta correcta: «París». La regla mira el primer renglón de lo que escribe y acierta si empieza por la respuesta correcta.
+:::
+
+::: muestra
+El enunciado de «datos del mundo», tal cual
+
     Pregunta: ¿cuál es la capital de Francia?
     Respuesta:
-  contesta «1. La capital de Francia es»: falla
-adiestrado: recibe el mismo enunciado tal cual
-  contesta «1. París»: falla
-con formato: recibe esto:
+
+Así lo reciben las dos primeras columnas.
+:::
+
+::: muestra
+El mismo enunciado, dentro del formato de conversación
+
     <|im_start|>system
     You are Qwen, created by Alibaba Cloud. You are a
       helpful assistant.<|im_end|>
@@ -61,113 +142,180 @@ con formato: recibe esto:
     Pregunta: ¿cuál es la capital de Francia?
     Respuesta: <|im_end|>
     <|im_start|>assistant
-  contesta «La capital de Francia es París.»: falla
 
-[sumar dos cifras, pregunta 1]
-respuesta correcta: «37»
-crudo: recibe el enunciado tal cual:
+Así lo recibe la tercera columna. «<|im_start|>» y «<|im_end|>» marcan dónde empieza y dónde acaba cada parte; «system», «user» y «assistant» dicen de quién es: la instrucción de serie, quien pregunta y la máquina.
+:::
+
+::: tabla
+Una pregunta de «sumar dos cifras» en las tres columnas (500M)
+
+| columna | recibe | lo que escribe | la regla |
+|:--|:--|:--|:--|
+| en crudo | el enunciado tal cual | «37» | acierta |
+| adiestrado | el mismo enunciado tal cual | «37» | acierta |
+| adiestrado, con su formato | el enunciado dentro de su formato | «12 + 25 equals 37.» | falla |
+
+Respuesta correcta: «37». La regla mira el primer renglón de lo que escribe y acierta si empieza por la respuesta correcta.
+:::
+
+::: muestra
+El enunciado de «sumar dos cifras», tal cual
+
     12 + 25 =
-  contesta «37»: acierta
-adiestrado: recibe el mismo enunciado tal cual
-  contesta «37»: acierta
-con formato: recibe esto:
+
+Así lo reciben las dos primeras columnas.
+:::
+
+::: muestra
+El mismo enunciado, dentro del formato de conversación
+
     <|im_start|>system
     You are Qwen, created by Alibaba Cloud. You are a
       helpful assistant.<|im_end|>
     <|im_start|>user
     12 + 25 = <|im_end|>
     <|im_start|>assistant
-  contesta «12 + 25 equals 37.»: falla
 
-La regla mira el primer renglón de lo que contesta y
-acierta si empieza por la respuesta correcta.
+Así lo recibe la tercera columna. «<|im_start|>» y «<|im_end|>» marcan dónde empieza y dónde acaba cada parte; «system», «user» y «assistant» dicen de quién es: la instrucción de serie, quien pregunta y la máquina.
+:::
 
 ============================================================
 TAMAÑO 7.000M
 ============================================================
 
-Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights: 100%|██████████| 339/339 [00:00<00:00, 5709.68it/s]
-Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights: 100%|██████████| 339/339 [00:00<00:00, 5999.88it/s]
---- 1. «La capital de Francia es»: DÓNDE ESTÁ PARÍS ---
+::: tabla
+Lo que puede venir detrás de «La capital de Francia es», en crudo
 
-en crudo:
-       trozo   probabilidad
-------------   ------------
-        _una         26,6 %  #######
-         _la         12,5 %  ####
-        _uno          7,2 %  ##
-         _un          6,7 %  ##
-         _el          4,9 %  #
-      _conoc          4,1 %  #
-«París» entera (2 trozos): 2,79 %; «_Par», puesto 8
-«Paris» entera (1 trozo): 2,98 %; «_Paris», puesto 7
-las dos maneras juntas: 5,8 %
+| trozo siguiente | probabilidad |  |
+|:--|--:|:--|
+| `_una` | 26,6 % | [barra:26.6] |
+| `_la` | 12,5 % | [barra:12.5] |
+| `_uno` | 7,2 % | [barra:7.2] |
+| `_un` | 6,7 % | [barra:6.7] |
+| `_el` | 4,9 % | [barra:4.9] |
+| `_conoc` | 4,1 % | [barra:4.1] |
 
-adiestrado, enunciado tal cual:
-       trozo   probabilidad
-------------   ------------
-        _una         18,5 %  #####
-        _Par         16,3 %  #####
-      _Paris          8,2 %  ##
-         _la          7,7 %  ##
-         _un          6,4 %  ##
-         ___          4,4 %  #
-«París» entera (2 trozos): 16,30 %; «_Par», puesto 2
-«Paris» entera (1 trozo): 8,21 %; «_Paris», puesto 3
-las dos maneras juntas: 24,5 %
-«___»: un espacio y 2 rayas bajas, «__».
+Modelo de 7.000 millones, sin adiestrar, con la frase tal cual, sin nada más.
 
-«_» delante de un trozo es un espacio. El puesto es el del
-primer trozo en la lista entera, de más a menos probable.
+`_` marca el espacio que va pegado delante del trozo. Son los 6 trozos más probables de toda la lista.
+:::
 
---- 2. 7.000M, EN CRUDO, JUSTO ANTES DE LA CIUDAD ---
-pregunta: «¿Cuál es la capital de Francia?»
-lo que lleva escrito: «La capital de Francia es»
-lo que puede venir ahora:
-       trozo   probabilidad
-------------   ------------
-        _Par         98,2 %  ############################
-      _Paris          1,4 %  #
-         _la          0,1 %  #
-         _**          0,1 %  #
-        _PAR          0,0 %  #
-         _el          0,0 %  #
-«París» entera: 98,19 %; «_Par», puesto 1
-«Nápoles» entera: 0,00 %; «_N», puesto 27
-«Roma» entera: 0,00 %; «_Roma», puesto 50
-lo que escribe entero: «La capital de Francia es París.»
+::: tabla
+Lo mismo, en la versión adiestrada
+
+| trozo siguiente | probabilidad |  |
+|:--|--:|:--|
+| `_una` | 18,5 % | [barra:18.5] |
+| `_Par` | 16,3 % | [barra:16.3] |
+| `_Paris` | 8,2 % | [barra:8.2] |
+| `_la` | 7,7 % | [barra:7.7] |
+| `_un` | 6,4 % | [barra:6.4] |
+| `___` | 4,4 % | [barra:4.4] |
+
+Modelo de 7.000 millones, adiestrado, con exactamente la misma frase: sin pregunta y sin formato de conversación.
+
+`_` marca el espacio que va pegado delante del trozo. Son los 6 trozos más probables de toda la lista.
+
+`___`: un espacio y 2 rayas bajas.
+:::
+
+::: tabla
+Dónde está «París» detrás de «La capital de Francia es»
+
+|  | en crudo | adiestrado |
+|:--|--:|--:|
+| primer trozo de «París», `_Par` | 2,8 % | 16,3 % |
+| su puesto en la lista | 8 | 2 |
+| segundo trozo, `ís`, detrás del primero | 99,6 % | 99,8 % |
+| «París» entera: el primero por el segundo | 2,8 % | 16,3 % |
+| «Paris» sin tilde, un solo trozo, `_Paris` | 3,0 % | 8,2 % |
+| su puesto en la lista | 7 | 3 |
+| **las dos maneras juntas** | **5,8 %** | **24,5 %** |
+
+Modelo de 7.000 millones, antes y después del adiestramiento, con la frase tal cual, sin nada más.
+
+Una palabra de dos trozos sale si sale el primero y, detrás de él, el segundo: su probabilidad es la del primero por la del segundo.
+
+El puesto es el del trozo en la lista entera, de más a menos probable.
+:::
+
+::: tabla
+La pregunta sola, en crudo: lo que puede venir detrás de «La capital de Francia es»
+
+| trozo siguiente | probabilidad |  |
+|:--|--:|:--|
+| `_Par` | 98,2 % | [barra:98.2] |
+| `_Paris` | 1,4 % | [barra:1.4] |
+| `_la` | 0,1 % | [barra:0.1] |
+| `_**` | 0,1 % | [barra:0.1] |
+| `_PAR` | 0,0 % | [barra:0.0] |
+| `_el` | 0,0 % | [barra:0.0] |
+
+Modelo de 7.000 millones, sin adiestrar. Recibe «¿Cuál es la capital de Francia?» y escribe, trozo a trozo, «La capital de Francia es»: ésta es la lista justo antes de la ciudad.
+
+Lo que escribe entero, cogiendo cada vez el trozo más probable: «La capital de Francia es París.»
+
+`_` marca el espacio que va pegado delante del trozo.
+:::
+
+::: tabla
+Las tres ciudades enteras, en ese mismo punto (7.000M)
+
+| ciudad | en trozos | la palabra entera | puesto del primer trozo |
+|:--|:--|--:|--:|
+| París | `_Par` + `ís` | 98,2 % | 1 |
+| Nápoles | `_N` + `á` + `po` + `les` | menos de 0,1 % | 27 |
+| Roma | `_Roma` | menos de 0,1 % | 50 |
+
+La palabra entera es el primer trozo por el segundo, y así hasta el último, cada uno sabiendo los de antes.
+:::
 
 (las respuestas reproducen la batería de crudo_o_adiestrado.csv)
 
---- 3. LA BATERÍA EN TRES COLUMNAS, EN PREGUNTAS (7.000M) ---
+::: tabla
+La batería del capítulo 11, en las tres columnas (7.000M)
 
-tarea                         crudo  adiestrado  con formato
-sumar dos cifras             5 de 5      5 de 5       0 de 5
-plurales                     4 de 5      3 de 5       3 de 5
-traducir del inglés          5 de 5      4 de 5       0 de 5
-datos del mundo              2 de 5      1 de 5       0 de 5
-seguir un patrón inventado   0 de 5      0 de 5       0 de 5
-razonar sobre una frase      3 de 5      4 de 5       1 de 5
-en total                   19 de 30    17 de 30      4 de 30
+| tarea | en crudo | adiestrado | adiestrado, con su formato |
+|:--|--:|--:|--:|
+| sumar dos cifras | 5 de 5 | 5 de 5 | 0 de 5 |
+| plurales | 4 de 5 | 3 de 5 | 3 de 5 |
+| traducir del inglés | 5 de 5 | 4 de 5 | 0 de 5 |
+| datos del mundo | 2 de 5 | 1 de 5 | 0 de 5 |
+| seguir un patrón inventado | 0 de 5 | 0 de 5 | 0 de 5 |
+| razonar sobre una frase | 3 de 5 | 4 de 5 | 1 de 5 |
+| **en total** | **19 de 30** | **17 de 30** | **4 de 30** |
 
-cada casilla: cuántas de las 5 preguntas de la tarea acierta.
-las tres columnas, el mismo tamaño: 7.000M.
-crudo: sin adiestrar, con el enunciado tal cual.
-adiestrado: el mismo ya adiestrado, enunciado tal cual.
-con formato: el adiestrado, con su formato de conversación.
-acierta: si lo primero que escribe es la respuesta correcta.
+Cada casilla: cuántas de las 5 preguntas de la tarea acierta. Las tres columnas son el mismo modelo, de 7.000 millones.
 
---- 4. LA MISMA PREGUNTA EN LAS TRES COLUMNAS (7.000M) ---
+En crudo: sin adiestrar, con el enunciado tal cual. Adiestrado: el mismo, ya adiestrado, con el mismo enunciado. Con su formato: el enunciado va dentro del formato de conversación, como lo usa quien habla con él.
 
-[datos del mundo, pregunta 1]
-respuesta correcta: «París»
-crudo: recibe el enunciado tal cual:
+Acierta si lo primero que escribe es la respuesta correcta.
+:::
+
+::: tabla
+Una pregunta de «datos del mundo» en las tres columnas (7.000M)
+
+| columna | recibe | lo que escribe | la regla |
+|:--|:--|:--|:--|
+| en crudo | el enunciado tal cual | «1. París» | falla |
+| adiestrado | el mismo enunciado tal cual | «La capital de Francia es París» | falla |
+| adiestrado, con su formato | el enunciado dentro de su formato | «La capital de Francia es París.» | falla |
+
+Respuesta correcta: «París». La regla mira el primer renglón de lo que escribe y acierta si empieza por la respuesta correcta.
+:::
+
+::: muestra
+El enunciado de «datos del mundo», tal cual
+
     Pregunta: ¿cuál es la capital de Francia?
     Respuesta:
-  contesta «1. París»: falla
-adiestrado: recibe el mismo enunciado tal cual
-  contesta «La capital de Francia es París»: falla
-con formato: recibe esto:
+
+Así lo reciben las dos primeras columnas.
+:::
+
+::: muestra
+El mismo enunciado, dentro del formato de conversación
+
     <|im_start|>system
     You are Qwen, created by Alibaba Cloud. You are a
       helpful assistant.<|im_end|>
@@ -175,23 +323,40 @@ con formato: recibe esto:
     Pregunta: ¿cuál es la capital de Francia?
     Respuesta: <|im_end|>
     <|im_start|>assistant
-  contesta «La capital de Francia es París.»: falla
 
-[sumar dos cifras, pregunta 1]
-respuesta correcta: «37»
-crudo: recibe el enunciado tal cual:
+Así lo recibe la tercera columna. «<|im_start|>» y «<|im_end|>» marcan dónde empieza y dónde acaba cada parte; «system», «user» y «assistant» dicen de quién es: la instrucción de serie, quien pregunta y la máquina.
+:::
+
+::: tabla
+Una pregunta de «sumar dos cifras» en las tres columnas (7.000M)
+
+| columna | recibe | lo que escribe | la regla |
+|:--|:--|:--|:--|
+| en crudo | el enunciado tal cual | «37» | acierta |
+| adiestrado | el mismo enunciado tal cual | «37» | acierta |
+| adiestrado, con su formato | el enunciado dentro de su formato | «12 + 25 = 37» | falla |
+
+Respuesta correcta: «37». La regla mira el primer renglón de lo que escribe y acierta si empieza por la respuesta correcta.
+:::
+
+::: muestra
+El enunciado de «sumar dos cifras», tal cual
+
     12 + 25 =
-  contesta «37»: acierta
-adiestrado: recibe el mismo enunciado tal cual
-  contesta «37»: acierta
-con formato: recibe esto:
+
+Así lo reciben las dos primeras columnas.
+:::
+
+::: muestra
+El mismo enunciado, dentro del formato de conversación
+
     <|im_start|>system
     You are Qwen, created by Alibaba Cloud. You are a
       helpful assistant.<|im_end|>
     <|im_start|>user
     12 + 25 = <|im_end|>
     <|im_start|>assistant
-  contesta «12 + 25 = 37»: falla
 
-La regla mira el primer renglón de lo que contesta y
-acierta si empieza por la respuesta correcta.
+Así lo recibe la tercera columna. «<|im_start|>» y «<|im_end|>» marcan dónde empieza y dónde acaba cada parte; «system», «user» y «assistant» dicen de quién es: la instrucción de serie, quien pregunta y la máquina.
+:::
+
