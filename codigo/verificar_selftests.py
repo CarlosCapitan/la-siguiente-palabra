@@ -35,6 +35,12 @@ SOLO_EN_EL_MAC = {
                             'números; en un contenedor de dos núcleos no termina nunca',
 }
 LIMITE = 420   # segundos por programa
+# Los que tardan más de eso con todo en orden, cada uno con lo que se midió. Igual que la lista
+# de arriba: corta, y con su motivo.
+LIMITE_LARGO = {
+    'editar_contexto.py': (900, 'carga un modelo de 7.000 millones en la GPU y rehace una caché de '
+                                '7.500 trozos una docena de veces: 513 s en el Mac, el 9 oct 2026'),
+}
 
 
 def programas(carpeta):
@@ -116,11 +122,12 @@ if '--ejecutar' in sys.argv:
         # para curarla, así que un plantón se cuenta como suspenso y el barrido sigue.
         try:
             r = subprocess.run([sys.executable, n, '--selftest'], cwd=carpeta,
-                               capture_output=True, text=True, timeout=LIMITE)
+                               capture_output=True, text=True,
+                               timeout=LIMITE_LARGO.get(n, (LIMITE,))[0])
         except subprocess.TimeoutExpired:
             print(f"  {n:<32} SUSPENDE")
             suspenden.append(n)
-            print(f"      no termina su selftest en {LIMITE} segundos")
+            print(f"      no termina su selftest en {LIMITE_LARGO.get(n, (LIMITE,))[0]} segundos")
             continue
         ok = 'SELFTEST:' in r.stdout and 'FALLA' not in r.stdout
         print(f"  {n:<32} {'pasa' if ok else 'SUSPENDE'}")
