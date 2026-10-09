@@ -48,7 +48,7 @@ import numpy as np
 
 import lo_habia_visto_ya as L
 import memoria_recurrente as mr
-from formato import ANCHO_CAJA_CITA, coma, comprobar_ancho, miles, pct
+from formato import ANCHO_CAJA, coma, miles, muestra_editorial, pct, tabla_editorial
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 
@@ -134,19 +134,40 @@ def marcar(palabras, cubiertas):
     return out
 
 
+# L24 (9 de octubre): los bloques salen como tablas y muestras editoriales (regla 6 ter). Las
+# cuentas no cambian.
+
 def bloque_tres(muestras):
-    lin = ["--- 1. LAS TRES MUESTRAS DEL CAPÍTULO ---",
-           f"de {L.VENTANAS} comienzos; «le di»: las {PALABRAS_ARRANQUE} palabras del comienzo;",
-           "«escribió»: lo que puso la red detrás"]
+    out = ["--- 1. LAS TRES MUESTRAS DEL CAPÍTULO ---", ""]
     for n in MUESTRAS_DEL_CAPITULO:
         arranque, s = muestras[n - 1]
         palabras = s.split()
         assert " ".join(palabras[:PALABRAS_ARRANQUE]) == arranque, \
             f"la muestra {n} no empieza por su arranque «{arranque}»"
-        lin += ["", f"muestra {n} de {L.VENTANAS}",
-                f"le di:     {arranque}", "escribió:"]
-        lin += partir(palabras[PALABRAS_ARRANQUE:], ANCHO_CAJA_CITA)
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+        out += muestra_editorial(
+            f"Muestra {n} de {L.VENTANAS}", partir(palabras[PALABRAS_ARRANQUE:], ANCHO_CAJA, ""),
+            [f"Le di las {PALABRAS_ARRANQUE} palabras del comienzo, «{arranque}»; lo de arriba es "
+             "lo que la red escribió detrás."]) + [""]
+    return out[:-1]
+
+
+def tabla_tramos(n_muestra, palabras, cubiertas, valores, libros):
+    """Los tramos de una muestra: cuántas palabras tiene cada uno, dónde está y de qué libro
+    sale; debajo, el copiado."""
+    tr = tramos(cubiertas)
+    n_cub = sum(cubiertas)
+    filas = []
+    for k, (d, h) in enumerate(tr, 1):
+        fuentes = de_que_libro(" ".join(palabras[d:h + 1]), libros)
+        fuente = fuentes[0] if len(fuentes) == 1 else (
+            f"{len(fuentes)} libros" if fuentes else "de varios trozos")
+        filas.append([str(k), str(h - d + 1), str(d + 1), str(h + 1), fuente])
+    return tabla_editorial(
+        f"Los tramos de la muestra {n_muestra}",
+        ["tramo", "palabras", "desde la palabra", "hasta la", "de qué libro sale"], filas, "cdddi",
+        [f"Palabras dentro de algún tramo: {n_cub} de {len(palabras)}; {n_cub} entre "
+         f"{len(palabras)}: {pct(n_cub / len(palabras), 1)} (el «copiado»).",
+         f"El tramo más largo que empieza en una palabra: {max(valores)}."])
 
 
 def bloque_a_mano(muestras, corpus, umbral, libros):
@@ -156,33 +177,21 @@ def bloque_a_mano(muestras, corpus, umbral, libros):
     cubiertas = L._cobertura(valores, umbral)
     tr = tramos(cubiertas)
     n_cub = sum(cubiertas)
-    lin = [f"--- 2. LA MUESTRA {MUESTRA_A_MANO}, TRAMO A TRAMO ---",
-           f"entre corchetes, cada tramo que está tal cual en los libros",
-           f"de entrenamiento con {umbral} palabras seguidas o más; detrás",
-           f"del corchete, cuántas palabras tiene el tramo", ""]
-    lin += partir(marcar(palabras, cubiertas), ANCHO_CAJA_CITA)
-    lin += ["", f"{'tramo':<7}{'palabras':>9}{'de la':>7}{'a la':>6}   de qué libro sale"]
-    for k, (d, h) in enumerate(tr, 1):
-        fuentes = de_que_libro(" ".join(palabras[d:h + 1]), libros)
-        fuente = fuentes[0] if len(fuentes) == 1 else (
-            f"{len(fuentes)} libros" if fuentes else "de varios trozos")
-        fuente = fuente if len(fuente) <= 30 else fuente[:29] + "…"
-        lin.append(f"{k:<7}{h - d + 1:>9}{d + 1:>7}{h + 1:>6}   {fuente}")
-    lin += ["", f"palabras dentro de algún tramo: {n_cub} de {len(palabras)}",
-            f"{n_cub} entre {len(palabras)}: {pct(n_cub / len(palabras), 1)}   (el «copiado»)",
-            f"el tramo más largo que empieza en una palabra: {max(valores)}"]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA), palabras, tr, n_cub, max(valores)
+    out = [f"--- 2. LA MUESTRA {MUESTRA_A_MANO}, TRAMO A TRAMO ---", ""]
+    out += muestra_editorial(
+        f"La muestra {MUESTRA_A_MANO}, tramo a tramo", partir(marcar(palabras, cubiertas), ANCHO_CAJA, ""),
+        [f"Entre corchetes, cada tramo que está tal cual en los libros de entrenamiento con "
+         f"{umbral} palabras seguidas o más; detrás del corchete, cuántas palabras tiene el tramo."])
+    out += [""] + tabla_tramos(MUESTRA_A_MANO, palabras, cubiertas, valores, libros)
+    return out, palabras, tr, n_cub, max(valores)
 
 
-def bloque_otra(muestras, corpus, umbral):
+def bloque_otra(muestras, corpus, umbral, libros):
     _, s = muestras[OTRA_A_MANO - 1]
-    cub = L._cobertura(L.rachas(s, corpus), umbral)
-    n = sum(cub)
-    lin = [f"--- 3. LA MUESTRA {OTRA_A_MANO} ---",
-           f"palabras dentro de algún tramo: {n} de {len(cub)};"
-           f" {n} entre {len(cub)}: {pct(n / len(cub), 1)}",
-           f"tramos: " + ", ".join(f"{h - d + 1} palabras" for d, h in tramos(cub))]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+    valores = L.rachas(s, corpus)
+    cub = L._cobertura(valores, umbral)
+    return ([f"--- 3. LA MUESTRA {OTRA_A_MANO} ---", ""] +
+            tabla_tramos(OTRA_A_MANO, s.split(), cub, valores, libros))
 
 
 def bloque_suelo(corpus, umbral):
@@ -193,13 +202,14 @@ def bloque_suelo(corpus, umbral):
     suelo = [L._ventana_literal(primera[t], ajenas, LARGO) for t in puntos]
     rmax, cop = L.medir(suelo, corpus, umbral)
     llegan = [i for i, r in enumerate(rmax) if r >= umbral]
-    lin = ["--- 4. EL SUELO: TEXTO QUE LA RED NO VIO ---",
-           f"{L.VENTANAS} trozos de {LARGO} palabras de seis libros que no entraron",
-           f"cuántos tienen algún tramo de {umbral} palabras o más: {len(llegan)}",
-           f"y en esos, la parte de la muestra dentro de un tramo:"]
-    lin += partir([pct(cop[i], 1, de_uno=False) for i in llegan], ANCHO_CAJA_CITA)
-    lin.append(f"tramo más largo de los {L.VENTANAS}: {max(rmax)} palabras")
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA), len(llegan), max(rmax)
+    out = ["--- 4. EL SUELO: TEXTO QUE LA RED NO VIO ---", ""] + tabla_editorial(
+        "El suelo: texto que la red no vio", ["", "cuánto"],
+        [[f"trozos de {LARGO} palabras de seis libros que no entraron", str(L.VENTANAS)],
+         [f"cuántos tienen algún tramo de {umbral} palabras o más", str(len(llegan))],
+         ["en esos, la parte de la muestra dentro de un tramo",
+          ", ".join(pct(cop[i], 1, de_uno=False) for i in llegan)],
+         [f"el tramo más largo de los {L.VENTANAS}", f"{max(rmax)} palabras"]], "id")
+    return out, len(llegan), max(rmax)
 
 
 FILAS_TABLA = ["techo", "contar_3", "contar_2", "red_s20260914_t1", "contar_1", "suelo"]
@@ -240,23 +250,20 @@ def bloque_tabla(puntos, palabras, corpus, umbral, cache=None):
         if ruta:
             os.makedirs(cache, exist_ok=True)
             json.dump(res[nombre], open(ruta, "w"))
-    lin = ["--- 5. LA TABLA DEL CAPÍTULO ---",
-           f"{L.VENTANAS} muestras de {largo} palabras por generador", "",
-           f"{'':<18}{'racha':>10}{'racha':>10}{'copiado':>12}",
-           f"{'generador':<18}{'mediana':>10}{'máximo':>10}{'mediana':>12}",
-           f"{'':<18}{'palabras':>10}{'palabras':>10}{'%':>12}",
-           "-" * 50]
+    filas = []
     for nombre in FILAS_TABLA:
         med, mx, cop = res[nombre]
-        lin.append(f"{nombre:<18}{coma(med, 1):>10}{coma(mx, 0):>10}{pct(cop, 1, de_uno=False):>12}")
-    lin += ["", "clave de los generadores:",
-            "  techo: el texto real que sigue a cada arranque",
-            "  contar_k: máquina de contar con k palabras de contexto",
-            "  red_sX_tY: la red, semilla X, tirada Y",
-            "  suelo: seis libros que no entraron en el entrenamiento", "",
-            f"copiado: racha de {umbral} palabras o más: una más que el",
-            "máximo de contar_1"]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA), res
+        filas.append([nombre, coma(med, 1), coma(mx, 0), pct(cop, 1, de_uno=False)])
+    lin = ["--- 5. LA TABLA DEL CAPÍTULO ---", ""] + tabla_editorial(
+        "Rachas y copiado, por generador",
+        ["generador", "racha, en palabras: mediana", "racha, en palabras: máximo",
+         "copiado: mediana"], filas, "iddd",
+        [f"{L.VENTANAS} muestras de {largo} palabras por generador.",
+         "Techo: el texto real que sigue a cada arranque. contar_k: máquina de contar con k "
+         "palabras de contexto. red_sX_tY: la red, semilla X, tirada Y. Suelo: seis libros que no "
+         "entraron en el entrenamiento.",
+         f"Copiado: racha de {umbral} palabras o más: una más que el máximo de contar_1."])
+    return lin, res
 
 
 def selftest():
@@ -330,7 +337,7 @@ def main():
     print("\n".join(bloque_tres(muestras)) + "\n")
     lin, *_ = bloque_a_mano(muestras, corpus, umbral, libros)
     print("\n".join(lin) + "\n")
-    print("\n".join(bloque_otra(muestras, corpus, umbral)) + "\n")
+    print("\n".join(bloque_otra(muestras, corpus, umbral, libros)) + "\n")
     lin, *_ = bloque_suelo(corpus, umbral)
     print("\n".join(lin) + "\n")
     cache = sys.argv[sys.argv.index("--cache") + 1] if "--cache" in sys.argv else None

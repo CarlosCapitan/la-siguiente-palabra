@@ -5,33 +5,47 @@
 SELFTEST: las tres pruebas pasan.
 
 --- 1. UNA PRUEBA, ESCRITA ENTERA ---
-los 8 símbolos que se le pueden pedir: A B C D E F G H
-los 4 de paja, distintos de esos: 1 2 3 4
 
-con 10 de paja:
-   se le enseña:  B
-   luego la paja:
-      3 4 1 3 2 2 2 4 4 2
-   pregunta:      ¿cuál era el primero?
-   respuesta buscada: B
+::: tabla
+Una prueba, con 10 de paja
 
-con 40 de paja:
-   se le enseña:  C
-   luego la paja:
-      1 1 1 3 3 1 2 1 1 3 2 4 2 2 3 4 1 3 3 1
-      1 1 2 4 2 4 2 4 2 1 1 1 2 4 2 3 1 4 1 1
-   pregunta:      ¿cuál era el primero?
-   respuesta buscada: C
+|  | los símbolos |
+|:--|:--|
+| se le enseña | B |
+| luego, la paja | 3 4 1 3 2 2 2 4 4 2 |
+| pregunta | ¿cuál era el primero? |
+| **respuesta buscada** | **B** |
+
+Los 8 símbolos que se le pueden pedir: A B C D E F G H. Los 4 de paja, distintos de esos: 1 2 3 4.
+:::
+
+::: tabla
+Una prueba, con 40 de paja
+
+|  | los símbolos |
+|:--|:--|
+| se le enseña | C |
+| luego, la paja | 1 1 1 3 3 1 2 1 1 3 2 4 2 2 3 4 1 3 3 1 1 1 2 4 2 4 2 4 2 1 1 1 2 4 2 3 1 4 1 1 |
+| pregunta | ¿cuál era el primero? |
+| **respuesta buscada** | **C** |
+
+Los 8 símbolos que se le pueden pedir: A B C D E F G H. Los 4 de paja, distintos de esos: 1 2 3 4.
+:::
 
 --- 2. DE CADA 100 PRUEBAS, CUÁNTAS ACIERTA ---
-acertar por puro azar: 12,5 de cada 100 (una de cada 8)
-media de 2 entrenamientos desde cero
 
-paja en medio,       memoria           con
-en símbolos           simple    compuertas
-------------------------------------------
-10                       100           100
-20                        93           100
-40                        45           100
-80                        20            13
-160                       11            12
+::: tabla
+De cada 100 pruebas, cuántas acierta
+
+| paja en medio, en símbolos | memoria simple | con compuertas |
+|--:|--:|--:|
+| 10 | 100 | 100 |
+| 20 | 93 | 100 |
+| 40 | 45 | 100 |
+| 80 | 20 | 13 |
+| 160 | 11 | 12 |
+
+Acertar por puro azar: 12,5 de cada 100 (una de cada 8).
+
+Cada cifra, media de 2 entrenamientos desde cero.
+:::

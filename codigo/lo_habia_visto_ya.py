@@ -63,7 +63,7 @@ import numpy as np
 
 import ngrama
 import memoria_recurrente as mr
-from formato import coma, comprobar_ancho, miles, pct
+from formato import coma, comprobar_ancho, miles, pct, tabla_editorial
 
 
 # --------------------------- el corpus, con frontera de palabra ---------------------------
@@ -460,25 +460,19 @@ def _reportar_muestras(ruta_fichero, puntos, palabras, corpus, rng_ngrama):
     muestras_45 = [(arranque, muestra) for (l, arranque, muestra) in cuerpo if l == largo]
     assert muestras_45, f"«{ruta_fichero}» no declara ninguna muestra de {largo} palabras"
 
-    ancho_arranque = min(24, max(len(a) for a, _ in muestras_45))
-    cab = comprobar_ancho([
-        f"{'muestra':>7}  {'arranque':<{ancho_arranque}}{'racha':>7}{'copiado':>10}",
-        f"{'-' * 7}  {'-' * ancho_arranque}{'-' * 7}{'-' * 10}",
-    ])
-    print(_linea_umbral(umbral))
-    print()
-    for l in cab:
-        print(l)
+    # L24 (9 de octubre): tabla editorial (regla 6 ter). Las cuentas no cambian.
+    filas = []
     for i, (arranque, muestra) in enumerate(muestras_45, start=1):
-        etiqueta = (arranque if len(arranque) <= ancho_arranque
-                    else arranque[:ancho_arranque - 1] + "…")
         valores = rachas(muestra, corpus)
         racha_max = max(valores) if valores else 0
         cubiertas = _cobertura(valores, umbral)
         copiado = 100 * sum(cubiertas) / len(cubiertas) if cubiertas else 0.0
-        linea = (f"{i:>7}  {etiqueta:<{ancho_arranque}}{racha_max:>7}"
-                 f"{pct(copiado, 1, de_uno=False):>10}")
-        print(*comprobar_ancho([linea]), sep="")
+        filas.append([str(i), arranque, str(racha_max), pct(copiado, 1, de_uno=False)])
+    print("\n".join(tabla_editorial(
+        "Racha y copiado de cada muestra", ["muestra", "arranque", "racha", "copiado"], filas, "didd",
+        ["Racha: la más larga de la muestra, en palabras.",
+         f"Copiado: la parte de la muestra dentro de alguna racha de {int(umbral)} palabras o más "
+         f"(el máximo de contar_1, más {MARGEN_UMBRAL})."])))
 
 
 def _medir_largo(largo, n_ventanas, puntos, palabras, primera, corpus, ajenas, puntos_ajenos,

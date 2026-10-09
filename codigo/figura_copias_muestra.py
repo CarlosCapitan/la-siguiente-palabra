@@ -33,6 +33,7 @@ from pathlib import Path
 
 from matplotlib.patches import Circle, Rectangle
 
+from formato import leer_tablas
 from infografia import COLOR, GRIS, Lienzo
 
 AQUI = Path(__file__).resolve().parent
@@ -41,12 +42,13 @@ ANCHO_CHAR = 0.602 * TAM / PT_POR_UNIDAD  # DejaVu Sans Mono
 
 
 def leer(ruta):
-    texto = Path(ruta).read_text(encoding="utf-8")
-    assert "--- 2. LA MUESTRA" in texto, f"se esperaba el bloque 2 en {ruta}"
-    b = texto.split("--- 2. LA MUESTRA", 1)[1].split("\n--- ", 1)[0]
-    n_muestra = int(re.match(r"\s*(\d+)", b).group(1))
-    lineas = b.split("\n\n")[1].strip().splitlines()
-    marcado = " ".join(l.strip() for l in lineas)
+    """La muestra marcada y su cuenta, de la muestra y la tabla editoriales del bloque 2
+    (L24, 9 de octubre)."""
+    tablas = leer_tablas(Path(ruta).read_text(encoding="utf-8"))
+    marcadas = [t for t in tablas if re.match(r"^La muestra \d+, tramo a tramo$", t)]
+    assert len(marcadas) == 1, f"se esperaba una muestra marcada en {ruta}; hay {marcadas}"
+    n_muestra = int(re.search(r"\d+", marcadas[0]).group())
+    marcado = " ".join(l.strip() for l in tablas[marcadas[0]][1])
     palabras, cubiertas, dentro = [], [], False
     for w in marcado.split():
         empieza = w.startswith("[")
@@ -60,8 +62,9 @@ def leer(ruta):
         cubiertas.append(dentro)
         if m:
             dentro = False
-    m = re.search(r"palabras dentro de algún tramo: (\d+) de (\d+)", b)
-    p = re.search(r"\d+ entre \d+: (\d+,\d %)", b)
+    notas = " ".join(tablas[f"Los tramos de la muestra {n_muestra}"][2])
+    m = re.search(r"Palabras dentro de algún tramo: (\d+) de (\d+)", notas)
+    p = re.search(r"\d+ entre \d+: (\d+,\d %)", notas)
     assert m and p, "no se encontró la cuenta del bloque 2"
     assert sum(cubiertas) == int(m.group(1)) and len(palabras) == int(m.group(2)), \
         f"los corchetes cubren {sum(cubiertas)} de {len(palabras)}; la salida dice {m.group(1)} de {m.group(2)}"

@@ -36,7 +36,7 @@ import sys
 import numpy as np
 
 import memoria_recurrente as mr
-from formato import ANCHO_CAJA_CITA, coma, comprobar_ancho
+from formato import coma, tabla_editorial
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 
@@ -69,36 +69,33 @@ def de_cada_cien(x):
 
 
 def bloque_pruebas():
+    """Cada prueba, como tabla editorial (L24, 9 de octubre; regla 6 ter)."""
     rng = np.random.default_rng(SEMILLA_EJEMPLO)
-    lin = ["--- 1. UNA PRUEBA, ESCRITA ENTERA ---",
-           f"los {mr.SIMBOLOS} símbolos que se le pueden pedir: " + " ".join(LETRAS),
-           f"los {mr.RELLENO} de paja, distintos de esos: " + " ".join(NUMEROS_PAJA)]
+    out = ["--- 1. UNA PRUEBA, ESCRITA ENTERA ---", ""]
     for distancia, n in PRUEBAS_A_ESCRIBIR:
         x, y = mr.lote_memoria(distancia, n, rng)
         for fila, objetivo in zip(x.numpy(), y.numpy()):
             simbolos = [a_texto(s) for s in fila]
-            lin += ["", f"con {distancia} de paja:",
-                    f"   se le enseña:  {simbolos[0]}", "   luego la paja:"]
-            paja = simbolos[1:]
-            for k in range(0, len(paja), 20):
-                lin.append("      " + " ".join(paja[k:k + 20]))
-            lin += ["   pregunta:      ¿cuál era el primero?",
-                    f"   respuesta buscada: {a_texto(objetivo)}"]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+            out += tabla_editorial(
+                f"Una prueba, con {distancia} de paja", ["", "los símbolos"],
+                [["se le enseña", simbolos[0]], ["luego, la paja", " ".join(simbolos[1:])],
+                 ["pregunta", "¿cuál era el primero?"],
+                 ["**respuesta buscada**", f"**{a_texto(objetivo)}**"]], "ii",
+                [f"Los {mr.SIMBOLOS} símbolos que se le pueden pedir: " + " ".join(LETRAS) +
+                 f". Los {mr.RELLENO} de paja, distintos de esos: " + " ".join(NUMEROS_PAJA) + "."])
+            out.append("")
+    return out[:-1]
 
 
 def bloque_tabla(tabla):
     azar = 1 / mr.SIMBOLOS
-    lin = ["--- 2. DE CADA 100 PRUEBAS, CUÁNTAS ACIERTA ---",
-           f"acertar por puro azar: {coma(100 * azar, 1)} de cada 100 (una de cada {mr.SIMBOLOS})",
-           f"media de {mr.SEMILLAS_MEMORIA} entrenamientos desde cero", "",
-           f"{'paja en medio,':<16}{'memoria':>12}{'con':>14}",
-           f"{'en símbolos':<16}{'simple':>12}{'compuertas':>14}",
-           "-" * 42]
-    for d in mr.DISTANCIAS:
-        v = tabla[d]
-        lin.append(f"{d:<16}{de_cada_cien(v[0]):>12}{de_cada_cien(v[3]):>14}")
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+    return ["--- 2. DE CADA 100 PRUEBAS, CUÁNTAS ACIERTA ---", ""] + tabla_editorial(
+        "De cada 100 pruebas, cuántas acierta",
+        ["paja en medio, en símbolos", "memoria simple", "con compuertas"],
+        [[str(d), de_cada_cien(tabla[d][0]), de_cada_cien(tabla[d][3])] for d in mr.DISTANCIAS],
+        "ddd",
+        [f"Acertar por puro azar: {coma(100 * azar, 1)} de cada 100 (una de cada {mr.SIMBOLOS}).",
+         f"Cada cifra, media de {mr.SEMILLAS_MEMORIA} entrenamientos desde cero."])
 
 
 def selftest():

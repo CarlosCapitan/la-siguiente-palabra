@@ -4,88 +4,114 @@
 
 SELFTEST: las tres pruebas pasan.
 
-Medido el 2026-09-28. No entrena nada: busca texto en texto.
+Medido el 2026-10-09. No entrena nada: busca texto en texto.
 listón: 7 palabras (el de la tabla de lo_habia_visto_ya.txt)
 
 --- 1. LAS TRES MUESTRAS DEL CAPÍTULO ---
-de 200 comienzos; «le di»: las 3 palabras del comienzo;
-«escribió»: lo que puso la red detrás
 
-muestra 1 de 200
-le di:     en las montañas
-escribió:
-   de santa ana, distante como la de san miguel, la campiña
-   por las noches, en que la principal se ha hecho con muy
-   buena en la corte, bajo cuya sombra llena se presenta
-   hasta que el leñador al además buscaba un instante
+::: muestra
+Muestra 1 de 200
 
-muestra 36 de 200
-le di:     que era un
-escribió:
-   realista fanático, un ciego amante de la tiranía. con los
-   ojos de alta clase. y esta tristeza conmovió á sebastiana.
-   no era ya tan malo como decían. usted será bueno; la
-   felicidad hace buenas á las personas. yo también espero
-   serlo ...
+    de santa ana, distante como la de san miguel, la campiña por las
+    noches, en que la principal se ha hecho con muy buena en la corte,
+    bajo cuya sombra llena se presenta hasta que el leñador al además
+    buscaba un instante
 
-muestra 173 de 200
-le di:     las manos en
-escribió:
-   los bolsillos, sino muchísimo más; puede llevar una camisa
-   de faldones bastante largos fuera del pantalón, y una
-   chaqueta muy corta encima de la camisa. esto no será muy
-   bonito, pero es tan noble y distintivo que sus productos
-   son muy frecuentes
+Le di las 3 palabras del comienzo, «en las montañas»; lo de arriba es lo que la red escribió detrás.
+:::
+
+::: muestra
+Muestra 36 de 200
+
+    realista fanático, un ciego amante de la tiranía. con los ojos de
+    alta clase. y esta tristeza conmovió á sebastiana. no era ya tan
+    malo como decían. usted será bueno; la felicidad hace buenas á las
+    personas. yo también espero serlo ...
+
+Le di las 3 palabras del comienzo, «que era un»; lo de arriba es lo que la red escribió detrás.
+:::
+
+::: muestra
+Muestra 173 de 200
+
+    los bolsillos, sino muchísimo más; puede llevar una camisa de
+    faldones bastante largos fuera del pantalón, y una chaqueta muy
+    corta encima de la camisa. esto no será muy bonito, pero es tan
+    noble y distintivo que sus productos son muy frecuentes
+
+Le di las 3 palabras del comienzo, «las manos en»; lo de arriba es lo que la red escribió detrás.
+:::
 
 --- 2. LA MUESTRA 36, TRAMO A TRAMO ---
-entre corchetes, cada tramo que está tal cual en los libros
-de entrenamiento con 7 palabras seguidas o más; detrás
-del corchete, cuántas palabras tiene el tramo
 
-   que [era un realista fanático, un ciego amante de la
-   tiranía. con los ojos]13 de alta clase. y esta tristeza
-   conmovió á sebastiana. no era ya [tan malo como decían.
-   usted será bueno; la felicidad hace buenas á las personas.
-   yo también espero serlo ...]19
+::: muestra
+La muestra 36, tramo a tramo
 
-tramo   palabras  de la  a la   de qué libro sale
-1             13      2    14   La Fontana de Oro
-2             19     27    45   La Fontana de Oro
+    que [era un realista fanático, un ciego amante de la tiranía. con
+    los ojos]13 de alta clase. y esta tristeza conmovió á sebastiana.
+    no era ya [tan malo como decían. usted será bueno; la felicidad
+    hace buenas á las personas. yo también espero serlo ...]19
 
-palabras dentro de algún tramo: 32 de 45
-32 entre 45: 71,1 %   (el «copiado»)
-el tramo más largo que empieza en una palabra: 19
+Entre corchetes, cada tramo que está tal cual en los libros de entrenamiento con 7 palabras seguidas o más; detrás del corchete, cuántas palabras tiene el tramo.
+:::
+
+::: tabla
+Los tramos de la muestra 36
+
+| tramo | palabras | desde la palabra | hasta la | de qué libro sale |
+|:-:|--:|--:|--:|:--|
+| 1 | 13 | 2 | 14 | La Fontana de Oro |
+| 2 | 19 | 27 | 45 | La Fontana de Oro |
+
+Palabras dentro de algún tramo: 32 de 45; 32 entre 45: 71,1 % (el «copiado»).
+
+El tramo más largo que empieza en una palabra: 19.
+:::
 
 --- 3. LA MUESTRA 173 ---
-palabras dentro de algún tramo: 40 de 45; 40 entre 45: 88,9 %
-tramos: 40 palabras
+
+::: tabla
+Los tramos de la muestra 173
+
+| tramo | palabras | desde la palabra | hasta la | de qué libro sale |
+|:-:|--:|--:|--:|:--|
+| 1 | 40 | 1 | 40 | Viajes por Filipinas: De Manila á Marianas |
+
+Palabras dentro de algún tramo: 40 de 45; 40 entre 45: 88,9 % (el «copiado»).
+
+El tramo más largo que empieza en una palabra: 40.
+:::
 
 --- 4. EL SUELO: TEXTO QUE LA RED NO VIO ---
-200 trozos de 45 palabras de seis libros que no entraron
-cuántos tienen algún tramo de 7 palabras o más: 3
-y en esos, la parte de la muestra dentro de un tramo:
-   15,6 % 17,8 % 17,8 %
-tramo más largo de los 200: 8 palabras
+
+::: tabla
+El suelo: texto que la red no vio
+
+|  | cuánto |
+|:--|--:|
+| trozos de 45 palabras de seis libros que no entraron | 200 |
+| cuántos tienen algún tramo de 7 palabras o más | 3 |
+| en esos, la parte de la muestra dentro de un tramo | 15,6 %, 17,8 %, 17,8 % |
+| el tramo más largo de los 200 | 8 palabras |
+:::
 
 --- 5. LA TABLA DEL CAPÍTULO ---
-200 muestras de 45 palabras por generador
 
-                       racha     racha     copiado
-generador            mediana    máximo     mediana
-                    palabras  palabras           %
---------------------------------------------------
-techo                   45,0        45     100,0 %
-contar_3                19,0        45      97,8 %
-contar_2                 9,0        17      35,6 %
-red_s20260914_t1         8,0        40      17,8 %
-contar_1                 4,0         6       0,0 %
-suelo                    4,0         8       0,0 %
+::: tabla
+Rachas y copiado, por generador
 
-clave de los generadores:
-  techo: el texto real que sigue a cada arranque
-  contar_k: máquina de contar con k palabras de contexto
-  red_sX_tY: la red, semilla X, tirada Y
-  suelo: seis libros que no entraron en el entrenamiento
+| generador | racha, en palabras: mediana | racha, en palabras: máximo | copiado: mediana |
+|:--|--:|--:|--:|
+| techo | 45,0 | 45 | 100,0 % |
+| contar_3 | 19,0 | 45 | 97,8 % |
+| contar_2 | 9,0 | 17 | 35,6 % |
+| red_s20260914_t1 | 8,0 | 40 | 17,8 % |
+| contar_1 | 4,0 | 6 | 0,0 % |
+| suelo | 4,0 | 8 | 0,0 % |
 
-copiado: racha de 7 palabras o más: una más que el
-máximo de contar_1
+200 muestras de 45 palabras por generador.
+
+Techo: el texto real que sigue a cada arranque. contar_k: máquina de contar con k palabras de contexto. red_sX_tY: la red, semilla X, tirada Y. Suelo: seis libros que no entraron en el entrenamiento.
+
+Copiado: racha de 7 palabras o más: una más que el máximo de contar_1.
+:::
