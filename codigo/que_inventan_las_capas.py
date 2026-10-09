@@ -45,7 +45,7 @@ import csv
 import sys
 from collections import Counter
 
-from formato import comprobar_ancho
+from formato import tabla_editorial
 import numpy as np
 
 from retropropagacion import Red, TABLA_XOR, Y_XOR
@@ -92,17 +92,10 @@ def entrenar_una(semilla, ocultas=OCULTAS):
     return resuelve, reglas
 
 
-# Los rótulos de la tabla. Están aquí arriba, con nombre, y no escondidos dentro de un
-# f-string: son texto del libro, y el libro se lee entero desde este bloque.
-# Cada reparto ocupa dos líneas: lo que mira una de las dos neuronas y la cuenta, y debajo,
-# sangrado, lo que mira la otra. Los nombres de los montajes son largos (perceptron.NOMBRES)
-# y dos en una línea no caben en la caja.
-CABECERA_UNA = "lo que mira una de las dos neuronas"
+# Los rótulos de la tabla. Están aquí arriba, con nombre: son texto del libro.
+CABECERA_UNA = "lo que mira una"
 CABECERA_OTRA = "lo que mira la otra"
-SANGRIA_OTRA = "  y "
-CABECERA_CUENTA_1 = "de cada"
-CABECERA_CUENTA_2 = "100"
-ANCHO_CUENTA = 7   # lo que mide «de cada», para que las dos líneas de cabecera cuadren
+CABECERA_CUENTA = "de cada 100"
 
 
 def medir(arranques=ARRANQUES, ocultas=OCULTAS):
@@ -117,38 +110,17 @@ def medir(arranques=ARRANQUES, ocultas=OCULTAS):
 
 
 def imprimir(r):
-    """La tabla que cita el capítulo. Las divisiones las hace aquí el programa: en el
-    libro no se calcula nada en prosa (regla 1 bis).
-
-    La tabla lleva sus propios rótulos. Sin ellos son tres columnas de palabras sueltas
-    y un número, y el lector que se la encuentre al volver la página no tiene manera de
-    saber qué es cada cosa. Un rótulo no es adorno: es lo que convierte una rejilla de
-    palabras en una tabla."""
-    ancho = max(len(x) for reglas in r["cuenta"] for x in reglas)
-    ancho = max(ancho, len(CABECERA_UNA), len(CABECERA_OTRA) + len(SANGRIA_OTRA))
-    hueco = 2
-    cuenta = ANCHO_CUENTA
-
-    def fila(a, n):
-        return f"{a:<{ancho + hueco}}{n:>{cuenta}}"
-
-    lineas = [
-        f"de {r['arranques']} arranques distintos, {r['resueltas']} resolvieron el o exclusivo",
-        f"y sus dos neuronas de en medio acabaron en {len(r['cuenta'])} parejas distintas:",
-        "",
-        fila("", CABECERA_CUENTA_1),
-        fila(CABECERA_UNA, CABECERA_CUENTA_2),
-        fila(SANGRIA_OTRA + CABECERA_OTRA, ""),
-        fila("-" * ancho, "-" * cuenta),
-    ]
-    for reglas, n in r["cuenta"].most_common():
-        por_cien = round(100 * n / r["resueltas"])
-        lineas.append(fila(reglas[0], por_cien))
-        lineas.append(fila(SANGRIA_OTRA + reglas[1], ""))
-    lineas = [l.rstrip() for l in lineas]
-    comprobar_ancho(lineas)
-    for l in lineas:
-        print(l)
+    """La tabla que cita el capítulo, como tabla de libro desde el 9 oct 2026 (formato.py;
+    REGLAS 6 ter). Las divisiones las hace aquí el programa: en el libro no se calcula nada en
+    prosa (regla 1 bis)."""
+    filas = [[reglas[0], reglas[1], str(round(100 * n / r["resueltas"]))]
+             for reglas, n in r["cuenta"].most_common()]
+    print("\n".join(tabla_editorial(
+        "Lo que acaban mirando las dos neuronas de en medio",
+        [CABECERA_UNA, CABECERA_OTRA, CABECERA_CUENTA], filas, "iid",
+        [f"De {r['arranques']} arranques distintos, {r['resueltas']} resolvieron el o exclusivo, "
+         f"y sus dos neuronas de en medio acabaron en {len(r['cuenta'])} parejas distintas.",
+         "De cada 100: de las redes que lo resolvieron."])))
 
 
 def guardar(r):

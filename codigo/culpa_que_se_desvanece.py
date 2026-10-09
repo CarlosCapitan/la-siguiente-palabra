@@ -50,21 +50,19 @@ SALIDA_CSV = "culpa_que_se_desvanece.csv"
 # ---- El aspecto del bloque. Los rótulos están aquí, con nombre, porque son texto que se
 # ---- lee solo: el que se encuentre esta tabla al volver una página tiene que poder saber
 # ---- qué son sus filas y sus columnas sin haber leído el párrafo de antes (regla 9).
-TITULO = "¿DE QUÉ DEPENDE QUE LA CULPA SE DESVANEZCA?"
+TITULO = "¿De qué depende que la culpa se desvanezca?"
 # L24 (28 de septiembre): el primer renglón dice qué es cada número («cuántas VECES menos»,
 # hallazgo A19); las filas ya no se llaman «otro reparto» ni «otra función» (A20, A21: «reparto»
 # era la tercera cosa con ese nombre en ocho páginas, y «función» es una palabra que el lector no
 # tiene); «uniformes» se dice con palabras, y los pesos de arranque llevan su tamaño.
-SUBTITULO = ["cuántas veces menos culpa le llega a la primera capa de",
-             "líneas (las que salen de la entrada) que a la última (las",
-             "que llegan a la final)",
-             "",
-             f"redes de {ANCHO} neuronas por capa, recién arrancadas; la culpa",
-             f"se mide con {EJEMPLOS} ejemplos de {ANCHO} números puestos al azar",
-             "",
-             "la culpa se reparte hacia atrás EXACTAMENTE IGUAL en las",
-             "cuatro filas: lo único que cambia es cómo son los pesos de",
-             "arranque y qué hay dentro de cada neurona de en medio"]
+# L24 (9 de octubre): tabla editorial (regla 6 ter); el subtítulo y el pie pasan a notas.
+NOTAS_ARRIBA = ["Cuántas veces menos culpa le llega a la primera capa de líneas (las que salen de "
+                "la entrada) que a la última (las que llegan a la final).",
+                f"Redes de {ANCHO} neuronas por capa, recién arrancadas; la culpa se mide con "
+                f"{EJEMPLOS} ejemplos de {ANCHO} números puestos al azar.",
+                "La culpa se reparte hacia atrás exactamente igual en las cuatro filas: lo único "
+                "que cambia es cómo son los pesos de arranque y qué hay dentro de cada neurona de "
+                "en medio."]
 CAB_CAPAS = "capas en medio"
 CAB_MONTAJE = "cómo se arma"
 CAB = {"ochenta": "como en los 80", "repartida": "más pequeños",
@@ -79,26 +77,22 @@ def _entre(montaje, entradas=ANCHO):
 
 
 def pie():
-    """El pie de la tabla. Los tamaños de los pesos de arranque los calcula el programa."""
+    """Las notas de debajo: qué es cada fila. Los tamaños de los pesos de arranque los calcula
+    el programa."""
     chico = _entre(MONTAJES[1])
     doble = _entre(MONTAJES[3])
     c = lambda x: f"{x:.2f}".replace(".", ",")
     return [
-        "como en los 80  los pesos de arranque, puestos al azar entre",
-        "                -1 y +1, cualquier valor con la misma",
-        "                oportunidad; en cada neurona, la rampa corta",
-        "más pequeños    los mismos pesos de arranque, encogidos según",
-        f"                cuántas entradas tiene la neurona: con las {ANCHO}",
-        f"                de estas redes, entre -{c(chico)} y +{c(chico)}",
-        "el codo         los pesos de arranque de los 80, y en cada",
-        "                neurona de en medio, en vez de la rampa, el",
-        "                codo: lo que pasa del listón, tal cual; si no",
-        "                llega, cero",
-        "las dos cosas   las dos a la vez (aquí los pesos de arranque",
-        f"                quedan entre -{c(doble)} y +{c(doble)})",
-        "",
-        "un número por debajo de 1 quiere decir que a la primera capa",
-        "le llega MÁS culpa que a la última"]
+        "Como en los 80: los pesos de arranque, puestos al azar entre -1 y +1, cualquier valor "
+        "con la misma oportunidad; en cada neurona, la rampa corta.",
+        "Más pequeños: los mismos pesos de arranque, encogidos según cuántas entradas tiene la "
+        f"neurona: con las {ANCHO} de estas redes, entre -{c(chico)} y +{c(chico)}.",
+        "El codo: los pesos de arranque de los 80, y en cada neurona de en medio, en vez de la "
+        "rampa, el codo: lo que pasa del listón, tal cual; si no llega, cero.",
+        "Las dos cosas: las dos a la vez (aquí los pesos de arranque quedan entre "
+        f"-{c(doble)} y +{c(doble)}).",
+        "Un número por debajo de 1 quiere decir que a la primera capa le llega más culpa que a "
+        "la última."]
 
 # ==========================================================
 
@@ -108,7 +102,7 @@ import sys
 
 import numpy as np
 
-from formato import comprobar_ancho, ANCHO_CAJA, miles, coma
+from formato import tabla_editorial, miles, coma
 from retropropagacion import sigmoide
 
 
@@ -220,34 +214,16 @@ def factores(montaje, profundidades=PROFUNDIDADES):
 
 
 def imprimir(tabla):
-    """Las filas son las cuatro maneras de armar la red y las columnas la profundidad.
+    """Las filas son las cuatro maneras de armar la red y las columnas la profundidad, con un
+    rótulo de grupo («capas en medio») encima de las cuatro.
 
-    Los rótulos y el pie no son adorno: quien se encuentre esta tabla sin haber leído nada
+    Los rótulos y las notas no son adorno: quien se encuentre esta tabla sin haber leído nada
     tiene que poder saber qué son sus números y qué cambia de una fila a otra (regla 9)."""
-    celdas = {m["clave"]: [escribir_veces(f["veces"]) for f in tabla[m["clave"]]]
-              for m in MONTAJES}
-    ancho_m = max([len(CAB_MONTAJE)] + [len(CAB[m["clave"]]) for m in MONTAJES])
-    anchos = [max(len(str(prof)), max(len(celdas[m["clave"]][i]) for m in MONTAJES))
-              for i, prof in enumerate(PROFUNDIDADES)]
-    hueco = "  "
-
-    def fila(primera, columnas):
-        return (f"{primera:<{ancho_m}}" + hueco +
-                hueco.join(f"{c:>{a}}" for c, a in zip(columnas, anchos))).rstrip()
-
-    lineas = [TITULO] + SUBTITULO + [""]
-    lineas.append(" " * (ancho_m + len(hueco)) + CAB_CAPAS)
-    lineas.append(fila(CAB_MONTAJE, [str(p) for p in PROFUNDIDADES]))
-    lineas.append(fila("-" * ancho_m, ["-" * a for a in anchos]))
-    for m in MONTAJES:
-        lineas.append(fila(CAB[m["clave"]], celdas[m["clave"]]))
-    lineas += [""] + pie()
-    # En el libro va como bloque sangrado con cuatro espacios, no dentro de una cita: su caja
-    # es la de 68 (verificar_anchos.py). Contra 62 no cabe la fila de veinte capas de «más
-    # pequeños» (L24: antes se comprobaba contra 64, que era la caja de la cita hasta el 20 sep).
-    comprobar_ancho(lineas, ANCHO_CAJA)
-    for l in lineas:
-        print(l)
+    filas = [[CAB[m["clave"]]] + [escribir_veces(f["veces"]) for f in tabla[m["clave"]]]
+             for m in MONTAJES]
+    rotulos = [CAB_MONTAJE] + [f"{CAB_CAPAS}: {p}" for p in PROFUNDIDADES]
+    print("\n".join(tabla_editorial(TITULO, rotulos, filas, "i" + "d" * len(PROFUNDIDADES),
+                                    NOTAS_ARRIBA + pie())))
 
 
 def guardar(tabla):
