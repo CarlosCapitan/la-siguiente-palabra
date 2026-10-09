@@ -62,7 +62,8 @@ import sys
 
 import en_que_orden_aprende as cap10
 import ngrama as N
-from formato import ANCHO_CAJA_CITA, coma, comprobar_ancho, miles
+from formato import (ANCHO_CAJA_CITA, coma, comprobar_ancho, miles, muestra_editorial,
+                     partir, tabla_editorial)
 
 
 def leer_muestras(ruta=SALIDA_CAP10):
@@ -133,14 +134,30 @@ def bloque_palabras(muestras, voc):
 
 
 def bloque_racha():
-    lin = [f"--- 3. EL TRÍO «{RACHA}», DENTRO DE LAS PALABRAS ---",
-           "los tríos de letras de una palabra: se toman tres letras",
-           "seguidas, se corre una letra, y otra vez.", ""]
-    for w in PALABRAS_RACHA:
-        lin.append(f"{w:<10}" + ", ".join(f"[{r}]" if r == RACHA else r for r in rachas(w)))
+    # L24 (9 de octubre de 2026): en tabla editorial, con el trío en negrita en vez de entre
+    # corchetes. Ninguna figura lee este bloque.
     assert all(RACHA in rachas(w) for w in PALABRAS_RACHA), "una palabra del ejemplo no lleva la racha"
-    lin += ["", f"entre corchetes, el trío «{RACHA}»."]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+    return [f"--- 3. EL TRÍO «{RACHA}», DENTRO DE LAS PALABRAS ---", ""] + tabla_editorial(
+        f"El trío «{RACHA}», dentro de cinco palabras",
+        ["palabra", "sus tríos de letras"],
+        [[w, ", ".join(f"**{r}**" if r == RACHA else r for r in rachas(w))]
+         for w in PALABRAS_RACHA],
+        "ii",
+        ["Los tríos de letras de una palabra: se toman tres letras seguidas, se corre una "
+         "letra, y otra vez.", f"En negrita, el trío «{RACHA}»."])
+
+
+def bloque_muestras(muestras):
+    """Los cuatro retratos tal como los escribe la máquina, en muestras editoriales (L24, 9 de
+    octubre de 2026: el capítulo los copiaba de en_que_orden_aprende.txt a mano, partidos en
+    renglones a ojo)."""
+    lin = ["--- 7. LOS CUATRO RETRATOS, TAL CUAL ---", ""]
+    for pasos, m in muestras:
+        lin += muestra_editorial(f"Lo que escribe tras {miles(pasos)} pasos", partir(m),
+                                 ["El «el» del principio se le da para arrancar."]) + [""]
+        junta = " ".join(partir(m))
+        assert junta == m, f"partir() ha cambiado la muestra de {miles(pasos)} pasos"
+    return lin
 
 
 def cuenta_peldanos(texto):
@@ -242,7 +259,8 @@ def main():
     muestras = leer_muestras()
     voc = vocabulario_quijote()
     for b in (bloque_paso(muestras), bloque_palabras(muestras, voc), bloque_racha(),
-              bloque_peldanos(texto), bloque_simbolos(texto), bloque_parecido(muestras)):
+              bloque_peldanos(texto), bloque_simbolos(texto), bloque_parecido(muestras),
+              bloque_muestras(muestras)):
         print("\n".join(b))
         print()
 

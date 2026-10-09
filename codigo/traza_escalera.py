@@ -52,7 +52,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import ngrama as N
-from formato import ANCHO_CAJA, coma, comprobar_ancho, miles, pct
+from formato import (ANCHO_CAJA, coma, comprobar_ancho, miles, muestra_editorial, partir, pct,
+                     tabla_editorial)
 
 AQUI = Path(__file__).resolve().parent
 
@@ -283,106 +284,96 @@ def main():
         a = "(ninguno)" if arranque is None else f"«{arranque}»"
         L.append(f"  {perilla(orden):<10}{a:<12}{texto[:24]}…")
 
+    # L24 (9 de octubre de 2026): del apartado 2 en adelante, tablas y muestras editoriales;
+    # antes, renglones sangrados que el capítulo 1 copiaba. El apartado 1 no sale en el libro.
+    E = []      # lo editorial va aparte: no se le mide el ancho, lo compone el libro
     tabla, texto, arranque, pasos = repetidas[PELDANO_A_MANO]
     clave, u, sale = pasos[0]
     total = sum(u.values())
-    L += [
-        "",
-        f"2. EL PRIMER SORTEO DE LA PERILLA EN {PELDANO_A_MANO}, ENTERO",
-        "",
-        f"La máquina arranca con «{arranque}» y va a la casilla de «{''.join(clave)}»:",
-        f"las {miles(total)} veces que aparece «{''.join(clave)}» en el Quijote",
-        "",
-        "  letra que sigue    veces    de cada cien veces",
-        "  ---------------   ------   -------------------",
-    ]
-    for s, n in u.most_common():
-        L.append(f"  {nombre_simbolo(s):^15}   {miles(n):>6}   {pct(n / total, 2):>19}")
-    L += ["", f"  sale: {letra(sale)}. Escrito: «{arranque + sale}»"]
+    E += ["", f"2. EL PRIMER SORTEO DE LA PERILLA EN {PELDANO_A_MANO}, ENTERO", ""]
+    E += tabla_editorial(
+        f"Qué letra viene detrás de «{''.join(clave)}»",
+        ["letra que sigue", "veces", "de cada cien veces"],
+        [[nombre_simbolo(x), miles(n), pct(n / total, 2)] for x, n in u.most_common()], "cdd",
+        [f"Las {miles(total)} veces que aparece «{''.join(clave)}» en el Quijote.",
+         f"La máquina arranca con «{arranque}». Sale {letra(sale)}; escrito: «{arranque + sale}»."])
 
-    L += [
-        "",
-        f"3. LOS {SORTEOS_A_MANO} PRIMEROS SORTEOS, UNO POR FILA",
-        "",
-        "mira: las dos últimas letras escritas, que dicen a qué casilla va",
-        "pueden venir: cuántas letras distintas hay en esa casilla",
-        "la que más sale: y cuántas veces de cada cien",
-        "",
-        f"  {'ha escrito':<12}{'mira':<8}{'pueden venir':>12}   {'la que más sale':<18}{'sale':<9}",
-        f"  {'----------':<12}{'----':<8}{'------------':>12}   {'---------------':<18}{'----':<9}",
-    ]
-    escrito = arranque
+    E += ["", f"3. LOS {SORTEOS_A_MANO} PRIMEROS SORTEOS, UNO POR FILA", ""]
+    filas, escrito = [], arranque
     for clave, u, sale in pasos[:SORTEOS_A_MANO]:
-        L.append(f"  {'«' + escrito + '»':<12}{'«' + ''.join(clave) + '»':<8}{len(u):>12}   "
-                 f"{la_que_mas(u):<18}{letra(sale):<9}")
+        filas.append([f"«{escrito}»", f"«{''.join(clave)}»", str(len(u)), la_que_mas(u),
+                      letra(sale)])
         escrito += sale
-    L += ["", f"  escrito al final: «{escrito}»"]
+    E += tabla_editorial(
+        f"Los {SORTEOS_A_MANO} primeros sorteos con la perilla en {perilla(PELDANO_A_MANO)}",
+        ["ha escrito", "mira", "pueden venir", "la que más sale", "sale"], filas, "iidii",
+        ["Mira: las dos últimas letras escritas, que dicen a qué casilla va. Pueden venir: "
+         "cuántas letras distintas hay en esa casilla. La que más sale: y cuántas veces de "
+         "cada cien.", f"Escrito al final: «{escrito}»."])
 
     tabla, texto, arranque, pasos = repetidas[("palabras", 2)]
-    L += [
-        "",
-        f"3 BIS. LA MÁQUINA DE PALABRAS, PERILLA EN 2: LOS {SORTEOS_PALABRAS} PRIMEROS SORTEOS",
-        "",
-        f"Arranque: «{' '.join(arranque)}». Cada sorteo mira las dos últimas",
-        "palabras; «pueden venir» cuenta palabras distintas.",
-        "",
-        f"  {'mira':<16}{'veces':>6}{'pueden venir':>13}  {'la que más sale':<18}{'sale'}",
-        f"  {'----':<16}{'-----':>6}{'------------':>13}  {'---------------':<18}{'----'}",
-    ]
-    escrito = list(arranque)
+    E += ["", f"3 BIS. LA MÁQUINA DE PALABRAS, PERILLA EN 2: LOS {SORTEOS_PALABRAS} PRIMEROS "
+              "SORTEOS", ""]
+    filas, escrito = [], list(arranque)
     for clave, u, sale in pasos[:SORTEOS_PALABRAS]:
-        L.append(f"  {'«' + ' '.join(clave) + '»':<16}{miles(sum(u.values())):>6}{len(u):>13}  "
-                 f"{la_que_mas(u, palabra=True):<18}{'«' + sale + '»'}")
+        filas.append([f"«{' '.join(clave)}»", miles(sum(u.values())), str(len(u)),
+                      la_que_mas(u, palabra=True), f"«{sale}»"])
         escrito.append(sale)
-    L += ["", f"  escrito al final: «{' '.join(escrito)}»"]
+    E += tabla_editorial(
+        f"Los {SORTEOS_PALABRAS} primeros sorteos de la máquina de palabras, con la perilla en 2",
+        ["mira", "veces", "pueden venir", "la que más sale", "sale"], filas, "iddii",
+        [f"Arranque: «{' '.join(arranque)}». Cada sorteo mira las dos últimas palabras; "
+         "«pueden venir» cuenta palabras distintas.",
+         f"Escrito al final: «{' '.join(escrito)}»."])
 
-    L += [
-        "",
-        "4. POR QUÉ AL SUBIR SALEN PALABRAS",
-        "",
-        f"La máquina ha escrito «{MOMENTO}» y tiene que sacar en un sorteo",
-        "la letra siguiente. Lo que mira depende de la perilla.",
-        "",
-        f"  {'perilla':<10}{'mira':<10}{'pueden venir':>14}{'la «t», de cada cien':>24}",
-        f"  {'-------':<10}{'----':<10}{'------------':>14}{'--------------------':>24}",
-    ]
+    E += ["", "4. POR QUÉ AL SUBIR SALEN PALABRAS", ""]
+    filas = []
     for orden in N.ORDENES_LETRA:
         t = repetidas[orden][0]
         clave = tuple(MOMENTO[len(MOMENTO) - orden:]) if orden else ()
         u = t[clave]
-        mira = "nada" if orden == 0 else "«" + "".join(clave) + "»"
-        L.append(f"  {perilla(orden):<10}{mira:<10}{len(u):>14}"
-                 f"{coma(100 * u['t'] / sum(u.values()), 1):>24}")
-    L += [
-        "",
-        "Y de media, en todos los sorteos: cuántas letras distintas",
-        "pueden venir en la casilla que le toca a la máquina.",
-        "",
-        f"  {'perilla':<10}{'casillas':>10}{'pueden venir, de media':>28}",
-        f"  {'-------':<10}{'--------':>10}{'----------------------':>28}",
-    ]
-    for orden in N.ORDENES_LETRA:
-        t = repetidas[orden][0]
-        L.append(f"  {perilla(orden):<10}{miles(len(t)):>10}{coma(letras_por_urna(t), 1):>28}")
+        filas.append([perilla(orden), "nada" if orden == 0 else "«" + "".join(clave) + "»",
+                      str(len(u)), coma(100 * u["t"] / sum(u.values()), 1)])
+    E += tabla_editorial(
+        f"La letra que viene detrás de «{MOMENTO}», según la perilla",
+        ["perilla", "mira", "pueden venir", "la «t», de cada cien"], filas, "iidd",
+        [f"La máquina ha escrito «{MOMENTO}» y tiene que sacar en un sorteo la letra siguiente. "
+         "Lo que mira depende de la perilla."])
+    E += [""] + tabla_editorial(
+        "Cuántas letras pueden venir, de media, según la perilla",
+        ["perilla", "casillas", "pueden venir, de media"],
+        [[perilla(o), miles(len(repetidas[o][0])), coma(letras_por_urna(repetidas[o][0]), 1)]
+         for o in N.ORDENES_LETRA], "idd",
+        ["De media en todos los sorteos: cuántas letras distintas pueden venir en la casilla "
+         "que le toca a la máquina."])
 
-    L += [
-        "",
-        "5. PALABRAS DEL QUIJOTE EN CADA MUESTRA",
-        "",
-        "Trozos entre espacios, sin los signos pegados, que son",
-        "palabras que están en el Quijote.",
-        "",
-        f"  {'perilla':<10}{'trozos':>8}{'palabras del Quijote':>24}{'de cada cien':>16}",
-        f"  {'-------':<10}{'------':>8}{'--------------------':>24}{'------------':>16}",
-    ]
+    E += ["", "5. PALABRAS DEL QUIJOTE EN CADA MUESTRA", ""]
+    filas = []
     for orden in N.ORDENES_LETRA:
         trozos, reales = palabras_reales(muestras_libro[orden], vocabulario)
-        L.append(f"  {perilla(orden):<10}{len(trozos):>8}{len(reales):>24}"
-                 f"{pct(len(reales) / len(trozos), 0):>16}")
+        filas.append([perilla(orden), str(len(trozos)), str(len(reales)),
+                      pct(len(reales) / len(trozos), 0)])
     _, reales = palabras_reales(muestras_libro[0], vocabulario)
-    L += ["", "  las de la perilla en nada: " + " ".join(f"«{r}»" for r in reales)]
+    E += tabla_editorial(
+        "Palabras del Quijote en cada muestra",
+        ["perilla", "trozos", "palabras del Quijote", "de cada cien"], filas, "iddd",
+        ["Trozos: lo que hay entre espacio y espacio, sin los signos pegados.",
+         "Las de la perilla en nada: " + " ".join(f"«{r}»" for r in reales) + "."])
+
+    # 6. Las muestras, tal como las imprimió ngrama.py, partidas en renglones solo por espacios.
+    E += ["", "6. LAS MUESTRAS, TAL CUAL", ""]
+    titulos = [(o, "Lo que escribe sin mirar nada" if o == 0 else
+                f"Lo que escribe con la perilla en {perilla(o)}") for o in N.ORDENES_LETRA]
+    titulos += [(("palabras", o), "Lo que escribe palabra a palabra, sin mirar ninguna"
+                 if o == 1 else f"Lo que escribe palabra a palabra, con la perilla en {o} palabras")
+                for o in N.ORDENES_PALABRA]
+    for clave, titulo in titulos:
+        m = muestras_libro[clave].rstrip()
+        E += muestra_editorial(titulo, partir(m)) + [""]
 
     for l in comprobar_ancho([l.rstrip() for l in "\n".join(L).split("\n")], ANCHO_CAJA):
+        print(l)
+    for l in E:
         print(l)
 
 

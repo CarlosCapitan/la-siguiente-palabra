@@ -126,8 +126,8 @@ def main():
         for f, fila in enumerate(cuadricula(n)):
             L.append(f"  {str(f + 1) + ' ' + pal[f]:<{w}}" + "".join(f"{'x' if v else '·':>3}" for v in fila))
         L += [f"  {n} palabras: {casillas(n)} casillas de {n * n}.", ""]
-    # L24 (9 de octubre): el apartado 2, en tabla editorial (regla 6 ter). El 1 y el 3 se quedan
-    # como estaban: los leen las figuras de la cuadrícula y de la fila, y el capítulo 9.
+    # L24 (9 de octubre): el apartado 2, en tabla editorial (regla 6 ter). El 1 se queda como
+    # estaba: lo lee la figura de la cuadrícula.
     filas, antes = [], None
     for n in LONGITUDES:
         v = casillas(n)
@@ -148,14 +148,27 @@ def main():
         L.append(f"    tanda {i + 1}: «{p}»" + (f", con el resumen de «{fp[i - 1]}»" if i else ""))
     L += ["", "  La que mira todo a la vez: la cuenta de cada palabra solo",
           "  necesita las listas de las palabras, que ya están todas.", "",
-          "    tanda 1: «" + "», «".join(fp) + "», a la vez", "",
-          f"  {'palabras':>10}{'en orden':>12}{'a la vez':>12}",
-          f"  {'--------':>10}{'--------':>12}{'--------':>12}"]
-    for m in [n] + LONGITUDES_FILA:
-        L.append(f"  {miles(m):>10}{miles(pasos_en_fila(dependencias(m, True))):>12}"
-                 f"{miles(pasos_en_fila(dependencias(m, False))):>12}")
-    L.append("")
-    for l in comprobar_ancho([l.rstrip() for l in L], ANCHO):
+          "    tanda 1: «" + "», «".join(fp) + "», a la vez", ""]
+    # L24 (9 de octubre, capítulo 9): la cuenta de tandas, en tabla editorial. Las líneas de
+    # «tanda» de arriba se quedan como estaban: las lee figura_en_fila.py.
+    L += tabla_editorial(
+        "Cuántas tandas, una detrás de otra",
+        ["palabras", "en orden", "a la vez"],
+        [[miles(m), miles(pasos_en_fila(dependencias(m, True))),
+          miles(pasos_en_fila(dependencias(m, False)))] for m in [n] + LONGITUDES_FILA],
+        "ddd",
+        ["En orden: la máquina que lee en orden. A la vez: la que lo mira todo de golpe. "
+         "Una tanda: las cuentas que se pueden hacer a la vez."]) + [""]
+    # El ancho se comprueba fuera de las tablas editoriales: ésas las compone el libro, no se
+    # copian tal cual, y sus notas son párrafos.
+    dentro = False
+    for l in [l.rstrip() for l in L]:
+        if l in ("::: tabla", "::: muestra"):
+            dentro = True
+        elif l == ":::":
+            dentro = False
+        elif not dentro:
+            comprobar_ancho([l], ANCHO)
         print(l)
     return 0
 

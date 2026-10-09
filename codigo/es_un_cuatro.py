@@ -36,8 +36,11 @@ from datetime import date
 
 import numpy as np
 
-from formato import comprobar_ancho, coma, miles, pct
+from formato import comprobar_ancho, coma, miles, pct, tabla_editorial
 from perceptron import SEMILLA, acierto, cargar_digitos, entrenar
+
+
+TITULO_DE_LOS_DIEZ = "La misma pregunta para cada uno de los diez dígitos"
 
 
 def acierto_equilibrado(y, pred):
@@ -88,7 +91,6 @@ def pareja(X, t, a, b, rng):
 
 
 # ---- El aspecto de los bloques ---------------------------------------------------
-ANCHO_ROTULO = 44
 # ---------------------------------------------------------------------------------
 
 
@@ -96,39 +98,32 @@ def bloque_del_cuatro(r):
     """El resultado de la pregunta del capítulo, con cada número rotulado entero.
 
     Un rótulo como «acierto» no dice de qué: si es sobre los dibujos que ha visto o
-    sobre los que no, y si es sobre los cuatros o sobre todo. Aquí cada línea lo dice."""
-    lineas = [
-        "¿ES UN CUATRO? UN SOLO COMITÉ CONTRA LOS OTROS NUEVE DÍGITOS",
-        "",
-        f"{'dibujos que se le enseñan para aprender':<{ANCHO_ROTULO}}{miles(r['ejemplos_entrenamiento']):>8}",
-        f"{'de ésos, los que sí son un cuatro':<{ANCHO_ROTULO}}{miles(r['de_esos_son_el_digito']):>8}",
-        f"{'dibujos que no ve nunca, para evaluarlo':<{ANCHO_ROTULO}}{miles(r['ejemplos_prueba']):>8}",
-        "",
-        f"{'acierta sobre los dibujos que no vio':<{ANCHO_ROTULO}}{pct(r['acierto_prueba']):>8}",
-        f"{'de ésos, sobre los que sí son un cuatro':<{ANCHO_ROTULO}}{pct(r['acierto_en_los_que_si']):>8}",
-        f"{'de ésos, sobre los que no son un cuatro':<{ANCHO_ROTULO}}{pct(r['acierto_en_los_que_no']):>8}",
-        "",
-        f"{'deja de corregirse solo':<{ANCHO_ROTULO}}{('sí' if r['converge'] else 'NO'):>8}",
-        f"{'correcciones hasta quedarse quieto':<{ANCHO_ROTULO}}{miles(r['correcciones']) if r['converge'] else '-':>8}",
-    ]
-    return comprobar_ancho(lineas)
+    sobre los que no, y si es sobre los cuatros o sobre todo. Aquí cada fila lo dice.
+    (L24, 9 de octubre de 2026: en tabla editorial; antes, renglones sangrados.)"""
+    return tabla_editorial(
+        "¿Es un cuatro? Un solo comité contra los otros nueve dígitos",
+        ["", "cuánto"],
+        [["dibujos que se le enseñan para aprender", miles(r["ejemplos_entrenamiento"])],
+         ["de ésos, los que sí son un cuatro", miles(r["de_esos_son_el_digito"])],
+         ["dibujos que no ve nunca, para evaluarlo", miles(r["ejemplos_prueba"])],
+         ["acierta sobre los dibujos que no vio", pct(r["acierto_prueba"])],
+         ["de ésos, sobre los que sí son un cuatro", pct(r["acierto_en_los_que_si"])],
+         ["de ésos, sobre los que no son un cuatro", pct(r["acierto_en_los_que_no"])],
+         ["deja de corregirse solo", "sí" if r["converge"] else "no"],
+         ["correcciones hasta quedarse quieto",
+          miles(r["correcciones"]) if r["converge"] else "-"]],
+        "id")
 
 
 def bloque_de_los_diez(filas):
-    """La misma pregunta para los diez dígitos, uno por uno."""
-    lineas = [
-        "LA MISMA PREGUNTA PARA CADA UNO DE LOS DIEZ DÍGITOS",
-        "",
-        f"{'la pregunta':<20}{'acierta sobre los':>20}{'deja de':>14}",
-        f"{'':<20}{'que no vio':>20}{'corregirse':>14}",
-        f"{'-' * 18:<20}{'-' * 18:>20}{'-' * 12:>14}",
-    ]
-    for d, r in filas:
-        lineas.append(
-            f"{f'¿es un {d}?':<20}{pct(r['acierto_prueba']):>20}"
-            f"{('sí' if r['converge'] else 'NO'):>14}"
-        )
-    return comprobar_ancho(lineas)
+    """La misma pregunta para los diez dígitos, uno por uno. La columna «deja de corregirse» la
+    lee el_ocho_y_la_raya.py con formato.leer_tablas, por el título."""
+    return tabla_editorial(
+        TITULO_DE_LOS_DIEZ,
+        ["la pregunta", "acierta sobre los que no vio", "deja de corregirse"],
+        [[f"¿es un {d}?", pct(r["acierto_prueba"]), "sí" if r["converge"] else "**no**"]
+         for d, r in filas],
+        "idc")
 
 
 def selftest():

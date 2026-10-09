@@ -9,97 +9,117 @@ de 1,0x es más lenta. De lo que queda de esa ventaja al pasar
 del texto más corto al más largo: por debajo del 75 % se llama
 «cae»; por encima del 110 %, «crece»; en medio, «se mantiene».
 
-contenedor, 2 núcleos, modelo de 256 números por posición
-   longitud del texto     64    128    256    512  1.024
-              ventaja   1,1x   0,8x   0,9x   0,7x   0,5x
-   de la ventaja del texto más corto queda el 45 %: cae
+::: tabla
+La ventaja en el ordenador de 2 núcleos en la nube
 
-portátil, procesador, modelo de 256 números por posición
-   longitud del texto     64    128    256    512  1.024
-              ventaja   3,8x   4,8x   4,8x   3,8x   3,2x
-   de la ventaja del texto más corto queda el 84 %: se mantiene
+| modelo, números por posición | longitud del texto: 64 | longitud del texto: 128 | longitud del texto: 256 | longitud del texto: 512 | longitud del texto: 1.024 | queda |
+|--:|--:|--:|--:|--:|--:|:--|
+| 256 | 1,1x | 0,8x | 0,9x | 0,7x | 0,5x | 45 %, cae |
 
-portátil, tarjeta, modelo de 256 números por posición
-   longitud del texto     64    128    256    512  1.024
-              ventaja   3,9x   2,9x   2,7x   2,4x   1,2x
-   de la ventaja del texto más corto queda el 31 %: cae
+Ventaja: cuántas veces más rápida es la máquina que lo mira todo a la vez; por debajo de 1,0x, es más lenta.
 
-portátil, procesador, modelo de 512 números por posición
-   longitud del texto     64    128    256    512  1.024
-              ventaja   3,9x   4,2x   3,2x   4,7x   3,1x
-   de la ventaja del texto más corto queda el 79 %: se mantiene
+Queda: qué parte de la ventaja del texto más corto queda en el más largo. Por debajo del 75 % se dice que cae; por encima del 110 %, que crece; en medio, que se mantiene.
+:::
 
-portátil, tarjeta, modelo de 512 números por posición
-   longitud del texto     64    128    256    512  1.024
-              ventaja   3,0x   2,2x   2,2x   1,8x   1,2x
-   de la ventaja del texto más corto queda el 40 %: cae
+::: tabla
+La ventaja en el procesador del portátil, con tres tamaños de modelo
 
-portátil, procesador, modelo de 1.024 números por posición
-   longitud del texto     64    128    256    512  1.024
-              ventaja   4,6x   5,2x   6,4x   5,5x   4,8x
-   de la ventaja del texto más corto queda el 104 %: se mantiene
+| modelo, números por posición | longitud del texto: 64 | longitud del texto: 128 | longitud del texto: 256 | longitud del texto: 512 | longitud del texto: 1.024 | queda |
+|--:|--:|--:|--:|--:|--:|:--|
+| 256 | 3,8x | 4,8x | 4,8x | 3,8x | 3,2x | 84 %, se mantiene |
+| 512 | 3,9x | 4,2x | 3,2x | 4,7x | 3,1x | 79 %, se mantiene |
+| 1.024 | 4,6x | 5,2x | 6,4x | 5,5x | 4,8x | 104 %, se mantiene |
 
-portátil, tarjeta, modelo de 1.024 números por posición
-   longitud del texto     64    128    256    512  1.024
-              ventaja   1,8x   1,8x   1,6x   1,5x   1,3x
-   de la ventaja del texto más corto queda el 72 %: cae
+Ventaja: cuántas veces más rápida es la máquina que lo mira todo a la vez; por debajo de 1,0x, es más lenta.
+
+Queda: qué parte de la ventaja del texto más corto queda en el más largo. Por debajo del 75 % se dice que cae; por encima del 110 %, que crece; en medio, que se mantiene.
+:::
+
+::: tabla
+La ventaja en la tarjeta gráfica del portátil, con tres tamaños de modelo
+
+| modelo, números por posición | longitud del texto: 64 | longitud del texto: 128 | longitud del texto: 256 | longitud del texto: 512 | longitud del texto: 1.024 | queda |
+|--:|--:|--:|--:|--:|--:|:--|
+| 256 | 3,9x | 2,9x | 2,7x | 2,4x | 1,2x | 31 %, cae |
+| 512 | 3,0x | 2,2x | 2,2x | 1,8x | 1,2x | 40 %, cae |
+| 1.024 | 1,8x | 1,8x | 1,6x | 1,5x | 1,3x | 72 %, cae |
+
+Ventaja: cuántas veces más rápida es la máquina que lo mira todo a la vez; por debajo de 1,0x, es más lenta.
+
+Queda: qué parte de la ventaja del texto más corto queda en el más largo. Por debajo del 75 % se dice que cae; por encima del 110 %, que crece; en medio, que se mantiene.
+:::
+
 
 ##### los segundos, ordenador a ordenador #####
-Cada número de segundos es lo que tarda una pasada de
-entrenamiento con 16 textos de esa longitud: la media de tres,
-tras una de calentamiento que se tira.
-«ventaja»: los segundos de «en orden» entre los de «a la vez».
-Por encima de 1,0x gana la que mira todo a la vez; por debajo,
-la que lee en orden.
 
-A. ordenador de 2 núcleos en la nube;
-   modelo de 256 números por posición
+::: tabla
+Los segundos en el ordenador de 2 núcleos en la nube, modelo de 256 números por posición
 
-  longitud   en orden (s)   a la vez (s)   ventaja
-  --------   ------------   ------------   -------
-        64         0,0268         0,0235      1,1x
-       128         0,0408         0,0490      0,8x
-       256         0,0926         0,1035      0,9x
-       512         0,1842         0,2704      0,7x
-     1.024         0,3664         0,7737      0,5x
+| longitud | en orden (s) | a la vez (s) | ventaja |
+|--:|--:|--:|--:|
+| 64 | 0,0268 | 0,0235 | 1,1x |
+| 128 | 0,0408 | 0,0490 | 0,8x |
+| 256 | 0,0926 | 0,1035 | 0,9x |
+| 512 | 0,1842 | 0,2704 | 0,7x |
+| 1.024 | 0,3664 | 0,7737 | 0,5x |
 
-B. portátil, su procesador;
-   modelo de 256 números por posición
+Cada número de segundos es lo que tarda una pasada de entrenamiento con 16 textos de esa longitud: la media de tres, tras una de calentamiento que se tira.
 
-  longitud   en orden (s)   a la vez (s)   ventaja
-  --------   ------------   ------------   -------
-        64         0,0157         0,0041      3,8x
-       128         0,0300         0,0063      4,8x
-       256         0,0571         0,0120      4,8x
-       512         0,1156         0,0304      3,8x
-     1.024         0,2443         0,0754      3,2x
+Ventaja: los segundos de «en orden» entre los de «a la vez». Por encima de 1,0x gana la que mira todo a la vez; por debajo, la que lee en orden.
+:::
 
-La cuenta de la ventaja, en el ordenador de 2 núcleos:
+::: tabla
+Los segundos en el procesador del portátil, modelo de 256 números por posición
 
-  64 posiciones: en orden, 0,0268 segundos; a la vez, 0,0235.
-  0,0268 entre 0,0235 da 1,14, que la tabla redondea
-  a 1,1x. La que mira todo a la vez es 1,1 veces más rápida.
-  1.024 posiciones: en orden, 0,3664 segundos; a la vez, 0,7737.
-  0,3664 entre 0,7737 da 0,47, que la tabla redondea
-  a 0,5x. La que mira todo a la vez tarda 2,1 veces más.
+| longitud | en orden (s) | a la vez (s) | ventaja |
+|--:|--:|--:|--:|
+| 64 | 0,0157 | 0,0041 | 3,8x |
+| 128 | 0,0300 | 0,0063 | 4,8x |
+| 256 | 0,0571 | 0,0120 | 4,8x |
+| 512 | 0,1156 | 0,0304 | 3,8x |
+| 1.024 | 0,2443 | 0,0754 | 3,2x |
 
-Con 1.024 posiciones y el modelo de 256 números, los tres
-ordenadores:
+Cada número de segundos es lo que tarda una pasada de entrenamiento con 16 textos de esa longitud: la media de tres, tras una de calentamiento que se tira.
 
-  ordenador                     en orden (s)  a la vez (s)
-  ---------                     ------------  ------------
-  ordenador de 2 núcleos              0,3664        0,7737
-  portátil, procesador                0,2443        0,0754
-  portátil, tarjeta gráfica           0,0460        0,0390
+Ventaja: los segundos de «en orden» entre los de «a la vez». Por encima de 1,0x gana la que mira todo a la vez; por debajo, la que lee en orden.
+:::
 
-C. portátil, su procesador;
-   modelo de 1.024 números por posición
+::: tabla
+La cuenta de la ventaja, en el ordenador de 2 núcleos
 
-  longitud   en orden (s)   a la vez (s)   ventaja
-  --------   ------------   ------------   -------
-        64         0,1251         0,0274      4,6x
-       128         0,2590         0,0500      5,2x
-       256         0,6000         0,0931      6,4x
-       512         1,1246         0,2062      5,5x
-     1.024         2,0900         0,4325      4,8x
+| posiciones | en orden (s) | a la vez (s) | cociente | redondeado |
+|--:|--:|--:|--:|--:|
+| 64 | 0,0268 | 0,0235 | 1,14 | 1,1x |
+| 1.024 | 0,3664 | 0,7737 | 0,47 | 0,5x |
+
+Cociente: los segundos de «en orden» entre los de «a la vez».
+
+La que mira todo a la vez: con 64 posiciones, es 1,1 veces más rápida; con 1.024 posiciones, tarda 2,1 veces más.
+:::
+
+::: tabla
+Con 1.024 posiciones y el modelo de 256 números, los tres ordenadores
+
+| ordenador | en orden (s) | a la vez (s) |
+|:--|--:|--:|
+| ordenador de 2 núcleos | 0,3664 | 0,7737 |
+| portátil, procesador | 0,2443 | 0,0754 |
+| portátil, tarjeta gráfica | 0,0460 | 0,0390 |
+:::
+
+::: tabla
+Los segundos en el procesador del portátil, modelo de 1.024 números por posición
+
+| longitud | en orden (s) | a la vez (s) | ventaja |
+|--:|--:|--:|--:|
+| 64 | 0,1251 | 0,0274 | 4,6x |
+| 128 | 0,2590 | 0,0500 | 5,2x |
+| 256 | 0,6000 | 0,0931 | 6,4x |
+| 512 | 1,1246 | 0,2062 | 5,5x |
+| 1.024 | 2,0900 | 0,4325 | 4,8x |
+
+Cada número de segundos es lo que tarda una pasada de entrenamiento con 16 textos de esa longitud: la media de tres, tras una de calentamiento que se tira.
+
+Ventaja: los segundos de «en orden» entre los de «a la vez». Por encima de 1,0x gana la que mira todo a la vez; por debajo, la que lee en orden.
+:::
 

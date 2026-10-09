@@ -81,7 +81,7 @@ import platform
 from datetime import datetime, timezone
 from pathlib import Path
 
-from formato import ANCHO_CAJA, coma, comprobar_ancho, miles, pct
+from formato import ANCHO_CAJA, coma, comprobar_ancho, miles, pct, tabla_editorial
 from ngrama import ALFABETO, SIGNOS, cargar_corpus, normalizar, solo_palabras, trocear
 
 AQUI = Path(__file__).resolve().parent
@@ -260,22 +260,22 @@ def main():
         f"  palabras distintas                     {miles(len(set(solo))):>14}",
         f"  trozos distintos (palabras y {len(SIGNOS)} signos) {miles(len(vocabulario)):>13}",
         "",
-        f"QUÉ LETRA VIENE DETRÁS DE «{PAR_VIGILADO.upper()}»",
-        f"las {miles(total_par)} veces que aparece «{PAR_VIGILADO}» en el Quijote",
-        "",
-        "  letra que sigue    veces    de cada cien veces",
-        "  ---------------   ------   -------------------",
     ]
+    # L24 (9 de octubre de 2026): la casilla de «qu», en tabla editorial; antes, renglones
+    # sangrados que el capítulo 1 copiaba. Ninguna figura lee esta parte.
+    filas_qu = []
     for letra, n in t.most_common():
         parte = pct(n / total_par, 2)
         if parte.startswith("0,00"):
             parte = "menos de 0,01 %"      # un recuento pequeño no es un cero
-        lineas.append(f"  {letra:^15}   {miles(n):>6}   {parte:>19}")
+        filas_qu.append([letra, miles(n), parte])
+    lineas += tabla_editorial(
+        f"Qué letra viene detrás de «{PAR_VIGILADO}»",
+        ["letra que sigue", "veces", "de cada cien veces"], filas_qu, "cdd",
+        [f"Las {miles(total_par)} veces que aparece «{PAR_VIGILADO}» en el Quijote.",
+         f"Símbolos distintos detrás de «{PAR_VIGILADO}»: {len(t)}, de los {len(ALFABETO)} que "
+         "admite el programa (letras, espacio y signos de puntuación)."])
     lineas += [
-        "",
-        f"  símbolos distintos detrás de «{PAR_VIGILADO}»: {len(t)}, de los "
-        f"{len(ALFABETO)} que",
-        "  admite el programa (letras, espacio y signos de puntuación)",
         "",
         "LA TABLA DE PAREJAS DE TROZOS",
         "una casilla por cada pareja de trozos que podría existir",
@@ -352,7 +352,15 @@ def main():
         fila += f" «{palabra}»"
     lineas.append(fila)
 
-    for l in comprobar_ancho(lineas, ANCHO_CAJA):
+    # El ancho se comprueba fuera de las tablas editoriales: ésas las compone el libro.
+    dentro = False
+    for l in lineas:
+        if l in ("::: tabla", "::: muestra"):
+            dentro = True
+        elif l == ":::":
+            dentro = False
+        elif not dentro:
+            comprobar_ancho([l], ANCHO_CAJA)
         print(l)
 
 

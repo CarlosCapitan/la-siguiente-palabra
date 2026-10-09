@@ -6,32 +6,39 @@
 SELFTEST: las tres pruebas pasan.
 
 ########## capítulo 2: ¿existe la raya del ocho? ##########
-máquina: Linux aarch64. Medido el 2026-09-26.
+máquina: Darwin arm64. Medido el 2026-10-09.
 La respuesta no depende de la máquina: es una cuenta exacta.
 Dibujos: los 1.257 con los que aprende el comité del capítulo 2.
 
-¿EXISTE UNA RAYA QUE DEJE CADA DÍGITO A UN LADO Y LOS DEMÁS AL OTRO?
+::: tabla
+¿Existe una raya que deje cada dígito a un lado y los demás al otro?
 
-  la pregunta       ¿existe la raya?     ¿se queda quieto?
-  -----------       ----------------     -----------------
-  ¿es un 0?                       sí                    sí
-  ¿es un 1?                       sí                    sí
-  ¿es un 2?                       sí                    sí
-  ¿es un 3?                       sí                    sí
-  ¿es un 4?                       sí                    sí
-  ¿es un 5?                       sí                    sí
-  ¿es un 6?                       sí                    sí
-  ¿es un 7?                       sí                    sí
-  ¿es un 8?                       NO                    NO
-  ¿es un 9?                       sí                    sí
+| la pregunta | ¿existe la raya? | ¿se queda quieto? |
+|:--|:-:|:-:|
+| ¿es un 0? | sí | sí |
+| ¿es un 1? | sí | sí |
+| ¿es un 2? | sí | sí |
+| ¿es un 3? | sí | sí |
+| ¿es un 4? | sí | sí |
+| ¿es un 5? | sí | sí |
+| ¿es un 6? | sí | sí |
+| ¿es un 7? | sí | sí |
+| ¿es un 8? | **no** | **no** |
+| ¿es un 9? | sí | sí |
 
-  «¿se queda quieto?» es la columna de la tabla del capítulo
-  (datos/salidas/es_un_cuatro.txt).
+¿Se queda quieto?: si el perceptrón deja de corregirse solo con esa pregunta, como en la tabla de los diez dígitos.
+:::
+
+::: tabla
+Los dibujos que impiden la raya del ocho
+
+| los dibujos | ¿existe la raya? |
+|:--|:-:|
+| con los 1.257 | no |
+| quitando 6 ochos | sí |
+:::
 
 LOS DIBUJOS QUE IMPIDEN LA RAYA DEL OCHO
-
-  con los 1.257 dibujos:        raya: NO
-  quitando estos 6:             raya: sí
 
     dibujo   qué es
     ------   ------

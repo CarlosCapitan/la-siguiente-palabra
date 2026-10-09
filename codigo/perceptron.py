@@ -31,7 +31,7 @@ import csv
 import itertools
 import sys
 
-from formato import ANCHO_CAJA, comprobar_ancho, miles, coma
+from formato import ANCHO_CAJA, comprobar_ancho, miles, coma, tabla_editorial
 import numpy as np
 
 
@@ -304,27 +304,33 @@ def main():
     # para que la tabla del capítulo sea literalmente esto y el verificador pueda
     # comprobarla fila por fila. Lo que el libro enseña y lo que el programa imprime
     # tienen que ser la misma cadena de caracteres.
-    print(f"{'tarea':<24}{'ejemplos':>10}{'acierto':>9}{'converge':>10}{'correcciones':>14}")
+    # L24 (9 de octubre de 2026): en tabla editorial. La columna «converge» pasa a una nota,
+    # porque el capítulo no la enseña y en las cuatro dice lo mismo; si alguna no converge, la
+    # nota lo dice y la tabla lo marca.
+    editorial = []
     for a, b_dig in PAREJAS_DIGITOS:
         r = tarea_digitos(X, t, a, b_dig, rng)
         pct = f"{100 * r['acierto_prueba']:.0f} %"
         # Las correcciones son la otra mitad de la historia: el capítulo las compara con las
         # cien mil del o exclusivo, y un número que el libro compara tiene que estar impreso.
-        print(f"{f'distinguir un {a} de un {b_dig}':<24}{r['ejemplos_entrenamiento']:>10}"
-              f"{pct:>9}{('sí' if r['converge'] else 'NO'):>10}"
-              f"{(miles(r['correcciones']) if r['converge'] else '-'):>14}")
+        editorial.append([f"distinguir un {a} de un {b_dig}", str(r["ejemplos_entrenamiento"]),
+                          pct, miles(r["correcciones"]) if r["converge"] else "no se queda quieto"])
         filas.append(["digitos", f"{a}v{b_dig}", r["ejemplos_entrenamiento"],
                       f"{r['acierto_prueba']:.4f}", r["converge"]])
+    convergen = sum(1 for f in filas if f[0] == "digitos" and f[4])
     # La clave de las columnas, debajo de la tabla y impresa por el programa (regla 9). Un
     # rótulo que dice lo que mide —«ejemplos para aprender»— no cabe en una columna de una
     # caja de 68 caracteres, y apilarlo en dos renglones no se puede verificar: al apilar por
     # columnas, los renglones entrelazan palabras de columnas distintas. Así que el rótulo va
     # corto arriba y lo que significa va entero aquí abajo, en líneas que el libro copia como
     # copia cualquier otra. Antes esto lo escribía el libro por su cuenta: fallo 4.32.
-    for l in comprobar_ancho([
-            "«ejemplos»: dibujos que se le enseñaron para aprender.",
-            "«acierto»: sobre dibujos que NO vio mientras aprendía.",
-            "«correcciones»: cuántas veces hubo que retocarle los pesos."]):
+    for l in tabla_editorial(
+            "Dos dígitos, con la regla de Rosenblatt",
+            ["tarea", "ejemplos", "acierto", "correcciones"], editorial, "iddd",
+            ["Ejemplos: dibujos que se le enseñaron para aprender.",
+             "Acierto: sobre dibujos que no vio mientras aprendía.",
+             "Correcciones: cuántas veces hubo que retocarle los pesos.",
+             f"Deja de corregirse solo en {convergen} de las {len(PAREJAS_DIGITOS)} tareas."]):
         print(l)
 
     print("\n--- 2. LAS DIECISÉIS MANERAS DE MONTAR LA LÁMPARA ---")
@@ -333,11 +339,17 @@ def main():
         print(linea)
     entrenadas = len(aprendidas) - len(constantes)
     print()
-    # Partido en dos líneas aquí, y no en el libro: una línea de 84 caracteres no cabe en
-    # la página, y partirla en el libro sería retocar salida de máquina (regla 6).
-    print(f"resuelve {len(aprendidas)} de 16: {entrenadas} entrenando y "
-          f"{len(constantes)} donde")
-    print(f"no hay nada que aprender. Con {len(fallidas)} no puede.")
+    # L24 (9 de octubre de 2026): el resumen, en tabla editorial; antes, dos renglones que el
+    # capítulo copiaba en una cita.
+    assert len(aprendidas) + len(fallidas) == 16, "los montajes no suman dieciséis"
+    for l in tabla_editorial(
+            "Lo que hace el perceptrón con los dieciséis montajes",
+            ["", "montajes"],
+            [["los aprende entrenando", str(entrenadas)],
+             ["los resuelve sin nada que aprender", str(len(constantes))],
+             ["no puede", str(len(fallidas))],
+             ["**en total**", "**16**"]], "id"):
+        print(l)
     filas.append(["reglas_dos", "aprendidas", len(aprendidas), "", ""])
     filas.append(["reglas_dos", "entrenadas", entrenadas, "", ""])
     filas.append(["reglas_dos", "constantes", len(constantes), "", ""])
@@ -349,16 +361,16 @@ def main():
     # Ancho fijo para las etiquetas: si cada una lleva el suyo, los números quedan en
     # tres columnas distintas y las dos cifras que hay que comparar dejan de estar una
     # encima de la otra, que es lo único que este bloque tiene que enseñar.
-    for etiqueta, valor in (
-            # «entrenando» aquí era falso: este 14 es todo lo que el perceptrón resuelve,
-            # constantes incluidas. Entrenando aprende 12, y así lo dice el bloque de arriba.
-            # Dos bloques de máquina literales llamando a dos cuentas distintas con la misma
-            # palabra: ningún verificador puede cazar eso, porque los dos son literales.
-            ("montajes que el perceptrón resuelve", len(aprendidas)),
-            ("montajes que una sola raya puede separar", len(separables)),
-            ("¿son exactamente los mismos?", "sí" if iguales else "NO")):
-        rotulo = etiqueta if etiqueta.endswith("?") else etiqueta + ":"
-        print(f"{rotulo:<48}{valor:>3}")
+    # «entrenando» aquí era falso: este 14 es todo lo que el perceptrón resuelve, constantes
+    # incluidas. Entrenando aprende 12, y así lo dice la tabla de arriba. (L24, 9 de octubre de
+    # 2026: en tabla editorial.)
+    for l in tabla_editorial(
+            "Lo que resuelve el perceptrón y lo que separa una raya",
+            ["", "montajes"],
+            [["los que el perceptrón resuelve", str(len(aprendidas))],
+             ["los que una sola raya puede separar", str(len(separables))],
+             ["¿son exactamente los mismos?", "sí" if iguales else "no"]], "id"):
+        print(l)
     filas.append(["puente", "aprendidas", len(aprendidas), "", ""])
     filas.append(["puente", "separables", len(separables), "", ""])
     filas.append(["puente", "coinciden", iguales, "", ""])

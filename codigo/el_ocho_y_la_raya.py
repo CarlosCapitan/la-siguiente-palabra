@@ -50,8 +50,8 @@ from pathlib import Path
 import numpy as np
 from scipy.optimize import linprog
 
-from es_un_cuatro import reparto
-from formato import ANCHO_CAJA, comprobar_ancho, miles
+from es_un_cuatro import TITULO_DE_LOS_DIEZ, reparto
+from formato import ANCHO_CAJA, comprobar_ancho, miles, tabla_editorial, leer_tablas
 from perceptron import SEMILLA, cargar_digitos
 
 AQUI = Path(__file__).resolve().parent
@@ -82,9 +82,15 @@ def quien_se_queda_quieto(ruta):
     """De la tabla del capítulo (es_un_cuatro.txt): para cada dígito, si el perceptrón se quedó
     quieto. Se lee la salida, no se vuelve a entrenar: lo que se compara es lo que el libro dice."""
     texto = Path(ruta).read_text(encoding="utf-8")
+    tablas = leer_tablas(texto)
+    assert TITULO_DE_LOS_DIEZ in tablas, f"se esperaba la tabla «{TITULO_DE_LOS_DIEZ}» en {ruta}"
+    rotulos, filas, _ = tablas[TITULO_DE_LOS_DIEZ]
+    assert rotulos[0] == "la pregunta" and rotulos[-1] == "deja de corregirse", rotulos
     quietos = {}
-    for d, s in re.findall(r"¿es un (\d)\?\s+[\d,]+ %\s+(sí|NO)", texto):
-        quietos[int(d)] = (s == "sí")
+    for f in filas:
+        d = re.fullmatch(r"¿es un (\d)\?", f[0])
+        assert d and f[-1] in ("sí", "no"), f"fila inesperada en {ruta}: {f}"
+        quietos[int(d.group(1))] = (f[-1] == "sí")
     assert sorted(quietos) == list(range(10)), \
         f"se esperaban las diez filas de la tabla en {ruta}; se encontraron {sorted(quietos)}"
     return quietos
@@ -162,17 +168,21 @@ def main():
         "La respuesta no depende de la máquina: es una cuenta exacta.",
         f"Dibujos: los {miles(len(tr))} con los que aprende el comité del capítulo 2.",
         "",
-        "¿EXISTE UNA RAYA QUE DEJE CADA DÍGITO A UN LADO Y LOS DEMÁS AL OTRO?",
-        "",
-        f"  {'la pregunta':<16}{'¿existe la raya?':>18}{'¿se queda quieto?':>22}",
-        f"  {'-----------':<16}{'----------------':>18}{'-----------------':>22}",
     ]
+    n_cab = len(L)
+    # L24 (9 de octubre de 2026): las dos tablas que enseña el capítulo, en tablas editoriales.
+    # La lista de dibujos de debajo se queda como estaba: la lee figura_ochos_sin_raya.py.
+    raya_de = {}
     for d in range(10):
-        raya = existe_la_raya(Xs, np.where(t[tr] == d, 1, -1))
-        L.append(f"  {'¿es un ' + str(d) + '?':<16}{'sí' if raya else 'NO':>18}"
-                 f"{'sí' if quietos[d] else 'NO':>22}")
-    L += ["", "  «¿se queda quieto?» es la columna de la tabla del capítulo",
-          "  (datos/salidas/es_un_cuatro.txt)."]
+        raya_de[d] = existe_la_raya(Xs, np.where(t[tr] == d, 1, -1))
+    editoriales = tabla_editorial(
+        "¿Existe una raya que deje cada dígito a un lado y los demás al otro?",
+        ["la pregunta", "¿existe la raya?", "¿se queda quieto?"],
+        [[f"¿es un {d}?", "sí" if raya_de[d] else "**no**", "sí" if quietos[d] else "**no**"]
+         for d in range(10)],
+        "icc",
+        ["¿Se queda quieto?: si el perceptrón deja de corregirse solo con esa pregunta, como en "
+         "la tabla de los diez dígitos."]) + [""]
 
     assert ESTORBAN, "ESTORBAN está vacío: falta pegar el resultado de la búsqueda"
     y8 = np.where(t[tr] == DIGITO, 1, -1)
@@ -180,14 +190,16 @@ def main():
     assert dentro.sum() == len(ESTORBAN), \
         f"se esperaban {len(ESTORBAN)} dibujos de ESTORBAN entre los de aprendizaje; hay {dentro.sum()}"
     sin_ellos = existe_la_raya(Xs[~dentro], y8[~dentro])
+    editoriales += tabla_editorial(
+        "Los dibujos que impiden la raya del ocho",
+        ["los dibujos", "¿existe la raya?"],
+        [[f"con los {miles(len(tr))}", "sí" if existe_la_raya(Xs, y8) else "no"],
+         [f"quitando {len(ESTORBAN)} ochos" if all(int(t[i]) == DIGITO for i in ESTORBAN)
+          else f"quitando {len(ESTORBAN)}", "sí" if sin_ellos else "no"]],
+        "ic")
     L += [
         "",
         "LOS DIBUJOS QUE IMPIDEN LA RAYA DEL OCHO",
-        "",
-        f"  {'con los ' + miles(len(tr)) + ' dibujos:':<30}raya: "
-        f"{'sí' if existe_la_raya(Xs, y8) else 'NO'}",
-        f"  {'quitando estos ' + str(len(ESTORBAN)) + ':':<30}raya: "
-        f"{'sí' if sin_ellos else 'NO'}",
         "",
         f"  {'dibujo':>8}   {'qué es':<10}",
         f"  {'------':>8}   {'------':<10}",
@@ -201,7 +213,11 @@ def main():
               f"{'sí' if not sobran else 'NO'}"]
     assert sin_ellos, "sin los dibujos de ESTORBAN la raya tendría que existir"
     assert not sobran, f"sobran dibujos en ESTORBAN: {sobran}"
-    for l in comprobar_ancho([l.rstrip() for l in L], ANCHO_CAJA):
+    for l in comprobar_ancho([l.rstrip() for l in L[:n_cab]], ANCHO_CAJA):
+        print(l)
+    for l in editoriales:
+        print(l)
+    for l in comprobar_ancho([l.rstrip() for l in L[n_cab:]], ANCHO_CAJA):
         print(l)
 
 

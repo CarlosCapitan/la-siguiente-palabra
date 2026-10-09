@@ -1,37 +1,40 @@
-Máquina: x86_64, Linux 6.18.44-fc-v33.
-Medido el 2026-09-18. Semilla: 20260914.
+Máquina: arm64, Darwin 25.6.0.
+Medido el 2026-10-09. Semilla: 20260914.
 Dígitos manuscritos: 1.797 imágenes de 8 por 8 puntos.
 
 --- 1. LA PREGUNTA CON LA QUE ABRE EL CAPÍTULO ---
-¿ES UN CUATRO? UN SOLO COMITÉ CONTRA LOS OTROS NUEVE DÍGITOS
+::: tabla
+¿Es un cuatro? Un solo comité contra los otros nueve dígitos
 
-dibujos que se le enseñan para aprender        1.257
-de ésos, los que sí son un cuatro                131
-dibujos que no ve nunca, para evaluarlo          540
-
-acierta sobre los dibujos que no vio          99,6 %
-de ésos, sobre los que sí son un cuatro      100,0 %
-de ésos, sobre los que no son un cuatro       99,6 %
-
-deja de corregirse solo                           sí
-correcciones hasta quedarse quieto               227
+|  | cuánto |
+|:--|--:|
+| dibujos que se le enseñan para aprender | 1.257 |
+| de ésos, los que sí son un cuatro | 131 |
+| dibujos que no ve nunca, para evaluarlo | 540 |
+| acierta sobre los dibujos que no vio | 99,6 % |
+| de ésos, sobre los que sí son un cuatro | 100,0 % |
+| de ésos, sobre los que no son un cuatro | 99,6 % |
+| deja de corregirse solo | sí |
+| correcciones hasta quedarse quieto | 227 |
+:::
 
 --- 2. LA MISMA PREGUNTA PARA LOS DIEZ DÍGITOS ---
-LA MISMA PREGUNTA PARA CADA UNO DE LOS DIEZ DÍGITOS
+::: tabla
+La misma pregunta para cada uno de los diez dígitos
 
-la pregunta            acierta sobre los       deja de
-                              que no vio    corregirse
-------------------    ------------------  ------------
-¿es un 0?                         99,4 %            sí
-¿es un 1?                         98,0 %            sí
-¿es un 2?                        100,0 %            sí
-¿es un 3?                         97,6 %            sí
-¿es un 4?                         99,6 %            sí
-¿es un 5?                         98,7 %            sí
-¿es un 6?                         99,1 %            sí
-¿es un 7?                         99,1 %            sí
-¿es un 8?                         95,9 %            NO
-¿es un 9?                         96,1 %            sí
+| la pregunta | acierta sobre los que no vio | deja de corregirse |
+|:--|--:|:-:|
+| ¿es un 0? | 99,4 % | sí |
+| ¿es un 1? | 98,0 % | sí |
+| ¿es un 2? | 100,0 % | sí |
+| ¿es un 3? | 97,6 % | sí |
+| ¿es un 4? | 99,6 % | sí |
+| ¿es un 5? | 98,7 % | sí |
+| ¿es un 6? | 99,1 % | sí |
+| ¿es un 7? | 99,1 % | sí |
+| ¿es un 8? | 95,9 % | **no** |
+| ¿es un 9? | 96,1 % | sí |
+:::
 
 dejan de corregirse solos 9 de los diez dígitos.
 

@@ -69,9 +69,15 @@ Doble de texto, casi cuatro veces más casillas: el cuadrado.
 
     tanda 1: «el», «perro», «mordió», «al», «hombre», a la vez
 
-    palabras    en orden    a la vez
-    --------    --------    --------
-           5           5           1
-          64          64           1
-       1.024       1.024           1
+::: tabla
+Cuántas tandas, una detrás de otra
+
+| palabras | en orden | a la vez |
+|--:|--:|--:|
+| 5 | 5 | 1 |
+| 64 | 64 | 1 |
+| 1.024 | 1.024 | 1 |
+
+En orden: la máquina que lee en orden. A la vez: la que lo mira todo de golpe. Una tanda: las cuentas que se pueden hacer a la vez.
+:::
 

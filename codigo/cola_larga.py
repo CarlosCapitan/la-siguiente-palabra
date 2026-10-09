@@ -31,7 +31,7 @@ import os
 import re
 import sys
 
-from formato import ANCHO_CAJA_CITA, coma, comprobar_ancho, miles
+from formato import coma, miles, tabla_editorial
 
 
 def uno(x):
@@ -61,28 +61,31 @@ def en_puestos(c):
 
 
 def informe(c):
+    """Las palabras por puestos y cuánto bajan de un puesto al siguiente, en tablas editoriales
+    (L24, 9 de octubre de 2026; antes, renglones sangrados que el capítulo 15 copiaba)."""
     total = sum(c.values())
-    print("--- LAS PALABRAS DE LOS TRESCIENTOS LIBROS, POR PUESTOS ---")
-    lineas = [f"palabras en total: {miles(total)}; distintas: {miles(len(c))}",
-              "",
-              f"{'puesto':>9}  {'palabra':<14}{'veces':>12}{'de cada millón':>17}"]
-    for p, w, n in en_puestos(c):
-        lineas.append(f"{miles(p):>9}  {w:<14}{miles(n):>12}{uno(1e6 * n / total):>17}")
     filas = en_puestos(c)
-    lineas += ["", "cada vez que el puesto se multiplica por diez, las veces"]
-    lineas += ["se dividen entre:"]
-    for (p1, _, n1), (p2, _, n2) in zip(filas, filas[1:]):
-        lineas.append(f"  del puesto {miles(p1)} al {miles(p2)}:{'':<{14 - len(miles(p1)) - len(miles(p2))}}"
-                      f"{coma(n1 / n2, 1):>6}")
     solo_una = sum(1 for n in c.values() if n == 1)
-    lineas += ["",
-               "«puesto»: el lugar en la lista, de la más a la menos",
-               "frecuente. «de cada millón»: de cada millón de palabras",
-               "de los libros, cuántas son ésa.",
-               f"palabras que salen una sola vez: {miles(solo_una)}, "
-               f"{coma(100 * solo_una / len(c), 0)} de cada",
-               "cien de las distintas."]
-    for l in comprobar_ancho(["  " + l if l else l for l in lineas], ANCHO_CAJA_CITA):
+    print("--- LAS PALABRAS DE LOS TRESCIENTOS LIBROS, POR PUESTOS ---")
+    print()
+    for l in tabla_editorial(
+            "Las palabras de los trescientos libros, por puestos",
+            ["puesto", "palabra", "veces", "de cada millón"],
+            [[miles(p), w, miles(n), uno(1e6 * n / total)] for p, w, n in filas],
+            "didd",
+            [f"En total, {miles(total)} palabras; distintas, {miles(len(c))}.",
+             "Puesto: el lugar en la lista, de la más a la menos frecuente. De cada millón: de "
+             "cada millón de palabras de los libros, cuántas son ésa.",
+             f"Palabras que salen una sola vez: {miles(solo_una)}, "
+             f"{coma(100 * solo_una / len(c), 0)} de cada cien de las distintas."]):
+        print(l)
+    print()
+    for l in tabla_editorial(
+            "Cada vez que el puesto se multiplica por diez, las veces se dividen entre",
+            ["del puesto", "al puesto", "las veces se dividen entre"],
+            [[miles(p1), miles(p2), coma(n1 / n2, 1)]
+             for (p1, _, n1), (p2, _, n2) in zip(filas, filas[1:])],
+            "ddd"):
         print(l)
 
 

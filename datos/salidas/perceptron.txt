@@ -1,14 +1,24 @@
 Dígitos manuscritos: 1797 imágenes de 8 por 8 puntos.
 
 --- 1. DISTINGUIR DOS DÍGITOS ---
-tarea                     ejemplos  acierto  converge  correcciones
-distinguir un 0 de un 1        251    100 %        sí             6
-distinguir un 1 de un 7        252    100 %        sí            15
-distinguir un 3 de un 5        255    100 %        sí            53
-distinguir un 4 de un 9        252    100 %        sí            36
-«ejemplos»: dibujos que se le enseñaron para aprender.
-«acierto»: sobre dibujos que NO vio mientras aprendía.
-«correcciones»: cuántas veces hubo que retocarle los pesos.
+::: tabla
+Dos dígitos, con la regla de Rosenblatt
+
+| tarea | ejemplos | acierto | correcciones |
+|:--|--:|--:|--:|
+| distinguir un 0 de un 1 | 251 | 100 % | 6 |
+| distinguir un 1 de un 7 | 252 | 100 % | 15 |
+| distinguir un 3 de un 5 | 255 | 100 % | 53 |
+| distinguir un 4 de un 9 | 252 | 100 % | 36 |
+
+Ejemplos: dibujos que se le enseñaron para aprender.
+
+Acierto: sobre dibujos que no vio mientras aprendía.
+
+Correcciones: cuántas veces hubo que retocarle los pesos.
+
+Deja de corregirse solo en 4 de las 4 tareas.
+:::
 
 --- 2. LAS DIECISÉIS MANERAS DE MONTAR LA LÁMPARA ---
 LAS DIECISÉIS MANERAS DE MONTAR LA LÁMPARA DEL PASILLO
@@ -36,13 +46,27 @@ siempre                                   sí     sí     sí     sí
 
 * con estos dos el perceptrón no puede
 
-resuelve 14 de 16: 12 entrenando y 2 donde
-no hay nada que aprender. Con 2 no puede.
+::: tabla
+Lo que hace el perceptrón con los dieciséis montajes
+
+|  | montajes |
+|:--|--:|
+| los aprende entrenando | 12 |
+| los resuelve sin nada que aprender | 2 |
+| no puede | 2 |
+| **en total** | **16** |
+:::
 
 --- 3. EL PUENTE: LO QUE APRENDE Y LO QUE UNA RAYA SEPARA ---
-montajes que el perceptrón resuelve:             14
-montajes que una sola raya puede separar:        14
-¿son exactamente los mismos?                     sí
+::: tabla
+Lo que resuelve el perceptrón y lo que separa una raya
+
+|  | montajes |
+|:--|--:|
+| los que el perceptrón resuelve | 14 |
+| los que una sola raya puede separar | 14 |
+| ¿son exactamente los mismos? | sí |
+:::
 
 --- 4. EL O EXCLUSIVO ---
 correcciones: 100.000   converge: NO   acierta 3 de las 4 posiciones
