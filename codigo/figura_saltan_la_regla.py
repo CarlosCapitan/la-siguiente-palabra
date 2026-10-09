@@ -51,19 +51,18 @@ NUMEROS = {1: "uno", 2: "dos", 3: "tres", 4: "cuatro", 5: "cinco", 6: "seis", 7:
 
 
 def leer(ruta):
-    """Del bloque 1 de la salida: para cada segmento, (pares apagados, impares encendidos)."""
-    texto = Path(ruta).read_text(encoding="utf-8")
-    assert "1. QUÉ DÍGITOS SE SALTAN LA REGLA" in texto, f"se esperaba el bloque 1 en {ruta}"
-    uno = texto.split("1. QUÉ DÍGITOS SE SALTAN LA REGLA", 1)[1].split("EL DE ABAJO", 1)[0]
-    import re
+    """De la tabla «Qué dígitos se saltan la regla, segmento a segmento»: para cada segmento,
+    (pares apagados, impares encendidos). Desde el 9 de octubre de 2026, con leer_tablas (la
+    salida dejó de imprimir renglones sangrados y este lector se había quedado atrás)."""
+    from formato import leer_tablas
+    titulo = "Qué dígitos se saltan la regla, segmento a segmento"
+    T = leer_tablas(Path(ruta).read_text(encoding="utf-8"))
+    assert titulo in T, f"se esperaba la tabla «{titulo}» en {ruta}"
+    rot, filas, _ = T[titulo]
+    assert rot == ["el segmento", "pares apagados", "impares encendidos", "cuántos"], rot
+    lee = lambda t: [] if t == "ninguno" else [int(x) for x in t.split()]
     saltan = {}
-    for linea in uno.splitlines():
-        if not linea.startswith("el ") or linea.startswith("el segmento"):
-            continue
-        campos = re.split(r"\s{2,}", linea.strip())
-        assert len(campos) == 4, f"se esperaban cuatro columnas; hay {campos} en «{linea}»"
-        nombre, pa, ie, n = campos
-        lee = lambda t: [] if t == "ninguno" else [int(x) for x in t.split()]
+    for nombre, pa, ie, n in filas:
         saltan[nombre] = (lee(pa), lee(ie))
         assert len(saltan[nombre][0]) + len(saltan[nombre][1]) == int(n), \
             f"«{nombre}»: la columna «cuántos» dice {n} y las listas suman otra cosa"

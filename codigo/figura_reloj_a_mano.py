@@ -59,26 +59,30 @@ def _numero(s):
 
 
 def leer(ruta):
-    """Pesos, listón, cuántos dígitos se saltan la regla con cada segmento, y los totales."""
-    texto = Path(ruta).read_text(encoding="utf-8")
-    assert "3. TRES PESOS PUESTOS A MANO" in texto, f"se esperaba la sección 3 en {ruta}"
-    assert "1. QUÉ DÍGITOS SE SALTAN LA REGLA" in texto, f"se esperaba la sección 1 en {ruta}"
-    uno = texto.split("1. QUÉ DÍGITOS SE SALTAN LA REGLA", 1)[1].split("EL DE ABAJO", 1)[0]
-    solos = {m.group(1): int(m.group(2))
-             for m in re.finditer(r"^(el (?:\S+ )*?\S+)\s{2,}.*?(\d+)$", uno, re.M)}
+    """Pesos, listón, cuántos dígitos se saltan la regla con cada segmento, y los totales.
+    Desde el 9 de octubre de 2026, de las tablas editoriales de la salida, por su título (la
+    salida dejó de imprimir renglones sangrados y este lector se había quedado atrás)."""
+    from formato import leer_tablas
+    T = leer_tablas(Path(ruta).read_text(encoding="utf-8"))
+    for t in ("Qué dígitos se saltan la regla, segmento a segmento", "Tres pesos puestos a mano",
+              "La cuenta de los diez dígitos"):
+        assert t in T, f"se esperaba la tabla «{t}» en {ruta}"
+    rot, filas, _ = T["Qué dígitos se saltan la regla, segmento a segmento"]
+    assert rot[0] == "el segmento" and rot[-1] == "cuántos", rot
+    solos = {f[0]: int(f[-1]) for f in filas}
     assert sorted(solos) == sorted(SEGMENTOS), f"se esperaban los siete segmentos; hay {sorted(solos)}"
-    tres = texto.split("3. TRES PESOS PUESTOS A MANO", 1)[1]
-    cabeza = tres.split("los otros cuatro", 1)[0]
-    pesos = {n.strip(): int(v) for n, v in re.findall(r"^(el [^\n]*?)\s+([+-]\d+)$", cabeza, re.M)}
-    assert pesos, f"se esperaban los pesos en la sección 3 de {ruta}"
-    m = re.search(r"el total tiene que pasar de ([\d,]+)", tres)
+    rot, filas, notas = T["Tres pesos puestos a mano"]
+    pesos = {f[0]: int(f[1]) for f in filas if f[0].startswith("el ")}
+    assert pesos, f"se esperaban los pesos en la tabla de los tres pesos de {ruta}"
+    m = re.search(r"el total tiene que pasar de ([\d,]+)", " ".join(notas))
     assert m, f"se esperaba el listón en {ruta}"
     liston = _numero(m.group(1))
-    filas = re.findall(r"^(\d)\s+\S+\s+\S+\s+\S+\s+(\S+)\s+(par|impar)$", tres, re.M)
-    assert [int(d) for d, _, _ in filas] == list(range(10)), \
-        f"se esperaban los diez dígitos en la cuenta de {ruta}; hay {[d for d, _, _ in filas]}"
-    totales = [int(_numero(t)) for _, t, _ in filas]
-    dice = [s == "par" for _, _, s in filas]
+    rot, filas, _ = T["La cuenta de los diez dígitos"]
+    assert rot[0] == "dígito" and rot[-2:] == ["total", "dice"], rot
+    assert [int(f[0]) for f in filas] == list(range(10)), \
+        f"se esperaban los diez dígitos en la cuenta de {ruta}; hay {[f[0] for f in filas]}"
+    totales = [int(_numero(f[-2])) for f in filas]
+    dice = [f[-1] == "par" for f in filas]
     return {"pesos": pesos, "liston": liston, "totales": totales, "dice": dice, "solos": solos}
 
 
