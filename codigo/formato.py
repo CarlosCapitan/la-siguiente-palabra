@@ -176,13 +176,24 @@ def muestra_editorial(titulo, lineas, notas=()):
 
 def leer_tablas(texto):
     """Las tablas editoriales de una salida, para los programas que dibujan con sus números:
-    {título: (rótulos, filas, notas)}. Las celdas, sin las ** de la negrita. Un título repetido
-    revienta: sería ambiguo de cuál se habla."""
+    {título: (rótulos, filas, notas)}. Las celdas, sin las ** de la negrita. Una muestra sale
+    como (None, sus renglones sin la sangría, notas). Un título repetido revienta: sería ambiguo
+    de cuál se habla."""
     L = texto.split("\n")
     out = {}
     i = 0
     while i < len(L):
-        if L[i] == "::: tabla":
+        if L[i] == "::: muestra":
+            titulo = L[i + 1]
+            j = i + 2
+            while L[j] != ":::":
+                j += 1
+            cuerpo = L[i + 2:j]
+            assert titulo not in out, f"Se esperaba un título distinto por tabla; «{titulo}» se repite"
+            out[titulo] = (None, [l[4:] for l in cuerpo if l.startswith("    ")],
+                           [l for l in cuerpo if l.strip() and not l.startswith("    ")])
+            i = j
+        elif L[i] == "::: tabla":
             titulo = L[i + 1]
             j = i + 2
             while L[j] != ":::":

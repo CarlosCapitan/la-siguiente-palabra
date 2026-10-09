@@ -31,20 +31,19 @@ from pathlib import Path
 
 from matplotlib.patches import FancyArrow, FancyBboxPatch
 
+from formato import leer_tablas
 from infografia import COLOR, GRIS, Lienzo
 
 AQUI = Path(__file__).resolve().parent
 
 
 def leer(ruta):
-    texto = Path(ruta).read_text(encoding="utf-8")
-    assert "--- 1. UNA PRUEBA, ESCRITA ENTERA ---" in texto, f"se esperaba el bloque 1 en {ruta}"
-    b = texto.split("--- 1. UNA PRUEBA, ESCRITA ENTERA ---", 1)[1].split("\n--- ", 1)[0]
-    pruebas = re.findall(r"se le enseña:\s+(\S)\n\s+luego la paja:\n((?:\s+[\d ]+\n)+)"
-                         r"\s+pregunta:.*\n\s+respuesta buscada: (\S)", b)
+    """La prueba, de sus tablas editoriales (L24, 9 de octubre)."""
+    tablas = leer_tablas(Path(ruta).read_text(encoding="utf-8"))
+    pruebas = [t for t in tablas if t.startswith("Una prueba, con ")]
     assert len(pruebas) >= PRUEBA, "no se encontró la prueba en el bloque 1"
-    primero, paja, respuesta = pruebas[PRUEBA - 1]
-    return [primero] + paja.split(), respuesta
+    filas = dict((f[0], f[1]) for f in tablas[pruebas[PRUEBA - 1]][1])
+    return [filas["se le enseña"]] + filas["luego, la paja"].split(), filas["respuesta buscada"]
 
 
 def dibujar(simbolos, respuesta, paleta, ruta):
