@@ -6,7 +6,7 @@
 SELFTEST: las tres pruebas pasan.
 
 ########## capítulo 3: el comité real, por dentro ##########
-máquina: Linux aarch64. Medido el 2026-09-28.
+máquina: Linux aarch64. Medido el 2026-10-09.
 La pregunta: ¿es un 4 o un 9? Aprende con 252 dibujos
 y acierta 100,0 % de los que no vio.
 Todo en enteros: tinta × 16, pesos × 32, listón × 512; decide igual.
@@ -39,29 +39,51 @@ Todo en enteros: tinta × 16, pesos × 32, listón × 512; decide igual.
 
 3. LA CUENTA DEL 4: TINTA POR PESO, PUNTO A PUNTO
 
-  fila 6, columna 4    16 de tinta por  150 de peso dan  2.400
-  fila 4, columna 6     9 de tinta por  -90 de peso dan   -810
-  fila 2, columna 6     0 de tinta por -176 de peso dan      0
+::: tabla
+Tres puntos, para ver cómo va
 
-  punto                tinta    peso    aporta
-  -----                -----    ----    ------
-  fila 6, columna 4       16     150     2.400
-  fila 5, columna 3       16     128     2.048
-  fila 6, columna 5       13     116     1.508
-  fila 6, columna 3       15     100     1.500
-  fila 3, columna 4       13      44       572
-  fila 5, columna 6       16     -20      -320
-  fila 1, columna 5       11     -40      -440
-  fila 2, columna 5        8     -72      -576
-  fila 7, columna 6       10     -70      -700
-  fila 4, columna 6        9     -90      -810
-  los otros 54 puntos                    2.202
-                                        ------
-  total del 4                            7.384
-  listón                                  -512
-  ¿pasa del listón?                         sí
+| punto | tinta | peso | aporta |
+|:--|--:|--:|--:|
+| fila 6, columna 4 | 16 | 150 | 2.400 |
+| fila 4, columna 6 | 9 | -90 | -810 |
+| fila 2, columna 6 | 0 | -176 | 0 |
 
-  un 9, con la misma cuenta: total -5.586; ¿pasa del listón? no
+Aporta: la tinta por el peso. Todo multiplicado para que salga entero: tinta por 16, pesos por 32.
+:::
+
+::: tabla
+La cuenta del 4, punto a punto
+
+| punto | tinta | peso | aporta |
+|:--|--:|--:|--:|
+| fila 6, columna 4 | 16 | 150 | 2.400 |
+| fila 5, columna 3 | 16 | 128 | 2.048 |
+| fila 6, columna 5 | 13 | 116 | 1.508 |
+| fila 6, columna 3 | 15 | 100 | 1.500 |
+| fila 3, columna 4 | 13 | 44 | 572 |
+| fila 5, columna 6 | 16 | -20 | -320 |
+| fila 1, columna 5 | 11 | -40 | -440 |
+| fila 2, columna 5 | 8 | -72 | -576 |
+| fila 7, columna 6 | 10 | -70 | -700 |
+| fila 4, columna 6 | 9 | -90 | -810 |
+| los otros 54 puntos |  |  | 2.202 |
+| **total del 4** |  |  | **7.384** |
+
+Los 5 puntos que más suman, los 5 que más restan y lo que suman juntos todos los demás. Aporta: la tinta por el peso.
+
+El listón es -512: dice «es un 4» si el total pasa de ahí.
+:::
+
+::: tabla
+El 4 y el 9, contra el listón
+
+| dibujo | total | listón | ¿pasa del listón? |
+|:--|--:|--:|:-:|
+| un 4 | 7.384 | -512 | sí |
+| un 9 | -5.586 | -512 | no |
+
+La misma cuenta, tinta por peso en los 64 puntos, sumada.
+:::
 
 4. EL 4 MEDIO, EL 9 MEDIO Y SU DIFERENCIA (tinta media, redondeada)
 
@@ -98,8 +120,16 @@ Todo en enteros: tinta × 16, pesos × 32, listón × 512; decide igual.
    7     0   0  -3   3   8  -6  -5   0
    8     0   0  -5  -4  -1  -7  -2   0
 
-  cuánto se parecen los pesos a cada cosa (de −1 a 1; 1, iguales):
-    al 4 medio                0,42
-    a la diferencia           0,86
-  puntos donde peso y diferencia empujan al mismo lado: 39 de 43
-  (de los que no valen cero ni el uno ni la otra)
+::: tabla
+Cuánto se parecen los pesos a cada cosa
+
+| los pesos, comparados con | cuánto se parecen |
+|:--|--:|
+| el 4 medio | 0,42 |
+| la diferencia | 0,86 |
+| puntos donde peso y diferencia empujan al mismo lado | 39 de 43 |
+
+Cuánto se parecen: de −1 a 1; 1 quiere decir iguales salvo el tamaño de los números, y 0, que no tienen nada que ver.
+
+Mismo lado: se cuentan solo los puntos donde ni el peso ni la diferencia valen cero.
+:::

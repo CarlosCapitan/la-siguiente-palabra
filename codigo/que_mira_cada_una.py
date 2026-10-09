@@ -68,7 +68,7 @@ import argparse
 import csv
 import sys
 
-from formato import comprobar_ancho, pct, coma, ANCHO_CAJA_CITA
+from formato import coma, pct, tabla_editorial
 import numpy as np
 
 from perceptron import cargar_digitos
@@ -167,61 +167,56 @@ def media_de_varias(funcion, semilla=SEMILLA):
     return float(np.mean(a)), float(np.min(a)), float(np.max(a))
 
 
+EN_LETRA = {8: "ocho"}   # el libro escribe «ocho comités», con letra
+
+
+def frase(titulo):
+    """«¿ES PAR ESTE DÍGITO…?» -> «¿Es par este dígito…?»: los títulos de las tablas de libro van
+    en minúscula con la primera letra en mayúscula (el filtro los pone en versalitas)."""
+    t = titulo.lower()
+    k = next(i for i, c in enumerate(t) if c.isalpha())
+    return t[:k] + t[k].upper() + t[k + 1:]
+
+
+def nota_media():
+    return (f"De cada 100 dígitos que nunca había visto, cuántos acierta. Media de {REPETICIONES} "
+            f"entrenamientos desde cero, con {REPETICIONES} semillas distintas, las mismas en "
+            f"todas las filas; al lado, el peor y el mejor de los {REPETICIONES}.")
+
+
 def imprimir(m, aciertos, parecido, sola, con_capa):
-    """Las tablas que cita el capítulo 3.
+    """Las tablas que cita el capítulo 3. Desde el 9 oct 2026, tablas de libro (formato.py;
+    REGLAS 6 ter): cada cifra en su columna, con su rótulo."""
+    def media_peor_mejor(t):
+        return [pct(t[0]), pct(t[1]), pct(t[2])]
 
-    Cada tabla lleva su rótulo y dice de qué son sus números. Antes iban las tres
-    seguidas, con la misma columna de porcentajes para tres cosas distintas: un acierto,
-    otro acierto y un parecido. Puestos en la misma columna, parecían lo mismo. Un
-    porcentaje sin rótulo no es un dato: es una cifra."""
-    ANCHO = 34
-    lineas = []
-
-    def fila(etiqueta, valor, cola=""):
-        lineas.append(f"{etiqueta:<{ANCHO}}{valor:>7}{cola}".rstrip())
-
-    lineas.append(TITULO_1)
-    lineas.append(SUBTITULO_1A)
-    lineas.append(SUBTITULO_1B.format(repeticiones=REPETICIONES))
-    lineas.append(SUBTITULO_1C.format(repeticiones=REPETICIONES))
-    lineas.append("")
-    for etiqueta, (media, peor, mejor) in (("un solo comité, sin capa", sola),
-                                           ("una capa de ocho comités en medio", con_capa)):
-        fila(etiqueta, pct(media), f"   (de {pct(peor)} a {pct(mejor)})")
-    lineas.append("")
-    lineas.append("")
-
-    lineas.append(TITULO_2)
-    lineas.append("")
-    for j, a in enumerate(aciertos, 1):
-        fila(f"el comité número {j}", pct(a))
-    lineas.append(f"{'-' * ANCHO}{'-' * 7}")
-    fila("el mejor de los ocho", pct(aciertos.max()))
-    lineas.append("")
-    lineas.append("")
-
-    lineas.append(TITULO_3)
-    lineas.append(SUBTITULO_3)
-    lineas.append("")
-    fila("los dos que más se parecen", pct(parecido))
-    lineas.append("")
-    lineas.append("")
-
-    lineas.append(TITULO_4)
-    lineas.append(SUBTITULO_4A.format(repeticiones=REPETICIONES))
-    lineas.append(SUBTITULO_4B.format(repeticiones=REPETICIONES))
-    lineas.append("")
-    fila("ninguno, un solo comité", pct(sola[0]),
-         f"   (de {coma(100 * sola[1])} a {coma(100 * sola[2])})")
+    T = []
+    T.append(tabla_editorial(
+        frase(TITULO_1), ["", "media", "el peor", "el mejor"],
+        [["un solo comité, sin capa"] + media_peor_mejor(sola),
+         [f"una capa de {EN_LETRA.get(EN_MEDIO, EN_MEDIO)} comités en medio"]
+         + media_peor_mejor(con_capa)], "iddd",
+        [nota_media()]))
+    filas = [[f"el comité número {j}", pct(a)] for j, a in enumerate(aciertos, 1)]
+    filas.append(["**el mejor de los ocho**", f"**{pct(aciertos.max())}**"])
+    T.append(tabla_editorial(
+        frase(TITULO_2), ["", "acierta"], filas, "id",
+        ["De cada 100 dígitos que nunca había visto, cuántos acierta cada comité de en medio, "
+         "él solo, con la lectura que mejor le va."]))
+    T.append(tabla_editorial(
+        frase(TITULO_3), ["", "parecido"], [["los dos que más se parecen", pct(parecido)]],
+        "id", ["0 % serían ocho preguntas sin nada en común; 100 %, ocho copias."]))
+    filas = [["ninguno, un solo comité"] + media_peor_mejor(sola)]
     for n, med, lo, hi in barrido_de_anchura():
-        # «1 comité» y «2 comités»: el plural se dice bien o no se dice. Una tabla que
-        # pone «1 comités» delata que el rótulo se escribió pensando solo en el número.
-        cuantos = f"{n:>2} comité" + ("s" if n > 1 else "") + " en medio"
-        fila(cuantos, pct(med), f"   (de {coma(100 * lo)} a {coma(100 * hi)})")
-
-    comprobar_ancho(lineas)
-    for l in lineas:
-        print(l)
+        # «1 comité» y «2 comités»: el plural se dice bien o no se dice.
+        filas.append([f"{n} comité" + ("s" if n > 1 else "") + " en medio",
+                      pct(med), pct(lo), pct(hi)])
+    T.append(tabla_editorial(
+        frase(TITULO_4), ["comités en medio", "media", "el peor", "el mejor"],
+        filas, "iddd", [nota_media()]))
+    for t in T:
+        print("\n".join(t))
+        print()
 
 
 def parecido_con_signo(red):
@@ -239,29 +234,38 @@ def parecido_con_signo(red):
 
 
 def imprimir_l24(m, sola, con_capa):
-    """Los tres bloques del repaso L24 del capítulo 3 (hallazgos A01, A02 y A03)."""
-    lineas = [TITULO_5, SUBTITULO_5, ""]
+    """Los tres bloques del repaso L24 del capítulo 3 (hallazgos A01, A02 y A03), en tablas de
+    libro desde el 9 oct 2026."""
     (sm, sp, sb), (cm, cp, cb) = sola, con_capa
-    for rotulo, de, a in (("las dos medias de 5", sm, cm),
-                          ("la mejor sin capa y la peor con capa", sb, cp),
-                          ("la peor sin capa y la mejor con capa", sp, cb)):
-        lineas.append(f"{rotulo:<39}{coma(100 * de)} a {coma(100 * a)}{coma(100 * (a - de)):>7}")
-    lineas += ["", "", TITULO_6, SUBTITULO_6, "",
-               f"{'':<14}{'si pasar de la':>16}{'si pasar de la':>19}{'se le':>9}",
-               f"{'':<14}{'mitad es «par»':>16}{'mitad es «impar»':>19}{'cuenta':>9}"]
+    filas = [[rotulo, coma(100 * de), coma(100 * a), coma(100 * (a - de))]
+             for rotulo, de, a in (("las dos medias de 5", sm, cm),
+                                   ("la mejor sin capa y la peor con capa", sb, cp),
+                                   ("la peor sin capa y la mejor con capa", sp, cb))]
+    T = [tabla_editorial(
+        frase(TITULO_5), ["qué dos se comparan", "sin capa", "con capa", "mejora"], filas,
+        "iddd", ["De cada 100 dígitos que nunca había visto, cuántos acierta. Mejora: cuántos "
+                 "más acierta con capa, en puntos."])]
+    filas = []
     for j in range(m["medio"].shape[1]):
         a = float(((m["medio"][:, j] > UMBRAL) == (m["yte"] > UMBRAL)).mean())
-        lineas.append(f"{'el comité ' + str(j + 1):<14}{pct(a):>16}{pct(1 - a):>19}{pct(max(a, 1 - a)):>9}")
+        filas.append([f"el comité {j + 1}", pct(a), pct(1 - a), pct(max(a, 1 - a))])
+    T.append(tabla_editorial(
+        frase(TITULO_6),
+        ["", "si pasar de la mitad es: «par»", "si pasar de la mitad es: «impar»", "se le cuenta"],
+        filas, "iddd",
+        ["De cada 100 dígitos que nunca había visto, cuántos acierta. Se le cuenta: la lectura "
+         "que mejor le va."]))
     a, b, r = parecido_con_signo(m["red"])
-    lineas += ["", "", TITULO_7] + SUBTITULO_7 + ["",
-               "los dos que más se parecen, contando como parecido también",
-               "que uno sea el negativo del otro:",
-               f"{'el comité ' + str(a + 1) + ' y el comité ' + str(b + 1):<41}{coma(r, 2):>7}"]
-    comprobar_ancho(lineas, ANCHO_CAJA_CITA)
-    print()
-    print()
-    for l in lineas:
-        print(l)
+    T.append(tabla_editorial(
+        frase(TITULO_7),
+        ["los dos que más se parecen", "parecido"],
+        [[f"el comité {a + 1} y el comité {b + 1}", coma(r, 2)]], "id",
+        ["De −1 a 1: 1, iguales salvo el tamaño de los números; 0, nada que ver; −1, uno es el "
+         "negativo del otro.",
+         "Se cuenta como parecido también que uno sea el negativo del otro."]))
+    for t in T:
+        print("\n".join(t))
+        print()
     return a, b, r
 
 

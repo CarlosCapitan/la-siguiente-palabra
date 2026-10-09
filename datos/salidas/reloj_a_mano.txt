@@ -9,63 +9,80 @@ SELFTEST: las tres pruebas pasan.
 Pesos puestos a mano, no entrenados. La cuenta no depende de la máquina.
 
 1. QUÉ DÍGITOS SE SALTAN LA REGLA, SEGMENTO A SEGMENTO
-   (la regla: encendido en los cinco pares
-   y apagado en los cinco impares)
 
-                        pares       impares
-el segmento             apagados    encendidos     cuántos
-el de arriba            4           3 5 7 9              5
-el de arriba izquierda  2           5 9                  3
-el de arriba derecha    6           1 3 7 9              5
-el del medio            0           3 5 9                4
-el de abajo izquierda   4           ninguno              1
-el de abajo derecha     2           1 3 5 7 9            6
-el de abajo             4           3 5 9                4
+::: tabla
+Qué dígitos se saltan la regla, segmento a segmento
 
-EL DE ABAJO IZQUIERDA, DÍGITO A DÍGITO
+| el segmento | pares apagados | impares encendidos | cuántos |
+|:--|:--|:--|--:|
+| el de arriba | 4 | 3 5 7 9 | 5 |
+| el de arriba izquierda | 2 | 5 9 | 3 |
+| el de arriba derecha | 6 | 1 3 7 9 | 5 |
+| el del medio | 0 | 3 5 9 | 4 |
+| el de abajo izquierda | 4 | ninguno | 1 |
+| el de abajo derecha | 2 | 1 3 5 7 9 | 6 |
+| el de abajo | 4 | 3 5 9 | 4 |
 
-                           0   1   2   3   4   5   6   7   8   9
-                         par imp par imp par imp par imp par imp
-                          --  --  --  --  --  --  --  --  --  --
-debería estar encendido   sí  no  sí  no  sí  no  sí  no  sí  no
-está encendido            sí  no  sí  no  no  no  sí  no  sí  no
+La regla: encendido en los cinco pares y apagado en los cinco impares. Se la saltan los pares que tienen el segmento apagado y los impares que lo tienen encendido.
+:::
 
-no coinciden: el 4
+::: tabla
+El de abajo izquierda, dígito a dígito
 
+|  | pares: 0 | pares: 2 | pares: 4 | pares: 6 | pares: 8 | impares: 1 | impares: 3 | impares: 5 | impares: 7 | impares: 9 |
+|:--|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| debería estar encendido | sí | sí | sí | sí | sí | no | no | no | no | no |
+| está encendido | sí | sí | no | sí | sí | no | no | no | no | no |
+
+No coinciden: el 4.
+:::
 
 2. LO QUE TIENE EL CUATRO Y NO TIENE NINGÚN OTRO
 
-                           0   1   2   3   4   5   6   7   8   9
-                         par imp par imp par imp par imp par imp
-                          --  --  --  --  --  --  --  --  --  --
-el de arriba izquierda    sí  no  no  no  sí  sí  sí  no  sí  sí
-el de arriba              sí  no  sí  sí  no  sí  sí  sí  sí  sí
+::: tabla
+Lo que tiene el cuatro y no tiene ningún otro
 
-encendido el de arriba izquierda y apagado el de arriba: el 4
+| el segmento | pares: 0 | pares: 2 | pares: 4 | pares: 6 | pares: 8 | impares: 1 | impares: 3 | impares: 5 | impares: 7 | impares: 9 |
+|:--|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| el de arriba izquierda | sí | no | sí | sí | sí | no | no | sí | no | sí |
+| el de arriba | sí | sí | no | sí | sí | no | sí | sí | sí | sí |
 
+Encendido el de arriba izquierda y apagado el de arriba: el 4.
+:::
 
 3. TRES PESOS PUESTOS A MANO, Y LA CUENTA DE LOS DIEZ
 
-el segmento                 puntos que suma
------------------------     ---------------
-el de arriba                             -1
-el de arriba izquierda                   +1
-el de abajo izquierda                    +2
-los otros cuatro                          0
-                                     ------
-para decir «par», el total tiene que pasar de 0,5
+::: tabla
+Tres pesos puestos a mano
 
-                 el de  el de arriba   el de abajo
-dígito          arriba     izquierda     izquierda   total    dice
-0                   -1            +1            +2      +2     par
-1                    0             0             0       0   impar
-2                   -1             0            +2      +1     par
-3                   -1             0             0      -1   impar
-4                    0            +1             0      +1     par
-5                   -1            +1             0       0   impar
-6                   -1            +1            +2      +2     par
-7                   -1             0             0      -1   impar
-8                   -1            +1            +2      +2     par
-9                   -1            +1             0       0   impar
+| el segmento | puntos que suma |
+|:--|--:|
+| el de arriba | -1 |
+| el de arriba izquierda | +1 |
+| el de abajo izquierda | +2 |
+| los otros cuatro | 0 |
 
-los mismos pesos y el mismo listón aciertan 10 de 10
+Para decir «par», el total tiene que pasar de 0,5.
+:::
+
+::: tabla
+La cuenta de los diez dígitos
+
+| dígito | puntos que suma el segmento de: arriba | puntos que suma el segmento de: arriba izquierda | puntos que suma el segmento de: abajo izquierda | total | dice |
+|:-:|--:|--:|--:|--:|:-:|
+| 0 | -1 | +1 | +2 | +2 | par |
+| 1 | 0 | 0 | 0 | 0 | impar |
+| 2 | -1 | 0 | +2 | +1 | par |
+| 3 | -1 | 0 | 0 | -1 | impar |
+| 4 | 0 | +1 | 0 | +1 | par |
+| 5 | -1 | +1 | 0 | 0 | impar |
+| 6 | -1 | +1 | +2 | +2 | par |
+| 7 | -1 | 0 | 0 | -1 | impar |
+| 8 | -1 | +1 | +2 | +2 | par |
+| 9 | -1 | +1 | 0 | 0 | impar |
+
+Un segmento encendido suma sus puntos; uno apagado, nada. El listón, 0,5.
+
+Los mismos pesos y el mismo listón aciertan 10 de 10.
+:::
+

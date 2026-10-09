@@ -48,7 +48,7 @@ from datetime import date
 
 import numpy as np
 
-from formato import ANCHO_CAJA, coma, comprobar_ancho, miles, pct
+from formato import ANCHO_CAJA, coma, comprobar_ancho, miles, pct, tabla_editorial
 from figura_una_neurona import DIGITO_NO, DIGITO_SI, ejemplos, entrenar_el_comite
 from perceptron import entrenar
 
@@ -181,49 +181,68 @@ def main():
     L += ["", "2. LO QUE APRENDIÓ: EL PESO DE CADA PUNTO", ""]
     L += cuadricula(casos, 6)
     L += ["", f"  el listón: {miles(liston)}. Dice «es un {DIGITO_SI}» si el total pasa de ahí.",
-          "", f"3. LA CUENTA DEL {DIGITO_SI}: TINTA POR PESO, PUNTO A PUNTO", ""]
+          "", f"3. LA CUENTA DEL {DIGITO_SI}: TINTA POR PESO, PUNTO A PUNTO"]
+    # Desde el 9 oct 2026 lo que va al libro (la cuenta y el parecido) sale en tablas de libro
+    # (formato.py; REGLAS 6 ter); las cuadrículas, que el libro enseña como figuras, siguen igual.
+    for l in comprobar_ancho([l.rstrip() for l in L], ANCHO_CAJA):
+        print(l)
+    T = []
     aporta = tinta[i_si] * casos
     orden = np.argsort(aporta)
     mas, menos = orden[::-1][0], orden[0]
     sin_tinta = [k for k in np.argsort(-np.abs(casos)) if tinta[i_si][k] == 0][0]
-    for k in (mas, menos, sin_tinta):
-        # L24 (28 sep): «×» y «=» fuera (regla 1, cero notación); la cuenta, con palabras.
-        L.append(f"  {lugar(k):<20} {tinta[i_si][k]:>2} de tinta por {casos[k]:>4} de peso "
-                 f"dan {miles(int(aporta[k])):>6}")
+    T.append(tabla_editorial(
+        "Tres puntos, para ver cómo va", ["punto", "tinta", "peso", "aporta"],
+        [[lugar(k), str(tinta[i_si][k]), miles(int(casos[k])), miles(int(aporta[k]))]
+         for k in (mas, menos, sin_tinta)], "iddd",
+        ["Aporta: la tinta por el peso. Todo multiplicado para que salga entero: tinta por "
+         f"{POR_TINTA}, pesos por {POR_PESO}."]))
     arriba, abajo = orden[::-1][:PUNTOS_EN_TABLA], orden[:PUNTOS_EN_TABLA]
     resto = np.setdiff1d(np.arange(LADO * LADO), np.concatenate([arriba, abajo]))
-    L += ["", f"  {'punto':<20}{'tinta':>6}{'peso':>8}{'aporta':>10}",
-          f"  {'-----':<20}{'-----':>6}{'----':>8}{'------':>10}"]
-    for k in list(arriba) + list(abajo[::-1]):
-        L.append(f"  {lugar(k):<20}{tinta[i_si][k]:>6}{casos[k]:>8}{miles(int(aporta[k])):>10}")
-    L += [f"  {'los otros ' + str(len(resto)) + ' puntos':<34}{miles(int(aporta[resto].sum())):>10}",
-          f"  {'':<34}{'------':>10}",
-          f"  {'total del ' + str(DIGITO_SI):<34}{miles(int(total[i_si])):>10}",
-          f"  {'listón':<34}{miles(liston):>10}",
-          f"  {'¿pasa del listón?':<34}{'sí' if total[i_si] > liston else 'no':>10}",
-          "",
-          f"  un {DIGITO_NO}, con la misma cuenta: total {miles(int(total[i_no]))}; "
-          f"¿pasa del listón? {'sí' if total[i_no] > liston else 'no'}"]
+    filas = [[lugar(k), str(tinta[i_si][k]), miles(int(casos[k])), miles(int(aporta[k]))]
+             for k in list(arriba) + list(abajo[::-1])]
+    filas.append([f"los otros {len(resto)} puntos", "", "", miles(int(aporta[resto].sum()))])
+    filas.append([f"**total del {DIGITO_SI}**", "", "", f"**{miles(int(total[i_si]))}**"])
+    T.append(tabla_editorial(
+        f"La cuenta del {DIGITO_SI}, punto a punto", ["punto", "tinta", "peso", "aporta"], filas,
+        "iddd",
+        [f"Los {PUNTOS_EN_TABLA} puntos que más suman, los {PUNTOS_EN_TABLA} que más restan y lo "
+         "que suman juntos todos los demás. Aporta: la tinta por el peso.",
+         f"El listón es {miles(liston)}: dice «es un {DIGITO_SI}» si el total pasa de ahí."]))
+    T.append(tabla_editorial(
+        f"El {DIGITO_SI} y el {DIGITO_NO}, contra el listón",
+        ["dibujo", "total", "listón", "¿pasa del listón?"],
+        [[f"un {d}", miles(int(total[i])), miles(liston), "sí" if total[i] > liston else "no"]
+         for d, i in ((DIGITO_SI, i_si), (DIGITO_NO, i_no))], "iddc",
+        [f"La misma cuenta, tinta por peso en los {LADO * LADO} puntos, sumada."]))
+    for t in T:
+        print()
+        print("\n".join(t))
 
     media_si = tinta[y == 1].mean(0)
     media_no = tinta[y == -1].mean(0)
     diferencia = media_si - media_no
     iguales, vivos = mismo_lado(casos, np.round(diferencia))
-    L += ["", f"4. EL {DIGITO_SI} MEDIO, EL {DIGITO_NO} MEDIO Y SU DIFERENCIA (tinta media, redondeada)",
-          "", f"  el {DIGITO_SI} medio ({(y == 1).sum()} dibujos)"]
+    L = ["", f"4. EL {DIGITO_SI} MEDIO, EL {DIGITO_NO} MEDIO Y SU DIFERENCIA (tinta media, redondeada)",
+         "", f"  el {DIGITO_SI} medio ({(y == 1).sum()} dibujos)"]
     L += cuadricula(np.round(media_si), 4)
     L += ["", f"  el {DIGITO_NO} medio ({(y == -1).sum()} dibujos)"]
     L += cuadricula(np.round(media_no), 4)
     L += ["", f"  la diferencia: el {DIGITO_SI} medio menos el {DIGITO_NO} medio"]
     L += cuadricula(np.round(diferencia), 4)
-    L += ["", "  cuánto se parecen los pesos a cada cosa (de −1 a 1; 1, iguales):",
-          f"    {'al ' + str(DIGITO_SI) + ' medio':<24}{coma(parecido(casos, media_si), 2):>6}",
-          f"    {'a la diferencia':<24}{coma(parecido(casos, diferencia), 2):>6}",
-          f"  puntos donde peso y diferencia empujan al mismo lado: {iguales} de {vivos}",
-          "  (de los que no valen cero ni el uno ni la otra)"]
-
     for l in comprobar_ancho([l.rstrip() for l in L], ANCHO_CAJA):
         print(l)
+    print()
+    print("\n".join(tabla_editorial(
+        "Cuánto se parecen los pesos a cada cosa",
+        ["los pesos, comparados con", "cuánto se parecen"],
+        [[f"el {DIGITO_SI} medio", coma(parecido(casos, media_si), 2)],
+         ["la diferencia", coma(parecido(casos, diferencia), 2)],
+         ["puntos donde peso y diferencia empujan al mismo lado", f"{iguales} de {vivos}"]],
+         "id",
+        ["Cuánto se parecen: de −1 a 1; 1 quiere decir iguales salvo el tamaño de los números, y "
+         "0, que no tienen nada que ver.",
+         "Mismo lado: se cuentan solo los puntos donde ni el peso ni la diferencia valen cero."])))
 
 
 if __name__ == "__main__":
