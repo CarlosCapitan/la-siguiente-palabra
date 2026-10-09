@@ -47,7 +47,7 @@ from pathlib import Path
 
 import numpy as np
 
-from formato import comprobar_ancho, coma, pct, ANCHO_CAJA
+from formato import coma, pct, tabla_editorial
 from perceptron import cargar_digitos
 from retropropagacion import Red
 from que_mira_cada_una import (datos, SEMILLA, REPETICIONES, LADO, TASA, PASOS, UMBRAL,
@@ -113,28 +113,34 @@ def signo(x):
 
 
 def tabla(tiradas, examenes, total):
-    lineas = [TITULO_1] + SUBTITULO_1 + [""]
-    lineas.append(f"{'':<18}" + "".join(f"{'fila ' + str(f) + ',':>11}" for f, _ in PUNTOS))
-    lineas.append(f"{'tirada':<8}{'semilla':<10}"
-                  + "".join(f"{'columna ' + str(c):>11}" for _, c in PUNTOS) + f"{'acierta':>10}")
+    """Desde el 9 oct 2026, tablas de libro (formato.py; REGLAS 6 ter). Los tres pesos llevan un
+    rótulo en dos pisos («peso al arrancar» y debajo «6 y 4»): con «fila 6, columna 4» entero en
+    cada columna, la tabla no cabía en la página."""
+    filas = []
     for k, t in enumerate(tiradas, 1):
-        pesos = "".join(f"{signo(t['arranque'][indice(f, c)]):>11}" for f, c in PUNTOS)
-        lineas.append(f"{k:<8}{miles(t['semilla']):<10}{pesos}{pct(t['acierta']):>10}")
-    ancho = len(lineas[-1])
+        filas.append([str(k), miles(t["semilla"])]
+                     + [signo(t["arranque"][indice(f, c)]) for f, c in PUNTOS]
+                     + [pct(t["acierta"])])
+    t1 = tabla_editorial(
+        "Lo que sortea la semilla: los pesos con los que arranca",
+        ["tirada", "semilla"]
+        + [f"peso al arrancar: {f} y {c}" for f, c in PUNTOS]
+        + ["acierta"], filas, "cd" + "d" * len(PUNTOS) + "d",
+        [" ".join(SUBTITULO_1)[0].upper() + " ".join(SUBTITULO_1)[1:] + ".",
+         "Peso al arrancar: «6 y 4» es el punto de la fila 6, columna 4, y así los otros."])
     a = [t["acierta"] for t in tiradas]
-    lineas.append("-" * ancho)
-    for rotulo, valor in (("el peor de los cinco", min(a)), ("el mejor de los cinco", max(a)),
-                          ("la media de los cinco", float(np.mean(a)))):
-        lineas.append(f"{rotulo:<{ancho - 10}}{pct(valor):>10}")
-
+    t_resumen = tabla_editorial(
+        "Lo que acierta, de las cinco tiradas", ["", "acierta"],
+        [["el peor de los cinco", pct(min(a))], ["el mejor de los cinco", pct(max(a))],
+         ["**la media de los cinco**", f"**{pct(float(np.mean(a)))}**"]], "id",
+        ["De cada 100 dígitos del examen."])
     primero = examenes[0]
-    lineas += ["", "", TITULO_2, SUBTITULO_2.format(total=miles(total), examen=len(primero)), ""]
-    lineas.append(f"{'':<9}de los {len(primero)} dígitos de su examen, cuántos son")
-    lineas.append(f"{'tirada':<9}los mismos que en el de la tirada 1")
-    for k, ex in enumerate(examenes[1:], 2):
-        lineas.append(f"{k:<9}{len(ex & primero):>3} de {len(ex)}")
-    comprobar_ancho(lineas, ANCHO_CAJA)
-    return lineas
+    t2 = tabla_editorial(
+        "Y lo que también sortea: qué dígitos van al examen",
+        ["tirada", f"de los {len(primero)} de su examen, cuántos son los de la tirada 1"],
+        [[str(k), f"{len(ex & primero)} de {len(ex)}"] for k, ex in enumerate(examenes[1:], 2)],
+        "cd", [SUBTITULO_2.format(total=miles(total), examen=len(primero)).capitalize() + "."])
+    return [t1, t_resumen, t2]
 
 
 def guardar(tiradas, ruta):
@@ -219,8 +225,9 @@ def main():
     if p.parse_args().selftest:
         return selftest()
     tiradas, examenes, total = medir()
-    for l in tabla(tiradas, examenes, total):
-        print(l)
+    for t in tabla(tiradas, examenes, total):
+        print("\n".join(t))
+        print()
     guardar(tiradas, SALIDA_CSV)
     return 0
 

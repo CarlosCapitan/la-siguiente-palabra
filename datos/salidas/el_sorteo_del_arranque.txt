@@ -1,27 +1,41 @@
-LO QUE SORTEA LA SEMILLA: LOS PESOS CON LOS QUE ARRANCA
-un solo comité, cinco veces desde cero; de sus 64 pesos, los
-de tres puntos, sorteados entre -1 y 1; y cuántos acierta al
-final, de cada 100 dígitos del examen
+::: tabla
+Lo que sortea la semilla: los pesos con los que arranca
 
-                      fila 6,    fila 4,    fila 2,
-tirada  semilla     columna 4  columna 6  columna 6   acierta
-1       20.260.916      +0,06      +0,39      +0,31    90,4 %
-2       20.261.916      +0,40      +0,14      +0,60    91,1 %
-3       20.262.916      +0,75      +0,61      +0,07    92,4 %
-4       20.263.916      +0,19      -0,87      -0,44    93,0 %
-5       20.264.916      -0,93      +0,37      -0,92    92,6 %
--------------------------------------------------------------
-el peor de los cinco                                   90,4 %
-el mejor de los cinco                                  93,0 %
-la media de los cinco                                  91,9 %
+| tirada | semilla | peso al arrancar: 6 y 4 | peso al arrancar: 4 y 6 | peso al arrancar: 2 y 6 | acierta |
+|:-:|--:|--:|--:|--:|--:|
+| 1 | 20.260.916 | +0,06 | +0,39 | +0,31 | 90,4 % |
+| 2 | 20.261.916 | +0,40 | +0,14 | +0,60 | 91,1 % |
+| 3 | 20.262.916 | +0,75 | +0,61 | +0,07 | 92,4 % |
+| 4 | 20.263.916 | +0,19 | -0,87 | -0,44 | 93,0 % |
+| 5 | 20.264.916 | -0,93 | +0,37 | -0,92 | 92,6 % |
 
+Un solo comité, cinco veces desde cero; de sus 64 pesos, los de tres puntos, sorteados entre -1 y 1; y cuántos acierta al final, de cada 100 dígitos del examen.
 
-Y LO QUE TAMBIÉN SORTEA: QUÉ DÍGITOS VAN AL EXAMEN
-de los 1.797 dígitos, 540 se apartan y no se enseñan al entrenar
+Peso al arrancar: «6 y 4» es el punto de la fila 6, columna 4, y así los otros.
+:::
 
-         de los 540 dígitos de su examen, cuántos son
-tirada   los mismos que en el de la tirada 1
-2        169 de 540
-3        168 de 540
-4        165 de 540
-5        151 de 540
+::: tabla
+Lo que acierta, de las cinco tiradas
+
+|  | acierta |
+|:--|--:|
+| el peor de los cinco | 90,4 % |
+| el mejor de los cinco | 93,0 % |
+| **la media de los cinco** | **91,9 %** |
+
+De cada 100 dígitos del examen.
+:::
+
+::: tabla
+Y lo que también sortea: qué dígitos van al examen
+
+| tirada | de los 540 de su examen, cuántos son los de la tirada 1 |
+|:-:|--:|
+| 2 | 169 de 540 |
+| 3 | 168 de 540 |
+| 4 | 165 de 540 |
+| 5 | 151 de 540 |
+
+De los 1.797 dígitos, 540 se apartan y no se enseñan al entrenar.
+:::
+

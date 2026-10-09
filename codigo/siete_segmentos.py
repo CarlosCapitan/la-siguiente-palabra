@@ -75,7 +75,7 @@ import csv
 import itertools
 import sys
 
-from formato import comprobar_ancho
+from formato import miles, tabla_editorial
 import numpy as np
 
 
@@ -129,45 +129,54 @@ def un_solo_segmento_basta(X):
 
 
 # ---- Los bloques que cita el capítulo ----------------------------------------------
+# Desde el 9 oct 2026, tablas de libro (formato.py; REGLAS 6 ter). Los dígitos van con los cinco
+# pares primero y los cinco impares después, con «pares» e «impares» encima: así se ve de un
+# vistazo si un segmento está encendido en un grupo y apagado en el otro, que es la pregunta.
 
-ANCHO_NOMBRE = 24
-COL = 4
-# La columna de puntos del comité: 24 + 19 = 43, que es donde acaba «puntos que suma».
-ANCHO_PUNTOS = 19
+ORDEN_DIGITOS = [0, 2, 4, 6, 8, 1, 3, 5, 7, 9]
 
 
-def bloque_tabla(X):
-    lineas = ["LOS DIEZ DÍGITOS DE UN RELOJ DIGITAL, SEGMENTO A SEGMENTO", ""]
-    lineas.append(f"{'':<{ANCHO_NOMBRE}}" + "".join(f"{d:>{COL}}" for d in range(10)))
-    lineas.append(f"{'':<{ANCHO_NOMBRE}}" +
-                  "".join(f"{('par' if d % 2 == 0 else 'imp'):>{COL}}" for d in range(10)))
-    lineas.append(f"{'':<{ANCHO_NOMBRE}}" + "".join(f"{'--':>{COL}}" for _ in range(10)))
-    for j, nombre in enumerate(SEGMENTOS):
-        # «sí» y «no», no un puntito: el libro no usa símbolos, y un punto en una tabla
-        # hay que ir a buscar a qué se refiere (regla 1 y regla 9).
-        celdas = "".join(f"{('sí' if X[d, j] else 'no'):>{COL}}" for d in range(10))
-        lineas.append(f"{nombre:<{ANCHO_NOMBRE}}{celdas}")
-    return comprobar_ancho(lineas)
+def tabla_digitos(titulo, filas, notas, primera="el segmento"):
+    """Una tabla de «sí» y «no» por dígito. `filas`: [(rótulo, [valor del 0, del 1, …])]."""
+    rotulos = [primera] + [f"{'pares' if d % 2 == 0 else 'impares'}: {d}" for d in ORDEN_DIGITOS]
+    return tabla_editorial(titulo, rotulos,
+                           [[nombre] + [valores[d] for d in ORDEN_DIGITOS]
+                            for nombre, valores in filas],
+                           "i" + "c" * len(ORDEN_DIGITOS), notas)
+
+
+def bloque_tabla(X, nombre_solo):
+    return tabla_digitos(
+        "Los diez dígitos de un reloj digital, segmento a segmento",
+        [(nombre, ["sí" if X[d, j] else "no" for d in range(10)])
+         for j, nombre in enumerate(SEGMENTOS)],
+        ["Sí: el segmento está encendido en ese dígito.",
+         "¿Hay un solo segmento encendido en los cinco pares y apagado en los cinco impares? "
+         + (f"Sí: {nombre_solo}." if nombre_solo else "No, ninguno.")])
+
+
+def texto_liston(liston):
+    # El listón puede salir cero, y «-0» no lo escribe nadie.
+    return f"{liston:+.0f}" if abs(liston) > 0.5 else "0"
 
 
 def bloque_comite(X, w, b):
-    lineas = ["EL COMITÉ QUE SÍ LO CONSIGUE, CON LOS SIETE SEGMENTOS", ""]
-    lineas.append(f"{'el segmento':<{ANCHO_NOMBRE}}{'puntos que suma':>{ANCHO_PUNTOS}}")
-    lineas.append(f"{'-' * 23:<{ANCHO_NOMBRE}}{'-' * 15:>{ANCHO_PUNTOS}}")
-    for nombre, peso in zip(SEGMENTOS, w):
-        lineas.append(f"{nombre:<{ANCHO_NOMBRE}}{peso:>+{ANCHO_PUNTOS}.0f}")
-    lineas.append(f"{'':<{ANCHO_NOMBRE}}{'-' * 6:>{ANCHO_PUNTOS}}")
-    # El listón puede salir cero, y «-0» no lo escribe nadie.
-    liston = -b
-    texto = f"{liston:+.0f}" if abs(liston) > 0.5 else "0"
-    lineas.append(f"para decir «par», el total tiene que pasar de {texto}")
-    lineas.append("")
-    lineas.append(f"{'dígito':<10}{'total':>8}{'dice':>8}      ¿acierta?")
+    pesos = tabla_editorial(
+        "El comité que sí lo consigue, con los siete segmentos",
+        ["el segmento", "puntos que suma"],
+        [[nombre, f"{peso:+.0f}"] for nombre, peso in zip(SEGMENTOS, w)], "id",
+        [f"Para decir «par», el total tiene que pasar de {texto_liston(-b)}. Pesos aprendidos "
+         "con la regla del capítulo 2, empezando de cero."])
+    filas = []
     for d in range(10):
         total = X[d] @ w + b
-        lineas.append(f"{d:<10}{total:>+8.0f}{('par' if total > 0 else 'impar'):>8}"
-                      f"      {'correcto' if (total > 0) == (d % 2 == 0) else 'MAL'}")
-    return comprobar_ancho(lineas)
+        filas.append([str(d), f"{total:+.0f}", "par" if total > 0 else "impar",
+                      "sí" if (total > 0) == (d % 2 == 0) else "NO"])
+    cuenta = tabla_editorial(
+        "La cuenta de los diez dígitos con ese comité",
+        ["dígito", "total", "dice", "¿acierta?"], filas, "cdcc",
+        ["Total: los puntos de los segmentos encendidos, menos el listón."])
+    return pesos, cuenta
 
 
 def selftest():
@@ -224,29 +233,28 @@ def main():
         return selftest()
 
     X = tabla_de_segmentos()
-    for l in bloque_tabla(X):
-        print(l)
-
-    print()
     nombre = un_solo_segmento_basta(X)
-    print("¿hay un solo segmento encendido en los cinco pares y apagado en los")
-    print(f"cinco impares?   {nombre if nombre else 'no, ninguno'}")
+    print("\n".join(bloque_tabla(X, nombre)))
 
     y = np.array([1.0 if d % 2 == 0 else -1.0 for d in range(10)])
     w, b = entrenar(X, y)
     assert w is not None, "no encontró la raya; con estos siete segmentos debería encontrarla"
-    print()
-    for l in bloque_comite(X, w, b):
-        print(l)
+    for t in bloque_comite(X, w, b):
+        print()
+        print("\n".join(t))
 
     filas = [["segmento", "peso"]] + [[n, f"{p:.0f}"] for n, p in zip(SEGMENTOS, w)]
     filas.append(["liston", f"{-b:.0f}"])
 
     if args.recuento:
-        print()
         n = sum(1 for bits in itertools.product([0, 1], repeat=10) if separable(X, bits))
-        print(f"de las 1.024 maneras de partir los diez dígitos en dos grupos,")
-        print(f"una sola raya separa {n}.")
+        print()
+        print("\n".join(tabla_editorial(
+            "Cuántas maneras de partir los diez dígitos separa una raya", ["", "cuántas"],
+            [["maneras de partir los diez dígitos en dos grupos", miles(2 ** 10)],
+             ["las que separa una sola raya", miles(n)]], "id",
+            ["Cada partición se prueba con el perceptrón del capítulo 2; si en "
+             f"{miles(PASOS_MAX)} pasadas por los diez dígitos no encuentra la raya, se da por no separable."])))
         filas.append(["particiones_separables", str(n)])
 
     with open(SALIDA_CSV, "w", newline="", encoding="utf-8") as fh:

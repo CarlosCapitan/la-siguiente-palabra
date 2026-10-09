@@ -49,8 +49,8 @@ import sys
 
 import numpy as np
 
-from formato import ANCHO_CAJA, coma, comprobar_ancho
-from siete_segmentos import SEGMENTOS, tabla_de_segmentos
+from formato import coma, tabla_editorial
+from siete_segmentos import SEGMENTOS, tabla_de_segmentos, tabla_digitos
 
 PARES = [d for d in range(10) if d % 2 == 0]
 COL = 4
@@ -97,74 +97,68 @@ def fila(nombre, valores):
 
 
 def bloques(X):
+    """Desde el 9 oct 2026, tablas de libro (formato.py; REGLAS 6 ter), con los dígitos en el
+    mismo orden que la tabla de siete_segmentos.py: los cinco pares y luego los cinco impares."""
     es_par = np.array([d % 2 == 0 for d in range(10)])
     w = vector_de_pesos(PESOS)
-    L = []
+    out = []
 
     # ---- 1. cada segmento, él solo
-    ANCHO_PA, ANCHO_IE = 12, 15
-    L += ["1. QUÉ DÍGITOS SE SALTAN LA REGLA, SEGMENTO A SEGMENTO",
-          "   (la regla: encendido en los cinco pares",
-          "   y apagado en los cinco impares)", "",
-          f"{'':<{ANCHO_NOMBRE}}{'pares':<{ANCHO_PA}}{'impares':<{ANCHO_IE}}",
-          f"{'el segmento':<{ANCHO_NOMBRE}}{'apagados':<{ANCHO_PA}}{'encendidos':<{ANCHO_IE}}cuántos"]
     saltan = [se_la_saltan(X, es_par, j) for j in range(len(SEGMENTOS))]
     cuentas = [len(pa) + len(ie) for pa, ie in saltan]
-    for nombre, (pa, ie), c in zip(SEGMENTOS, saltan, cuentas):
-        L.append(f"{nombre:<{ANCHO_NOMBRE}}{lista(pa):<{ANCHO_PA}}{lista(ie):<{ANCHO_IE}}{c:>7}")
     mejor = int(np.argmin(cuentas))
     assert SEGMENTOS[mejor] == "el de abajo izquierda", \
         f"se esperaba que al que menos se la saltan fuera el de abajo izquierda; es {SEGMENTOS[mejor]}"
     assert min(cuentas) > 0, "a un segmento no se la salta nadie: el capítulo diría lo contrario"
+    out.append(["1. QUÉ DÍGITOS SE SALTAN LA REGLA, SEGMENTO A SEGMENTO", ""] + tabla_editorial(
+        "Qué dígitos se saltan la regla, segmento a segmento",
+        ["el segmento", "pares apagados", "impares encendidos", "cuántos"],
+        [[nombre, lista(pa), lista(ie), str(c)]
+         for nombre, (pa, ie), c in zip(SEGMENTOS, saltan, cuentas)], "iiid",
+        ["La regla: encendido en los cinco pares y apagado en los cinco impares. Se la saltan "
+         "los pares que tienen el segmento apagado y los impares que lo tienen encendido."]))
     j = mejor
-    L += ["", "EL DE ABAJO IZQUIERDA, DÍGITO A DÍGITO", ""] + cabecera_digitos()
     enc = X[:, j] > 0
-    L.append(fila("debería estar encendido", ["sí" if p else "no" for p in es_par]))
-    L.append(fila("está encendido", ["sí" if e else "no" for e in enc]))
     fallan = [d for d in range(10) if enc[d] != es_par[d]]
     assert fallan == saltan[j][0] + saltan[j][1], "el dígito a dígito no dice lo mismo que la tabla"
-    L += ["", f"no coinciden: {', '.join(f'el {d}' for d in fallan)}"]
+    out.append(tabla_digitos(
+        f"{SEGMENTOS[j].capitalize()}, dígito a dígito",
+        [("debería estar encendido", ["sí" if p else "no" for p in es_par]),
+         ("está encendido", ["sí" if e else "no" for e in enc])],
+        [f"No coinciden: {', '.join(f'el {d}' for d in fallan)}."], primera=""))
 
     # ---- 2. lo que solo tiene el cuatro
     a = SEGMENTOS.index("el de arriba izquierda")
     b = SEGMENTOS.index("el de arriba")
     solo = [d for d in range(10) if X[d, a] > 0 and X[d, b] == 0]
-    L += ["", "", "2. LO QUE TIENE EL CUATRO Y NO TIENE NINGÚN OTRO", ""] + cabecera_digitos()
-    L.append(fila("el de arriba izquierda", ["sí" if X[d, a] else "no" for d in range(10)]))
-    L.append(fila("el de arriba", ["sí" if X[d, b] else "no" for d in range(10)]))
-    L += ["", "encendido el de arriba izquierda y apagado el de arriba: "
-          + ", ".join(f"el {d}" for d in solo)]
+    out.append(["2. LO QUE TIENE EL CUATRO Y NO TIENE NINGÚN OTRO", ""] + tabla_digitos(
+        "Lo que tiene el cuatro y no tiene ningún otro",
+        [("el de arriba izquierda", ["sí" if X[d, a] else "no" for d in range(10)]),
+         ("el de arriba", ["sí" if X[d, b] else "no" for d in range(10)])],
+        ["Encendido el de arriba izquierda y apagado el de arriba: "
+         + ", ".join(f"el {d}" for d in solo) + "."]))
 
     # ---- 3. tres pesos y un listón
-    L += ["", "", "3. TRES PESOS PUESTOS A MANO, Y LA CUENTA DE LOS DIEZ", "",
-          f"{'el segmento':<{ANCHO_NOMBRE}}{'puntos que suma':>19}",
-          f"{'-' * 23:<{ANCHO_NOMBRE}}{'-' * 15:>19}"]
-    for s in SEGMENTOS:
-        if s in PESOS:
-            L.append(f"{s:<{ANCHO_NOMBRE}}{signo(PESOS[s]):>19}")
-    L.append(f"{'los otros cuatro':<{ANCHO_NOMBRE}}{'0':>19}")
-    L.append(f"{'':<{ANCHO_NOMBRE}}{'-' * 6:>19}")
-    L.append(f"para decir «par», el total tiene que pasar de {coma(LISTON)}")
-
+    filas = [[s, signo(PESOS[s])] for s in SEGMENTOS if s in PESOS]
+    filas.append(["los otros cuatro", "0"])
+    out.append(["3. TRES PESOS PUESTOS A MANO, Y LA CUENTA DE LOS DIEZ", ""] + tabla_editorial(
+        "Tres pesos puestos a mano", ["el segmento", "puntos que suma"], filas, "id",
+        [f"Para decir «par», el total tiene que pasar de {coma(LISTON)}."]))
     cols = [s for s in SEGMENTOS if s in PESOS]
     idx = [SEGMENTOS.index(s) for s in cols]
-    cortos = {"el de arriba": ("el de", "arriba"),
-              "el de arriba izquierda": ("el de arriba", "izquierda"),
-              "el de abajo izquierda": ("el de abajo", "izquierda")}
-    ANCHO_D, ANCHO_C, ANCHO_T, ANCHO_DICE = 8, 14, 8, 8
-    L += ["",
-          f"{'':<{ANCHO_D}}" + "".join(f"{cortos[s][0]:>{ANCHO_C}}" for s in cols),
-          f"{'dígito':<{ANCHO_D}}" + "".join(f"{cortos[s][1]:>{ANCHO_C}}" for s in cols)
-          + f"{'total':>{ANCHO_T}}{'dice':>{ANCHO_DICE}}"]
     total = X @ w
     dice = decide(X, w, LISTON)
-    for d in range(10):
-        partes = [signo(X[d, k] * w[k]) for k in idx]
-        L.append(f"{d:<{ANCHO_D}}" + "".join(f"{p:>{ANCHO_C}}" for p in partes)
-                 + f"{signo(total[d]):>{ANCHO_T}}{('par' if dice[d] else 'impar'):>{ANCHO_DICE}}")
+    filas = [[str(d)] + [signo(X[d, k] * w[k]) for k in idx]
+             + [signo(total[d]), "par" if dice[d] else "impar"] for d in range(10)]
     bien = int(np.sum(dice == es_par))
-    L += ["", f"los mismos pesos y el mismo listón aciertan {bien} de 10"]
-    return comprobar_ancho([l.rstrip() for l in L], ANCHO_CAJA)
+    out.append(tabla_editorial(
+        "La cuenta de los diez dígitos",
+        ["dígito"] + [f"puntos que suma el segmento de: {s.removeprefix('el de ')}" for s in cols]
+        + ["total", "dice"],
+        filas, "c" + "d" * len(cols) + "dc",
+        [f"Un segmento encendido suma sus puntos; uno apagado, nada. El listón, {coma(LISTON)}.",
+         f"Los mismos pesos y el mismo listón aciertan {bien} de 10."]))
+    return out
 
 
 def selftest():
@@ -236,8 +230,9 @@ def main():
     print("########## capítulo 3: par o impar en un reloj, con tres pesos a mano ##########")
     print("Pesos puestos a mano, no entrenados. La cuenta no depende de la máquina.")
     print()
-    for l in bloques(X):
-        print(l)
+    for b in bloques(X):
+        print("\n".join(b))
+        print()
 
 
 if __name__ == "__main__":

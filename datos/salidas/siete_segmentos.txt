@@ -1,46 +1,65 @@
-LOS DIEZ DÍGITOS DE UN RELOJ DIGITAL, SEGMENTO A SEGMENTO
+::: tabla
+Los diez dígitos de un reloj digital, segmento a segmento
 
-                           0   1   2   3   4   5   6   7   8   9
-                         par imp par imp par imp par imp par imp
-                          --  --  --  --  --  --  --  --  --  --
-el de arriba              sí  no  sí  sí  no  sí  sí  sí  sí  sí
-el de arriba izquierda    sí  no  no  no  sí  sí  sí  no  sí  sí
-el de arriba derecha      sí  sí  sí  sí  sí  no  no  sí  sí  sí
-el del medio              no  no  sí  sí  sí  sí  sí  no  sí  sí
-el de abajo izquierda     sí  no  sí  no  no  no  sí  no  sí  no
-el de abajo derecha       sí  sí  no  sí  sí  sí  sí  sí  sí  sí
-el de abajo               sí  no  sí  sí  no  sí  sí  no  sí  sí
+| el segmento | pares: 0 | pares: 2 | pares: 4 | pares: 6 | pares: 8 | impares: 1 | impares: 3 | impares: 5 | impares: 7 | impares: 9 |
+|:--|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| el de arriba | sí | sí | no | sí | sí | no | sí | sí | sí | sí |
+| el de arriba izquierda | sí | no | sí | sí | sí | no | no | sí | no | sí |
+| el de arriba derecha | sí | sí | sí | no | sí | sí | sí | no | sí | sí |
+| el del medio | no | sí | sí | sí | sí | no | sí | sí | no | sí |
+| el de abajo izquierda | sí | sí | no | sí | sí | no | no | no | no | no |
+| el de abajo derecha | sí | no | sí | sí | sí | sí | sí | sí | sí | sí |
+| el de abajo | sí | sí | no | sí | sí | no | sí | sí | no | sí |
 
-¿hay un solo segmento encendido en los cinco pares y apagado en los
-cinco impares?   no, ninguno
+Sí: el segmento está encendido en ese dígito.
 
-EL COMITÉ QUE SÍ LO CONSIGUE, CON LOS SIETE SEGMENTOS
+¿Hay un solo segmento encendido en los cinco pares y apagado en los cinco impares? No, ninguno.
+:::
 
-el segmento                 puntos que suma
------------------------     ---------------
-el de arriba                             -3
-el de arriba izquierda                   +3
-el de arriba derecha                     +1
-el del medio                             +1
-el de abajo izquierda                    +5
-el de abajo derecha                      -2
-el de abajo                              -1
-                                     ------
-para decir «par», el total tiene que pasar de 0
+::: tabla
+El comité que sí lo consigue, con los siete segmentos
 
-dígito       total    dice      ¿acierta?
-0               +3     par      correcto
-1               -1   impar      correcto
-2               +3     par      correcto
-3               -4   impar      correcto
-4               +3     par      correcto
-5               -2   impar      correcto
-6               +3     par      correcto
-7               -4   impar      correcto
-8               +4     par      correcto
-9               -1   impar      correcto
+| el segmento | puntos que suma |
+|:--|--:|
+| el de arriba | -3 |
+| el de arriba izquierda | +3 |
+| el de arriba derecha | +1 |
+| el del medio | +1 |
+| el de abajo izquierda | +5 |
+| el de abajo derecha | -2 |
+| el de abajo | -1 |
 
-de las 1.024 maneras de partir los diez dígitos en dos grupos,
-una sola raya separa 864.
+Para decir «par», el total tiene que pasar de 0. Pesos aprendidos con la regla del capítulo 2, empezando de cero.
+:::
+
+::: tabla
+La cuenta de los diez dígitos con ese comité
+
+| dígito | total | dice | ¿acierta? |
+|:-:|--:|:-:|:-:|
+| 0 | +3 | par | sí |
+| 1 | -1 | impar | sí |
+| 2 | +3 | par | sí |
+| 3 | -4 | impar | sí |
+| 4 | +3 | par | sí |
+| 5 | -2 | impar | sí |
+| 6 | +3 | par | sí |
+| 7 | -4 | impar | sí |
+| 8 | +4 | par | sí |
+| 9 | -1 | impar | sí |
+
+Total: los puntos de los segmentos encendidos, menos el listón.
+:::
+
+::: tabla
+Cuántas maneras de partir los diez dígitos separa una raya
+
+|  | cuántas |
+|:--|--:|
+| maneras de partir los diez dígitos en dos grupos | 1.024 |
+| las que separa una sola raya | 864 |
+
+Cada partición se prueba con el perceptrón del capítulo 2; si en 20.000 pasadas por los diez dígitos no encuentra la raya, se da por no separable.
+:::
 
 Escrito siete_segmentos.csv

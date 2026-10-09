@@ -212,27 +212,24 @@ def selftest():
 
 
 def tabla_a_mano():
-    """La tabla de los tres comités del final del capítulo 2, calculada con sus montajes: el
-    capítulo 3 la recuerda como bloque (en tabla de autor, la maqueta pegaba las columnas)."""
-    from formato import comprobar_ancho, ANCHO_CAJA_CITA
+    """La tabla de los tres comités del final del capítulo 2, calculada con sus montajes. Desde
+    el 9 oct 2026, tabla de libro (formato.py; REGLAS 6 ter)."""
+    from formato import tabla_editorial
     mano = a_mano()
     si_no = {0: "no", 1: "sí"}
     filas = [("ninguno subido", 0), ("uno subido, cualquiera", 1), ("los dos subidos", 3)]
     assert (mano[1] == mano[2]).all(), "las dos posiciones de un solo interruptor deberían coincidir"
-    L = ["LOS TRES COMITÉS DEL FINAL DEL CAPÍTULO 2",
-         f"el primero: «{MONTAJES_A_MANO[0]}»",
-         f"el segundo: «{MONTAJES_A_MANO[1]}»",
-         "el tercero: enciende la luz si los dos dicen que sí",
-         "",
-         f"{'los interruptores':<24}{'el primero':>11}{'el segundo':>12}{'la luz':>12}",
-         f"{'-' * 22:<24}{'-' * 10:>11}{'-' * 10:>12}{'-' * 9:>12}"]
+    T = []
     for nombre, k in filas:
         a, b = int(mano[k, 0]), int(mano[k, 1])
         luz = "encendida" if (a + b) > LISTON_A_MANO else "apagada"
         assert (luz == "encendida") == ENCIENDE[k], "el tercero no hace el o exclusivo"
-        L.append(f"{nombre:<24}{si_no[a]:>11}{si_no[b]:>12}{luz:>12}")
-    comprobar_ancho(L, ANCHO_CAJA_CITA)
-    print("\n".join(L))
+        T.append([nombre, si_no[a], si_no[b], luz])
+    print("\n".join(tabla_editorial(
+        "Los tres comités del final del capítulo 2",
+        ["los interruptores", "el primero", "el segundo", "la luz"], T, "iccc",
+        [f"El primero: «{MONTAJES_A_MANO[0]}». El segundo: «{MONTAJES_A_MANO[1]}». El tercero "
+         "enciende la luz si los dos dicen que sí."])))
 
 
 def main():

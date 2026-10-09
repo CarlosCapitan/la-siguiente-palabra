@@ -35,7 +35,7 @@ SUBTITULO_C = "el peor y el mejor de los {repeticiones}"
 import platform, sys, time
 import numpy as np
 
-from formato import comprobar_ancho, pct
+from formato import pct, tabla_editorial
 from perceptron import cargar_digitos
 from retropropagacion import Red
 
@@ -164,19 +164,16 @@ def main():
 
     sin_capa = media_de_varias(0)
     con_capa = media_de_varias(EN_MEDIO)
-    lineas = [TITULO,
-              SUBTITULO_A,
-              SUBTITULO_B.format(repeticiones=REPETICIONES),
-              SUBTITULO_C.format(repeticiones=REPETICIONES),
-              ""]
-    ANCHO = 34
-    for etiqueta, (media, peor, mejor) in (("un solo comité, sin capa", sin_capa),
-                                           ("una capa de ocho comités en medio", con_capa)):
-        lineas.append(f"{etiqueta:<{ANCHO}}{pct(media):>7}   (de {pct(peor)} a {pct(mejor)})")
-    comprobar_ancho(lineas)
+    # Desde el 9 oct 2026, tabla de libro (formato.py; REGLAS 6 ter).
+    filas = [[etiqueta, pct(media), pct(peor), pct(mejor)]
+             for etiqueta, (media, peor, mejor) in (("un solo comité, sin capa", sin_capa),
+                                                     ("una capa de ocho comités en medio", con_capa))]
     print()
-    for l in lineas:
-        print(l)
+    print("\n".join(tabla_editorial(
+        "¿Es un ocho este dígito escrito a mano?", ["", "media", "el peor", "el mejor"], filas,
+        "iddd",
+        [f"De cada 100 dígitos que nunca había visto, cuántos acierta. Media de {REPETICIONES} "
+         f"entrenamientos desde cero; al lado, el peor y el mejor de los {REPETICIONES}."])))
     return 0
 
 
