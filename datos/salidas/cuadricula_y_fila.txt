@@ -33,20 +33,23 @@ ordenador.
 
 2. CUÁNTAS CASILLAS, SEGÚN LO LARGO QUE SEA EL TEXTO
 
-    palabras    casillas      veces las de
-                         la fila de arriba
-    --------    -------- -----------------
-           4          10
-           8          36              3,60
-          16         136              3,78
-          32         528              3,88
-          64       2.080              3,94
-         128       8.256              3,97
-         256      32.896              3,98
-         512     131.328              3,99
-       1.024     524.800              4,00
+::: tabla
+Cuántas casillas, según lo largo que sea el texto
 
-  Doble de texto, casi cuatro veces más casillas: el cuadrado.
+| palabras | casillas | veces las de la fila de arriba |
+|--:|--:|--:|
+| 4 | 10 |  |
+| 8 | 36 | 3,60 |
+| 16 | 136 | 3,78 |
+| 32 | 528 | 3,88 |
+| 64 | 2.080 | 3,94 |
+| 128 | 8.256 | 3,97 |
+| 256 | 32.896 | 3,98 |
+| 512 | 131.328 | 3,99 |
+| 1.024 | 524.800 | 4,00 |
+
+Doble de texto, casi cuatro veces más casillas: el cuadrado.
+:::
 
 3. CUÁNTAS TANDAS HAY QUE HACER UNA DETRÁS DE OTRA
    (una tanda: las cuentas que se pueden hacer a la vez)

@@ -6,144 +6,208 @@
 SELFTEST: las tres pruebas pasan.
 
 ########## capítulo 8: una mirada que nadie programa ##########
-máquina: Darwin arm64; calcula en: cpu. Medido el 2026-09-28.
+máquina: Darwin arm64; calcula en: cpu. Medido el 2026-10-09.
 Semilla 20260914. Texto: el Quijote, 2.095.402 letras:
 1.885.861 para aprender y 209.541 para probar.
 
-1. EL TAMAÑO
+--- 1. EL TAMAÑO ---
 
-  números ajustables: 15.690
-  una ronda, una mirada, 16 letras de contexto, 32 números por letra
-  pasos de entrenamiento: 20.000 (0,5 min en esta máquina)
-  cada paso mueve cada número 1,0 veces su culpa, en contra
-  (la regla del capítulo 4)
+::: tabla
+El tamaño de la máquina que mira
 
-2. LO QUE ACIERTA Y CÓMO REPARTE LA MIRADA, EN CINCO MOMENTOS
-   (20.000 fragmentos de prueba de 16 letras, que nunca ha visto)
+|  | cuánto |
+|:--|--:|
+| números ajustables | 15.690 |
+| rondas | 1 |
+| miradas | 1 |
+| letras de contexto | 16 |
+| números por letra | 32 |
+| pasos de entrenamiento | 20.000 |
+| lo que tarda en entrenar, en esta máquina | 0,5 min |
+| cada paso mueve cada número | 1,0 veces su culpa, en contra |
 
-  tras              acierta la siguiente   reparte entre
-  ----              --------------------   -------------
-  0 pasos                          0,1 %     16,0 letras
-  1.000 pasos                     29,8 %     16,0 letras
-  5.000 pasos                     41,6 %      4,4 letras
-  10.000 pasos                    44,5 %      4,4 letras
-  20.000 pasos                    44,5 %      4,4 letras
+Cada paso, con la regla del capítulo 4.
+:::
 
-  «acierta la siguiente»: la letra a la que da más porcentaje es
-  la que viene de verdad detrás del fragmento.
-  «reparte entre»: a cuántas de las 16 letras mira de verdad,
-  de media: 16 si reparte por igual, 1 si mira a una sola.
+--- 2. LO QUE ACIERTA Y CÓMO REPARTE LA MIRADA ---
 
-3. A DÓNDE MIRA MÁS LA ÚLTIMA LETRA, AL PRINCIPIO Y AL FINAL
-   (de cada cien fragmentos de prueba, en cuántos la letra a la
-   que más mira de las 16 es ésta)
+::: tabla
+Lo que acierta y cómo reparte la mirada, en cinco momentos
 
-  la letra a la que más mira          al empezar    al final
-  --------------------------          ----------    --------
-  la propia letra                          0,0 %      19,0 %
-  la de justo antes                        0,1 %      65,2 %
-  un espacio                              22,2 %       0,9 %
-  la primera letra de la palabra           2,8 %       6,4 %
-  otra                                    74,8 %       8,5 %
+| tras | acierta la siguiente | reparte entre |
+|:--|--:|--:|
+| 0 pasos | 0,1 % | 16,0 letras |
+| 1.000 pasos | 29,8 % | 16,0 letras |
+| 5.000 pasos | 41,6 % | 4,4 letras |
+| 10.000 pasos | 44,5 % | 4,4 letras |
+| 20.000 pasos | 44,5 % | 4,4 letras |
 
-  Al empezar reparte casi por igual: «la que más mira» sale
-  por decimales, y esa columna es casi azar.
+Con 20.000 fragmentos de prueba de 16 letras, que nunca ha visto.
 
-4. ¿SIRVE DE ALGO MIRAR? LAS MISMAS LETRAS DE PRUEBA
+Acierta la siguiente: la letra a la que da más porcentaje es la que viene de verdad detrás del fragmento.
 
-  la máquina                      acierta      números      vacías
-  ----------                      -------      -------      ------
-  contar, perilla en 0             17,7 %           41           0
-  contar, perilla en 1             30,1 %          798           0
-  contar, perilla en 2             39,6 %        6.753           2
-  contar, perilla en 3             49,0 %       31.731          19
-  contar, perilla en 5             58,0 %      231.704         434
-  esta, sin mirar atrás            30,0 %       11.594           —
-  esta, mirando                    44,5 %       15.690           —
+Reparte entre: a cuántas de las 16 letras mira de verdad, de media: 16 si reparte por igual, 1 si mira a una sola.
+:::
 
-  «números»: los que guarda cada máquina. En la de contar, uno por
-  cada casilla y letra que se ha visto detrás alguna vez.
-  «vacías»: fragmentos de prueba cuya casilla no salió al aprender.
-  Cuentan como fallo: contar no tiene nada que decir ahí.
+--- 3. A DÓNDE MIRA MÁS LA ÚLTIMA LETRA ---
 
-5. EL REPARTO DE LA ÚLTIMA LETRA DE «quiero acordarme»
-   (de cada cien, cuánto de su mirada va a cada letra)
+::: tabla
+A dónde mira más la última letra, al principio y al final
 
-  letra         q  u  i  e  r  o  _  a  c  o  r  d  a  r  m  e
-  tras 0        6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  6
-  tras 20.000   0  0  0  0  0  0  0  0  0  0  2  5 10 28 42 12
+| la letra a la que más mira | al empezar | al final |
+|:--|--:|--:|
+| la propia letra | 0,0 % | 19,0 % |
+| la de justo antes | 0,1 % | 65,2 % |
+| un espacio | 22,2 % | 0,9 % |
+| la primera letra de la palabra | 2,8 % | 6,4 % |
+| otra | 74,8 % | 8,5 % |
 
-  «_» es un espacio.
-  lo más probable detrás: al empezar «á», al final « ».
-  en el Quijote viene detrás: «,».
-  reparte entre: al empezar 16,0 letras; al final 4,4.
+De cada cien fragmentos de prueba, en cuántos la letra a la que más mira de las 16 es ésta.
 
-6. EL AJUSTE DE ESCALA, CON ÉL Y SIN ÉL
-   (64 números por letra en lugar de 32; 3.000 pasos;
-   cada número se mueve con su propio poquito)
+Al empezar reparte casi por igual: «la que más mira» sale por decimales, y esa columna es casi azar.
+:::
 
-  empiezan           ajuste      0    100  1.000  3.000    reparte
-  pequeños (0,02)        sí    2 %   29 %   37 %   43 %       16,0
-  pequeños (0,02)        no    2 %   29 %   37 %   43 %       16,0
-  de tamaño 1            sí    3 %   33 %   40 %   45 %        6,3
-  de tamaño 1            no    3 %   30 %   37 %   38 %        1,3
+--- 4. ¿SIRVE DE ALGO MIRAR? ---
 
-  Lo mismo con números de tamaño 1 y otras 2 semillas,
-  tras 3.000 pasos:
-  semilla 20260915: con ajuste 45 %, sin ajuste 38 %
-  semilla 20260916: con ajuste 46 %, sin ajuste 38 %
+::: tabla
+¿Sirve de algo mirar? Las mismas letras de prueba
 
-  «empiezan»: de qué tamaño son al azar las listas de las letras
-  antes de aprender: de cada cien números, 68 entre menos 1 y 1
-  («de tamaño 1») o 68 entre menos 0,02 y 0,02.
-  Columnas 0 a 3.000: cuánto acierta tras esos pasos, de cada cien.
-  «reparte»: entre cuántas letras mira antes de aprender nada.
+| la máquina | acierta | números | vacías |
+|:--|--:|--:|--:|
+| contar, perilla en 0 | 17,7 % | 41 | 0 |
+| contar, perilla en 1 | 30,1 % | 798 | 0 |
+| contar, perilla en 2 | 39,6 % | 6.753 | 2 |
+| contar, perilla en 3 | 49,0 % | 31.731 | 19 |
+| contar, perilla en 5 | 58,0 % | 231.704 | 434 |
+| esta, sin mirar atrás | 30,0 % | 11.594 |  |
+| esta, mirando | 44,5 % | 15.690 |  |
 
-7. ¿MIRAR, O SABER A DÓNDE MIRAR?
+Números: los que guarda cada máquina. En la de contar, uno por cada casilla y letra que se ha visto detrás alguna vez.
 
-  la máquina                                 acierta  reparte entre
-  ----------                                 -------  -------------
-  entrenada entera                            44,5 %            4,4
-  pregunta y etiqueta al azar, fijas          32,4 %           16,0
-  sin mirar atrás                             30,0 %              —
+Vacías: fragmentos de prueba cuya casilla no salió al aprender. Cuentan como fallo: contar no tiene nada que decir ahí. Esta máquina no tiene casillas.
+:::
 
-  La entrenada entera, con el reparto impuesto al usarla:
+--- 5. EL REPARTO DE LA ÚLTIMA LETRA DE LA FRASE ---
 
-  el reparto impuesto                        acierta  reparte entre
-  -------------------                        -------  -------------
-  por igual entre las 16                      24,1 %           16,0
-  todo a la de justo antes                    26,8 %            1,0
-  todo a sí misma                             16,6 %            1,0
+::: tabla
+El reparto de la última letra de «quiero acordarme»
 
-  Lo mismo, pero dejando que el resto vuelva a aprender 5.000 pasos
-  con el reparto impuesto (la pregunta y la etiqueta no cuentan),
-  moviendo cada número 0,1 veces su culpa:
+| sitio | letra | tras 0 pasos | tras 20.000 pasos |
+|:-:|:-:|--:|--:|
+| 1 | q | 6 | 0 |
+| 2 | u | 6 | 0 |
+| 3 | i | 6 | 0 |
+| 4 | e | 6 | 0 |
+| 5 | r | 6 | 0 |
+| 6 | o | 6 | 0 |
+| 7 | _ | 6 | 0 |
+| 8 | a | 6 | 0 |
+| 9 | c | 6 | 0 |
+| 10 | o | 6 | 0 |
+| 11 | r | 6 | 2 |
+| 12 | d | 6 | 5 |
+| 13 | a | 6 | 10 |
+| 14 | r | 6 | 28 |
+| 15 | m | 6 | 42 |
+| 16 | e | 6 | 12 |
 
-  la máquina                                 acierta  reparte entre
-  ----------                                 -------  -------------
-  sin imponer nada (para comparar)            48,7 %            4,0
-  por igual entre las 16                      32,5 %           16,0
-  todo a la de justo antes                    39,5 %            1,0
+De cada cien, cuánto de su mirada va a cada letra. El guion bajo es un espacio.
 
-  La entrenada entera, 5.000 pasos más sin imponer nada, con los
-  mismos fragmentos y en el mismo orden que sus 5.000 primeros
-  pasos, según cuánto se mueve cada número:
+Lo más probable detrás: al empezar «á», al final «_». En el Quijote viene detrás: «,».
 
-  cuánto se mueve                                      acierta
-  ---------------                                      -------
-  cada número 1,0 veces su culpa (lo de siempre)        45,5 %
-  cada número 0,1 veces su culpa                        48,7 %
+Reparte entre: al empezar 16,0 letras; al final 4,4.
+:::
 
-  «pregunta y etiqueta al azar, fijas»: se entrena todo menos las
-  dos tablas que fijan a dónde mira; el contenido sí aprende.
-  «impuesto»: la máquina no cambia; solo se le dice a dónde mirar.
+--- 6. EL AJUSTE DE ESCALA ---
 
-8. LO QUE ESCRIBE AL FINAL, EMPEZANDO POR
-   «en un lugar de la mancha, de cuyo »
+::: tabla
+El ajuste de escala, con él y sin él
 
-  en un lugar de la mancha, de cuyo de un mementé miro he  su
-  chas de de l ancan y en y pen finana, y sina, el cabie, y di
-  screto de por lego lanos acena sirvició no legun propoguendo
-   la y anto y el negasenchos anjo, alabrado e hino coyes, y e
-  chos de histila hilinere, encró de de mundadw dilado habá qu
-  e delando ella y me digo de a migi
+| empiezan | ajuste | acierta, tras los pasos: 0 | acierta, tras los pasos: 100 | acierta, tras los pasos: 1.000 | acierta, tras los pasos: 3.000 | reparte |
+|:--|:-:|--:|--:|--:|--:|--:|
+| pequeños (0,02) | sí | 2 % | 29 % | 37 % | 43 % | 16,0 |
+| pequeños (0,02) | no | 2 % | 29 % | 37 % | 43 % | 16,0 |
+| de tamaño 1 | sí | 3 % | 33 % | 40 % | 45 % | 6,3 |
+| de tamaño 1 | no | 3 % | 30 % | 37 % | 38 % | 1,3 |
+
+64 números por letra en lugar de 32; 3.000 pasos; cada número se mueve con su propio poquito.
+
+Empiezan: de qué tamaño son al azar las listas de las letras antes de aprender: de cada cien números, 68 entre menos 1 y 1 («de tamaño 1») o 68 entre menos 0,02 y 0,02.
+
+Acierta: de cada cien, tras esos pasos. Reparte: entre cuántas letras mira antes de aprender nada.
+:::
+
+::: tabla
+El ajuste de escala, con otras semillas
+
+| semilla | con ajuste | sin ajuste |
+|:-:|--:|--:|
+| 20260915 | 45 % | 38 % |
+| 20260916 | 46 % | 38 % |
+
+Números de tamaño 1; cuánto acierta tras 3.000 pasos, de cada cien.
+:::
+
+--- 7. ¿MIRAR, O SABER A DÓNDE MIRAR? ---
+
+::: tabla
+¿Mirar, o saber a dónde mirar?
+
+| la máquina | acierta | reparte entre |
+|:--|--:|--:|
+| entrenada entera | 44,5 % | 4,4 |
+| pregunta y etiqueta al azar, fijas | 32,4 % | 16,0 |
+| sin mirar atrás | 30,0 % |  |
+
+Pregunta y etiqueta al azar, fijas: se entrena todo menos las dos tablas que fijan a dónde mira; el contenido sí aprende.
+:::
+
+::: tabla
+La entrenada entera, con el reparto impuesto al usarla
+
+| el reparto impuesto | acierta | reparte entre |
+|:--|--:|--:|
+| por igual entre las 16 | 24,1 % | 16,0 |
+| todo a la de justo antes | 26,8 % | 1,0 |
+| todo a sí misma | 16,6 % | 1,0 |
+
+Impuesto: la máquina no cambia; solo se le dice a dónde mirar.
+:::
+
+::: tabla
+Con el reparto impuesto, y 5.000 pasos para que el resto vuelva a aprender
+
+| la máquina | acierta | reparte entre |
+|:--|--:|--:|
+| sin imponer nada (para comparar) | 48,7 % | 4,0 |
+| por igual entre las 16 | 32,5 % | 16,0 |
+| todo a la de justo antes | 39,5 % | 1,0 |
+
+La pregunta y la etiqueta no cuentan; el resto aprende moviendo cada número 0,1 veces su culpa.
+:::
+
+::: tabla
+La entrenada entera, 5.000 pasos más sin imponer nada
+
+| cuánto se mueve | acierta |
+|:--|--:|
+| cada número 1,0 veces su culpa (lo de siempre) | 45,5 % |
+| cada número 0,1 veces su culpa | 48,7 % |
+
+Con los mismos fragmentos y en el mismo orden que sus 5.000 primeros pasos.
+:::
+
+--- 8. LO QUE ESCRIBE AL FINAL ---
+
+::: muestra
+Lo que escribe la máquina que mira, al final
+
+    en un lugar de la mancha, de cuyo de un mementé miro he  su 
+    chas de de l ancan y en y pen finana, y sina, el cabie, y di
+    screto de por lego lanos acena sirvició no legun propoguendo
+     la y anto y el negasenchos anjo, alabrado e hino coyes, y e
+    chos de histila hilinere, encró de de mundadw dilado habá qu
+    e delando ella y me digo de a migi
+
+Empieza por «en un lugar de la mancha, de cuyo »; lo demás lo escribe ella, letra a letra.
+:::

@@ -33,22 +33,22 @@ from pathlib import Path
 
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
 
+from formato import leer_tablas
 from infografia import COLOR, GRIS, Lienzo
 
 AQUI = Path(__file__).resolve().parent
 
 
 def leer(ruta):
-    """Del apartado 1: {pieza: números}, el total y lo que se quita sin mirar atrás."""
-    texto = Path(ruta).read_text(encoding="utf-8")
-    assert "1. LA MÁQUINA, PIEZA A PIEZA" in texto, f"se esperaba el apartado 1 en {ruta}"
-    uno = texto.split("1. LA MÁQUINA, PIEZA A PIEZA", 1)[1].split("\n2.", 1)[0]
-    piezas = {}
-    for m in re.finditer(r"^  (\S.*?)\s{2,}([\d.]+)$", uno, re.M):
-        piezas[m.group(1)] = int(m.group(2).replace(".", ""))
+    """Del apartado 1: {pieza: números}, el total y lo que se quita sin mirar atrás, de su tabla
+    editorial (L24, 9 de octubre)."""
+    tablas = leer_tablas(Path(ruta).read_text(encoding="utf-8"))
+    assert "La máquina, pieza a pieza" in tablas, f"se esperaba el apartado 1 en {ruta}"
+    _, filas, notas = tablas["La máquina, pieza a pieza"]
+    piezas = {f[0]: int(f[1].replace(".", "")) for f in filas}
     total = piezas.pop("total")
-    piezas.pop("la pieza", None)
-    quita = int(re.search(r"se quitan las cuatro tablas: ([\d.]+) números", uno).group(1).replace(".", ""))
+    quita = int(re.search(r"se quitan las cuatro tablas: ([\d.]+) números", " ".join(notas))
+                .group(1).replace(".", ""))
     assert sum(piezas.values()) == total, "las piezas no suman el total"
     assert sum(piezas[t] for t in TABLAS_DE_MIRAR) == quita, "las cuatro tablas no suman lo que se quita"
     return piezas, total, quita

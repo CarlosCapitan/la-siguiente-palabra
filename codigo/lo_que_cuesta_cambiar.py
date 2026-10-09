@@ -70,7 +70,7 @@ import json
 import statistics
 import sys
 
-from formato import ANCHO_CAJA, coma, comprobar_ancho, miles, pct
+from formato import coma, miles, pct, tabla_editorial
 
 
 # --------------------------- las medidas de un modelo ---------------------------
@@ -215,86 +215,74 @@ def leer_medido(ruta=MEDIDO):
 # --------------------------- la salida ---------------------------
 
 def imprimir(medidas, medido, n_total):
-    out = []
-    out += ["Cuentas, no tiempos: esta parte no depende de la máquina.",
-            f"Lo medido con el reloj viene de {MEDIDO}",
-            "(eso sí depende de la máquina: MacBook Pro M4 Max, 36 GB, GPU).",
-            "",
-            "medidas de los modelos, leídas de su config.json:"]
-    for nombre, repo, _ in MODELOS:
-        m = medidas[nombre]
-        out += [f"  {ROTULO[nombre]}: {repo}",
-                f"    capas {m['capas']}; números por trozo {miles(m['numeros'])}; "
-                f"mezclar {miles(m['mezclar'])};",
-                f"    miradas {m['miradas']}, con {m['miradas_kv']} juegos de etiqueta y "
-                f"contenido;",
-                f"    vocabulario {miles(m['vocabulario'])} trozos"]
-    out += [""]
-
-    # tabla 1
+    """Las tablas editoriales (L24, 9 de octubre; regla 6 ter). Las cuentas no cambian."""
+    leyenda = " ".join(LEYENDA_MODELOS)
+    out = ["Cuentas, no tiempos: esta parte no depende de la máquina.",
+           f"Lo medido con el reloj viene de {MEDIDO}",
+           "(eso sí depende de la máquina: MacBook Pro M4 Max, 36 GB, GPU).", ""]
     a, b = (n for n, _, _ in MODELOS)
     ra, rb = ROTULO[a], ROTULO[b]
-    t1 = ["PARTE DEL TRABAJO QUE SE VA EN LAS CASILLAS",
-          "(un texto entero, calculado desde cero; de cada cien",
-          "multiplicaciones)",
-          "",
-          f"     trozos   {ra:>10}   {rb:>10}",
-          f"    -------   {'-' * 10}   {'-' * 10}"]
-    for n in LARGOS:
-        t1.append(f"    {miles(n):>7}   {pct(parte_casillas(medidas[a], n)):>10}"
-                  f"   {pct(parte_casillas(medidas[b], n)):>10}")
-    t1 += ["",
-           "    las casillas pesan tanto como todo lo demás a partir de:",
-           f"      {ra}: {miles(largo_del_empate(medidas[a]))} trozos",
-           f"      {rb}: {miles(largo_del_empate(medidas[b]))} trozos",
-           "",
-           "    casillas: cada trozo comparado con él mismo y con todos los",
-           "    anteriores, y lo que trae de cada uno.",
-           "    todo lo demás: las tablas que sacan pregunta, etiqueta y",
-           "    contenido, la que junta las miradas y la parte de mezclar."]
-    t1 += ["    " + l for l in LEYENDA_MODELOS]
-    out += comprobar_ancho(t1, ANCHO_CAJA) + [""]
+    filas = []
+    for nombre, repo, _ in MODELOS:
+        m = medidas[nombre]
+        filas.append([ROTULO[nombre], repo, str(m["capas"]), miles(m["numeros"]),
+                      miles(m["mezclar"]), str(m["miradas"]), str(m["miradas_kv"]),
+                      miles(m["vocabulario"])])
+    out += tabla_editorial(
+        "Las medidas de los dos modelos, leídas de su config.json",
+        ["modelo", "repositorio", "capas", "números por trozo", "mezclar", "miradas",
+         "juegos de etiqueta y contenido", "vocabulario, en trozos"], filas, "iidddddd",
+        [leyenda]) + [""]
 
-    # tabla 2
-    t2 = ["CADA TURNO, EN VECES EL COSTE DE «SOLO AÑADIR»",
-          f"(texto de {miles(n_total)} trozos)",
-          "",
-          f"{'':25}  {ra:^18}  {rb:^18}".rstrip(),
-          f"{'condición':<17} {'trozos':>7}" + f"  {'cuentas':>8}  {'reloj':>8}" * 2,
-          "-" * 65]
+    out += tabla_editorial(
+        "Parte del trabajo que se va en las casillas",
+        ["trozos", ra, rb],
+        [[miles(n), pct(parte_casillas(medidas[a], n)), pct(parte_casillas(medidas[b], n))]
+         for n in LARGOS], "ddd",
+        ["Un texto entero, calculado desde cero; de cada cien multiplicaciones.",
+         f"Las casillas pesan tanto como todo lo demás a partir de {miles(largo_del_empate(medidas[a]))} "
+         f"trozos en el de {ra} y de {miles(largo_del_empate(medidas[b]))} en el de {rb}.",
+         "Casillas: cada trozo comparado con él mismo y con todos los anteriores, y lo que trae de "
+         "cada uno. Todo lo demás: las tablas que sacan pregunta, etiqueta y contenido, la que junta "
+         "las miradas y la parte de mezclar.", leyenda]) + [""]
+
     base = {}
     for nombre in (a, b):
         d = medido[(nombre, "solo añadir")]
         base[nombre] = (total(cuentas_turno(medidas[nombre], d["desde"], n_total)), d["mediana"])
+    filas = []
     for c in CONDICIONES:
         d = medido[(a, c)]
         assert d["recalculados"] == medido[(b, c)]["recalculados"], (
             f"Se esperaba lo mismo recalculado en los dos modelos en «{c}»; no es así")
-        fila = f"{EN_EL_LIBRO.get(c, c):<17} {miles(d['recalculados']):>7}"
+        fila = [EN_EL_LIBRO.get(c, c), miles(d["recalculados"])]
         for nombre in (a, b):
             dn = medido[(nombre, c)]
             cu = total(cuentas_turno(medidas[nombre], dn["desde"], n_total)) / base[nombre][0]
             re = dn["mediana"] / base[nombre][1]
-            fila += f"  {coma(cu):>8}  {coma(re):>8}"
-        t2.append(fila)
-    t2 += ["",
-           "trozos: los que se vuelven a calcular en ese turno.",
-           "cuentas: multiplicaciones del turno entre las de «solo añadir».",
-           "reloj: mediana del tiempo medido entre la de «solo añadir»",
-           "(de editar_contexto.csv; depende de la máquina).",
-           f"«todo desde cero»: los {miles(n_total)} trozos, sin nada ya calculado."]
-    t2 += LEYENDA_MODELOS
-    out += comprobar_ancho(t2, ANCHO_CAJA)
+            fila += [coma(cu), coma(re)]
+        filas.append(fila)
+    out += tabla_editorial(
+        "Cada turno, en veces el coste de «solo añadir»",
+        ["condición", "trozos", f"{ra}: cuentas", f"{ra}: reloj", f"{rb}: cuentas", f"{rb}: reloj"],
+        filas, "iddddd",
+        [f"Un texto de {miles(n_total)} trozos.",
+         "Trozos: los que se vuelven a calcular en ese turno. Cuentas: multiplicaciones del turno "
+         "entre las de «solo añadir». Reloj: mediana del tiempo medido entre la de «solo añadir» (de "
+         "editar_contexto.csv; depende de la máquina).",
+         f"Todo desde cero: los {miles(n_total)} trozos, sin nada ya calculado.", leyenda]) + [""]
 
-    # la parte de las casillas en cada turno, para el texto
-    out += ["", "parte de las casillas en cada turno, de cada cien multiplicaciones:"]
+    filas = []
     for nombre in (a, b):
-        partes = []
+        fila = [ROTULO[nombre]]
         for c in ("solo añadir", "cambio al 0 %"):
             t, k, f = cuentas_turno(medidas[nombre], medido[(nombre, c)]["desde"], n_total)
-            partes.append(f"{c} {pct(k / (t + k + f))}")
-        out.append(f"  {ROTULO[nombre]}: " + "; ".join(partes))
-    print("\n".join(comprobar_ancho(out, ANCHO_CAJA)))
+            fila.append(pct(k / (t + k + f)))
+        filas.append(fila)
+    out += tabla_editorial(
+        "La parte de las casillas en cada turno", ["modelo", "solo añadir", "cambio al 0 %"],
+        filas, "idd", ["De cada cien multiplicaciones del turno."])
+    print("\n".join(out))
 
 
 # --------------------------- selftest ---------------------------

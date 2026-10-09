@@ -33,6 +33,7 @@ from pathlib import Path
 
 from matplotlib.patches import Rectangle
 
+from formato import leer_tablas
 from infografia import COLOR, GRIS, Lienzo
 
 AQUI = Path(__file__).resolve().parent
@@ -41,21 +42,20 @@ NUM = r"(-?\d+,\d+)"
 
 def leer(ruta):
     """Del bloque 9: [(letra, porción, contenido[3], por su porción[3])], la fila de las otras y la
-    mezcla."""
-    texto = Path(ruta).read_text(encoding="utf-8")
-    assert "9. LA MEZCLA:" in texto, f"se esperaba el bloque 9 en {ruta}"
-    nueve = texto.split("9. LA MEZCLA:", 1)[1].split("LO QUE SIGUE ADELANTE", 1)[0]
+    mezcla, de su tabla editorial (L24, 9 de octubre)."""
+    tablas = leer_tablas(Path(ruta).read_text(encoding="utf-8"))
+    titulo = "La mezcla: cada contenido, por su porción, y todo sumado"
+    assert titulo in tablas, f"se esperaba el bloque 9 en {ruta}"
     f = lambda v: float(v.replace(",", "."))
-    filas = []
-    for m in re.finditer(rf"^  (\d+ \S)\s+([\d,]+) %\s+{NUM}\s+{NUM}\s+{NUM}\s+{NUM}\s+{NUM}\s+{NUM}$",
-                         nueve, re.M):
-        g = m.groups()
-        filas.append((g[0], f(g[1]), [f(x) for x in g[2:5]], [f(x) for x in g[5:8]]))
-    m = re.search(rf"^  (otras \d+)\s+([\d,]+) %\s+{NUM}\s+{NUM}\s+{NUM}$", nueve, re.M)
-    otras = (m.group(1), f(m.group(2)), None, [f(x) for x in m.groups()[2:5]])
-    m = re.search(rf"^  la mezcla \(la suma\)\s+{NUM}\s+{NUM}\s+{NUM}$", nueve, re.M)
-    mezcla = [f(x) for x in m.groups()]
-    assert len(filas) >= 2, f"se esperaban varias letras en la mezcla; hay {len(filas)}"
+    filas, otras, mezcla = [], None, None
+    for c in tablas[titulo][1]:
+        if re.match(r"^\d+ \S$", c[0]):
+            filas.append((c[0], f(c[1].replace(" %", "")), [f(x) for x in c[2:5]], [f(x) for x in c[5:8]]))
+        elif c[0].startswith("otras "):
+            otras = (c[0], f(c[1].replace(" %", "")), None, [f(x) for x in c[5:8]])
+        elif c[0] == "la mezcla (la suma)":
+            mezcla = [f(x) for x in c[5:8]]
+    assert len(filas) >= 2 and otras and mezcla, f"se esperaban varias letras en la mezcla; hay {len(filas)}"
     for j in range(3):
         suma = sum(r[3][j] for r in filas) + otras[3][j]
         assert abs(suma - mezcla[j]) <= 0.005 * (len(filas) + 2), \

@@ -40,7 +40,7 @@ import sys
 import numpy as np
 import torch
 
-from formato import coma, comprobar_ancho
+from formato import coma, tabla_editorial, trozo
 
 ANCHO = 64
 
@@ -169,68 +169,74 @@ def main():
     if codigo or args.selftest:
         return codigo
     capas = modelo.config.num_hidden_layers
+    miradas = modelo.config.num_attention_heads
     desde = capas - max(1, int(round(capas * FRACCION_CAPAS_FINALES)))
+    todas, ultimas = capas * miradas, (capas - desde) * miradas
+    claves = (f"Todas: las {todas} miradas; últimas: las {ultimas} de las {capas - desde} últimas "
+              "capas.")
+    # L24 (9 de octubre): tablas editoriales (regla 6 ter). Las cuentas no cambian.
     L = ["", "####### capítulo 8: la papelera por dentro #######",
          f"modelo: {MODELO}, el mismo de reparto_una_a_una.py", ""]
     piezas, palabras, *_ = por_dentro(tok, modelo, FRASES["alto"])
-    import textwrap
-    L += ["La frase, en los trozos en que la parte el modelo:"]
-    L += ["  " + l for l in textwrap.wrap(" | ".join(p.strip() or "_" for p in piezas), 58)]
-    L += [
-          "Pregunta el último trozo, como en reparto_una_a_una.py.", ""]
-    L += ["1. LO QUE PONE «El» EN LA MEZCLA", "",
-          "  «porción»: la parte del reparto que se lleva, de cada cien.",
-          "  «tamaño»: de media, cuánto se aleja de cero cada uno de los",
-          "  64 números de su contenido.",
-          "  «parte de la mezcla»: su contenido por su porción, frente a lo",
-          "  mismo de todas las palabras juntas, de cada cien.", ""]
+    L += tabla_editorial(
+        "La frase del «alto», en los trozos en que la parte el modelo",
+        ["trozos", "la frase, trozo a trozo"],
+        [[str(len(piezas)), " ".join(trozo(p.strip() or "_") for p in piezas)]], "di",
+        ["Pregunta el último trozo, como en reparto_una_a_una.py."]) + [""]
+
+    L += ["--- 1. LO QUE PONE «El» EN LA MEZCLA ---", ""]
+    filas = []
     for adj, frase in FRASES.items():
         _, _, P, A, C, _ = por_dentro(tok, modelo, frase)
         for nombre, d in (("todas", 0), ("últimas", desde)):
             r = resumen(P, A, C, d)
-            L += [f"  «{adj}», {nombre} ({r['miradas']} miradas)",
-                  f"    {'':<22}{'porción':>10}{'tamaño':>10}{'parte de':>12}",
-                  f"    {'':<22}{'':>10}{'':>10}{'la mezcla':>12}",
-                  f"    {'«El»':<22}{coma(100 * r['porcion_el']) + ' %':>10}{coma(r['tam_el'], 3):>10}"
-                  f"{coma(100 * r['parte_el']) + ' %':>12}",
-                  f"    {'las demás palabras':<22}{coma(100 * r['porcion_otras']) + ' %':>10}"
-                  f"{coma(r['tam_otras'], 3):>10}{coma(100 * r['parte_otras']) + ' %':>12}", ""]
-    L += ["  «todas»: las 336 miradas; «últimas»: las de las 8 últimas",
-          "  capas. El tamaño de «las demás» es la media de una palabra;",
-          "  su porción y su parte, la suma de todas.", ""]
-    L += ["2. EL REPARTO DEL FINAL DE LA FRASE, PALABRA A PALABRA",
-          "   (lo mismo que reparto_una_a_una.py, con la última columna",
-          "   rotulada por lo que es)", "",
-          f"  {'frase':<8}{'miradas':<9}{'«El»':>10}{'«vaso»':>10}{'«cajón»':>10}{'el final':>10}",
-          f"  {'-----':<8}{'-------':<9}{'----':>10}{'------':>10}{'-------':>10}{'--------':>10}"]
+            filas += [[f"«{adj}»", nombre, "«El»", f"{coma(100 * r['porcion_el'])} %",
+                       coma(r["tam_el"], 3), f"{coma(100 * r['parte_el'])} %"],
+                      ["", "", "las demás palabras", f"{coma(100 * r['porcion_otras'])} %",
+                       coma(r["tam_otras"], 3), f"{coma(100 * r['parte_otras'])} %"]]
+    L += tabla_editorial(
+        "Lo que pone «El» en la mezcla",
+        ["frase", "miradas", "", "porción", "tamaño", "parte de la mezcla"], filas, "iiiddd",
+        ["Porción: la parte del reparto que se lleva, de cada cien. Tamaño: de media, cuánto se "
+         "aleja de cero cada uno de los 64 números de su contenido. Parte de la mezcla: su "
+         "contenido por su porción, frente a lo mismo de todas las palabras juntas, de cada cien.",
+         claves + " El tamaño de «las demás» es la media de una palabra; su porción y su parte, "
+         "la suma de todas."]) + [""]
+
+    L += ["--- 2. EL REPARTO DEL FINAL DE LA FRASE, PALABRA A PALABRA ---", ""]
+    filas = []
     for adj, frase in FRASES.items():
         _, pal, P, A, C, _ = por_dentro(tok, modelo, frase)
         iv = [i for i, w in enumerate(pal) if w.strip(".,").lower() == "vaso"][0]
         ic = [i for i, w in enumerate(pal) if w.strip(".,").lower() == "cajón"][0]
         for nombre, d in (("todas", 0), ("últimas", desde)):
             Q = P[d:]
-            L.append(f"  {adj:<8}{nombre:<9}" + "".join(f"{coma(100 * Q[..., i].mean()) + ' %':>10}"
-                                                      for i in (0, iv, ic, len(pal) - 1)))
-    L += ["", "  Lo que va a los trozos de una palabra se suma: «v» y «aso»",
-          "  cuentan como «vaso». «el final»: los dos últimos trozos",
-          "  juntos, el adjetivo y el punto: lo que se queda el final",
-          "  de la frase. «El» es la primera palabra: la",
-          "  papelera. «todas»: las 336 miradas; «últimas»: las 112 de",
-          "  las 8 últimas capas.", ""]
-    L += ["3. SI PREGUNTA EL ADJETIVO Y NO EL PUNTO DE DETRÁS",
-          "   (reparto_una_a_una.py pregunta desde el último trozo de la",
-          "   frase, que es el punto; aquí, desde el trozo de antes)", "",
-          f"  {'adjetivo':<10}{'pregunta':<12}{'«El»':>10}{'«vaso»':>10}{'«cajón»':>10}",
-          f"  {'--------':<10}{'--------':<12}{'----':>10}{'------':>10}{'-------':>10}"]
+            filas.append([adj, nombre] + [f"{coma(100 * Q[..., i].mean())} %"
+                                          for i in (0, iv, ic, len(pal) - 1)])
+    L += tabla_editorial(
+        "El reparto del final de la frase, palabra a palabra",
+        ["frase", "miradas", "«El»", "«vaso»", "«cajón»", "el final"], filas, "iidddd",
+        ["Lo que va a los trozos de una palabra se suma: «v» y «aso» cuentan como «vaso». El "
+         "final: los dos últimos trozos juntos, el adjetivo y el punto: lo que se queda el final "
+         "de la frase. «El» es la primera palabra: la papelera.",
+         claves,
+         "Lo mismo que reparto_una_a_una.py, con la última columna rotulada por lo que es."]) + [""]
+
+    L += ["--- 3. SI PREGUNTA EL ADJETIVO Y NO EL PUNTO DE DETRÁS ---", ""]
+    filas = []
     for adj, frase in FRASES.items():
         for nombre, antes in (("el punto", False), ("el adjetivo", True)):
             pz, pal, P, A, C, _ = por_dentro(tok, modelo, frase, antes_del_punto=antes)
             iv = [i for i, w in enumerate(pal) if w.strip(".,").lower() == "vaso"][0]
             ic = [i for i, w in enumerate(pal) if w.strip(".,").lower() == "cajón"][0]
-            L.append(f"  {adj:<10}{nombre:<12}{coma(100 * P[..., 0].mean()) + ' %':>10}"
-                     f"{coma(100 * P[..., iv].mean()) + ' %':>10}{coma(100 * P[..., ic].mean()) + ' %':>10}")
-    L += ["", "  Media de las 336 miradas, de cada cien.", ""]
-    for l in comprobar_ancho([l.rstrip() for l in L], ANCHO):
+            filas.append([adj, nombre, f"{coma(100 * P[..., 0].mean())} %",
+                          f"{coma(100 * P[..., iv].mean())} %", f"{coma(100 * P[..., ic].mean())} %"])
+    L += tabla_editorial(
+        "Si pregunta el adjetivo y no el punto de detrás",
+        ["adjetivo", "pregunta", "«El»", "«vaso»", "«cajón»"], filas, "iiddd",
+        [f"Media de las {todas} miradas, de cada cien. reparto_una_a_una.py pregunta desde el "
+         "último trozo de la frase, que es el punto; aquí también desde el trozo de antes."])
+    for l in L:
         print(l)
     return 0
 
