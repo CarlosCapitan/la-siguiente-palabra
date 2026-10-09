@@ -37,7 +37,7 @@ import re
 import sys
 from pathlib import Path
 
-from formato import tabla_editorial
+from formato import coma, tabla_editorial
 
 AQUI = Path(__file__).resolve().parent
 
@@ -138,7 +138,7 @@ def selftest():
             if r["clave"] == "bateria" and r["tarea"] == "media":
                 medias = [float(r[c]) for c in COLUMNAS]
     ok = all(abs(m * 30 - x) < 0.02 for m, x in zip(medias, tot))
-    print(f"[3] invariante        totales {tot} = medias del csv {medias} por 30: {'sí' if ok else 'NO'}")
+    print(f"[3] invariante        totales {tot} = medias del csv {', '.join(coma(m, 3) for m in medias)} por 30: {'sí' if ok else 'NO'}")
     if not ok:
         fallos.append("invariante: los totales no son la media por treinta")
     print()

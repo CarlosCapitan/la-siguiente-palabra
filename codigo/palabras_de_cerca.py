@@ -502,8 +502,8 @@ def selftest():
         signos.append(mismo_signo(u, v))
         parecidos_.append(parecido(u, v))
     ms, mp = float(np.mean(signos)), float(np.mean(np.abs(parecidos_)))
-    print(f"[1] test nulo         listas al azar: mismo signo {ms:.1f} de {DIMENSION}; "
-          f"parecido medio en valor absoluto {mp:.3f}")
+    print(f"[1] test nulo         listas al azar: mismo signo {coma(ms, 1)} de {DIMENSION}; "
+          f"parecido medio en valor absoluto {coma(mp, 3)}")
     if not (45 <= ms <= 55 and mp < 0.15):
         fallos.append(f"test nulo: mismo signo {ms:.1f}, parecido {mp:.3f}")
 

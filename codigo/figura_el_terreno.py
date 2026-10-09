@@ -27,6 +27,7 @@ NIVELES = [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7]
 # ==========================================================
 
 import argparse
+from formato import coma
 import csv
 import sys
 from pathlib import Path
@@ -111,7 +112,7 @@ def selftest():
     # 1. TEST NULO — en el tramo llano de la izquierda (pesos muy negativos) el error no cambia:
     #    ahí la culpa es casi cero, que es lo que dice el rótulo.
     llano = t[t[:, 0] < -4, 1]
-    print(f"[1] test nulo         en el llano, el error va de {llano.min():.4f} a {llano.max():.4f}")
+    print(f"[1] test nulo         en el llano, el error va de {coma(llano.min(), 4)} a {coma(llano.max(), 4)}")
     if llano.max() - llano.min() > 0.005:
         fallos.append("test nulo: el tramo que la figura llama llano no lo es")
 
@@ -130,7 +131,7 @@ def selftest():
     bajo = z[i, j] <= np.quantile(z, 0.10)
     for pal in (COLOR, GRIS):
         dibujar(t, c, ejes, z, peso_final, pal, "/dev/null")
-    print(f"[3] invariante        error del mapa donde lo dejó el entrenamiento: {z[i, j]:.4f} (entre el 10 % más bajo: {bajo})")
+    print(f"[3] invariante        error del mapa donde lo dejó el entrenamiento: {coma(z[i, j], 4)} (entre el 10 % más bajo: {bajo})")
     if not bajo:
         fallos.append("invariante: el punto entrenado no está en lo más bajo del mapa")
     print()

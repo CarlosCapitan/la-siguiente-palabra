@@ -1,4 +1,4 @@
-[1] test nulo         listas al azar: mismo signo 50.0 de 100; parecido medio en valor absoluto 0.081
+[1] test nulo         listas al azar: mismo signo 50,0 de 100; parecido medio en valor absoluto 0,081
 [2] señal implantada  puntos en un plano: 20 de 20 conservan su vecina; resta fabricada -> «objetivo»
 [3] invariante        consigo misma, al revés, estirada y con ceros: bien; resta propia = gensim: True
 

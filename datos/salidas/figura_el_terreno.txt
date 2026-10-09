@@ -1,6 +1,6 @@
-[1] test nulo         en el llano, el error va de 0.4999 a 0.5000
+[1] test nulo         en el llano, el error va de 0,4999 a 0,5000
 [2] señal             el camino siempre baja: True; marcas que no están en la salida: ninguna
-[3] invariante        error del mapa donde lo dejó el entrenamiento: 0.0003 (entre el 10 % más bajo: True)
+[3] invariante        error del mapa donde lo dejó el entrenamiento: 0,0003 (entre el 10 % más bajo: True)
 
 SELFTEST: las tres pruebas pasan.
 escrita ../figuras/el_terreno.png

@@ -43,14 +43,22 @@ AQUI = Path(__file__).resolve().parent
 
 
 def leer(ruta):
-    """Las cinco filas de la tabla: tirada, semilla, los tres pesos de arranque y el acierto."""
-    texto = Path(ruta).read_text(encoding="utf-8")
-    num = lambda s: float(s.replace(",", "."))
+    """Las cinco filas de la tabla: tirada, semilla, los tres pesos de arranque y el acierto.
+    Desde el 9 de octubre de 2026, de la tabla editorial de la salida, por su título (la
+    salida dejó de imprimir renglones sangrados y este lector se había quedado atrás)."""
+    from formato import leer_tablas
+    titulo = "Lo que pone al azar la semilla: los pesos con los que arranca"
+    T = leer_tablas(Path(ruta).read_text(encoding="utf-8"))
+    assert titulo in T, f"Se esperaba la tabla «{titulo}» en {ruta}"
+    rot, tabla, _ = T[titulo]
+    assert rot[0] == "tirada" and rot[-1] == "acierta" and len(rot) == 6, rot
+    num = lambda s: float(s.replace("+", "").replace(".", "").replace(",", ".")) if "," in s \
+        else float(s.replace(".", ""))
     filas = []
-    for m in re.finditer(r"^(\d)\s+([\d.]+)\s+([+-]\d,\d\d)\s+([+-]\d,\d\d)\s+([+-]\d,\d\d)"
-                         r"\s+(\d+,\d) %$", texto, re.M):
-        filas.append({"tirada": int(m.group(1)), "semilla": int(m.group(2).replace(".", "")),
-                      "pesos": [num(m.group(k)) for k in (3, 4, 5)], "acierta": num(m.group(6))})
+    for t in tabla:
+        assert t[-1].endswith(" %"), f"acierto inesperado: {t}"
+        filas.append({"tirada": int(t[0]), "semilla": int(t[1].replace(".", "")),
+                      "pesos": [num(x) for x in t[2:5]], "acierta": num(t[5][:-2])})
     assert len(filas) == 5, f"Se esperaban 5 tiradas en {ruta}; se encontraron {len(filas)}"
     return filas
 

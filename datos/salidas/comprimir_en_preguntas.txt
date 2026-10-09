@@ -1,7 +1,7 @@
 --- selftest ---
 [1] test nulo         un 0,5 no se deja convertir en aciertos de 5
 [2] señal             32.000M en «datos del mundo»: 0 de 5; cambian: ['sumar dos cifras', 'razonar sobre una frase']
-[3] invariante        totales [14, 17, 19] = medias del csv [0.467, 0.567, 0.633] por 30: sí
+[3] invariante        totales [14, 17, 19] = medias del csv 0,467, 0,567, 0,633 por 30: sí
 
 SELFTEST: las tres pruebas pasan.
 

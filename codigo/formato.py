@@ -13,7 +13,8 @@ bloques de programa a \\footnotesize) y se fue alargando una línea de caractere
 hasta que xelatex avisó de que se salía.
 
   - bloque normal:             con 68 no avisa; con 69 avisa (se sale 4,42 pt).
-  - bloque dentro de una cita: con 64 no avisa; con 65 avisa (se sale 0,85 pt).
+  - bloque dentro de una cita: con 62 no avisa; con 63 avisa (se sale 4,07 pt). Medido el 20 de
+    septiembre de 2026, con la cita a 1,4 em por lado (fallo 4.44); antes de eso eran 64.
 
 La cita es más estrecha porque su entorno mete margen por los dos lados. Si cambia el
 papel, la caja o el cuerpo de letra, estos dos números se vuelven a MEDIR.

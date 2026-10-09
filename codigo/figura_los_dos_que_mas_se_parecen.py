@@ -22,6 +22,7 @@ ALTO = 2.6                    # pulgadas
 # ==========================================================
 
 import argparse
+from formato import coma, leer_tablas
 import re
 import sys
 from pathlib import Path
@@ -35,10 +36,14 @@ AQUI = Path(__file__).resolve().parent
 
 
 def leer(ruta):
-    texto = Path(ruta).read_text(encoding="utf-8")
-    m = re.search(r"el comité (\d+) y el comité (\d+)\s+(-?\d+,\d+)", texto)
-    assert m, f"no encuentro la pareja que más se parece en {ruta}"
-    return int(m.group(1)), int(m.group(2)), float(m.group(3).replace(",", "."))
+    # Desde el 9 de octubre de 2026, de la tabla editorial, por su título.
+    titulo = "Cuánto se parecen, con la cuenta del cuatro y el nueve"
+    T = leer_tablas(Path(ruta).read_text(encoding="utf-8"))
+    assert titulo in T, f"no encuentro la tabla «{titulo}» en {ruta}"
+    _, filas, _ = T[titulo]
+    m = re.fullmatch(r"el comité (\d+) y el comité (\d+)", filas[0][0])
+    assert m and len(filas) == 1, f"no encuentro la pareja que más se parece en {ruta}"
+    return int(m.group(1)), int(m.group(2)), float(filas[0][1].replace(",", "."))
 
 
 def dibujar(W, a, b, r, paleta, ruta):
@@ -65,13 +70,13 @@ def selftest():
 
     # 1. TEST NULO — un comité comparado con su propio negativo da exactamente −1.
     nulo = float(np.corrcoef(W[:, a - 1], -W[:, a - 1])[0, 1])
-    print(f"[1] test nulo         un comité contra su negativo: {nulo:.3f} (tiene que ser -1)")
+    print(f"[1] test nulo         un comité contra su negativo: {coma(nulo, 3)} (tiene que ser -1)")
     if abs(nulo + 1) > 1e-9:
         fallos.append("test nulo: un comité contra su negativo no da -1")
 
     # 2. SEÑAL — la pareja de la salida, con los pesos de esta red, da el parecido de la salida.
     rr = float(np.corrcoef(W[:, a - 1], W[:, b - 1])[0, 1])
-    print(f"[2] señal             comités {a} y {b}: {rr:.2f} (la salida dice {r})")
+    print(f"[2] señal             comités {a} y {b}: {coma(rr, 2)} (la salida dice {coma(r, 2)})")
     if abs(rr - r) > 0.006:
         fallos.append("señal: la pareja dibujada no tiene el parecido que dice la salida")
 
@@ -81,7 +86,7 @@ def selftest():
     mayor = float(C.max())
     for pal in (COLOR, GRIS):
         dibujar(W, a, b, r, pal, "/dev/null")
-    print(f"[3] invariante        el parecido más grande entre dos comités: {mayor:.2f}")
+    print(f"[3] invariante        el parecido más grande entre dos comités: {coma(mayor, 2)}")
     if abs(mayor - abs(r)) > 0.006:
         fallos.append("invariante: hay otra pareja que se parece más")
     print()

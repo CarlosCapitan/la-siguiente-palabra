@@ -1,4 +1,4 @@
-[1] test nulo         reparto igual: 100 + 0; pasos al 50 %: casi seguro 0.0
+[1] test nulo         reparto igual: 100 + 0; pasos al 50 %: casi seguro 0 %
 [2] señal             casi seguro 57 %, termina palabra 23 % (el libro: 57 % y 23 %)
 [3] invariante        partes que suman el todo y papeletas 62 + 38 = 100: True
 
