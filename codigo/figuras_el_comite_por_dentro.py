@@ -83,14 +83,27 @@ def leer(ruta):
     d["tinta"] = _cuadricula(L, linea("1. EL DIBUJO DE UN"))
     d["casos"] = _cuadricula(L, linea("2. LO QUE APRENDIÓ"))
     d["liston"] = _numero(re.search(r"el listón: (-?[\d.]+)\.", texto).group(1))
-    d["total_si"] = _numero(re.search(r"total del \d\s+(-?[\d.]+)", texto).group(1))
-    d["total_no"] = _numero(re.search(r"con la misma cuenta: total (-?[\d.]+)", texto).group(1))
     d["si"], d["no"] = [int(x) for x in re.search(r"¿es un (\d) o un (\d)\?", texto).groups()]
+    # Desde el 9 de octubre de 2026, los totales y los parecidos se leen de las tablas
+    # editoriales de la salida, por su título (la salida dejó de imprimir renglones sangrados y
+    # este lector se había quedado atrás).
+    from formato import leer_tablas
+    T = leer_tablas(texto)
+    t_liston = f"El {d['si']} y el {d['no']}, contra el listón"
+    assert t_liston in T, f"se esperaba la tabla «{t_liston}» en {ruta}"
+    rot, filas, _ = T[t_liston]
+    assert rot[:2] == ["dibujo", "total"], rot
+    tot = {f[0]: _numero(f[1]) for f in filas}
+    d["total_si"], d["total_no"] = tot[f"un {d['si']}"], tot[f"un {d['no']}"]
     d["media_si"] = _cuadricula(L, linea(f"  el {d['si']} medio"))
     d["media_no"] = _cuadricula(L, linea(f"  el {d['no']} medio"))
     d["diferencia"] = _cuadricula(L, linea("  la diferencia:"))
-    d["parecido_media"] = re.search(r"al \d medio\s+(-?[\d,]+)", texto).group(1)
-    d["parecido_dif"] = re.search(r"a la diferencia\s+(-?[\d,]+)", texto).group(1)
+    par = [f for rot, fs, _ in T.values() if rot and rot[0] == "los pesos, comparados con"
+           for f in fs]
+    par = {f[0]: f[1] for f in par}
+    assert f"el {d['si']} medio" in par and "la diferencia" in par, f"parecidos en {ruta}: {par}"
+    d["parecido_media"] = par[f"el {d['si']} medio"]
+    d["parecido_dif"] = par["la diferencia"]
     return d
 
 
