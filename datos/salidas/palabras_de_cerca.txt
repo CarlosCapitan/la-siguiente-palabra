@@ -4,7 +4,7 @@
 
 SELFTEST: las tres pruebas pasan.
 
-Máquina: aarch64, Linux 6.8.0-138-generic.
+Máquina: arm64, Darwin 25.6.0.
 Medido el 2026-10-09. Semilla: 20260914.
 Biblioteca: 21.313.324 palabras, 68.927 distintas.
 Mismo modelo que palabras_numeros.txt: las vecinas de las ocho palabras coinciden.
@@ -31,7 +31,7 @@ Las 5 palabras de cada lado; «caballo», entre corchetes.
 |  | a | 50 | 40 |
 |  | mi | 50 | 37 |
 |  | que | 50 | 17 |
-|  | continuaba | 50 | 24 |
+|  | continuaba | 50 | 25 |
 |  | su | 50 | 28 |
 |  | camino | 50 | 41 |
 |  | lentamente | 50 | 32 |
@@ -79,7 +79,7 @@ Cómo se parecen dos listas
 |:--|--:|--:|--:|--:|--:|
 | caballo y corcel | 44 | -0,08 | 74 | 0,70 | 119 |
 | caballo y galope | 52 | 0,10 | 82 | 0,80 | 2 |
-| caballo y lunes | 51 | 0,04 | 66 | 0,51 | 32.043 |
+| caballo y lunes | 51 | 0,04 | 66 | 0,51 | 32.040 |
 
 Signo: en cuántas de las 100 posiciones las dos listas tienen las dos un número positivo o las dos uno negativo.
 
@@ -87,7 +87,7 @@ Parecido: la cuenta entera, que va de -1 a 1; 1 es lo más parecido posible.
 
 Puesto: en qué puesto sale la segunda entre las 68.926 vecinas de la primera.
 
-A media tabla, en el puesto 34.463 de las vecinas de «caballo», está «russell», con parecido 0,50.
+A media tabla, en el puesto 34.463 de las vecinas de «caballo», está «manan», con parecido 0,50.
 :::
 
 --- 4. LAS VECINAS DE «CABALLO», CON SU PARECIDO ---
@@ -114,13 +114,13 @@ Las palabras del capítulo 1
 | pareja | parecido | puesto |
 |:--|--:|--:|
 | caballo y rocín | 0,76 | 5 |
-| caballo y rocinante | 0,69 | 184 |
+| caballo y rocinante | 0,69 | 185 |
 | caballo y corcel | 0,70 | 119 |
 | caballero y hidalgo | 0,74 | 73 |
 | dijo y respondió | 0,83 | 1 |
 | dijo y preguntó | 0,80 | 3 |
 | dijo y replicó | 0,79 | 4 |
-| caballo y lunes | 0,51 | 32.043 |
+| caballo y lunes | 0,51 | 32.040 |
 
 Puesto: en qué puesto sale la segunda entre las 68.926 vecinas de la primera; el puesto 1 es la más parecida.
 :::
@@ -132,9 +132,9 @@ La resta, número a número
 
 |  | 1.º | 2.º | 3.º | 4.º | 5.º | 6.º |
 |:--|--:|--:|--:|--:|--:|--:|
-| rey | -0,030 | 0,016 | 0,175 | -0,147 | -0,021 | -0,006 |
-| menos hombre | 0,047 | 0,133 | 0,095 | 0,046 | -0,142 | 0,112 |
-| más mujer | -0,001 | 0,104 | 0,104 | -0,051 | -0,053 | 0,041 |
+| rey | -0,030 | 0,016 | 0,175 | -0,147 | -0,020 | -0,006 |
+| menos hombre | 0,047 | 0,133 | 0,095 | 0,045 | -0,142 | 0,112 |
+| más mujer | -0,001 | 0,105 | 0,104 | -0,051 | -0,054 | 0,041 |
 | **el resultado** | **-0,078** | **-0,013** | **0,184** | **-0,243** | **0,068** | **-0,077** |
 | y, para comparar, reina | 0,035 | 0,045 | 0,181 | -0,139 | -0,040 | -0,023 |
 
@@ -175,7 +175,7 @@ En qué puesto sale la palabra buscada
 | padre, menos hombre, más mujer | madre | 1 |
 | hijo, menos hombre, más mujer | hija | 1 |
 | hermano, menos hombre, más mujer | hermana | 2 |
-| caballo, menos macho, más hembra | yegua | 6.247 |
+| caballo, menos macho, más hembra | yegua | 6.245 |
 
 Sin contar las tres de la pregunta.
 :::
@@ -232,7 +232,7 @@ El mapa: de cien números a dos
 | noche | 0,197 | -0,440 | madrugada | 4 |
 | madrugada | 0,176 | -0,243 | noche | 4 |
 | tarde | 0,324 | -0,368 | noche | 4 |
-| dinero | -0,011 | 0,460 | negocio | 5 |
+| dinero | -0,011 | 0,461 | negocio | 5 |
 | pagar | -0,119 | 0,361 | dinero | 5 |
 | negocio | 0,001 | 0,294 | dinero | 5 |
 | banco | 0,254 | 0,195 | escritorio | 6 |
