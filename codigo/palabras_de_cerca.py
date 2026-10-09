@@ -92,7 +92,7 @@ from datetime import date
 
 import numpy as np
 
-from formato import ANCHO_CAJA_CITA, coma, comprobar_ancho, miles
+from formato import ANCHO_CAJA, coma, leer_tablas, miles, muestra_editorial, tabla_editorial
 from palabras_numeros import (CORPUS_BIBLIOTECA, DIMENSION, EPOCAS, HILOS, MIN_APARICIONES,
                               SEMILLA, SONDAS, VECINOS, VENTANA, cargar_corpus)
 
@@ -208,23 +208,26 @@ def entrenar_guardando_el_arranque(frases, palabras):
 
 
 def vecinas_del_libro(ruta):
-    """Las vecinas de la biblioteca en la salida de palabras_numeros.py."""
-    texto = open(ruta, encoding="utf-8").read()
-    assert "UNA BIBLIOTECA" in texto, f"se esperaba la sección de la biblioteca en {ruta}"
-    bib = texto.split("UNA BIBLIOTECA", 1)[1].split("--- ARITMÉTICA", 1)[0]
-    out = {}
-    for l in bib.splitlines():
-        m = re.match(r"^(\w+)\s+-> (.+)$", l)
-        if m:
-            out[m.group(1)] = [x.strip() for x in m.group(2).split(",")]
+    """Las vecinas de la biblioteca en la salida de palabras_numeros.py (su tabla editorial)."""
+    tablas = leer_tablas(open(ruta, encoding="utf-8").read())
+    titulo = "Las vecinas más próximas, con una biblioteca (300 libros)"
+    assert titulo in tablas, f"se esperaba la tabla «{titulo}» en {ruta}"
+    out = {f[0]: [x.strip() for x in f[1].split(",")] for f in tablas[titulo][1]}
     assert set(out) == set(SONDAS), f"se esperaban las vecinas de {SONDAS}; hay {sorted(out)}"
     return out
 
 
 # --------------------------------------------------------------------------- los bloques
+# L24 (9 de octubre): cada bloque sale en tablas editoriales (regla 6 ter). Las cuentas no
+# cambian; cambia la forma, y lo que antes eran frases con cifras pasa a casillas con rótulo.
+
+def imprimir(*bloques):
+    for b in bloques:
+        print("\n".join(b))
+        print()
+
 
 def bloque_tarea(m, frases, antes_sal, rng):
-    lin = ["--- 1. LA TAREA, HECHA UNA VEZ ---"]
     frase = None
     for f in frases:
         for i, p in enumerate(f):
@@ -246,33 +249,29 @@ def bloque_tarea(m, frases, antes_sal, rng):
         p = vocab[int(rng.choice(len(vocab), p=frec))]
         if p not in alrededor and p != PALABRA_TAREA and p not in azar:
             azar.append(p)
-    trozo = frase[pos - VENTANA:pos + VENTANA + 1]
-    texto = " ".join(trozo[:VENTANA]) + " [" + PALABRA_TAREA + "] " + " ".join(trozo[VENTANA + 1:])
-    lin += [f"una frase del texto, con «{PALABRA_TAREA}» en medio y las",
-            f"{VENTANA} palabras de cada lado:", ""]
-    lin += ["   " + x for x in _partir(texto, ANCHO_CAJA_CITA - 3)]
+    trozo_ = frase[pos - VENTANA:pos + VENTANA + 1]
+    texto = " ".join(trozo_[:VENTANA]) + " [" + PALABRA_TAREA + "] " + " ".join(trozo_[VENTANA + 1:])
+    muestra = muestra_editorial(
+        f"Una frase del texto, con «{PALABRA_TAREA}» en medio",
+        _partir(texto, ANCHO_CAJA),
+        [f"Las {VENTANA} palabras de cada lado; «{PALABRA_TAREA}», entre corchetes."])
     sal = m.syn1neg[m.wv.key_to_index[PALABRA_TAREA]]
-    lin += ["", f"¿van juntas «{PALABRA_TAREA}» y esta palabra?",
-            "de 0 (seguro que no) a 100 (seguro que sí)", "",
-            f"{'':<18}{'antes de':>12}{'después de':>12}",
-            f"{'':<18}{'entrenar':>12}{'entrenar':>12}",
-            "las de alrededor"]
-    filas = []
-    for p in alrededor:
-        a = si_van_juntas(m.wv[p], antes_sal[PALABRA_TAREA])
-        d = si_van_juntas(m.wv[p], sal)
-        filas.append((p, a, d, True))
-        lin.append(f"  {p:<16}{coma(a, 0):>12}{coma(d, 0):>12}")
-    lin.append(f"{AL_AZAR} sacadas al azar")
-    for p in azar:
-        a = si_van_juntas(m.wv[p], antes_sal[PALABRA_TAREA])
-        d = si_van_juntas(m.wv[p], sal)
-        filas.append((p, a, d, False))
-        lin.append(f"  {p:<16}{coma(a, 0):>12}{coma(d, 0):>12}")
+    filas, tabla = [], []
+    for de_verdad, lista, rotulo in ((True, alrededor, "de alrededor"),
+                                     (False, azar, "sacada al azar")):
+        for k, p in enumerate(lista):
+            a = si_van_juntas(m.wv[p], antes_sal[PALABRA_TAREA])
+            d = si_van_juntas(m.wv[p], sal)
+            filas.append((p, a, d, de_verdad))
+            tabla.append([rotulo if k == 0 else "", p, coma(a, 0), coma(d, 0)])
     media = lambda de_verdad: float(np.mean([d for _, _, d, v in filas if v == de_verdad]))
-    lin += ["", f"media después de entrenar: las de alrededor {coma(media(True), 0)};",
-            f"las sacadas al azar {coma(media(False), 0)}"]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA), filas
+    tabla_ = tabla_editorial(
+        f"¿Van juntas «{PALABRA_TAREA}» y esta palabra?",
+        ["de dónde sale", "la palabra", "antes de entrenar", "después de entrenar"], tabla, "iidd",
+        ["De 0 (seguro que no) a 100 (seguro que sí).",
+         f"Media después de entrenar: las de alrededor, {coma(media(True), 0)}; "
+         f"las sacadas al azar, {coma(media(False), 0)}."])
+    return [muestra, tabla_], filas
 
 
 def _partir(texto, ancho):
@@ -290,37 +289,24 @@ def _partir(texto, ancho):
 
 def bloque_tres_palabras(m, antes):
     n = NUMEROS_A_ENSENAR
-    cab = f"{'':<9}" + "".join(f"{f'{k}.º':>8}" for k in range(1, n + 1))
-    lin = ["--- 2. LOS NÚMEROS DE TRES PALABRAS ---",
-           f"los {n} primeros de sus {DIMENSION} números", "", cab,
-           "antes de entrenar (puestos al azar)"]
-    for p in TRES_PALABRAS:
-        lin.append(f"{p:<9}" + "".join(f"{coma(float(x), 3):>8}" for x in antes[p][:n]))
-    lin.append("después de entrenar")
-    for p in TRES_PALABRAS:
-        lin.append(f"{p:<9}" + "".join(f"{coma(float(x), 3):>8}" for x in m.wv[p][:n]))
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+    rotulos = ["palabra"] + [f"{k}.º" for k in range(1, n + 1)]
+    fila = lambda p, v: [p] + [coma(float(x), 3) for x in v[:n]]
+    return [tabla_editorial(f"Los {n} primeros de sus {DIMENSION} números, antes de entrenar",
+                            rotulos, [fila(p, antes[p]) for p in TRES_PALABRAS], "i" + "d" * n,
+                            ["Puestos al azar."]),
+            tabla_editorial(f"Los {n} primeros de sus {DIMENSION} números, después de entrenar",
+                            rotulos, [fila(p, m.wv[p]) for p in TRES_PALABRAS], "i" + "d" * n)]
 
 
 def bloque_parecido(m, antes):
     n = len(m.wv.index_to_key)
-    lin = ["--- 3. CÓMO SE PARECEN DOS LISTAS ---",
-           f"«signo»: en cuántas de las {DIMENSION} posiciones las dos listas",
-           "tienen las dos un número positivo o las dos uno negativo.",
-           "«parecido»: la cuenta entera, que va de -1 a 1; 1 es lo",
-           "más parecido posible. «puesto»: en qué puesto sale",
-           f"la segunda entre las {miles(n - 1)} vecinas de la primera", "",
-           f"{'':<18}{'antes de entrenar':>18}{'después de entrenar':>26}",
-           f"{'pareja':<18}{'signo':>8}{'parecido':>10}{'signo':>8}{'parecido':>10}{'puesto':>8}",
-           "-" * 62]
-    valores = {}
+    valores, filas = {}, []
     for a, b in PAREJAS_PARECIDO:
         sa, pa = mismo_signo(antes[a], antes[b]), parecido(antes[a], antes[b])
         sd, pd = mismo_signo(m.wv[a], m.wv[b]), parecido(m.wv[a], m.wv[b])
         pu = puesto_vecina(m.wv, a, b)
         valores[(a, b)] = (sa, pa, sd, pd, pu)
-        lin.append(f"{a + ' y ' + b:<18}{sa:>8}{coma(pa, 2):>10}{sd:>8}{coma(pd, 2):>10}"
-                   f"{miles(pu):>8}")
+        filas.append([f"{a} y {b}", str(sa), coma(pa, 2), str(sd), coma(pd, 2), miles(pu)])
     # La referencia (tercera vuelta de L24): la vecina de «caballo» que queda a media tabla. Es
     # contra lo que se leen las cifras de «caballo»; el parecido medio de dos palabras sacadas
     # al azar de todo el vocabulario no sirve, porque casi todas son raras y las raras se
@@ -330,96 +316,108 @@ def bloque_parecido(m, antes):
     orden = [i for i in np.argsort(-s_) if m.wv.index_to_key[i] != a0]
     medio = (len(orden) + 1) // 2
     w_medio = m.wv.index_to_key[orden[medio - 1]]
-    lin += ["", f"a media tabla, en el puesto {miles(medio)} de las vecinas de",
-            f"«{a0}», está «{w_medio}», con parecido {coma(parecido(m.wv[a0], m.wv[w_medio]), 2)}"]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA), valores
+    A, D = "antes de entrenar", "después de entrenar"
+    return [tabla_editorial(
+        "Cómo se parecen dos listas",
+        ["pareja", f"{A}: signo", f"{A}: parecido", f"{D}: signo", f"{D}: parecido", f"{D}: puesto"],
+        filas, "iddddd",
+        [f"Signo: en cuántas de las {DIMENSION} posiciones las dos listas tienen las dos un número "
+         "positivo o las dos uno negativo.",
+         "Parecido: la cuenta entera, que va de -1 a 1; 1 es lo más parecido posible.",
+         f"Puesto: en qué puesto sale la segunda entre las {miles(n - 1)} vecinas de la primera.",
+         f"A media tabla, en el puesto {miles(medio)} de las vecinas de «{a0}», está «{w_medio}», "
+         f"con parecido {coma(parecido(m.wv[a0], m.wv[w_medio]), 2)}."])], valores
 
 
 def bloque_vecinas(m):
-    lin = [f"--- 4. LAS VECINAS DE «{PALABRA_TAREA.upper()}», CON SU PARECIDO ---",
-           f"de las {miles(len(m.wv.index_to_key))} palabras, las {VECINOS} más parecidas", ""]
-    for p, s in m.wv.most_similar(PALABRA_TAREA, topn=VECINOS):
-        lin.append(f"   {p:<14}{coma(s, 2):>6}")
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+    return [tabla_editorial(
+        f"Las vecinas de «{PALABRA_TAREA}», con su parecido", ["vecina", "parecido"],
+        [[p, coma(s, 2)] for p, s in m.wv.most_similar(PALABRA_TAREA, topn=VECINOS)], "id",
+        [f"De las {miles(len(m.wv.index_to_key))} palabras, las {VECINOS} más parecidas."])]
 
 
 def bloque_averia(m):
     n = len(m.wv.index_to_key)
-    lin = ["--- 5. LAS PALABRAS DEL CAPÍTULO 1 ---",
-           "«puesto»: en qué puesto sale la segunda entre las",
-           f"{miles(n - 1)} vecinas de la primera; el puesto 1 es la más", "parecida", "",
-           f"{'pareja':<24}{'parecido':>10}{'puesto':>10}", "-" * 44]
-    filas = []
+    filas, tabla = [], []
     for a, b in PAREJAS_AVERIA:
         assert a in m.wv and b in m.wv, f"«{a}» o «{b}» no está en el vocabulario"
         s, pu = parecido(m.wv[a], m.wv[b]), puesto_vecina(m.wv, a, b)
         filas.append((a, b, s, pu))
-        lin.append(f"{a + ' y ' + b:<24}{coma(s, 2):>10}{miles(pu):>10}")
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA), filas
+        tabla.append([f"{a} y {b}", coma(s, 2), miles(pu)])
+    return [tabla_editorial(
+        "Las palabras del capítulo 1", ["pareja", "parecido", "puesto"], tabla, "idd",
+        [f"Puesto: en qué puesto sale la segunda entre las {miles(n - 1)} vecinas de la primera; "
+         "el puesto 1 es la más parecida."])], filas
 
 
 def bloque_resta(m):
     a, b, c, buscada = RESTAS[0]
     r, _ = resta(m.wv, a, b, c, PUESTOS_RESULTADO)
     k = NUMEROS_RESTA
-    fila = lambda nombre, v: f"{nombre:<14}" + "".join(f"{coma(float(x), 3):>8}" for x in v[:k])
-    lin = ["--- 6. LA RESTA, NÚMERO A NÚMERO ---",
-           f"los {k} primeros de los {DIMENSION} números; cada lista, antes,",
-           "dividida por su tamaño (bloque 10), para que no mande", "la de números más grandes", "",
-           f"{'':<14}" + "".join(f"{f'{j}.º':>8}" for j in range(1, k + 1)),
-           fila(a, unidad(m.wv[a])), fila(f"menos {b}", unidad(m.wv[b])),
-           fila(f"más {c}", unidad(m.wv[c])), "-" * (14 + 8 * k),
-           fila("resultado", r), "", fila(buscada, unidad(m.wv[buscada])), "",
-           f"el resultado, con los {DIMENSION} números:",
-           f"{'':<15}{'signo':>8}{'parecido':>10}"]
-    for p in (buscada, a, b, c):
-        lin.append(f"   con «{p}»{'':<{8 - len(p)}}{mismo_signo(r, m.wv[p]):>8}"
-                   f"{coma(parecido(r, m.wv[p]), 2):>10}")
+    fila = lambda nombre, v, negrita=False: [
+        (f"**{x}**" if negrita else x) for x in [nombre] + [coma(float(y), 3) for y in v[:k]]]
+    numeros = tabla_editorial(
+        "La resta, número a número", [""] + [f"{j}.º" for j in range(1, k + 1)],
+        [fila(a, unidad(m.wv[a])), fila(f"menos {b}", unidad(m.wv[b])),
+         fila(f"más {c}", unidad(m.wv[c])), fila("el resultado", r, True),
+         fila(f"y, para comparar, {buscada}", unidad(m.wv[buscada]))], "i" + "d" * k,
+        [f"Los {k} primeros de los {DIMENSION} números. Cada lista, antes, dividida por su "
+         "tamaño, para que no mande la de números más grandes."])
+    resultado = tabla_editorial(
+        f"El resultado, con los {DIMENSION} números", ["comparado con", "signo", "parecido"],
+        [[f"«{p}»", str(mismo_signo(r, m.wv[p])), coma(parecido(r, m.wv[p]), 2)]
+         for p in (buscada, a, b, c)], "idd")
     _, todas = resta(m.wv, a, b, c, PUESTOS_RESULTADO, excluir=False)
-    lin += ["", "las más parecidas al resultado, de todas; las de la",
-            "pregunta no cuentan y no llevan número:"]
-    i = 0
+    filas, i = [], 0
     for p, s in todas:
         if p in (a, b, c):
-            lin.append(f"      {p:<12}{coma(s, 2):>6}   (de la pregunta: no cuenta)")
+            filas.append(["no cuenta", p, coma(s, 2)])
         else:
             i += 1
-            lin.append(f"   {i}. {p:<12}{coma(s, 2):>6}")
-    lin += ["", "en qué puesto sale la palabra buscada, sin contar",
-            "las tres de la pregunta:", ""]
-    puestos = []
+            filas.append([str(i), p, coma(s, 2)])
+    parecidas = tabla_editorial(
+        "Las más parecidas al resultado, de todas", ["puesto", "palabra", "parecido"], filas, "cid",
+        ["Las de la pregunta no cuentan y no llevan puesto."])
+    puestos, filas = [], []
     for a2, b2, c2, bus in RESTAS:
         pu = puesto_en_resta(m.wv, a2, b2, c2, bus)
         puestos.append((a2, b2, c2, bus, pu))
-        pregunta = f"{a2}, menos {b2}, más {c2}"
-        lin.append(f"   {pregunta:<36}{bus:<9}{miles(pu):>7}")
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA), puestos
+        filas.append([f"{a2}, menos {b2}, más {c2}", bus, miles(pu)])
+    donde = tabla_editorial(
+        "En qué puesto sale la palabra buscada", ["la cuenta", "la buscada", "puesto"], filas, "iid",
+        ["Sin contar las tres de la pregunta."])
+    return [numeros, resultado, parecidas, donde], puestos
+
+
+def nombre_camino(x, y):
+    return f"de {x} a {y}"
 
 
 def bloque_caminos(m, rng):
     difs = {(x, y): m.wv[y].astype(np.float64) - m.wv[x] for x, y in CAMINOS}
-    lin = ["--- 7. LOS CAMINOS DEL GÉNERO ---",
-           "camino: la resta de las dos listas, número a número;",
-           "«tamaño»: la misma cuenta del bloque 10", "",
-           f"{'camino':<20}{'tamaño':>8}"]
-    for (x, y), d in difs.items():
-        lin.append(f"{x + ' -> ' + y:<20}{coma(float(np.linalg.norm(d)), 2):>8}")
-    lin += ["", f"{'un camino':<20}{'y otro':<20}{'parecido':>10}", "-" * 50]
+    largos = tabla_editorial(
+        "El tamaño de cada camino", ["camino", "tamaño"],
+        [[nombre_camino(x, y), coma(float(np.linalg.norm(d)), 2)] for (x, y), d in difs.items()],
+        "id",
+        ["Camino: la resta de las dos listas, número a número. Tamaño: la misma cuenta que el "
+         "de una lista."])
     claves = list(difs)
-    pares = []
+    pares, filas = [], []
     for i in range(len(claves)):
         for j in range(i + 1, len(claves)):
             s = parecido(difs[claves[i]], difs[claves[j]])
             pares.append((claves[i], claves[j], s))
-            lin.append(f"{claves[i][0] + ' -> ' + claves[i][1]:<20}"
-                       f"{claves[j][0] + ' -> ' + claves[j][1]:<20}{coma(s, 2):>10}")
+            filas.append([nombre_camino(*claves[i]), nombre_camino(*claves[j]), coma(s, 2)])
     media = float(np.mean([s for *_, s in pares]))
-    lin.append(f"{'media de las ' + str(len(pares)):<40}{coma(media, 2):>10}")
     from la_misma_direccion import referencia_al_azar
     azar = referencia_al_azar(m.wv)
-    lin += ["", f"caminos entre palabras sacadas al azar, de dos en dos,",
-            f"{'media de ' + str(len(azar)) + ' comparaciones':<40}{coma(float(np.mean(azar)), 3):>10}"]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA), pares
+    filas += [[f"**media de las {len(pares)}**", "", f"**{coma(media, 2)}**"],
+              ["caminos entre palabras sacadas al azar", f"media de {len(azar)} comparaciones",
+               coma(float(np.mean(azar)), 3)]]
+    return [largos, tabla_editorial(
+        "Los caminos del género, de dos en dos", ["un camino", "y otro", "parecido"], filas, "iid",
+        ["Camino: la resta de las dos listas, número a número. Parecido: 1 quiere decir que los "
+         "dos caminos apuntan exactamente hacia el mismo lado."])], pares
 
 
 def bloque_mapa(m):
@@ -436,21 +434,23 @@ def bloque_mapa(m):
     papel_sin = papel.copy()
     np.fill_diagonal(papel_sin, np.inf)
     entre_tres = int(sum(de_verdad[i] in np.argsort(papel_sin[i])[:3] for i in range(len(palabras))))
-    lin = ["--- 8. EL MAPA: DE CIEN NÚMEROS A DOS ---",
-           "distancia en el papel = 1 menos el parecido; aplanado",
-           "para que las distancias del papel se acerquen a esas", "",
-           f"{'palabra':<13}{'x':>8}{'y':>8}   {'su más parecida':<15}  grupo"]
+    filas = []
     for i, p in enumerate(palabras):
         grupo = next(k for k, (g, ps) in enumerate(MAPA, 1) if p in ps)
-        lin.append(f"{p:<13}{coma(x[i, 0], 3):>8}{coma(x[i, 1], 3):>8}   "
-                   f"{palabras[de_verdad[i]]:<15}  {grupo}")
-    lin += ["", "grupos (solo para la clave de la figura; el aplanado no",
-            "los conoce):"] + [f"   {k}: {g}" for k, (g, _) in enumerate(MAPA, 1)]
-    lin += ["", "lo que se pierde al aplanar: de las " + str(len(palabras)) + " palabras,",
-            f"en cuántas su más parecida es también la más cercana",
-            f"en el papel: {iguales}; y está entre las tres más",
-            f"cercanas en el papel: {entre_tres}"]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA), iguales
+        filas.append([p, coma(x[i, 0], 3), coma(x[i, 1], 3), palabras[de_verdad[i]], str(grupo)])
+    mapa = tabla_editorial(
+        "El mapa: de cien números a dos", ["palabra", "x", "y", "su más parecida", "grupo"],
+        filas, "iddic",
+        ["Distancia en el papel: 1 menos el parecido. Aplanado para que las distancias del papel "
+         "se acerquen a esas.",
+         f"Lo que se pierde al aplanar: de las {len(palabras)} palabras, en {iguales} su más "
+         f"parecida es también la más cercana en el papel, y en {entre_tres} está entre las tres "
+         "más cercanas en el papel."])
+    grupos = tabla_editorial(
+        "Los grupos del mapa", ["grupo", "qué palabras"],
+        [[str(k), g] for k, (g, _) in enumerate(MAPA, 1)], "ci",
+        ["Solo para la clave de la figura: el aplanado no los conoce."])
+    return [mapa, grupos], iguales
 
 
 def bloque_cuenta(m):
@@ -462,24 +462,29 @@ def bloque_cuenta(m):
     prod = [x * y for x, y in zip(u, v)]
     ta2, tb2 = sum(x * x for x in u), sum(y * y for y in v)
     ta, tb = ta2 ** 0.5, tb2 ** 0.5
-    lin = [f"--- 10. LA CUENTA DEL PARECIDO, HECHA CON {NUMEROS_CUENTA} NÚMEROS ---",
-           f"los {NUMEROS_CUENTA} primeros números de «{a}» y de «{b}», después de",
-           f"entrenar; con los {DIMENSION}, la cuenta es la misma", "",
-           f"{'posición':<10}{a:>10}{b:>10}{'uno por otro':>15}"]
-    for k in range(NUMEROS_CUENTA):
-        lin.append(f"{str(k + 1) + '.º':<10}{coma(u[k], 3):>10}{coma(v[k], 3):>10}{coma(prod[k], 3):>15}")
-    lin += [f"{'suma de «uno por otro»':<30}{coma(sum(prod), 3):>15}", "",
-            "tamaño de una lista: cada número por sí mismo, se suman,",
-            "y se saca la raíz cuadrada",
-            f"   {a}: suman {coma(ta2, 3)}; raíz, {coma(ta, 3)}",
-            f"   {b}: suman {coma(tb2, 3)}; raíz, {coma(tb, 3)}",
-            "la raíz es el número que, multiplicado por sí mismo,", "da la suma:",
-            f"   {coma(ta, 3)} por {coma(ta, 3)} da {coma(ta * ta, 3)}", "",
-            f"{coma(ta, 3)} por {coma(tb, 3)} da {coma(ta * tb, 3)}",
-            f"parecido: {coma(sum(prod), 3)} entre {coma(ta * tb, 3)} da "
-            f"{coma(sum(prod) / (ta * tb), 2)}",
-            f"con los {DIMENSION} números: {coma(parecido(m.wv[a], m.wv[b]), 2)}"]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA), sum(prod) / (ta * tb)
+    filas = [[f"{k + 1}.º", coma(u[k], 3), coma(v[k], 3), coma(prod[k], 3)]
+             for k in range(NUMEROS_CUENTA)]
+    filas.append(["**la suma**", "", "", f"**{coma(sum(prod), 3)}**"])
+    productos = tabla_editorial(
+        f"La cuenta del parecido, con los {NUMEROS_CUENTA} primeros números",
+        ["posición", a, b, "uno por otro"], filas, "cddd",
+        [f"Los {NUMEROS_CUENTA} primeros números de «{a}» y de «{b}», después de entrenar; con "
+         f"los {DIMENSION}, la cuenta es la misma."])
+    tamanos = tabla_editorial(
+        "El tamaño de cada lista", ["", a, b],
+        [["cada número por sí mismo, sumados", coma(ta2, 3), coma(tb2, 3)],
+         ["**el tamaño: la raíz cuadrada de esa suma**", f"**{coma(ta, 3)}**", f"**{coma(tb, 3)}**"]],
+        "idd",
+        [f"La raíz es el número que, multiplicado por sí mismo, da la suma: {coma(ta, 3)} por "
+         f"{coma(ta, 3)} da {coma(ta * ta, 3)}."])
+    final = tabla_editorial(
+        f"El parecido de «{a}» y «{b}»", ["", "cuánto"],
+        [["la suma de «uno por otro»", coma(sum(prod), 3)],
+         ["un tamaño por el otro", coma(ta * tb, 3)],
+         ["**el parecido: la suma entre los dos tamaños multiplicados**",
+          f"**{coma(sum(prod) / (ta * tb), 2)}**"],
+         [f"el parecido, con los {DIMENSION} números", coma(parecido(m.wv[a], m.wv[b]), 2)]], "id")
+    return [productos, tamanos, final], sum(prod) / (ta * tb)
 
 
 # --------------------------------------------------------------------------- selftest
@@ -583,23 +588,18 @@ def main():
     print("Mismo modelo que palabras_numeros.txt: las vecinas de las ocho palabras coinciden.\n")
 
     rng = np.random.default_rng(SEMILLA)
-    lin, _ = bloque_tarea(m, frases, antes_sal, rng)
-    print("\n".join(lin) + "\n")
-    print("\n".join(bloque_tres_palabras(m, antes)) + "\n")
-    lin, _ = bloque_parecido(m, antes)
-    print("\n".join(lin) + "\n")
-    print("\n".join(bloque_vecinas(m)) + "\n")
-    lin, _ = bloque_averia(m)
-    print("\n".join(lin) + "\n")
-    lin, _ = bloque_resta(m)
-    print("\n".join(lin) + "\n")
-    lin, _ = bloque_caminos(m, rng)
-    print("\n".join(lin) + "\n")
-    lin, _ = bloque_mapa(m)
-    print("\n".join(lin) + "\n")
-    lin, _ = bloque_cuenta(m)
-    print("\n".join(lin))
-
+    secciones = [("1. LA TAREA, HECHA UNA VEZ", bloque_tarea(m, frases, antes_sal, rng)[0]),
+                 ("2. LOS NÚMEROS DE TRES PALABRAS", bloque_tres_palabras(m, antes)),
+                 ("3. CÓMO SE PARECEN DOS LISTAS", bloque_parecido(m, antes)[0]),
+                 ("4. LAS VECINAS DE «CABALLO», CON SU PARECIDO", bloque_vecinas(m)),
+                 ("5. LAS PALABRAS DEL CAPÍTULO 1", bloque_averia(m)[0]),
+                 ("6. LA RESTA, NÚMERO A NÚMERO", bloque_resta(m)[0]),
+                 ("7. LOS CAMINOS DEL GÉNERO", bloque_caminos(m, rng)[0]),
+                 ("8. EL MAPA: DE CIEN NÚMEROS A DOS", bloque_mapa(m)[0]),
+                 ("10. LA CUENTA DEL PARECIDO, HECHA CON TRES NÚMEROS", bloque_cuenta(m)[0])]
+    for titulo, bloques in secciones:
+        print(f"--- {titulo} ---\n")
+        imprimir(*bloques)
 
 if __name__ == "__main__":
     main()

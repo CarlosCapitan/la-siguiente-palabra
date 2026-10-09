@@ -54,7 +54,7 @@ import re
 import sys
 import unicodedata
 
-from formato import miles
+from formato import miles, tabla_editorial
 import numpy as np
 
 ALFABETO = set("abcdefghijklmnñopqrstuvwxyzáéíóúü ")
@@ -199,24 +199,39 @@ def main():
     if args.selftest:
         sys.exit(selftest())
 
-    for etiqueta, origen in (("UN LIBRO (el Quijote)", CORPUS_LIBRO),
-                             ("UNA BIBLIOTECA (300 libros)", CORPUS_BIBLIOTECA)):
+    # L24 (9 de octubre): tablas editoriales (regla 6 ter). Las cuentas no cambian.
+    for etiqueta, origen in (("con un libro (el Quijote)", CORPUS_LIBRO),
+                             ("con una biblioteca (300 libros)", CORPUS_BIBLIOTECA)):
         frases, total = cargar_corpus(origen)
         modelo = entrenar(frases)
-        print(f"\n{'='*74}\n{etiqueta}: {miles(total)} palabras, "
-              f"{miles(len(modelo.wv.index_to_key))} palabras distintas aprendidas\n{'='*74}")
-
-        print("\n--- VECINAS MÁS PRÓXIMAS ---")
+        cuantas = (f"{miles(total)} palabras de texto; "
+                   f"{miles(len(modelo.wv.index_to_key))} palabras distintas aprendidas.")
+        filas = []
         for sonda in SONDAS:
             v = vecinos(modelo, sonda)
-            print(f"{sonda:<10} -> {', '.join(v) if v else '(no aparece bastante)'}")
+            filas.append([sonda, ", ".join(v) if v else "no aparece bastante"])
+        print()
+        print("\n".join(tabla_editorial(
+            f"Las vecinas más próximas, {etiqueta}",
+            ["palabra", f"sus {VECINOS} vecinas más próximas, de la más parecida a la menos"],
+            filas, "ii",
+            [cuantas, f"No aparece bastante: sale menos de {MIN_APARICIONES} veces en el texto."])))
 
-        print("\n--- ARITMÉTICA CON PALABRAS ---")
         aciertos, evaluadas, detalle = probar_analogias(modelo)
+        filas = []
         for a, b, c, esp, res in detalle:
-            print(f"{a} - {b} + {c} = {esp}?   {res}")
-        print(f"\naciertos: {aciertos} de {evaluadas} evaluadas")
-
+            if res.startswith("("):
+                filas.append([f"{a}, menos {b}, más {c}", esp, "no se puede: falta alguna palabra", ""])
+            else:
+                sale = res.startswith("ACIERTA")
+                filas.append([f"{a}, menos {b}, más {c}", esp, "sí" if sale else "no",
+                              res.split(":", 1)[1].strip()])
+        print()
+        print("\n".join(tabla_editorial(
+            f"Aritmética con palabras, {etiqueta}",
+            ["la cuenta", "la buscada", "¿sale entre las 5 primeras?", "las 3 primeras"],
+            filas, "iici",
+            [f"Aciertos: {aciertos} de {evaluadas} evaluadas."])))
 
 if __name__ == "__main__":
     main()

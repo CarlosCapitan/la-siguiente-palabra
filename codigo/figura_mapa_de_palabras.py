@@ -32,26 +32,25 @@ from pathlib import Path
 
 import numpy as np
 
+from formato import leer_tablas
 from infografia import COLOR, GRIS, Lienzo
 
 AQUI = Path(__file__).resolve().parent
 
 
 def leer(ruta):
-    texto = Path(ruta).read_text(encoding="utf-8")
-    assert "--- 8. EL MAPA" in texto, f"se esperaba el bloque 8 en {ruta}"
-    b = texto.split("--- 8. EL MAPA", 1)[1].split("\n--- ", 1)[0]
-    puntos, nombres = [], {}
-    for l in b.splitlines():
-        m = re.match(r"^(\S+)\s+(-?\d+,\d+)\s+(-?\d+,\d+)\s+(\S+)\s+(\d+)$", l)
-        if m:
-            puntos.append((m.group(1), float(m.group(2).replace(",", ".")),
-                           float(m.group(3).replace(",", ".")), m.group(4), int(m.group(5))))
-        m = re.match(r"^\s+(\d+): (.+)$", l)
-        if m:
-            nombres[int(m.group(1))] = m.group(2)
-    m1 = re.search(r"en el papel: (\d+); y está entre las tres más\s+cercanas en el papel: (\d+)", b)
-    assert puntos and nombres and m1, "no se pudo leer el bloque 8"
+    """Los puntos y los grupos, de las dos tablas del mapa (L24, 9 de octubre: la salida ya no
+    es texto sangrado sino tablas editoriales)."""
+    tablas = leer_tablas(Path(ruta).read_text(encoding="utf-8"))
+    for t in ("El mapa: de cien números a dos", "Los grupos del mapa"):
+        assert t in tablas, f"se esperaba la tabla «{t}» en {ruta}"
+    _, filas, notas = tablas["El mapa: de cien números a dos"]
+    puntos = [(p, float(x.replace(",", ".")), float(y.replace(",", ".")), mas, int(g))
+              for p, x, y, mas, g in filas]
+    nombres = {int(k): g for k, g in tablas["Los grupos del mapa"][1]}
+    m1 = re.search(r"en (\d+) su más parecida es también la más cercana en el papel, y en (\d+)",
+                   " ".join(notas))
+    assert puntos and nombres and m1, "no se pudo leer el mapa"
     assert {p[4] for p in puntos} == set(nombres), "grupos sin nombre"
     return puntos, nombres, int(m1.group(1)), int(m1.group(2))
 

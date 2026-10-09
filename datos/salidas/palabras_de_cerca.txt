@@ -5,220 +5,298 @@
 SELFTEST: las tres pruebas pasan.
 
 Máquina: aarch64, Linux 6.8.0-138-generic.
-Medido el 2026-09-28. Semilla: 20260914.
+Medido el 2026-10-09. Semilla: 20260914.
 Biblioteca: 21.313.324 palabras, 68.927 distintas.
 Mismo modelo que palabras_numeros.txt: las vecinas de las ocho palabras coinciden.
 
 --- 1. LA TAREA, HECHA UNA VEZ ---
-una frase del texto, con «caballo» en medio y las
-5 palabras de cada lado:
 
-   soltando las riendas a mi [caballo] que continuaba su
-   camino lentamente
+::: muestra
+Una frase del texto, con «caballo» en medio
 
-¿van juntas «caballo» y esta palabra?
-de 0 (seguro que no) a 100 (seguro que sí)
+    soltando las riendas a mi [caballo] que continuaba su camino
+    lentamente
 
-                      antes de  después de
-                      entrenar    entrenar
-las de alrededor
-  soltando                  50          26
-  las                       50          14
-  riendas                   50          55
-  a                         50          40
-  mi                        50          37
-  que                       50          17
-  continuaba                50          24
-  su                        50          28
-  camino                    50          41
-  lentamente                50          32
-5 sacadas al azar
-  tres                      50           8
-  subió                     50          46
-  ventajoso                 50          10
-  eramos                    50          33
-  desconocidos              50          11
+Las 5 palabras de cada lado; «caballo», entre corchetes.
+:::
 
-media después de entrenar: las de alrededor 31;
-las sacadas al azar 22
+::: tabla
+¿Van juntas «caballo» y esta palabra?
+
+| de dónde sale | la palabra | antes de entrenar | después de entrenar |
+|:--|:--|--:|--:|
+| de alrededor | soltando | 50 | 26 |
+|  | las | 50 | 14 |
+|  | riendas | 50 | 55 |
+|  | a | 50 | 40 |
+|  | mi | 50 | 37 |
+|  | que | 50 | 17 |
+|  | continuaba | 50 | 24 |
+|  | su | 50 | 28 |
+|  | camino | 50 | 41 |
+|  | lentamente | 50 | 32 |
+| sacada al azar | tres | 50 | 8 |
+|  | subió | 50 | 46 |
+|  | ventajoso | 50 | 10 |
+|  | eramos | 50 | 33 |
+|  | desconocidos | 50 | 11 |
+
+De 0 (seguro que no) a 100 (seguro que sí).
+
+Media después de entrenar: las de alrededor, 31; las sacadas al azar, 22.
+:::
 
 --- 2. LOS NÚMEROS DE TRES PALABRAS ---
-los 6 primeros de sus 100 números
 
-              1.º     2.º     3.º     4.º     5.º     6.º
-antes de entrenar (puestos al azar)
-caballo    -0,009  -0,003  -0,002   0,003   0,001  -0,003
-corcel     -0,010   0,007  -0,008  -0,004  -0,001   0,000
-lunes       0,006   0,005   0,005   0,007  -0,001   0,002
-después de entrenar
-caballo     0,213   0,565   0,505  -0,391  -0,536   0,629
-corcel      0,101   0,121   0,441  -0,181  -0,241   0,303
-lunes      -0,356   0,358   0,637   0,132  -0,391   0,252
+::: tabla
+Los 6 primeros de sus 100 números, antes de entrenar
+
+| palabra | 1.º | 2.º | 3.º | 4.º | 5.º | 6.º |
+|:--|--:|--:|--:|--:|--:|--:|
+| caballo | -0,009 | -0,003 | -0,002 | 0,003 | 0,001 | -0,003 |
+| corcel | -0,010 | 0,007 | -0,008 | -0,004 | -0,001 | 0,000 |
+| lunes | 0,006 | 0,005 | 0,005 | 0,007 | -0,001 | 0,002 |
+
+Puestos al azar.
+:::
+
+::: tabla
+Los 6 primeros de sus 100 números, después de entrenar
+
+| palabra | 1.º | 2.º | 3.º | 4.º | 5.º | 6.º |
+|:--|--:|--:|--:|--:|--:|--:|
+| caballo | 0,213 | 0,565 | 0,505 | -0,391 | -0,536 | 0,629 |
+| corcel | 0,101 | 0,121 | 0,441 | -0,181 | -0,241 | 0,303 |
+| lunes | -0,356 | 0,358 | 0,637 | 0,132 | -0,391 | 0,252 |
+:::
 
 --- 3. CÓMO SE PARECEN DOS LISTAS ---
-«signo»: en cuántas de las 100 posiciones las dos listas
-tienen las dos un número positivo o las dos uno negativo.
-«parecido»: la cuenta entera, que va de -1 a 1; 1 es lo
-más parecido posible. «puesto»: en qué puesto sale
-la segunda entre las 68.926 vecinas de la primera
 
-                   antes de entrenar       después de entrenar
-pareja               signo  parecido   signo  parecido  puesto
---------------------------------------------------------------
-caballo y corcel        44     -0,08      74      0,70     119
-caballo y galope        52      0,10      82      0,80       2
-caballo y lunes         51      0,04      66      0,51  32.043
+::: tabla
+Cómo se parecen dos listas
 
-a media tabla, en el puesto 34.463 de las vecinas de
-«caballo», está «russell», con parecido 0,50
+| pareja | antes de entrenar: signo | antes de entrenar: parecido | después de entrenar: signo | después de entrenar: parecido | después de entrenar: puesto |
+|:--|--:|--:|--:|--:|--:|
+| caballo y corcel | 44 | -0,08 | 74 | 0,70 | 119 |
+| caballo y galope | 52 | 0,10 | 82 | 0,80 | 2 |
+| caballo y lunes | 51 | 0,04 | 66 | 0,51 | 32.043 |
+
+Signo: en cuántas de las 100 posiciones las dos listas tienen las dos un número positivo o las dos uno negativo.
+
+Parecido: la cuenta entera, que va de -1 a 1; 1 es lo más parecido posible.
+
+Puesto: en qué puesto sale la segunda entre las 68.926 vecinas de la primera.
+
+A media tabla, en el puesto 34.463 de las vecinas de «caballo», está «russell», con parecido 0,50.
+:::
 
 --- 4. LAS VECINAS DE «CABALLO», CON SU PARECIDO ---
-de las 68.927 palabras, las 5 más parecidas
 
-   montar          0,81
-   galope          0,80
-   estribo         0,77
-   pié             0,76
-   rocín           0,76
+::: tabla
+Las vecinas de «caballo», con su parecido
+
+| vecina | parecido |
+|:--|--:|
+| montar | 0,81 |
+| galope | 0,80 |
+| estribo | 0,77 |
+| pié | 0,76 |
+| rocín | 0,76 |
+
+De las 68.927 palabras, las 5 más parecidas.
+:::
 
 --- 5. LAS PALABRAS DEL CAPÍTULO 1 ---
-«puesto»: en qué puesto sale la segunda entre las
-68.926 vecinas de la primera; el puesto 1 es la más
-parecida
 
-pareja                    parecido    puesto
---------------------------------------------
-caballo y rocín               0,76         5
-caballo y rocinante           0,69       184
-caballo y corcel              0,70       119
-caballero y hidalgo           0,74        73
-dijo y respondió              0,83         1
-dijo y preguntó               0,80         3
-dijo y replicó                0,79         4
-caballo y lunes               0,51    32.043
+::: tabla
+Las palabras del capítulo 1
+
+| pareja | parecido | puesto |
+|:--|--:|--:|
+| caballo y rocín | 0,76 | 5 |
+| caballo y rocinante | 0,69 | 184 |
+| caballo y corcel | 0,70 | 119 |
+| caballero y hidalgo | 0,74 | 73 |
+| dijo y respondió | 0,83 | 1 |
+| dijo y preguntó | 0,80 | 3 |
+| dijo y replicó | 0,79 | 4 |
+| caballo y lunes | 0,51 | 32.043 |
+
+Puesto: en qué puesto sale la segunda entre las 68.926 vecinas de la primera; el puesto 1 es la más parecida.
+:::
 
 --- 6. LA RESTA, NÚMERO A NÚMERO ---
-los 6 primeros de los 100 números; cada lista, antes,
-dividida por su tamaño (bloque 10), para que no mande
-la de números más grandes
 
-                   1.º     2.º     3.º     4.º     5.º     6.º
-rey             -0,030   0,016   0,175  -0,147  -0,021  -0,006
-menos hombre     0,047   0,133   0,095   0,046  -0,142   0,112
-más mujer       -0,001   0,104   0,104  -0,051  -0,053   0,041
---------------------------------------------------------------
-resultado       -0,078  -0,013   0,184  -0,243   0,068  -0,077
+::: tabla
+La resta, número a número
 
-reina            0,035   0,045   0,181  -0,139  -0,040  -0,023
+|  | 1.º | 2.º | 3.º | 4.º | 5.º | 6.º |
+|:--|--:|--:|--:|--:|--:|--:|
+| rey | -0,030 | 0,016 | 0,175 | -0,147 | -0,021 | -0,006 |
+| menos hombre | 0,047 | 0,133 | 0,095 | 0,046 | -0,142 | 0,112 |
+| más mujer | -0,001 | 0,104 | 0,104 | -0,051 | -0,053 | 0,041 |
+| **el resultado** | **-0,078** | **-0,013** | **0,184** | **-0,243** | **0,068** | **-0,077** |
+| y, para comparar, reina | 0,035 | 0,045 | 0,181 | -0,139 | -0,040 | -0,023 |
 
-el resultado, con los 100 números:
-                  signo  parecido
-   con «reina»         71      0,62
-   con «rey»           74      0,77
-   con «hombre»        41     -0,05
-   con «mujer»         69      0,58
+Los 6 primeros de los 100 números. Cada lista, antes, dividida por su tamaño, para que no mande la de números más grandes.
+:::
 
-las más parecidas al resultado, de todas; las de la
-pregunta no cuentan y no llevan número:
-      rey           0,77   (de la pregunta: no cuenta)
-   1. esposa        0,68
-   2. isabel        0,65
-   3. muger         0,62
-   4. reina         0,62
+::: tabla
+El resultado, con los 100 números
 
-en qué puesto sale la palabra buscada, sin contar
-las tres de la pregunta:
+| comparado con | signo | parecido |
+|:--|--:|--:|
+| «reina» | 71 | 0,62 |
+| «rey» | 74 | 0,77 |
+| «hombre» | 41 | -0,05 |
+| «mujer» | 69 | 0,58 |
+:::
 
-   rey, menos hombre, más mujer        reina          4
-   padre, menos hombre, más mujer      madre          1
-   hijo, menos hombre, más mujer       hija           1
-   hermano, menos hombre, más mujer    hermana        2
-   caballo, menos macho, más hembra    yegua      6.247
+::: tabla
+Las más parecidas al resultado, de todas
+
+| puesto | palabra | parecido |
+|:-:|:--|--:|
+| no cuenta | rey | 0,77 |
+| 1 | esposa | 0,68 |
+| 2 | isabel | 0,65 |
+| 3 | muger | 0,62 |
+| 4 | reina | 0,62 |
+
+Las de la pregunta no cuentan y no llevan puesto.
+:::
+
+::: tabla
+En qué puesto sale la palabra buscada
+
+| la cuenta | la buscada | puesto |
+|:--|:--|--:|
+| rey, menos hombre, más mujer | reina | 4 |
+| padre, menos hombre, más mujer | madre | 1 |
+| hijo, menos hombre, más mujer | hija | 1 |
+| hermano, menos hombre, más mujer | hermana | 2 |
+| caballo, menos macho, más hembra | yegua | 6.247 |
+
+Sin contar las tres de la pregunta.
+:::
 
 --- 7. LOS CAMINOS DEL GÉNERO ---
-camino: la resta de las dos listas, número a número;
-«tamaño»: la misma cuenta del bloque 10
 
-camino                tamaño
-rey -> reina            2,86
-padre -> madre          2,14
-hermano -> hermana      2,16
-hijo -> hija            2,50
+::: tabla
+El tamaño de cada camino
 
-un camino           y otro                parecido
---------------------------------------------------
-rey -> reina        padre -> madre            0,39
-rey -> reina        hermano -> hermana        0,28
-rey -> reina        hijo -> hija              0,41
-padre -> madre      hermano -> hermana        0,59
-padre -> madre      hijo -> hija              0,50
-hermano -> hermana  hijo -> hija              0,50
-media de las 6                                0,45
+| camino | tamaño |
+|:--|--:|
+| de rey a reina | 2,86 |
+| de padre a madre | 2,14 |
+| de hermano a hermana | 2,16 |
+| de hijo a hija | 2,50 |
 
-caminos entre palabras sacadas al azar, de dos en dos,
-media de 200 comparaciones                   0,008
+Camino: la resta de las dos listas, número a número. Tamaño: la misma cuenta que el de una lista.
+:::
+
+::: tabla
+Los caminos del género, de dos en dos
+
+| un camino | y otro | parecido |
+|:--|:--|--:|
+| de rey a reina | de padre a madre | 0,39 |
+| de rey a reina | de hermano a hermana | 0,28 |
+| de rey a reina | de hijo a hija | 0,41 |
+| de padre a madre | de hermano a hermana | 0,59 |
+| de padre a madre | de hijo a hija | 0,50 |
+| de hermano a hermana | de hijo a hija | 0,50 |
+| **media de las 6** |  | **0,45** |
+| caminos entre palabras sacadas al azar | media de 200 comparaciones | 0,008 |
+
+Camino: la resta de las dos listas, número a número. Parecido: 1 quiere decir que los dos caminos apuntan exactamente hacia el mismo lado.
+:::
 
 --- 8. EL MAPA: DE CIEN NÚMEROS A DOS ---
-distancia en el papel = 1 menos el parecido; aplanado
-para que las distancias del papel se acerquen a esas
 
-palabra             x       y   su más parecida  grupo
-caballo        -0,134   0,141   montar           1
-galope          0,094  -0,061   montar           1
-estribo         0,012  -0,025   galope           1
-montar          0,045   0,053   galope           1
-rey            -0,413  -0,280   emperador        2
-emperador      -0,318  -0,317   rey              2
-soberano       -0,414  -0,146   emperador        2
-espada         -0,431   0,102   carabina         3
-pistola        -0,078   0,002   carabina         3
-carabina       -0,111  -0,062   pistola          3
-noche           0,197  -0,440   madrugada        4
-madrugada       0,176  -0,243   noche            4
-tarde           0,324  -0,368   noche            4
-dinero         -0,011   0,460   negocio          5
-pagar          -0,119   0,361   dinero           5
-negocio         0,001   0,294   dinero           5
-banco           0,254   0,195   escritorio       6
-escritorio      0,164   0,069   almacén          7
-armario         0,279   0,084   baúl             7
-baúl            0,111   0,109   escritorio       7
-almacén         0,191   0,092   escritorio       7
-ferrocarril     0,182  -0,021   almacén          7
+::: tabla
+El mapa: de cien números a dos
 
-grupos (solo para la clave de la figura; el aplanado no
-los conoce):
-   1: montar a caballo
-   2: reyes
-   3: armas
-   4: horas
-   5: dinero
-   6: banco
-   7: las cinco vecinas de «banco»
+| palabra | x | y | su más parecida | grupo |
+|:--|--:|--:|:--|:-:|
+| caballo | -0,134 | 0,141 | montar | 1 |
+| galope | 0,094 | -0,061 | montar | 1 |
+| estribo | 0,012 | -0,025 | galope | 1 |
+| montar | 0,045 | 0,053 | galope | 1 |
+| rey | -0,413 | -0,280 | emperador | 2 |
+| emperador | -0,318 | -0,317 | rey | 2 |
+| soberano | -0,414 | -0,146 | emperador | 2 |
+| espada | -0,431 | 0,102 | carabina | 3 |
+| pistola | -0,078 | 0,002 | carabina | 3 |
+| carabina | -0,111 | -0,062 | pistola | 3 |
+| noche | 0,197 | -0,440 | madrugada | 4 |
+| madrugada | 0,176 | -0,243 | noche | 4 |
+| tarde | 0,324 | -0,368 | noche | 4 |
+| dinero | -0,011 | 0,460 | negocio | 5 |
+| pagar | -0,119 | 0,361 | dinero | 5 |
+| negocio | 0,001 | 0,294 | dinero | 5 |
+| banco | 0,254 | 0,195 | escritorio | 6 |
+| escritorio | 0,164 | 0,069 | almacén | 7 |
+| armario | 0,279 | 0,084 | baúl | 7 |
+| baúl | 0,111 | 0,109 | escritorio | 7 |
+| almacén | 0,191 | 0,092 | escritorio | 7 |
+| ferrocarril | 0,182 | -0,021 | almacén | 7 |
 
-lo que se pierde al aplanar: de las 22 palabras,
-en cuántas su más parecida es también la más cercana
-en el papel: 8; y está entre las tres más
-cercanas en el papel: 20
+Distancia en el papel: 1 menos el parecido. Aplanado para que las distancias del papel se acerquen a esas.
 
---- 10. LA CUENTA DEL PARECIDO, HECHA CON 3 NÚMEROS ---
-los 3 primeros números de «caballo» y de «corcel», después de
-entrenar; con los 100, la cuenta es la misma
+Lo que se pierde al aplanar: de las 22 palabras, en 8 su más parecida es también la más cercana en el papel, y en 20 está entre las tres más cercanas en el papel.
+:::
 
-posición     caballo    corcel   uno por otro
-1.º            0,213     0,101          0,022
-2.º            0,565     0,121          0,068
-3.º            0,505     0,441          0,222
-suma de «uno por otro»                  0,312
+::: tabla
+Los grupos del mapa
 
-tamaño de una lista: cada número por sí mismo, se suman,
-y se saca la raíz cuadrada
-   caballo: suman 0,620; raíz, 0,787
-   corcel: suman 0,219; raíz, 0,468
-la raíz es el número que, multiplicado por sí mismo,
-da la suma:
-   0,787 por 0,787 da 0,620
+| grupo | qué palabras |
+|:-:|:--|
+| 1 | montar a caballo |
+| 2 | reyes |
+| 3 | armas |
+| 4 | horas |
+| 5 | dinero |
+| 6 | banco |
+| 7 | las cinco vecinas de «banco» |
 
-0,787 por 0,468 da 0,368
-parecido: 0,312 entre 0,368 da 0,85
-con los 100 números: 0,70
+Solo para la clave de la figura: el aplanado no los conoce.
+:::
+
+--- 10. LA CUENTA DEL PARECIDO, HECHA CON TRES NÚMEROS ---
+
+::: tabla
+La cuenta del parecido, con los 3 primeros números
+
+| posición | caballo | corcel | uno por otro |
+|:-:|--:|--:|--:|
+| 1.º | 0,213 | 0,101 | 0,022 |
+| 2.º | 0,565 | 0,121 | 0,068 |
+| 3.º | 0,505 | 0,441 | 0,222 |
+| **la suma** |  |  | **0,312** |
+
+Los 3 primeros números de «caballo» y de «corcel», después de entrenar; con los 100, la cuenta es la misma.
+:::
+
+::: tabla
+El tamaño de cada lista
+
+|  | caballo | corcel |
+|:--|--:|--:|
+| cada número por sí mismo, sumados | 0,620 | 0,219 |
+| **el tamaño: la raíz cuadrada de esa suma** | **0,787** | **0,468** |
+
+La raíz es el número que, multiplicado por sí mismo, da la suma: 0,787 por 0,787 da 0,620.
+:::
+
+::: tabla
+El parecido de «caballo» y «corcel»
+
+|  | cuánto |
+|:--|--:|
+| la suma de «uno por otro» | 0,312 |
+| un tamaño por el otro | 0,368 |
+| **el parecido: la suma entre los dos tamaños multiplicados** | **0,85** |
+| el parecido, con los 100 números | 0,70 |
+:::
+
