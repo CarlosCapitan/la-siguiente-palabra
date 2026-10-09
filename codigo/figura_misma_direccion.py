@@ -33,6 +33,7 @@ from pathlib import Path
 
 from matplotlib.patches import FancyArrow
 
+from formato import leer_tablas
 from infografia import COLOR, GRIS, Lienzo
 
 AQUI = Path(__file__).resolve().parent
@@ -44,21 +45,21 @@ def f(x):
 
 
 def leer(ruta):
-    texto = Path(ruta).read_text(encoding="utf-8")
-    assert "--- 7. LOS CAMINOS DEL GÉNERO" in texto, f"se esperaba el bloque 7 en {ruta}"
-    b = texto.split("--- 7. LOS CAMINOS DEL GÉNERO", 1)[1].split("\n--- ", 1)[0]
-    largos, pares, azar = {}, [], None
-    for l in b.splitlines():
-        m = re.match(rf"^(\w+ -> \w+)\s+{NUM}$", l)
-        if m:
-            largos[m.group(1)] = f(m.group(2))
-        m = re.match(rf"^(\w+ -> \w+)\s+(\w+ -> \w+)\s+{NUM}$", l)
-        if m:
-            pares.append((m.group(1), m.group(2), f(m.group(3))))
-        m = re.match(rf"^media de \d+ comparaciones\s+{NUM}$", l)
-        if m:
-            azar = f(m.group(1))
-    assert largos and len(pares) >= 2 and azar is not None, "no se pudo leer el bloque 7"
+    """Los largos y los parecidos, de las dos tablas de los caminos (L24, 9 de octubre: la
+    salida ya no es texto sangrado sino tablas editoriales). Los nombres de los caminos se
+    devuelven como antes, «rey -> reina», que es lo que rotula la figura."""
+    tablas = leer_tablas(Path(ruta).read_text(encoding="utf-8"))
+    for t in ("El tamaño de cada camino", "Los caminos del género, de dos en dos"):
+        assert t in tablas, f"se esperaba la tabla «{t}» en {ruta}"
+    camino = lambda c: re.sub(r"^de (\w+) a (\w+)$", r"\1 -> \2", c)
+    largos = {camino(c): f(v) for c, v in tablas["El tamaño de cada camino"][1]}
+    pares, azar = [], None
+    for a, b, v in tablas["Los caminos del género, de dos en dos"][1]:
+        if re.match(r"^de \w+ a \w+$", a) and re.match(r"^de \w+ a \w+$", b):
+            pares.append((camino(a), camino(b), f(v)))
+        elif re.match(r"^media de \d+ comparaciones$", b):
+            azar = f(v)
+    assert largos and len(pares) >= 2 and azar is not None, "no se pudieron leer los caminos"
     return largos, pares, azar
 
 

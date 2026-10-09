@@ -1,46 +1,66 @@
 
-==========================================================================
-UN LIBRO (el Quijote): 383.637 palabras, 3.020 palabras distintas aprendidas
-==========================================================================
+::: tabla
+Las vecinas más próximas, con un libro (el Quijote)
 
---- VECINAS MÁS PRÓXIMAS ---
-caballo    -> tenía, podía, adarga, puesto, hay
-rey        -> este, mucho, poner, fin, tiene
-espada     -> deste, celada, adarga, doncellas, capítulo
-noche      -> mano, eran, ya, adarga, pareció
-mujer      -> pensamiento, vulgo, llegaron, decir, haberle
-dinero     -> encerrado, queriendo, pendiente, plega, traza
-banco      -> (no aparece bastante)
-cura       -> nuestro, tierra, decía, estaba, mal
+| palabra | sus 5 vecinas más próximas, de la más parecida a la menos |
+|:--|:--|
+| caballo | tenía, podía, adarga, puesto, hay |
+| rey | este, mucho, poner, fin, tiene |
+| espada | deste, celada, adarga, doncellas, capítulo |
+| noche | mano, eran, ya, adarga, pareció |
+| mujer | pensamiento, vulgo, llegaron, decir, haberle |
+| dinero | encerrado, queriendo, pendiente, plega, traza |
+| banco | no aparece bastante |
+| cura | nuestro, tierra, decía, estaba, mal |
 
---- ARITMÉTICA CON PALABRAS ---
-rey - hombre + mujer = reina?   falla:  llegaron, haré, este
-padre - hombre + mujer = madre?   falla:  haré, grandeza, honra
-hijo - hombre + mujer = hija?   falla:  estáis, llegaron, pensamiento
-caballo - macho + hembra = yegua?   (alguna palabra no está en el vocabulario)
-hermano - hombre + mujer = hermana?   falla:  llegaron, hechas, haré
+383.637 palabras de texto; 3.020 palabras distintas aprendidas.
 
-aciertos: 0 de 4 evaluadas
+No aparece bastante: sale menos de 10 veces en el texto.
+:::
 
-==========================================================================
-UNA BIBLIOTECA (300 libros): 21.313.324 palabras, 68.927 palabras distintas aprendidas
-==========================================================================
+::: tabla
+Aritmética con palabras, con un libro (el Quijote)
 
---- VECINAS MÁS PRÓXIMAS ---
-caballo    -> montar, galope, estribo, pié, rocín
-rey        -> emperador, papa, cárlos, felipe, soberano
-espada     -> diestra, carabina, flecha, bandera, pistola
-noche      -> mañana, madrugada, tarde, siesta, hora
-mujer      -> criatura, casada, hija, muchacha, marido
-dinero     -> gasto, negocio, pagar, gastar, dineros
-banco      -> escritorio, almacén, baúl, ferrocarril, armario
-cura       -> laubepin, canuto, boticario, médico, jorobado
+| la cuenta | la buscada | ¿sale entre las 5 primeras? | las 3 primeras |
+|:--|:--|:-:|:--|
+| rey, menos hombre, más mujer | reina | no | llegaron, haré, este |
+| padre, menos hombre, más mujer | madre | no | haré, grandeza, honra |
+| hijo, menos hombre, más mujer | hija | no | estáis, llegaron, pensamiento |
+| caballo, menos macho, más hembra | yegua | no se puede: falta alguna palabra |  |
+| hermano, menos hombre, más mujer | hermana | no | llegaron, hechas, haré |
 
---- ARITMÉTICA CON PALABRAS ---
-rey - hombre + mujer = reina?   ACIERTA: esposa, isabel, muger
-padre - hombre + mujer = madre?   ACIERTA: madre, esposa, hija
-hijo - hombre + mujer = hija?   ACIERTA: hija, esposa, madre
-caballo - macho + hembra = yegua?   falla:  retaguardia, acertó, tomarla
-hermano - hombre + mujer = hermana?   ACIERTA: hija, hermana, esposa
+Aciertos: 0 de 4 evaluadas.
+:::
 
-aciertos: 4 de 5 evaluadas
+::: tabla
+Las vecinas más próximas, con una biblioteca (300 libros)
+
+| palabra | sus 5 vecinas más próximas, de la más parecida a la menos |
+|:--|:--|
+| caballo | montar, galope, estribo, pié, rocín |
+| rey | emperador, papa, cárlos, felipe, soberano |
+| espada | diestra, carabina, flecha, bandera, pistola |
+| noche | mañana, madrugada, tarde, siesta, hora |
+| mujer | criatura, casada, hija, muchacha, marido |
+| dinero | gasto, negocio, pagar, gastar, dineros |
+| banco | escritorio, almacén, baúl, ferrocarril, armario |
+| cura | laubepin, canuto, boticario, médico, jorobado |
+
+21.313.324 palabras de texto; 68.927 palabras distintas aprendidas.
+
+No aparece bastante: sale menos de 10 veces en el texto.
+:::
+
+::: tabla
+Aritmética con palabras, con una biblioteca (300 libros)
+
+| la cuenta | la buscada | ¿sale entre las 5 primeras? | las 3 primeras |
+|:--|:--|:-:|:--|
+| rey, menos hombre, más mujer | reina | sí | esposa, isabel, muger |
+| padre, menos hombre, más mujer | madre | sí | madre, esposa, hija |
+| hijo, menos hombre, más mujer | hija | sí | hija, esposa, madre |
+| caballo, menos macho, más hembra | yegua | no | retaguardia, acertó, tomarla |
+| hermano, menos hombre, más mujer | hermana | sí | hija, hermana, esposa |
+
+Aciertos: 4 de 5 evaluadas.
+:::

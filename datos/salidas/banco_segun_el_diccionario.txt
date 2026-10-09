@@ -5,51 +5,50 @@
 SELFTEST: las tres pruebas pasan.
 
 Máquina: aarch64, Linux 6.8.0-138-generic.
-Medido el 2026-09-28. Semillas: 20260914, 20260915, 20260916, 20260917, 20260918.
+Medido el 2026-10-09. Semillas: 20260914, 20260915, 20260916, 20260917, 20260918.
 Biblioteca: 21.313.324 palabras.
 
---- «BANCO», SEGÚN EL DICCIONARIO ---
-los dos grupos: los sustantivos de las definiciones de
-«banco» en el Diccionario de la lengua española
-(https://dle.rae.es/banco, consultado el 2026-09-28)
-   el mueble, acepciones 1 y 2 (asiento; mesa de carpintero)
-   el dinero, acepción 5 (empresa de operaciones financieras)
-fuera, por no estar en el modelo: ninguna
+::: tabla
+Puesto de cada palabra entre las vecinas de «banco», en las cinco tiradas
 
-puesto de cada palabra entre las 68.926 vecinas de «banco»
-en las cinco tiradas; el puesto 1 es la más parecida
+| sentido | palabra | tirada: 1 | tirada: 2 | tirada: 3 | tirada: 4 | tirada: 5 |
+|:--|:--|--:|--:|--:|--:|--:|
+| el mueble | asiento | 8.698 | 9.194 | 14.362 | 9.164 | 10.704 |
+|  | respaldo | 125 | 429 | 1.108 | 82 | 163 |
+|  | personas | 61.902 | 62.117 | 62.228 | 62.094 | 61.125 |
+|  | madero | 407 | 546 | 446 | 364 | 823 |
+|  | pies | 42.737 | 31.408 | 48.368 | 43.162 | 38.616 |
+|  | mesa | 22.925 | 21.287 | 41.686 | 34.538 | 34.717 |
+|  | labores | 19.627 | 38.236 | 34.234 | 42.370 | 38.100 |
+|  | carpinteros | 49.350 | 44.061 | 42.614 | 45.927 | 55.065 |
+|  | artesanos | 23.472 | 25.228 | 16.792 | 24.911 | 24.867 |
+| el dinero | empresa | 54.583 | 59.540 | 54.603 | 57.488 | 56.310 |
+|  | operaciones | 50.829 | 53.584 | 48.093 | 54.840 | 51.599 |
+|  | dinero | 48.437 | 52.763 | 51.480 | 47.864 | 48.669 |
+|  | accionistas | 20.995 | 25.853 | 31.977 | 30.146 | 43.607 |
+|  | depósitos | 38.143 | 15.463 | 18.502 | 36.327 | 20.777 |
+|  | clientes | 46.658 | 41.315 | 34.751 | 43.384 | 43.380 |
+| **mediana** | **el mueble** | **22.925** | **25.228** | **34.234** | **34.538** | **34.717** |
+| **mediana** | **el dinero** | **47.548** | **47.039** | **41.422** | **45.624** | **46.138** |
+| a media tabla |  | 34.463 | 34.463 | 34.463 | 34.463 | 34.463 |
 
-palabra          tirada 1 tirada 2 tirada 3 tirada 4 tirada 5
--------------------------------------------------------------
-el mueble
-  asiento           8.698    9.194   14.362    9.164   10.704
-  respaldo            125      429    1.108       82      163
-  personas         61.902   62.117   62.228   62.094   61.125
-  madero              407      546      446      364      823
-  pies             42.737   31.408   48.368   43.162   38.616
-  mesa             22.925   21.287   41.686   34.538   34.717
-  labores          19.627   38.236   34.234   42.370   38.100
-  carpinteros      49.350   44.061   42.614   45.927   55.065
-  artesanos        23.472   25.228   16.792   24.911   24.867
-el dinero
-  empresa          54.583   59.540   54.603   57.488   56.310
-  operaciones      50.829   53.584   48.093   54.840   51.599
-  dinero           48.437   52.763   51.480   47.864   48.669
-  accionistas      20.995   25.853   31.977   30.146   43.607
-  depósitos        38.143   15.463   18.502   36.327   20.777
-  clientes         46.658   41.315   34.751   43.384   43.380
--------------------------------------------------------------
-mediana, mueble    22.925   25.228   34.234   34.538   34.717
-mediana, dinero    47.548   47.039   41.422   45.624   46.138
-a media tabla      34.463   34.463   34.463   34.463   34.463
+Puesto entre las 68.926 vecinas de «banco»; el puesto 1 es la más parecida.
 
-«mediana»: la mitad de las palabras del grupo sale en ese
-puesto o más arriba. «a media tabla»: el puesto del medio,
-el que saca de media una palabra cualquiera
+Mediana: la mitad de las palabras del grupo sale en ese puesto o más arriba. A media tabla: el puesto del medio, el que saca de media una palabra cualquiera.
 
-las 5 vecinas de «banco» en cada tirada:
-   1: escritorio, almacén, baúl, ferrocarril, armario
-   2: cajón, plano, almacén, ferrocarril, armario
-   3: cajón, plano, ferrocarril, cerco, almacén
-   4: pupitre, plano, cajón, escritorio, estribo
-   5: cerco, plano, cajón, escritorio, egército
+Los dos grupos: los sustantivos de las definiciones de «banco» en el Diccionario de la lengua española (https://dle.rae.es/banco, consultado el 2026-09-28). El mueble, acepciones 1 y 2 (asiento; mesa de carpintero); el dinero, acepción 5 (empresa de operaciones financieras).
+
+Fuera, por no estar en el modelo: ninguna.
+:::
+
+::: tabla
+Las 5 vecinas de «banco» en cada tirada
+
+| tirada | las 5 más parecidas |
+|:-:|:--|
+| 1 | escritorio, almacén, baúl, ferrocarril, armario |
+| 2 | cajón, plano, almacén, ferrocarril, armario |
+| 3 | cajón, plano, ferrocarril, cerco, almacén |
+| 4 | pupitre, plano, cajón, escritorio, estribo |
+| 5 | cerco, plano, cajón, escritorio, egército |
+:::

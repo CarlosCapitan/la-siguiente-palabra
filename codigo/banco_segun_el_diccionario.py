@@ -49,7 +49,7 @@ import sys
 import numpy as np
 
 from cuantas_veces_sale import SEMILLAS
-from formato import ANCHO_CAJA_CITA, comprobar_ancho, miles
+from formato import miles, tabla_editorial
 from palabras_numeros import CORPUS_BIBLIOTECA, cargar_corpus, entrenar
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
@@ -80,36 +80,36 @@ def mediana(valores):
 
 
 def informe(tiradas):
+    """Dos tablas editoriales (L24, 9 de octubre; regla 6 ter): los puestos y las vecinas."""
     n = tiradas[0]["n"]
     conocidas = lambda lista: [w for w in lista if all(t["puestos"][w] is not None for t in tiradas)]
     fuera = [w for w in MUEBLE + DINERO if w not in conocidas(MUEBLE + DINERO)]
-    lin = [f"--- «{PALABRA.upper()}», SEGÚN EL DICCIONARIO ---",
-           "los dos grupos: los sustantivos de las definiciones de",
-           f"«{PALABRA}» en el Diccionario de la lengua española",
-           f"({FUENTE}, consultado el {CONSULTADO})",
-           "   el mueble, acepciones 1 y 2 (asiento; mesa de carpintero)",
-           "   el dinero, acepción 5 (empresa de operaciones financieras)",
-           f"fuera, por no estar en el modelo: {', '.join(fuera) if fuera else 'ninguna'}", "",
-           f"puesto de cada palabra entre las {miles(n)} vecinas de «{PALABRA}»",
-           "en las cinco tiradas; el puesto 1 es la más parecida", "",
-           f"{'palabra':<16}" + "".join(f"{'tirada ' + str(k + 1):>9}" for k in range(len(tiradas))),
-           "-" * (16 + 9 * len(tiradas))]
+    filas = []
     for titulo, lista in (("el mueble", MUEBLE), ("el dinero", DINERO)):
-        lin.append(titulo)
-        for w in conocidas(lista):
-            lin.append(f"  {w:<14}" + "".join(f"{miles(t['puestos'][w]):>9}" for t in tiradas))
-    lin.append("-" * (16 + 9 * len(tiradas)))
-    for titulo, lista in (("mediana, mueble", MUEBLE), ("mediana, dinero", DINERO)):
-        lin.append(f"{titulo:<16}" + "".join(
-            f"{miles(round(mediana([t['puestos'][w] for w in conocidas(lista)]))):>9}" for t in tiradas))
-    lin += [f"{'a media tabla':<16}" + "".join(f"{miles((t['n'] + 1) // 2):>9}" for t in tiradas),
-            "", "«mediana»: la mitad de las palabras del grupo sale en ese",
-            "puesto o más arriba. «a media tabla»: el puesto del medio,",
-            "el que saca de media una palabra cualquiera", "",
-            f"las {VECINAS} vecinas de «{PALABRA}» en cada tirada:"]
-    for k, t in enumerate(tiradas, 1):
-        lin.append(f"   {k}: " + ", ".join(t["vecinas"]))
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+        for k, w in enumerate(conocidas(lista)):
+            filas.append([titulo if k == 0 else "", w] + [miles(t["puestos"][w]) for t in tiradas])
+    for titulo, lista in (("el mueble", MUEBLE), ("el dinero", DINERO)):
+        filas.append(["**mediana**", f"**{titulo}**"] + [
+            f"**{miles(round(mediana([t['puestos'][w] for w in conocidas(lista)])))}**"
+            for t in tiradas])
+    filas.append(["a media tabla", ""] + [miles((t["n"] + 1) // 2) for t in tiradas])
+    puestos_ = tabla_editorial(
+        f"Puesto de cada palabra entre las vecinas de «{PALABRA}», en las cinco tiradas",
+        ["sentido", "palabra"] + [f"tirada: {k + 1}" for k in range(len(tiradas))], filas,
+        "ii" + "d" * len(tiradas),
+        [f"Puesto entre las {miles(n)} vecinas de «{PALABRA}»; el puesto 1 es la más parecida.",
+         "Mediana: la mitad de las palabras del grupo sale en ese puesto o más arriba. A media "
+         "tabla: el puesto del medio, el que saca de media una palabra cualquiera.",
+         f"Los dos grupos: los sustantivos de las definiciones de «{PALABRA}» en el Diccionario "
+         f"de la lengua española ({FUENTE}, consultado el {CONSULTADO}). El mueble, acepciones 1 "
+         "y 2 (asiento; mesa de carpintero); el dinero, acepción 5 (empresa de operaciones "
+         "financieras).",
+         f"Fuera, por no estar en el modelo: {', '.join(fuera) if fuera else 'ninguna'}."])
+    vecinas = tabla_editorial(
+        f"Las {VECINAS} vecinas de «{PALABRA}» en cada tirada",
+        ["tirada", f"las {VECINAS} más parecidas"],
+        [[str(k), ", ".join(t["vecinas"])] for k, t in enumerate(tiradas, 1)], "ci")
+    return puestos_ + [""] + vecinas
 
 
 def selftest():

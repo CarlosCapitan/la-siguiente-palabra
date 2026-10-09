@@ -23,6 +23,8 @@ de porcentaje con un espacio delante: 90,4 %. Que el programa imprima 90.4% y el
 escriba 90,4 % es una diferencia invisible mientras se escribe y muy visible impresa.
 """
 
+import re
+
 ANCHO_CAJA = 68
 ANCHO_CAJA_CITA = 62   # medido el 20 sep 2026 con el preámbulo actual (cita con margen de 1,4 em)
 
@@ -169,4 +171,30 @@ def muestra_editorial(titulo, lineas, notas=()):
             out += [n, ""]
         out.pop()
     out.append(":::")
+    return out
+
+
+def leer_tablas(texto):
+    """Las tablas editoriales de una salida, para los programas que dibujan con sus números:
+    {título: (rótulos, filas, notas)}. Las celdas, sin las ** de la negrita. Un título repetido
+    revienta: sería ambiguo de cuál se habla."""
+    L = texto.split("\n")
+    out = {}
+    i = 0
+    while i < len(L):
+        if L[i] == "::: tabla":
+            titulo = L[i + 1]
+            j = i + 2
+            while L[j] != ":::":
+                j += 1
+            cuerpo = [l for l in L[i + 2:j]]
+            filas_md = [l for l in cuerpo if l.startswith("|")]
+            notas = [l for l in cuerpo if l.strip() and not l.startswith("|")]
+            celdas = lambda l: [c.strip().strip("*").replace("\\|", "|")
+                                for c in re.split(r"(?<!\\)\|", l.strip()[1:-1])]
+            assert len(filas_md) >= 2, f"Se esperaba cabecera y alineación en «{titulo}»"
+            assert titulo not in out, f"Se esperaba un título distinto por tabla; «{titulo}» se repite"
+            out[titulo] = (celdas(filas_md[0]), [celdas(l) for l in filas_md[2:]], notas)
+            i = j
+        i += 1
     return out
