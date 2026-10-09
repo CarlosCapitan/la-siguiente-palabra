@@ -34,7 +34,7 @@ LONGITUDES_FILA = [64, 1024]                         # las de la tabla del capí
 import argparse
 import sys
 
-from formato import comprobar_ancho, miles, coma
+from formato import comprobar_ancho, miles, coma, tabla_editorial
 
 ANCHO = 64
 
@@ -126,16 +126,17 @@ def main():
         for f, fila in enumerate(cuadricula(n)):
             L.append(f"  {str(f + 1) + ' ' + pal[f]:<{w}}" + "".join(f"{'x' if v else '·':>3}" for v in fila))
         L += [f"  {n} palabras: {casillas(n)} casillas de {n * n}.", ""]
-    L += ["2. CUÁNTAS CASILLAS, SEGÚN LO LARGO QUE SEA EL TEXTO", "",
-          f"  {'palabras':>10}{'casillas':>12}{'veces las de':>18}",
-          f"  {'':>10}{'':>12}{'la fila de arriba':>18}",
-          f"  {'--------':>10}{'--------':>12}{'-----------------':>18}"]
-    antes = None
+    # L24 (9 de octubre): el apartado 2, en tabla editorial (regla 6 ter). El 1 y el 3 se quedan
+    # como estaban: los leen las figuras de la cuadrícula y de la fila, y el capítulo 9.
+    filas, antes = [], None
     for n in LONGITUDES:
         v = casillas(n)
-        L.append(f"  {miles(n):>10}{miles(v):>12}" + (f"{coma(v / antes, 2):>18}" if antes else f"{'':>18}"))
+        filas.append([miles(n), miles(v), coma(v / antes, 2) if antes else ""])
         antes = v
-    L += ["", "  Doble de texto, casi cuatro veces más casillas: el cuadrado.", ""]
+    L += ["2. CUÁNTAS CASILLAS, SEGÚN LO LARGO QUE SEA EL TEXTO", ""] + tabla_editorial(
+        "Cuántas casillas, según lo largo que sea el texto",
+        ["palabras", "casillas", "veces las de la fila de arriba"], filas, "ddd",
+        ["Doble de texto, casi cuatro veces más casillas: el cuadrado."]) + [""]
     fp = FRASE_FILA.split()
     n = len(fp)
     L += ["3. CUÁNTAS TANDAS HAY QUE HACER UNA DETRÁS DE OTRA",

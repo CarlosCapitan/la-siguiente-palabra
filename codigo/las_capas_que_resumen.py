@@ -35,7 +35,7 @@ import json
 import os
 import sys
 
-from formato import ANCHO_CAJA, comprobar_ancho, miles
+from formato import miles, tabla_editorial
 
 
 def leer(config, origen):
@@ -65,21 +65,19 @@ def contar(n, tipos, intervalo):
 
 
 def imprimir(nombre, n, tipos, intervalo, largo):
+    """Una tabla editorial (L24, 9 de octubre; regla 6 ter). La cuenta no cambia."""
     completas, resumen, cuadra = contar(n, tipos, intervalo)
-    out = [f"LAS {n} CAPAS DE UN MODELO HÍBRIDO",
-           f"({nombre}, leído de su config.json)",
-           "",
-           f"  {'mirada completa (cada trozo con él y los anteriores):':<54} {completas:>3} capas",
-           f"  {'resumen de tamaño fijo:':<54} {resumen:>3} capas"]
+    filas = [["capas de mirada completa (cada trozo con él y los anteriores)", str(completas)],
+             ["capas de resumen de tamaño fijo", str(resumen)]]
     if intervalo is not None:
-        out.append(f"  una de mirada completa cada {intervalo} capas, la última de cada "
-                   f"grupo: {'sí' if cuadra else 'no'}")
-    out += ["",
-            f"  las {PRIMERAS} primeras: " + " ".join(LETRA[x] for x in tipos[:PRIMERAS]),
-            "  M: mirada completa.  R: resumen de tamaño fijo."]
+        filas.append([f"una de mirada completa cada {intervalo} capas, la última de cada grupo",
+                      "sí" if cuadra else "no"])
+    filas.append([f"las {PRIMERAS} primeras", " ".join(LETRA[x] for x in tipos[:PRIMERAS])])
     if largo is not None:
-        out.append(f"  texto más largo que admite: {miles(largo)} trozos")
-    print("\n".join(comprobar_ancho(out, ANCHO_CAJA)))
+        filas.append(["texto más largo que admite", f"{miles(largo)} trozos"])
+    print("\n".join(tabla_editorial(
+        f"Las {n} capas de un modelo híbrido", ["", "cuántas"], filas, "id",
+        [f"{nombre}, leído de su config.json.", "M: mirada completa. R: resumen de tamaño fijo."])))
 
 
 def selftest():

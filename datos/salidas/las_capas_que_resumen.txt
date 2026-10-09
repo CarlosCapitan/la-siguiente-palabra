@@ -1,10 +1,15 @@
-LAS 64 CAPAS DE UN MODELO HÍBRIDO
-(lmstudio-community/Qwen3.8-27B-MLX-6bit, leído de su config.json)
+::: tabla
+Las 64 capas de un modelo híbrido
 
-  mirada completa (cada trozo con él y los anteriores):   16 capas
-  resumen de tamaño fijo:                                 48 capas
-  una de mirada completa cada 4 capas, la última de cada grupo: sí
+|  | cuántas |
+|:--|--:|
+| capas de mirada completa (cada trozo con él y los anteriores) | 16 |
+| capas de resumen de tamaño fijo | 48 |
+| una de mirada completa cada 4 capas, la última de cada grupo | sí |
+| las 8 primeras | R R R M R R R M |
+| texto más largo que admite | 262.144 trozos |
 
-  las 8 primeras: R R R M R R R M
-  M: mirada completa.  R: resumen de tamaño fijo.
-  texto más largo que admite: 262.144 trozos
+lmstudio-community/Qwen3.8-27B-MLX-6bit, leído de su config.json.
+
+M: mirada completa. R: resumen de tamaño fijo.
+:::

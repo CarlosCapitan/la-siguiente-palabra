@@ -102,7 +102,7 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from formato import ANCHO_CAJA, coma, comprobar_ancho, miles
+from formato import coma, miles, muestra_editorial, tabla_editorial
 from ngrama import ALFABETO, cargar_corpus, normalizar
 
 AQUI = Path(__file__).resolve().parent
@@ -613,11 +613,14 @@ def main():
 
     texto, aprender, probar = cargar_texto()
     prueba = trozos(probar, np.random.default_rng(SEMILLA), EJEMPLOS_PRUEBA)
+    # L24 (9 de octubre): cada apartado, en tablas y muestras editoriales (regla 6 ter). Las
+    # cuentas, y el orden en que se hacen, no cambian.
     L = ["", "########## capítulo 8: una mirada que nadie programa ##########",
          f"máquina: {platform.system()} {platform.machine()}; calcula en: {DISPOSITIVO}. "
          f"Medido el {date.today().isoformat()}.",
          f"Semilla {SEMILLA}. Texto: el Quijote, {miles(len(texto))} letras:",
          f"{miles(len(aprender))} para aprender y {miles(len(probar))} para probar.", ""]
+    ver = lambda ch: "_" if ch == " " else ch
 
     frases = {}
     t0 = time.perf_counter()
@@ -626,87 +629,82 @@ def main():
     minutos = (time.perf_counter() - t0) / 60
     _, med_sin = entrenar(aprender, PASOS, [PASOS], prueba, mirar=False)
 
-    L += ["1. EL TAMAÑO", "",
-          f"  números ajustables: {miles(cuantos_numeros(p))}",
-          f"  una ronda, una mirada, {CONTEXTO} letras de contexto, {ANCHO} números por letra",
-          f"  pasos de entrenamiento: {miles(PASOS)} ({coma(minutos)} min en esta máquina)",
-          f"  cada paso mueve cada número {coma(TASA, 1)} veces su culpa, en contra",
-          "  (la regla del capítulo 4)", ""]
+    L += ["--- 1. EL TAMAÑO ---", ""] + tabla_editorial(
+        "El tamaño de la máquina que mira", ["", "cuánto"],
+        [["números ajustables", miles(cuantos_numeros(p))],
+         ["rondas", "1"], ["miradas", "1"],
+         ["letras de contexto", str(CONTEXTO)], ["números por letra", str(ANCHO)],
+         ["pasos de entrenamiento", miles(PASOS)],
+         ["lo que tarda en entrenar, en esta máquina", f"{coma(minutos)} min"],
+         ["cada paso mueve cada número", f"{coma(TASA, 1)} veces su culpa, en contra"]], "id",
+        ["Cada paso, con la regla del capítulo 4."]) + [""]
 
     assert len(MOMENTOS) == 5, "el título del apartado 2 dice «cinco momentos»"
-    L += ["2. LO QUE ACIERTA Y CÓMO REPARTE LA MIRADA, EN CINCO MOMENTOS",
-          f"   ({miles(EJEMPLOS_PRUEBA)} fragmentos de prueba de {CONTEXTO} letras, que nunca ha visto)", "",
-          f"  {'tras':<16}{'acierta la siguiente':>22}{'reparte entre':>16}",
-          f"  {'----':<16}{'--------------------':>22}{'-------------':>16}"]
-    for paso in MOMENTOS:
-        m = med[paso]
-        L.append(f"  {miles(paso) + ' pasos':<16}{coma(100 * m['acierto']) + ' %':>22}"
-                 f"{coma(m['reparte_entre']) + ' letras':>16}")
-    L += ["", "  «acierta la siguiente»: la letra a la que da más porcentaje es",
-          "  la que viene de verdad detrás del fragmento.",
-          f"  «reparte entre»: a cuántas de las {CONTEXTO} letras mira de verdad,",
-          "  de media: 16 si reparte por igual, 1 si mira a una sola.", ""]
+    L += ["--- 2. LO QUE ACIERTA Y CÓMO REPARTE LA MIRADA ---", ""] + tabla_editorial(
+        "Lo que acierta y cómo reparte la mirada, en cinco momentos",
+        ["tras", "acierta la siguiente", "reparte entre"],
+        [[f"{miles(paso)} pasos", f"{coma(100 * med[paso]['acierto'])} %",
+          f"{coma(med[paso]['reparte_entre'])} letras"] for paso in MOMENTOS], "idd",
+        [f"Con {miles(EJEMPLOS_PRUEBA)} fragmentos de prueba de {CONTEXTO} letras, que nunca ha visto.",
+         "Acierta la siguiente: la letra a la que da más porcentaje es la que viene de verdad "
+         "detrás del fragmento.",
+         f"Reparte entre: a cuántas de las {CONTEXTO} letras mira de verdad, de media: "
+         f"{CONTEXTO} si reparte por igual, 1 si mira a una sola."]) + [""]
 
     x = prueba[:, :CONTEXTO]
-    L += ["3. A DÓNDE MIRA MÁS LA ÚLTIMA LETRA, AL PRINCIPIO Y AL FINAL",
-          "   (de cada cien fragmentos de prueba, en cuántos la letra a la",
-          f"   que más mira de las {CONTEXTO} es ésta)", "",
-          f"  {'la letra a la que más mira':<34}{'al empezar':>12}{'al final':>12}",
-          f"  {'--------------------------':<34}{'----------':>12}{'--------':>12}"]
     c0, cf = clasificar(x, med[0]["destino"]), clasificar(x, med[PASOS]["destino"])
-    for cat in CATEGORIAS:
-        L.append(f"  {cat:<34}{coma(100 * c0[cat] / len(x)) + ' %':>12}"
-                 f"{coma(100 * cf[cat] / len(x)) + ' %':>12}")
-    L += ["", "  Al empezar reparte casi por igual: «la que más mira» sale",
-          "  por decimales, y esa columna es casi azar.", ""]
+    L += ["--- 3. A DÓNDE MIRA MÁS LA ÚLTIMA LETRA ---", ""] + tabla_editorial(
+        "A dónde mira más la última letra, al principio y al final",
+        ["la letra a la que más mira", "al empezar", "al final"],
+        [[cat, f"{coma(100 * c0[cat] / len(x))} %", f"{coma(100 * cf[cat] / len(x))} %"]
+         for cat in CATEGORIAS], "idd",
+        [f"De cada cien fragmentos de prueba, en cuántos la letra a la que más mira de las "
+         f"{CONTEXTO} es ésta.",
+         "Al empezar reparte casi por igual: «la que más mira» sale por decimales, y esa columna "
+         "es casi azar."]) + [""]
 
-    L += ["4. ¿SIRVE DE ALGO MIRAR? LAS MISMAS LETRAS DE PRUEBA", "",
-          f"  {'la máquina':<30}{'acierta':>9}{'números':>13}{'vacías':>12}",
-          f"  {'----------':<30}{'-------':>9}{'-------':>13}{'------':>12}"]
+    filas = []
     for k in PERILLAS:
         acc, vac, guard = contar_perilla(aprender, prueba, k)
-        L.append(f"  {'contar, perilla en ' + str(k):<30}{coma(100 * acc) + ' %':>9}{miles(guard):>13}"
-                 f"{miles(vac):>12}")
+        filas.append([f"contar, perilla en {k}", f"{coma(100 * acc)} %", miles(guard), miles(vac)])
     de_mirar = sum(p[n].numel() for n in ("Wp", "We", "Wc", "Wo"))
-    L.append(f"  {'esta, sin mirar atrás':<30}{coma(100 * med_sin[PASOS]['acierto']) + ' %':>9}"
-             f"{miles(cuantos_numeros(p) - de_mirar):>13}{'—':>12}")
-    L.append(f"  {'esta, mirando':<30}{coma(100 * med[PASOS]['acierto']) + ' %':>9}"
-             f"{miles(cuantos_numeros(p)):>13}{'—':>12}")
-    L += ["", "  «números»: los que guarda cada máquina. En la de contar, uno por",
-          "  cada casilla y letra que se ha visto detrás alguna vez.",
-          "  «vacías»: fragmentos de prueba cuya casilla no salió al aprender.",
-          "  Cuentan como fallo: contar no tiene nada que decir ahí.", ""]
+    filas += [["esta, sin mirar atrás", f"{coma(100 * med_sin[PASOS]['acierto'])} %",
+               miles(cuantos_numeros(p) - de_mirar), ""],
+              ["esta, mirando", f"{coma(100 * med[PASOS]['acierto'])} %",
+               miles(cuantos_numeros(p)), ""]]
+    L += ["--- 4. ¿SIRVE DE ALGO MIRAR? ---", ""] + tabla_editorial(
+        "¿Sirve de algo mirar? Las mismas letras de prueba",
+        ["la máquina", "acierta", "números", "vacías"], filas, "iddd",
+        ["Números: los que guarda cada máquina. En la de contar, uno por cada casilla y letra que "
+         "se ha visto detrás alguna vez.",
+         "Vacías: fragmentos de prueba cuya casilla no salió al aprender. Cuentan como fallo: "
+         "contar no tiene nada que decir ahí. Esta máquina no tiene casillas."]) + [""]
 
-    L += [f"5. EL REPARTO DE LA ÚLTIMA LETRA DE «{FRASE[-CONTEXTO:]}»",
-          "   (de cada cien, cuánto de su mirada va a cada letra)", ""]
     tramo = frases[0][0]
-    L.append("  " + f"{'letra':<12}" + "".join(f"{('_' if ch == ' ' else ch):>3}" for ch in tramo))
-    for paso in (0, PASOS):
-        _, a, apuesta = frases[paso]
-        L.append("  " + f"{'tras ' + miles(paso):<12}" + "".join(f"{round(100 * v):>3}" for v in a))
     i_frase = texto.find(FRASE)
     assert texto.count(FRASE) == 1, "la frase tiene que salir una sola vez en el Quijote"
     viene = texto[i_frase + len(FRASE)]
-    L += ["", "  «_» es un espacio.",
-          f"  lo más probable detrás: al empezar «{frases[0][2]}», al final «{frases[PASOS][2]}».",
-          f"  en el Quijote viene detrás: «{'_' if viene == ' ' else viene}».",
-          f"  reparte entre: al empezar {coma(reparte_entre(frases[0][1]))} letras; "
-          f"al final {coma(reparte_entre(frases[PASOS][1]))}.", ""]
+    a0, af = frases[0][1], frases[PASOS][1]
+    L += ["--- 5. EL REPARTO DE LA ÚLTIMA LETRA DE LA FRASE ---", ""] + tabla_editorial(
+        f"El reparto de la última letra de «{FRASE[-CONTEXTO:]}»",
+        ["sitio", "letra", "tras 0 pasos", f"tras {miles(PASOS)} pasos"],
+        [[str(k + 1), ver(ch), str(round(100 * a0[k])), str(round(100 * af[k]))]
+         for k, ch in enumerate(tramo)], "ccdd",
+        ["De cada cien, cuánto de su mirada va a cada letra. El guion bajo es un espacio.",
+         f"Lo más probable detrás: al empezar «{ver(frases[0][2])}», al final «{ver(frases[PASOS][2])}». "
+         f"En el Quijote viene detrás: «{ver(viene)}».",
+         f"Reparte entre: al empezar {coma(reparte_entre(a0))} letras; al final "
+         f"{coma(reparte_entre(af))}."]) + [""]
 
-    L += ["6. EL AJUSTE DE ESCALA, CON ÉL Y SIN ÉL",
-          f"   ({ANCHO_ESCALA} números por letra en lugar de {ANCHO}; {miles(PASOS_ESCALA)} pasos;",
-          "   cada número se mueve con su propio poquito)", "",
-          f"  {'empiezan':<18}{'ajuste':>7}" + "".join(f"{miles(s):>7}" for s in MOMENTOS_ESCALA)
-          + f"{'reparte':>11}"]
+    filas = []
     for nombre, ini in INICIOS_ESCALA.items():
         for escalar in (True, False):
             _, me = entrenar(aprender, PASOS_ESCALA, MOMENTOS_ESCALA, prueba[:5_000],
                              ancho=ANCHO_ESCALA, escalar=escalar, inicio=ini, mover="adam")
-            L.append(f"  {nombre:<18}{('sí' if escalar else 'no'):>7}"
-                     + "".join(f"{coma(100 * me[s]['acierto'], 0) + ' %':>7}" for s in MOMENTOS_ESCALA)
-                     + f"{coma(me[0]['reparte_entre']):>11}")
-    L += ["", f"  Lo mismo con números de tamaño 1 y otras {len(OTRAS_SEMILLAS_ESCALA)} semillas,",
-          f"  tras {miles(PASOS_ESCALA)} pasos:"]
+            filas.append([nombre, "sí" if escalar else "no"]
+                         + [f"{coma(100 * me[s]['acierto'], 0)} %" for s in MOMENTOS_ESCALA]
+                         + [coma(me[0]["reparte_entre"])])
+    otras = []
     for sem in OTRAS_SEMILLAS_ESCALA:
         r = {}
         for escalar in (True, False):
@@ -714,72 +712,79 @@ def main():
                              ancho=ANCHO_ESCALA, escalar=escalar, inicio="unidad", semilla=sem,
                              mover="adam")
             r[escalar] = me[PASOS_ESCALA]["acierto"]
-        L.append(f"  semilla {sem}: con ajuste {coma(100 * r[True], 0)} %, "
-                 f"sin ajuste {coma(100 * r[False], 0)} %")
+        otras.append([str(sem), f"{coma(100 * r[True], 0)} %", f"{coma(100 * r[False], 0)} %"])
     dentro = {n: dentro_de(ini) for n, ini in INICIOS_ESCALA.items()}
-    L += ["", "  «empiezan»: de qué tamaño son al azar las listas de las letras",
-          "  antes de aprender: de cada cien números, "
-          f"{coma(100 * dentro['de tamaño 1'], 0)} entre menos 1 y 1",
-          f"  («de tamaño 1») o {coma(100 * dentro['pequeños (0,02)'], 0)} entre menos 0,02 y 0,02.",
-          f"  Columnas {MOMENTOS_ESCALA[0]} a {miles(PASOS_ESCALA)}: cuánto acierta tras esos pasos, de cada cien.",
-          "  «reparte»: entre cuántas letras mira antes de aprender nada.", ""]
+    L += ["--- 6. EL AJUSTE DE ESCALA ---", ""] + tabla_editorial(
+        "El ajuste de escala, con él y sin él",
+        ["empiezan", "ajuste"] + [f"acierta, tras los pasos: {miles(s)}" for s in MOMENTOS_ESCALA]
+        + ["reparte"], filas, "ic" + "d" * len(MOMENTOS_ESCALA) + "d",
+        [f"{ANCHO_ESCALA} números por letra en lugar de {ANCHO}; {miles(PASOS_ESCALA)} pasos; "
+         "cada número se mueve con su propio poquito.",
+         "Empiezan: de qué tamaño son al azar las listas de las letras antes de aprender: de cada "
+         f"cien números, {coma(100 * dentro['de tamaño 1'], 0)} entre menos 1 y 1 («de tamaño 1») "
+         f"o {coma(100 * dentro['pequeños (0,02)'], 0)} entre menos 0,02 y 0,02.",
+         "Acierta: de cada cien, tras esos pasos. Reparte: entre cuántas letras mira antes de "
+         "aprender nada."]) + [""] + tabla_editorial(
+        "El ajuste de escala, con otras semillas", ["semilla", "con ajuste", "sin ajuste"], otras,
+        "cdd",
+        [f"Números de tamaño 1; cuánto acierta tras {miles(PASOS_ESCALA)} pasos, de cada cien."]) + [""]
 
     # ---- 7. ¿mirar, o saber a dónde mirar?
     _, med_fija = entrenar(aprender, PASOS, [PASOS], prueba, congelar=("Wp", "We"))
-    L += ["7. ¿MIRAR, O SABER A DÓNDE MIRAR?", "",
-          f"  {'la máquina':<40}{'acierta':>10}{'reparte entre':>15}",
-          f"  {'----------':<40}{'-------':>10}{'-------------':>15}",
-          f"  {'entrenada entera':<40}{coma(100 * med[PASOS]['acierto']) + ' %':>10}"
-          f"{coma(med[PASOS]['reparte_entre']):>15}",
-          f"  {'pregunta y etiqueta al azar, fijas':<40}{coma(100 * med_fija[PASOS]['acierto']) + ' %':>10}"
-          f"{coma(med_fija[PASOS]['reparte_entre']):>15}",
-          f"  {'sin mirar atrás':<40}{coma(100 * med_sin[PASOS]['acierto']) + ' %':>10}"
-          f"{'—':>15}",
-          "", "  La entrenada entera, con el reparto impuesto al usarla:", "",
-          f"  {'el reparto impuesto':<40}{'acierta':>10}{'reparte entre':>15}",
-          f"  {'-------------------':<40}{'-------':>10}{'-------------':>15}"]
+    rotulos = ["la máquina", "acierta", "reparte entre"]
+    L += ["--- 7. ¿MIRAR, O SABER A DÓNDE MIRAR? ---", ""] + tabla_editorial(
+        "¿Mirar, o saber a dónde mirar?", rotulos,
+        [["entrenada entera", f"{coma(100 * med[PASOS]['acierto'])} %",
+          coma(med[PASOS]["reparte_entre"])],
+         ["pregunta y etiqueta al azar, fijas", f"{coma(100 * med_fija[PASOS]['acierto'])} %",
+          coma(med_fija[PASOS]["reparte_entre"])],
+         ["sin mirar atrás", f"{coma(100 * med_sin[PASOS]['acierto'])} %", ""]], "idd",
+        ["Pregunta y etiqueta al azar, fijas: se entrena todo menos las dos tablas que fijan a "
+         "dónde mira; el contenido sí aprende."]) + [""]
+    filas = []
     for cual, nombre in REPARTOS_IMPUESTOS.items():
         mi = medir(p, prueba, forzar=cual)
-        L.append(f"  {nombre:<40}{coma(100 * mi['acierto']) + ' %':>10}{coma(mi['reparte_entre']):>15}")
-    L += ["", f"  Lo mismo, pero dejando que el resto vuelva a aprender {miles(PASOS_REAPRENDER)} pasos",
-          "  con el reparto impuesto (la pregunta y la etiqueta no cuentan),",
-          f"  moviendo cada número {coma(TASA_REAPRENDER, 1)} veces su culpa:", "",
-          f"  {'la máquina':<40}{'acierta':>10}{'reparte entre':>15}",
-          f"  {'----------':<40}{'-------':>10}{'-------------':>15}"]
+        filas.append([nombre, f"{coma(100 * mi['acierto'])} %", coma(mi["reparte_entre"])])
+    L += tabla_editorial(
+        "La entrenada entera, con el reparto impuesto al usarla",
+        ["el reparto impuesto", "acierta", "reparte entre"], filas, "idd",
+        ["Impuesto: la máquina no cambia; solo se le dice a dónde mirar."]) + [""]
     _, mr = entrenar(aprender, PASOS_REAPRENDER, [PASOS_REAPRENDER], prueba, desde=p, tasa=TASA_REAPRENDER)
     mr_libre = mr
-    L.append(f"  {'sin imponer nada (para comparar)':<40}{coma(100 * mr[PASOS_REAPRENDER]['acierto']) + ' %':>10}"
-             f"{coma(mr[PASOS_REAPRENDER]['reparte_entre']):>15}")
+    filas = [["sin imponer nada (para comparar)", f"{coma(100 * mr[PASOS_REAPRENDER]['acierto'])} %",
+              coma(mr[PASOS_REAPRENDER]["reparte_entre"])]]
     for cual in ("igual", "anterior"):
         _, mr = entrenar(aprender, PASOS_REAPRENDER, [PASOS_REAPRENDER], prueba, desde=p, forzar=cual,
                          congelar=("Wp", "We"), tasa=TASA_REAPRENDER)
-        L.append(f"  {REPARTOS_IMPUESTOS[cual]:<40}{coma(100 * mr[PASOS_REAPRENDER]['acierto']) + ' %':>10}"
-                 f"{coma(mr[PASOS_REAPRENDER]['reparte_entre']):>15}")
+        filas.append([REPARTOS_IMPUESTOS[cual], f"{coma(100 * mr[PASOS_REAPRENDER]['acierto'])} %",
+                      coma(mr[PASOS_REAPRENDER]["reparte_entre"])])
+    L += tabla_editorial(
+        f"Con el reparto impuesto, y {miles(PASOS_REAPRENDER)} pasos para que el resto vuelva a aprender",
+        rotulos, filas, "idd",
+        ["La pregunta y la etiqueta no cuentan; el resto aprende moviendo cada número "
+         f"{coma(TASA_REAPRENDER, 1)} veces su culpa."]) + [""]
     _, m_igual = entrenar(aprender, PASOS_REAPRENDER, [PASOS_REAPRENDER], prueba, desde=p, tasa=TASA)
-    L += ["", f"  La entrenada entera, {miles(PASOS_REAPRENDER)} pasos más sin imponer nada, con los",
-          f"  mismos fragmentos y en el mismo orden que sus {miles(PASOS_REAPRENDER)} primeros",
-          "  pasos, según cuánto se mueve cada número:", "",
-          f"  {'cuánto se mueve':<50}{'acierta':>10}",
-          f"  {'---------------':<50}{'-------':>10}",
-          f"  {'cada número ' + coma(TASA, 1) + ' veces su culpa (lo de siempre)':<50}"
-          f"{coma(100 * m_igual[PASOS_REAPRENDER]['acierto']) + ' %':>10}",
-          f"  {'cada número ' + coma(TASA_REAPRENDER, 1) + ' veces su culpa':<50}"
-          f"{coma(100 * mr_libre[PASOS_REAPRENDER]['acierto']) + ' %':>10}"]
-    L += ["", "  «pregunta y etiqueta al azar, fijas»: se entrena todo menos las",
-          "  dos tablas que fijan a dónde mira; el contenido sí aprende.",
-          "  «impuesto»: la máquina no cambia; solo se le dice a dónde mirar.", ""]
+    L += tabla_editorial(
+        f"La entrenada entera, {miles(PASOS_REAPRENDER)} pasos más sin imponer nada",
+        ["cuánto se mueve", "acierta"],
+        [[f"cada número {coma(TASA, 1)} veces su culpa (lo de siempre)",
+          f"{coma(100 * m_igual[PASOS_REAPRENDER]['acierto'])} %"],
+         [f"cada número {coma(TASA_REAPRENDER, 1)} veces su culpa",
+          f"{coma(100 * mr_libre[PASOS_REAPRENDER]['acierto'])} %"]], "id",
+        [f"Con los mismos fragmentos y en el mismo orden que sus {miles(PASOS_REAPRENDER)} "
+         "primeros pasos."]) + [""]
 
-    L += ["8. LO QUE ESCRIBE AL FINAL, EMPEZANDO POR", f"   «{ARRANQUE_MUESTRA}»", ""]
     muestra = escribir(p, np.random.default_rng(SEMILLA))
-    for i in range(0, len(muestra), 60):
-        L.append("  " + muestra[i:i + 60])
+    L += ["--- 8. LO QUE ESCRIBE AL FINAL ---", ""] + muestra_editorial(
+        "Lo que escribe la máquina que mira, al final",
+        [muestra[i:i + 60] for i in range(0, len(muestra), 60)],
+        [f"Empieza por «{ARRANQUE_MUESTRA}»; lo demás lo escribe ella, letra a letra."])
 
-    # si alguna línea no cabe, que la medición no se pierda: se deja entera en el disco antes
+    # si algo falla al imprimir, que la medición no se pierda: se deja entera en el disco antes
     Path(AQUI / "../datos/mirada_a_mano_bruto.txt").write_text("\n".join(L), encoding="utf-8")
-    for l in comprobar_ancho([l.rstrip() for l in L], ANCHO_CAJA):
+    for l in L:
         print(l)
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())

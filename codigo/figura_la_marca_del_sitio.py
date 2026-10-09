@@ -33,23 +33,22 @@ from pathlib import Path
 
 from matplotlib.patches import Rectangle
 
+from formato import leer_tablas
 from infografia import COLOR, GRIS, Lienzo
 
 AQUI = Path(__file__).resolve().parent
 
 
 def leer(ruta):
-    """Del apartado 3: dos bloques de tres filas (lista, marca, lo que entra), con sus números."""
-    texto = Path(ruta).read_text(encoding="utf-8")
-    assert "3. LA MISMA «e» EN DOS SITIOS" in texto, f"se esperaba el apartado 3 en {ruta}"
-    tres = texto.split("3. LA MISMA «e» EN DOS SITIOS", 1)[1].split("\n4.", 1)[0]
-    filas = []
-    for m in re.finditer(r"^  (la lista de la «e»|más la marca del sitio \d+|da: lo que entra)"
-                         r"((?:\s+-?\d+,\d+)+)$", tres, re.M):
-        filas.append((m.group(1), [float(v.replace(",", ".")) for v in m.group(2).split()]))
-    assert len(filas) == 6, f"se esperaban seis filas; hay {len(filas)}"
-    bloques = [filas[:3], filas[3:]]
+    """Del apartado 3: dos bloques de tres filas (lista, marca, lo que entra), con sus números,
+    de sus dos tablas editoriales (L24, 9 de octubre)."""
+    tablas = leer_tablas(Path(ruta).read_text(encoding="utf-8"))
+    titulos = [t for t in tablas if re.match(r"^La «e» del sitio \d+: la lista que entra$", t)]
+    assert len(titulos) == 2, f"se esperaban dos tablas del apartado 3; hay {titulos}"
+    bloques = [[(f[0], [float(v.replace(",", ".")) for v in f[1:]]) for f in tablas[t][1]]
+               for t in titulos]
     for b in bloques:
+        assert len(b) == 3, f"se esperaban tres filas; hay {len(b)}"
         for a, m_, s in zip(*[v for _, v in b]):
             assert abs(a + m_ - s) <= 0.011, f"la suma no cuadra: {a} + {m_} no es {s}"
     return bloques

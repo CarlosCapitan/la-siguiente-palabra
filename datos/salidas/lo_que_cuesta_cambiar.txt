@@ -2,66 +2,69 @@ Cuentas, no tiempos: esta parte no depende de la máquina.
 Lo medido con el reloj viene de ../datos/salidas/editar_contexto.csv
 (eso sí depende de la máquina: MacBook Pro M4 Max, 36 GB, GPU).
 
-medidas de los modelos, leídas de su config.json:
-  7.000M: mlx-community/Qwen2.5-7B-Instruct-bf16
-    capas 28; números por trozo 3.584; mezclar 18.944;
-    miradas 28, con 4 juegos de etiqueta y contenido;
-    vocabulario 152.064 trozos
-  32.000M: mlx-community/Qwen2.5-32B-Instruct-4bit
-    capas 64; números por trozo 5.120; mezclar 27.648;
-    miradas 40, con 8 juegos de etiqueta y contenido;
-    vocabulario 152.064 trozos
+::: tabla
+Las medidas de los dos modelos, leídas de su config.json
 
-PARTE DEL TRABAJO QUE SE VA EN LAS CASILLAS
-(un texto entero, calculado desde cero; de cada cien
-multiplicaciones)
+| modelo | repositorio | capas | números por trozo | mezclar | miradas | juegos de etiqueta y contenido | vocabulario, en trozos |
+|:--|:--|--:|--:|--:|--:|--:|--:|
+| 7.000M | mlx-community/Qwen2.5-7B-Instruct-bf16 | 28 | 3.584 | 18.944 | 28 | 4 | 152.064 |
+| 32.000M | mlx-community/Qwen2.5-32B-Instruct-4bit | 64 | 5.120 | 27.648 | 40 | 8 | 152.064 |
 
-     trozos       7.000M      32.000M
-    -------   ----------   ----------
-      1.000        1,5 %        1,0 %
-      2.000        3,0 %        2,1 %
-      4.000        5,8 %        4,0 %
-      8.000       11,0 %        7,8 %
-     16.000       19,7 %       14,4 %
-     32.000       33,0 %       25,2 %
-     64.000       49,6 %       40,2 %
-    128.000       66,3 %       57,3 %
+7.000M, 32.000M: millones de números de cada modelo. El de 32.000M va comprimido, con sus números redondeados para que quepa en el portátil: eso cambia el reloj, no las cuentas.
+:::
 
-    las casillas pesan tanto como todo lo demás a partir de:
-      7.000M: 65.023 trozos
-      32.000M: 95.231 trozos
+::: tabla
+Parte del trabajo que se va en las casillas
 
-    casillas: cada trozo comparado con él mismo y con todos los
-    anteriores, y lo que trae de cada uno.
-    todo lo demás: las tablas que sacan pregunta, etiqueta y
-    contenido, la que junta las miradas y la parte de mezclar.
-    7.000M, 32.000M: millones de números de cada modelo. El de
-    32.000M va comprimido, con sus números redondeados para que
-    quepa en el portátil: eso cambia el reloj, no las cuentas.
+| trozos | 7.000M | 32.000M |
+|--:|--:|--:|
+| 1.000 | 1,5 % | 1,0 % |
+| 2.000 | 3,0 % | 2,1 % |
+| 4.000 | 5,8 % | 4,0 % |
+| 8.000 | 11,0 % | 7,8 % |
+| 16.000 | 19,7 % | 14,4 % |
+| 32.000 | 33,0 % | 25,2 % |
+| 64.000 | 49,6 % | 40,2 % |
+| 128.000 | 66,3 % | 57,3 % |
 
-CADA TURNO, EN VECES EL COSTE DE «SOLO AÑADIR»
-(texto de 8.000 trozos)
+Un texto entero, calculado desde cero; de cada cien multiplicaciones.
 
-                                 7.000M             32.000M
-condición          trozos   cuentas     reloj   cuentas     reloj
------------------------------------------------------------------
-solo añadir           500       1,0       1,0       1,0       1,0
-cambio al 0 %       8.000      14,5      13,1      14,9      13,5
-cambio al 25 %      6.125      11,4       9,7      11,6      10,6
-cambio al 50 %      4.250       8,1       7,4       8,2       7,4
-cambio al 75 %      2.375       4,6       4,2       4,7       4,3
-cambio al 95 %        875       1,7       1,7       1,7       1,6
-todo desde cero     8.000      14,5      12,4      14,9      13,4
+Las casillas pesan tanto como todo lo demás a partir de 65.023 trozos en el de 7.000M y de 95.231 en el de 32.000M.
 
-trozos: los que se vuelven a calcular en ese turno.
-cuentas: multiplicaciones del turno entre las de «solo añadir».
-reloj: mediana del tiempo medido entre la de «solo añadir»
-(de editar_contexto.csv; depende de la máquina).
-«todo desde cero»: los 8.000 trozos, sin nada ya calculado.
-7.000M, 32.000M: millones de números de cada modelo. El de
-32.000M va comprimido, con sus números redondeados para que
-quepa en el portátil: eso cambia el reloj, no las cuentas.
+Casillas: cada trozo comparado con él mismo y con todos los anteriores, y lo que trae de cada uno. Todo lo demás: las tablas que sacan pregunta, etiqueta y contenido, la que junta las miradas y la parte de mezclar.
 
-parte de las casillas en cada turno, de cada cien multiplicaciones:
-  7.000M: solo añadir 19,2 %; cambio al 0 % 11,0 %
-  32.000M: solo añadir 14,0 %; cambio al 0 % 7,8 %
+7.000M, 32.000M: millones de números de cada modelo. El de 32.000M va comprimido, con sus números redondeados para que quepa en el portátil: eso cambia el reloj, no las cuentas.
+:::
+
+::: tabla
+Cada turno, en veces el coste de «solo añadir»
+
+| condición | trozos | 7.000M: cuentas | 7.000M: reloj | 32.000M: cuentas | 32.000M: reloj |
+|:--|--:|--:|--:|--:|--:|
+| solo añadir | 500 | 1,0 | 1,0 | 1,0 | 1,0 |
+| cambio al 0 % | 8.000 | 14,5 | 13,1 | 14,9 | 13,5 |
+| cambio al 25 % | 6.125 | 11,4 | 9,7 | 11,6 | 10,6 |
+| cambio al 50 % | 4.250 | 8,1 | 7,4 | 8,2 | 7,4 |
+| cambio al 75 % | 2.375 | 4,6 | 4,2 | 4,7 | 4,3 |
+| cambio al 95 % | 875 | 1,7 | 1,7 | 1,7 | 1,6 |
+| todo desde cero | 8.000 | 14,5 | 12,4 | 14,9 | 13,4 |
+
+Un texto de 8.000 trozos.
+
+Trozos: los que se vuelven a calcular en ese turno. Cuentas: multiplicaciones del turno entre las de «solo añadir». Reloj: mediana del tiempo medido entre la de «solo añadir» (de editar_contexto.csv; depende de la máquina).
+
+Todo desde cero: los 8.000 trozos, sin nada ya calculado.
+
+7.000M, 32.000M: millones de números de cada modelo. El de 32.000M va comprimido, con sus números redondeados para que quepa en el portátil: eso cambia el reloj, no las cuentas.
+:::
+
+::: tabla
+La parte de las casillas en cada turno
+
+| modelo | solo añadir | cambio al 0 % |
+|:--|--:|--:|
+| 7.000M | 19,2 % | 11,0 % |
+| 32.000M | 14,0 % | 7,8 % |
+
+De cada cien multiplicaciones del turno.
+:::

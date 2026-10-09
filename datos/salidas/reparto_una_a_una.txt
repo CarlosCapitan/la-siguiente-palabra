@@ -1,91 +1,103 @@
 máquina: arm64, Darwin 25.6.0, procesador
-modelo: Qwen/Qwen2.5-0.5B en float32   fecha: 2026-09-28
+modelo: Qwen/Qwen2.5-0.5B en float32   fecha: 2026-10-09
 la palabra que pregunta es el adjetivo final de cada frase
 
---- LA FORMA DE ESTA MÁQUINA ---
-capas (rondas de mirar y mezclar):        24
-miradas dentro de cada capa:              14
-miradas en total:                         336
-rasgos que compara cada mirada:           64
-números con que se representa cada trozo: 896
+::: tabla
+La forma de esta máquina
 
---- ¿A QUIÉN LE LLEGA EL REPARTO DEL ADJETIVO? ---
-«todas»: promedio de las 336 miradas del modelo.
-«final»: promedio de las 112 miradas de las 8 últimas capas,
-        que es el recorte con el que mide reparto_atencion.py.
-Cada casilla: la porción del pastel que se lleva esa palabra.
+|  | cuánto |
+|:--|--:|
+| capas (rondas de mirar y mezclar) | 24 |
+| miradas dentro de cada capa | 14 |
+| miradas en total | 336 |
+| rasgos que compara cada mirada | 64 |
+| números con que se representa cada trozo | 896 |
+:::
 
-adjetivo  miradas       «El»     «vaso»    «cajón»   adjetivo
---------  -------  ---------  ---------  ---------  ---------
-alto      todas       53,0 %      3,8 %      2,6 %     24,6 %
-alto      final       60,4 %      1,2 %      0,7 %     26,1 %
-bajo      todas       52,7 %      3,8 %      2,6 %     25,0 %
-bajo      final       60,2 %      1,2 %      0,7 %     26,7 %
-caro      todas       53,3 %      3,6 %      2,5 %     25,3 %
-caro      final       60,8 %      1,1 %      0,6 %     26,2 %
+::: tabla
+¿A quién le llega el reparto del adjetivo?
 
-«El» es la primera palabra de la frase: la papelera.
-«adjetivo» es lo que la palabra que pregunta se queda para sí.
+| adjetivo | miradas | «El» | «vaso» | «cajón» | el propio adjetivo |
+|:--|:--|--:|--:|--:|--:|
+| alto | todas | 53,0 % | 3,8 % | 2,6 % | 24,6 % |
+| alto | final | 60,4 % | 1,2 % | 0,7 % | 26,1 % |
+| bajo | todas | 52,7 % | 3,8 % | 2,6 % | 25,0 % |
+| bajo | final | 60,2 % | 1,2 % | 0,7 % | 26,7 % |
+| caro | todas | 53,3 % | 3,6 % | 2,5 % | 25,3 % |
+| caro | final | 60,8 % | 1,1 % | 0,6 % | 26,2 % |
 
---- ¿HAY ALGUNA MIRADA QUE SE FIJE EN «VASO»? ---
-Las tres que más se fijan en «vaso» con el adjetivo «alto»,
-de las 336 que tiene el modelo:
+Todas: promedio de las 336 miradas del modelo. Final: promedio de las 112 miradas de las 8 últimas capas, que es el recorte con el que mide reparto_atencion.py.
 
-  capa  mirada  sobre «vaso»
-  ----  ------  ------------
-    13      10        51,1 %
-    16       1        32,9 %
-     5      14        27,2 %
+Cada casilla: la porción del pastel que se lleva esa palabra. «El» es la primera palabra de la frase: la papelera. El propio adjetivo: lo que la palabra que pregunta se queda para sí.
+:::
 
-miradas que pasan de la mitad sobre «vaso»: 1 de 336
+::: tabla
+Las tres miradas que más se fijan en «vaso»
 
-La misma —capa 13, mirada 10— en las tres frases:
+| capa | mirada | sobre «vaso» |
+|:-:|:-:|--:|
+| 13 | 10 | 51,1 % |
+| 16 | 1 | 32,9 % |
+| 5 | 14 | 27,2 % |
 
-  adjetivo  sobre «vaso»
-  --------  ------------
-  alto            51,1 %
-  bajo            49,6 %
-  caro            49,9 %
+Con el adjetivo «alto», de las 336 que tiene el modelo. Miradas que pasan de la mitad sobre «vaso»: 1 de 336.
+:::
 
---- ¿SIGUE AL SUJETO, O AL PRINCIPIO DE LA FRASE? ---
-La mirada de la capa 13, número 10, es la que más se fija en
-«vaso» en la frase del vaso. Se le ponen delante otras frases
-donde el sujeto y el primer sustantivo no son el mismo.
+::: tabla
+La misma mirada —capa 13, mirada 10— en las tres frases
 
-1  El vaso no cabía en el cajón porque era demasiado alto.
-2  En el cajón el vaso no cabía porque era demasiado alto.
-3  El cajón no admitía el vaso porque era demasiado alto.
-4  La caja no cabía en el armario porque era demasiado alta.
-5  Con el cajón abierto el vaso no cabía porque era alto.
-6  Dentro del armario la caja no cabía porque era alta.
-7  Sobre la mesa el libro no cabía porque era demasiado ancho.
+| adjetivo | sobre «vaso» |
+|:--|--:|
+| alto | 51,1 % |
+| bajo | 49,6 % |
+| caro | 49,9 % |
+:::
 
-        sujeto    primer sust.  se fija en    ¿es el sujeto?
-  -  ----------  ------------  ------------  --------------
-  1  vaso        vaso          vaso          sí
-  2  vaso        cajón         cajón         no
-  3  cajón       cajón         cajón         sí
-  4  caja        caja          caja          sí
-  5  vaso        cajón         cajón         no
-  6  caja        armario       dentro        no
-  7  libro       mesa          sobre         no
+::: muestra
+Las siete frases
 
-frases donde el sujeto NO es el primer sustantivo: 4
-de ésas, en las que se fija en el sujeto:          0
+    1  El vaso no cabía en el cajón porque era demasiado alto.
+    2  En el cajón el vaso no cabía porque era demasiado alto.
+    3  El cajón no admitía el vaso porque era demasiado alto.
+    4  La caja no cabía en el armario porque era demasiado alta.
+    5  Con el cajón abierto el vaso no cabía porque era alto.
+    6  Dentro del armario la caja no cabía porque era alta.
+    7  Sobre la mesa el libro no cabía porque era demasiado ancho.
 
---- ¿CAMBIA ALGUNA DE OPINIÓN AL CAMBIAR EL ADJETIVO? ---
-«vuelco» es la parte del pastel que una mirada mueve de sitio
-al cambiar «alto» por «bajo»: 0 = no mueve nada, 1 = lo mueve
-todo. Se mide sobre las 336 miradas del modelo.
+En 4 de ellas, el sujeto no es el primer sustantivo.
+:::
 
-  vuelco mayor:          0,349  (capa 1, mirada 13)
-  vuelco medio:          0,021
-  vuelco mediano:        0,016
-  miradas que mueven más de 0,10:  3 de 336
+::: tabla
+¿Sigue al sujeto, o al principio de la frase?
 
-Y sobre las dos palabras candidatas, el mayor cambio de todas:
+| frase | sujeto | primer sustantivo | se fija en | ¿es el sujeto? |
+|:-:|:--|:--|:--|:-:|
+| 1 | vaso | vaso | vaso | sí |
+| 2 | vaso | cajón | cajón | no |
+| 3 | cajón | cajón | cajón | sí |
+| 4 | caja | caja | caja | sí |
+| 5 | vaso | cajón | cajón | no |
+| 6 | caja | armario | dentro | no |
+| 7 | libro | mesa | sobre | no |
 
-  sobre «vaso»:   2,5 %
-  sobre «cajón»:  2,3 %
+La mirada de la capa 13, número 10: la que más se fija en «vaso» en la frase del vaso.
+
+Frases donde el sujeto no es el primer sustantivo: 4. De ésas, en las que se fija en el sujeto: 0.
+:::
+
+::: tabla
+¿Cambia alguna de opinión al cambiar el adjetivo?
+
+|  | cuánto |
+|:--|--:|
+| vuelco mayor | 0,349 (capa 1, mirada 13) |
+| vuelco medio | 0,021 |
+| vuelco mediano | 0,016 |
+| miradas que mueven más de 0,10 | 3 de 336 |
+| el mayor cambio sobre «vaso», de todas | 2,5 % |
+| el mayor cambio sobre «cajón», de todas | 2,3 % |
+
+Vuelco: la parte del pastel que una mirada mueve de sitio al cambiar «alto» por «bajo»: 0, no mueve nada; 1, lo mueve todo. Se mide sobre las 336 miradas del modelo.
+:::
 
 Escrito reparto_una_a_una.csv

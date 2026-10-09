@@ -40,7 +40,7 @@ import numpy as np
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from formato import coma, comprobar_ancho, miles
+from formato import coma, miles, muestra_editorial, tabla_editorial
 
 ANCHO = 64
 
@@ -121,12 +121,13 @@ def main():
     codigo = selftest(tok, modelo)
     if codigo or args.selftest:
         return codigo
+    # L24 (9 de octubre): tablas y muestras editoriales (regla 6 ter). Las cuentas no cambian.
     L = ["", "####### capítulo 8: de dónde sale la seguridad #######", ""]
     frase, _ = CASOS["caro"]
-    L += ["1. EL TEXTO QUE SE LE PASA (la frase del «caro»)", ""]
-    L += ["  " + l for l in PLANTILLA.format(frase=frase, adj="caro").split("\n")]
-    L += ["", "  El modelo continúa detrás de «Respuesta: El». Lo mismo con",
-          "  «alto» y con «bajo».", ""]
+    L += ["--- 1. EL TEXTO QUE SE LE PASA ---", ""] + muestra_editorial(
+        "El texto que se le pasa, con la frase del «caro»",
+        [l.rstrip() for l in PLANTILLA.format(frase=frase, adj="caro").split("\n")],
+        ["El modelo continúa detrás de «Respuesta: El». Lo mismo con «alto» y con «bajo»."]) + [""]
     tamanos = {}
     modelos = {}
     for nombre in MODELOS:
@@ -134,45 +135,38 @@ def main():
         tamanos[nombre] = sum(t.numel() for t in modelo.parameters())
         modelos[nombre] = {adj: (cuenta(tok, modelo, fr, adj), cuenta(tok, modelo, fr, adj, True))
                            for adj, (fr, _) in CASOS.items()}
-    L += ["2. COMO LO MEDÍA respuesta_modelo.py HASTA EL 28 DE SEPT.", "",
-          "  El texto acaba en «Respuesta: El », con el espacio, y las",
-          "  opciones son «vaso» y «cajón» sin espacio delante: un corte",
-          "  que el modelo casi nunca ve.",
-          "  «vaso», «cajón»: de cada millón de veces, cuántas escribiría",
-          "  esa palabra justo ahí, en su lista entera de trozos posibles.",
-          "  «seguridad»: lo que se lleva la ganadora de lo que suman",
-          "  las dos, de cada cien.", ""]
+    seguridad = ("Seguridad: lo que se lleva la ganadora de lo que suman las dos, de cada cien.")
+    L += ["--- 2. COMO LO MEDÍA respuesta_modelo.py HASTA EL 28 DE SEPT. ---", ""]
     for nombre in MODELOS:
-        L += [f"  {NOMBRES[nombre]}",
-              f"  {'frase':<8}{'«vaso»':>10}{'«cajón»':>10}{'responde':>11}{'seguridad':>12}",
-              f"  {'-----':<8}{'------':>10}{'-------':>10}{'--------':>11}{'---------':>12}"]
-        for adj, ((p, gan, seg), _) in modelos[nombre].items():
-            L.append(f"  {adj:<8}{coma(1e6 * p['vaso'], 2):>10}{coma(1e6 * p['cajón'], 2):>10}"
-                     f"{gan:>11}{coma(100 * seg) + ' %':>12}")
-        L.append("")
-    L += ["3. CON EL ESPACIO EN SU SITIO", "",
-          "  El texto acaba en «Respuesta: El» y las opciones son «_vaso»",
-          "  y «_cajón», con el espacio delante, como las escribe el",
-          "  modelo («_» es un espacio).",
-          "  «vaso», «cajón»: de cada cien veces, cuántas escribiría esa",
-          "  palabra justo ahí, en su lista entera de trozos posibles.",
-          "  «las dos»: la suma; el resto va a otras palabras.",
-          "  «seguridad»: lo que se lleva la ganadora de lo que suman",
-          "  las dos, de cada cien.", ""]
+        L += tabla_editorial(
+            f"Como se medía hasta el 28 de septiembre: {NOMBRES[nombre]}",
+            ["frase", "«vaso»", "«cajón»", "responde", "seguridad"],
+            [[adj, coma(1e6 * p["vaso"], 2), coma(1e6 * p["cajón"], 2), gan, f"{coma(100 * seg)} %"]
+             for adj, ((p, gan, seg), _) in modelos[nombre].items()], "iddid",
+            ["El texto acaba en «Respuesta: El », con el espacio, y las opciones son «vaso» y "
+             "«cajón» sin espacio delante: un corte que el modelo casi nunca ve. Así lo medía "
+             "respuesta_modelo.py.",
+             "«vaso», «cajón»: de cada millón de veces, cuántas escribiría esa palabra justo ahí, en "
+             "su lista entera de trozos posibles.", seguridad]) + [""]
+    L += ["--- 3. CON EL ESPACIO EN SU SITIO ---", ""]
     for nombre in MODELOS:
-        L += [f"  {NOMBRES[nombre]}",
-              f"  {'frase':<8}{'«vaso»':>10}{'«cajón»':>10}{'las dos':>10}{'responde':>11}{'seguridad':>12}",
-              f"  {'-----':<8}{'------':>10}{'-------':>10}{'-------':>10}{'--------':>11}{'---------':>12}"]
-        for adj, (_, (p, gan, seg)) in modelos[nombre].items():
-            L.append(f"  {adj:<8}{coma(100 * p['vaso']) + ' %':>10}{coma(100 * p['cajón']) + ' %':>10}"
-                     f"{coma(100 * sum(p.values())) + ' %':>10}{gan:>11}{coma(100 * seg) + ' %':>12}")
-        L.append("")
+        L += tabla_editorial(
+            f"Qué responde {NOMBRES[nombre]}",
+            ["frase", "«vaso»", "«cajón»", "las dos", "responde", "seguridad"],
+            [[adj, f"{coma(100 * p['vaso'])} %", f"{coma(100 * p['cajón'])} %",
+              f"{coma(100 * sum(p.values()))} %", gan, f"{coma(100 * seg)} %"]
+             for adj, (_, (p, gan, seg)) in modelos[nombre].items()], "idddid",
+            ["«vaso», «cajón»: de cada cien veces, cuántas escribiría esa palabra justo ahí, en su "
+             "lista entera de trozos posibles. Las dos: la suma; el resto va a otras palabras.",
+             seguridad,
+             "El texto acaba en «Respuesta: El» y las opciones llevan el espacio delante, como las "
+             "escribe el modelo."]) + [""]
     a, b = MODELOS
-    L += ["4. EL TAMAÑO DE LOS DOS MODELOS", ""]
-    for n in MODELOS:
-        L.append(f"  {NOMBRES[n]:<32}{miles(tamanos[n]):>16} números")
-    L += [f"  el segundo tiene {coma(tamanos[b] / tamanos[a])} veces los números del primero", ""]
-    for l in comprobar_ancho([l.rstrip() for l in L], ANCHO):
+    L += ["--- 4. EL TAMAÑO DE LOS DOS MODELOS ---", ""] + tabla_editorial(
+        "El tamaño de los dos modelos", ["el modelo", "números"],
+        [[NOMBRES[n], miles(tamanos[n])] for n in MODELOS], "id",
+        [f"El segundo tiene {coma(tamanos[b] / tamanos[a])} veces los números del primero."])
+    for l in L:
         print(l)
     return 0
 

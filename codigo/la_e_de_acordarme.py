@@ -68,7 +68,7 @@ import numpy as np
 import torch
 
 import mirada_a_mano as M
-from formato import coma, comprobar_ancho, miles
+from formato import coma, leer_tablas, miles, tabla_editorial, trozo
 
 AQUI = Path(__file__).resolve().parent
 ANCHO = 64                    # ancho de línea: cabe dentro de una cita del libro
@@ -139,16 +139,15 @@ def reparto_de(puntuaciones):
 
 
 def leer_mirada(ruta):
-    """Del apartado 5 de la salida de mirada_a_mano.py: el reparto final de la frase, de cada cien,
-    y del apartado 2, el acierto final."""
-    texto = Path(ruta).read_text(encoding="utf-8")
-    assert "5. EL REPARTO DE LA ÚLTIMA LETRA DE" in texto, f"no está el apartado 5 en {ruta}"
-    tramo = texto.split("5. EL REPARTO DE LA ÚLTIMA LETRA DE", 1)[1].split("\n6.", 1)[0]
-    filas = re.findall(r"^\s+tras ([\d.]+)\s+([\d ]+)$", tramo, re.M)
-    final = [int(v) for v in filas[-1][1].split()]
-    m = re.search(r"^\s+20\.000 pasos\s+([\d,]+) %", texto, re.M)
-    assert m, "no está la fila de 20.000 pasos del apartado 2"
-    return final, float(m.group(1).replace(",", "."))
+    """De la salida de mirada_a_mano.py: el reparto final de la frase, de cada cien, y el acierto
+    final (de sus tablas editoriales; L24, 9 de octubre)."""
+    tablas = leer_tablas(Path(ruta).read_text(encoding="utf-8"))
+    titulos = [t for t in tablas if t.startswith("El reparto de la última letra de «")]
+    assert len(titulos) == 1, f"no está la tabla del reparto en {ruta}"
+    final = [int(f[3]) for f in tablas[titulos[0]][1]]
+    momentos = {f[0]: f[1] for f in tablas["Lo que acierta y cómo reparte la mirada, en cinco momentos"][1]}
+    assert "20.000 pasos" in momentos, "no está la fila de 20.000 pasos del apartado 2"
+    return final, float(momentos["20.000 pasos"].replace(" %", "").replace(",", "."))
 
 
 # ---------------------------------------------------------------- selftest
@@ -227,16 +226,19 @@ def distancias(rng):
 # ---------------------------------------------------------------- lo que imprime
 
 def informe(texto, prueba, p, med):
+    """Cada apartado, en tablas editoriales (L24, 9 de octubre; regla 6 ter). Las cuentas no
+    cambian."""
     P = numpy_de(p)
     tramo = M.FRASE[-M.CONTEXTO:]
     ids = np.array([M.INDICE[c] for c in tramo])
     r = ida_a_mano(P, ids)
     T = M.CONTEXTO
     L = ["", "####### capítulo 8: la mirada de la «e», hecha a mano #######",
-         "La máquina de mirada_a_mano.py, entrenada otra vez con su",
-         f"semilla ({M.SEMILLA}) y sus {miles(M.PASOS)} pasos: acierta {coma(100 * med['acierto'])} %,",
-         "como en el libro. Las cuentas se hacen con todos los decimales;",
-         "se enseñan con dos.", ""]
+         f"La máquina de mirada_a_mano.py, entrenada otra vez con su semilla ({M.SEMILLA}) y sus "
+         f"{miles(M.PASOS)} pasos: acierta {coma(100 * med['acierto'])} %, como en el libro.",
+         "Las cuentas se hacen con todos los decimales; se enseñan con dos.", ""]
+    neg = lambda fila: [f"**{c}**" if c else "" for c in fila]
+    num = lambda j: f"número: {j}"
 
     # 1. la máquina, pieza a pieza
     n = {k: v.numel() for k, v in p.items()}
@@ -254,204 +256,187 @@ def informe(texto, prueba, p, med):
     total = sum(v for _, v in piezas)
     de_mirar = n["Wp"] + n["We"] + n["Wc"] + n["Wo"]
     assert total == M.cuantos_numeros(p)
-    L += ["1. LA MÁQUINA, PIEZA A PIEZA", "",
-          f"  {'la pieza':<50}{'números':>10}", f"  {'--------':<50}{'-------':>10}"]
-    L += [f"  {nombre:<50}{miles(v):>10}" for nombre, v in piezas]
-    L += [f"  {'':<50}{'-------':>10}", f"  {'total':<50}{miles(total):>10}", "",
-          f"  Sin mirar atrás se quitan las cuatro tablas: {miles(de_mirar)} números.",
-          f"  Quedan {miles(total - de_mirar)}.", ""]
+    L += ["--- 1. LA MÁQUINA, PIEZA A PIEZA ---", ""] + tabla_editorial(
+        "La máquina, pieza a pieza", ["la pieza", "números"],
+        [[nombre, miles(v)] for nombre, v in piezas] + [neg(["total", miles(total)])], "id",
+        [f"Sin mirar atrás se quitan las cuatro tablas: {miles(de_mirar)} números. Quedan "
+         f"{miles(total - de_mirar)}."]) + [""]
 
-    # 2. tramos de prueba enteros
-    L += ["2. FRAGMENTOS: LO QUE VE, LO QUE VIENE, LO MÁS PROBABLE", "",
-          "  Los tres primeros fragmentos de prueba, sin elegir, y la frase",
-          "  de la figura. «acierta»: la letra a la que da más porcentaje",
-          "  es la que viene de verdad.", ""]
+    # 2. fragmentos de prueba enteros
     i_frase = texto.find(M.FRASE)
     assert texto.count(M.FRASE) == 1 and i_frase >= 0
-    casos = [("".join(M.LETRAS[i] for i in f[:T]), M.LETRAS[f[T]], f"fragmento de prueba {j + 1}")
+    casos = [("".join(M.LETRAS[i] for i in f[:T]), M.LETRAS[f[T]], str(j + 1))
              for j, f in enumerate(prueba[:TRAMOS_DE_PRUEBA])]
-    casos.append((tramo, texto[i_frase + len(M.FRASE)], "la frase de la figura"))
+    casos.append((tramo, texto[i_frase + len(M.FRASE)], "el de la figura"))
+    filas = []
     for ve, viene, nombre in casos:
         rr = ida_a_mano(P, np.array([M.INDICE[c] for c in ve]))
         orden = np.argsort(-rr["apuesta"])[:3]
-        apuesta = ", ".join(f"«{letra(M.LETRAS[k])}» {coma(100 * rr['apuesta'][k])} %" for k in orden)
-        L += [f"  {nombre}",
-              f"    lo que ve:        «{''.join(letra(ch) for ch in ve)}»",
-              f"    lo que viene:     «{letra(viene)}»",
-              f"    lo más probable:  {apuesta}",
-              f"    ¿acierta?         {'sí' if M.LETRAS[orden[0]] == viene else 'no'}", ""]
-    L += ["  «_» es un espacio.", ""]
+        apuesta = ", ".join(f"{trozo(letra(M.LETRAS[k]))} {coma(100 * rr['apuesta'][k])} %" for k in orden)
+        filas.append([nombre, trozo("".join(letra(ch) for ch in ve)), trozo(letra(viene)), apuesta,
+                      "sí" if M.LETRAS[orden[0]] == viene else "no"])
+    L += ["--- 2. FRAGMENTOS ---", ""] + tabla_editorial(
+        "Fragmentos: lo que ve, lo que viene, lo más probable",
+        ["fragmento", "lo que ve", "viene", "lo más probable", "¿acierta?"], filas, "ciiic",
+        ["Fragmento: los tres primeros de prueba, sin elegir, y el de la figura.",
+         "¿Acierta?: la letra a la que da más porcentaje es la que viene de verdad. El guion bajo "
+         "es un espacio."]) + [""]
 
     # 3. de la letra a la lista que entra
     k = MIRADOS_SITIO
     s1, s2 = SITIO_OTRA_E, T
     assert tramo[s1 - 1] == tramo[s2 - 1] == "e"
-    cab = "".join(f"{j + 1:>6}" for j in range(k))
-    fila = lambda nombre, v: f"  {nombre:<26}" + "".join(f"{dec(x):>6}" for x in v[:k])
     ent1, ent2 = r["entra"][s1 - 1], r["entra"][s2 - 1]
     parecido = float(ent1 @ ent2 / np.linalg.norm(ent1) / np.linalg.norm(ent2))
-    L += ["3. LA MISMA «e» EN DOS SITIOS: LA LISTA QUE ENTRA",
-          f"   (los {k} primeros de sus {A} números; en «quiero acordarme» hay", 
-          f"   una «e» en el sitio {s1} y otra en el {s2})", "",
-          f"  {'número':<26}{cab}", f"  {'------':<26}" + "".join(f"{'--':>6}" for _ in range(k)),
-          fila("la lista de la «e»", r["letra"][s2 - 1]),
-          fila(f"más la marca del sitio {s1}", r["sitio"][s1 - 1]),
-          fila("da: lo que entra", ent1), "",
-          fila("la lista de la «e»", r["letra"][s2 - 1]),
-          fila(f"más la marca del sitio {s2}", r["sitio"][s2 - 1]),
-          fila("da: lo que entra", ent2), "",
-          f"  parecido entre las dos listas que entran, con sus {A} números:",
-          f"  {coma(parecido, 2)} (la medida del capítulo 5: 1 quiere decir idénticas)", ""]
     assert np.allclose(r["letra"][s1 - 1], r["letra"][s2 - 1])
+    fila = lambda nombre, v: [nombre] + [dec(x) for x in v[:k]]
+    L += ["--- 3. LA MISMA «e» EN DOS SITIOS ---", ""]
+    for s, ent, notas in (
+            (s1, ent1, [f"Los {k} primeros de sus {A} números. En «quiero acordarme» hay una «e» en "
+                        f"el sitio {s1} y otra en el {s2}."]),
+            (s2, ent2, [f"Los {k} primeros de sus {A} números.",
+                        f"Parecido entre las dos listas que entran, con sus {A} números: "
+                        f"{coma(parecido, 2)} (la medida del capítulo 5: 1 quiere decir idénticas)."])):
+        L += tabla_editorial(
+            f"La «e» del sitio {s}: la lista que entra", [""] + [num(j + 1) for j in range(k)],
+            [fila("la lista de la «e»", r["letra"][s2 - 1]),
+             fila(f"más la marca del sitio {s}", r["sitio"][s - 1]),
+             neg(fila("da: lo que entra", ent))], "i" + "d" * k, notas) + [""]
 
     # 4. un número de la pregunta, hecho a mano
     col = P["Wp"][:, 0]
     ent = r["entra"][-1]
     aporta = ent * col
-    L += ["4. UN NÚMERO DE LA PREGUNTA DE LA «e», HECHO A MANO",
-          f"   (la lista que entra en el sitio {T}, por la primera columna",
-          "   de la tabla de las preguntas: un comité como el del",
-          "   capítulo 3)", "",
-          f"  {'número de la lista':<22}{'vale':>8}{'peso':>9}{'aporta':>10}",
-          f"  {'------------------':<22}{'----':>8}{'----':>9}{'------':>10}"]
-    for j in range(MIRADOS):
-        L.append(f"  {'número ' + str(j + 1):<22}{dec(ent[j]):>8}{dec(col[j]):>9}{dec(aporta[j]):>10}")
-    L += [f"  {'los otros ' + str(A - MIRADOS):<22}{'':>17}{dec(aporta[MIRADOS:].sum()):>10}",
-          f"  {'':<22}{'':>17}{'------':>10}",
-          f"  {'total: el número 1 de la pregunta':<39}{dec(aporta.sum()):>10}", "",
-          f"  Lo mismo con cada una de las {A} columnas da los {A} números",
-          "  de la pregunta; con la tabla de las etiquetas, los de la",
-          "  etiqueta; con la de los contenidos, los del contenido. Los",
-          f"  {MIRADOS} primeros de cada una:", ""]
-    cab4 = "".join(f"{j + 1:>7}" for j in range(MIRADOS))
-    L += [f"  {'de la «e» del sitio ' + str(T):<30}{cab4}",
-          f"  {'-' * 20:<30}" + "".join(f"{'--':>7}" for _ in range(MIRADOS))]
-    for nombre in ("pregunta", "etiqueta", "contenido"):
-        L.append(f"  {'su ' + nombre:<30}" + "".join(f"{dec(v):>7}" for v in r[nombre][-1][:MIRADOS]))
-    L.append("")
     assert abs(aporta.sum() - r["pregunta"][-1][0]) < 1e-9
+    L += ["--- 4. UN NÚMERO DE LA PREGUNTA, HECHO A MANO ---", ""] + tabla_editorial(
+        "Un número de la pregunta de la «e», hecho a mano",
+        ["número de la lista", "vale", "peso", "aporta"],
+        [[f"número {j + 1}", dec(ent[j]), dec(col[j]), dec(aporta[j])] for j in range(MIRADOS)]
+        + [[f"los otros {A - MIRADOS}", "", "", dec(aporta[MIRADOS:].sum())],
+           neg(["total: el número 1 de la pregunta", "", "", dec(aporta.sum())])], "iddd",
+        [f"La lista que entra en el sitio {T}, por la primera columna de la tabla de las "
+         "preguntas: un comité como el del capítulo 3."]) + [""]
+    L += tabla_editorial(
+        f"La pregunta, la etiqueta y el contenido de la «e» del sitio {T}",
+        [""] + [num(j + 1) for j in range(MIRADOS)],
+        [[f"su {nombre}"] + [dec(v) for v in r[nombre][-1][:MIRADOS]]
+         for nombre in ("pregunta", "etiqueta", "contenido")], "i" + "d" * MIRADOS,
+        [f"Lo mismo con cada una de las {A} columnas da los {A} números de la pregunta; con la "
+         "tabla de las etiquetas, los de la etiqueta; con la de los contenidos, los del contenido. "
+         f"Los {MIRADOS} primeros de cada una."]) + [""]
 
     # 5. la puntuación de una pareja, hecha a mano
     j_par = max(i for i, ch in enumerate(tramo) if ch == LETRA_PAREJA)
     q, et = r["pregunta"][-1], r["etiqueta"][j_par]
     prod = q * et
-    L += [f"5. CUÁNTO ENCAJA LA PREGUNTA DE LA «e» CON LA ETIQUETA DE LA «{LETRA_PAREJA}»",
-          "   (número a número: se multiplican y se suma todo)", "",
-          f"  {'número':<12}{'pregunta de la «e»':>20}{'etiqueta de la «' + LETRA_PAREJA + '»':>20}{'producto':>10}",
-          f"  {'------':<12}{'------------------':>20}{'------------------':>20}{'--------':>10}"]
-    for j in range(MIRADOS):
-        L.append(f"  {str(j + 1):<12}{dec(q[j]):>20}{dec(et[j]):>20}{dec(prod[j]):>10}")
-    L += [f"  {'los otros ' + str(A - MIRADOS):<52}{dec(prod[MIRADOS:].sum()):>10}",
-          f"  {'':<52}{'--------':>10}",
-          f"  {'suma de los ' + str(A) + ' productos':<52}{dec(prod.sum()):>10}",
-          f"  {'entre ' + dec(r['divisor']) + ' (el ajuste de escala): la puntuación':<52}"
-          f"{dec(r['puntuacion'][j_par]):>10}", ""]
     assert abs(prod.sum() - r["suma"][j_par]) < 1e-9
+    L += ["--- 5. CUÁNTO ENCAJA UNA PREGUNTA CON UNA ETIQUETA ---", ""] + tabla_editorial(
+        f"Cuánto encaja la pregunta de la «e» con la etiqueta de la «{LETRA_PAREJA}»",
+        ["número", "pregunta de la «e»", f"etiqueta de la «{LETRA_PAREJA}»", "producto"],
+        [[str(j + 1), dec(q[j]), dec(et[j]), dec(prod[j])] for j in range(MIRADOS)]
+        + [[f"los otros {A - MIRADOS}", "", "", dec(prod[MIRADOS:].sum())],
+           neg([f"suma de los {A} productos", "", "", dec(prod.sum())]),
+           neg([f"entre {dec(r['divisor'])} (el ajuste de escala): la puntuación", "", "",
+                dec(r["puntuacion"][j_par])])], "iddd",
+        ["Número a número: se multiplican y se suma todo."]) + [""]
 
     # 6. de las puntuaciones al reparto
-    L += ["6. DE LAS PUNTUACIONES AL REPARTO: LA «e» Y LAS 16 LETRAS",
-          "   (la pregunta de la «e» contra la etiqueta de cada una)", "",
-          f"  {'sitio':<7}{'letra':<7}{'puntuación':>12}{'fuerza':>12}{'de cada cien':>15}",
-          f"  {'-----':<7}{'-----':<7}{'----------':>12}{'------':>12}{'------------':>15}"]
-    for i, ch in enumerate(tramo):
-        L.append(f"  {i + 1:<7}{letra(ch):<7}{dec(r['puntuacion'][i], 3):>12}{dec(r['fuerza'][i]):>12}"
-                 f"{coma(100 * r['reparto'][i]) + ' %':>15}")
-    L += [f"  {'':<26}{'------':>12}{'-------':>15}",
-          f"  {'suma':<26}{dec(r['fuerza'].sum()):>12}{coma(100 * r['reparto'].sum()) + ' %':>15}", "",
-          "  «fuerza»: cada punto más de puntuación la multiplica por "
-          f"{coma(math.e, 2)}.",
-          f"  Con puntuación 0 vale 1; con 1, {coma(math.e, 2)}; con 2, {coma(math.e ** 2, 2)};",
-          f"  con 3, {coma(math.e ** 3, 2)}; con menos 1, {coma(math.e ** -1, 2)}.",
-          "  «de cada cien»: su fuerza entre la suma de todas, por cien.",
-          "  «_» es un espacio.", ""]
+    L += ["--- 6. DE LAS PUNTUACIONES AL REPARTO ---", ""] + tabla_editorial(
+        f"De las puntuaciones al reparto: la «e» y las {T} letras",
+        ["sitio", "letra", "puntuación", "fuerza", "de cada cien"],
+        [[str(i + 1), letra(ch), dec(r["puntuacion"][i], 3), dec(r["fuerza"][i]),
+          f"{coma(100 * r['reparto'][i])} %"] for i, ch in enumerate(tramo)]
+        + [neg(["suma", "", "", dec(r["fuerza"].sum()), f"{coma(100 * r['reparto'].sum())} %"])],
+        "ccddd",
+        ["La pregunta de la «e» contra la etiqueta de cada una.",
+         f"Fuerza: cada punto más de puntuación la multiplica por {coma(math.e, 2)}. Con "
+         f"puntuación 0 vale 1; con 1, {coma(math.e, 2)}; con 2, {coma(math.e ** 2, 2)}; con 3, "
+         f"{coma(math.e ** 3, 2)}; con menos 1, {coma(math.e ** -1, 2)}.",
+         "De cada cien: su fuerza entre la suma de todas, por cien. El guion bajo es un espacio."]) + [""]
 
     # 7. doble puntuación no es doble porción
-    L += ["7. DOBLE PUNTUACIÓN NO ES DOBLE PORCIÓN", "",
-          f"  {'dos letras, con puntuaciones':<34}{'se llevan, de cada cien':>26}",
-          f"  {'----------------------------':<34}{'-----------------------':>26}"]
+    filas = []
     for a, b in PAREJAS_PUNTUACION:
         ra = reparto_de([a, b])
-        L.append(f"  {str(a) + ' y ' + str(b):<34}{coma(100 * ra[0]) + ' y ' + coma(100 * ra[1]):>26}")
+        filas.append([f"{a} y {b}", f"{coma(100 * ra[0])} y {coma(100 * ra[1])}"])
     sin = reparto_de(r["suma"])
     ult = list(range(T - 6, T))
-    L += ["", "  El reparto de la «e», con el ajuste y sin él (sin dividir",
-          f"  entre {dec(r['divisor'])}), en las seis últimas letras, de cada cien:", "",
-          f"  {'sitio y letra':<14}" + "".join(f"{str(i + 1) + ' ' + letra(tramo[i]):>6}" for i in ult)
-          + f"{'reparte':>9}",
-          f"  {'-------------':<14}" + "".join(f"{'----':>6}" for _ in ult) + f"{'-------':>9}",
-          f"  {'con el ajuste':<14}" + "".join(f"{round(100 * r['reparto'][i]):>6}" for i in ult)
-          + f"{coma(reparte_entre(r['reparto'])):>9}",
-          f"  {'sin el ajuste':<14}" + "".join(f"{round(100 * sin[i]):>6}" for i in ult)
-          + f"{coma(reparte_entre(sin)):>9}", "",
-          "  «reparte»: entre cuántas letras reparte, contadas como en",
-          "  «reparte entre».", ""]
+    L += ["--- 7. DOBLE PUNTUACIÓN NO ES DOBLE PORCIÓN ---", ""] + tabla_editorial(
+        "Doble puntuación no es doble porción",
+        ["dos letras, con puntuaciones", "se llevan, de cada cien"], filas, "id") + [""]
+    L += tabla_editorial(
+        "El reparto de la «e», con el ajuste y sin él",
+        [""] + [f"{i + 1} {letra(tramo[i])}" for i in ult] + ["reparte"],
+        [["con el ajuste"] + [str(round(100 * r["reparto"][i])) for i in ult]
+         + [coma(reparte_entre(r["reparto"]))],
+         ["sin el ajuste"] + [str(round(100 * sin[i])) for i in ult] + [coma(reparte_entre(sin))]],
+        "i" + "d" * len(ult) + "d",
+        [f"Sin el ajuste: sin dividir entre {dec(r['divisor'])}. En las seis últimas letras, de "
+         "cada cien.",
+         "Reparte: entre cuántas letras reparte, contadas como en «reparte entre»."]) + [""]
 
     # 8. reparte entre
-    L += ["8. «REPARTE ENTRE», CON REPARTOS DE EJEMPLO", "",
-          f"  {'el reparto, de cada cien':<46}{'reparte entre':>14}",
-          f"  {'------------------------':<46}{'-------------':>14}"]
-    for nombre, rep in EJEMPLOS_REPARTO:
-        L.append(f"  {nombre:<46}{coma(reparte_entre(rep)):>14}")
     mayores = [i for i in range(T) if round(100 * r["reparto"][i]) > 0]
-    L.append(f"  {'el de la «e»: ' + ', '.join(str(round(100 * r['reparto'][i])) for i in mayores):<46}"
-             f"{coma(reparte_entre(r['reparto'])):>14}")
-    L += ["", "  «reparte entre»: cuántas letras, repartiendo a partes iguales,",
-          "  darían un reparto igual de concentrado que éste.", ""]
+    L += ["--- 8. «REPARTE ENTRE» ---", ""] + tabla_editorial(
+        "«Reparte entre», con repartos de ejemplo", ["el reparto, de cada cien", "reparte entre"],
+        [[nombre, coma(reparte_entre(rep))] for nombre, rep in EJEMPLOS_REPARTO]
+        + [["el de la «e»: " + ", ".join(str(round(100 * r["reparto"][i])) for i in mayores),
+            coma(reparte_entre(r["reparto"]))]], "id",
+        ["Reparte entre: cuántas letras, repartiendo a partes iguales, darían un reparto igual de "
+         "concentrado que éste."]) + [""]
 
     # 9. la mezcla
     km = MIRADOS_MEZCLA
-    L += ["9. LA MEZCLA: CADA CONTENIDO, POR SU PORCIÓN, Y TODO SUMADO",
-          f"   (los {km} primeros de los {A} números de cada contenido)", "",
-          f"  {'letra':<9}{'porción':>8}{'contenido':>20}{'por su porción':>20}",
-          f"  {'-----':<9}{'-------':>8}{'---------':>20}{'--------------':>20}"]
-    for i in mayores:
-        L.append(f"  {str(i + 1) + ' ' + letra(tramo[i]):<9}{coma(100 * r['reparto'][i]) + ' %':>8}  "
-                 + "".join(f"{dec(v):>6}" for v in r["contenido"][i][:km])
-                 + "  " + "".join(f"{dec(v):>6}" for v in (r["reparto"][i] * r["contenido"][i])[:km]))
     resto = [i for i in range(T) if i not in mayores]
     otras = sum(r["reparto"][i] * r["contenido"][i] for i in resto)
-    L += [f"  {'otras ' + str(len(resto)):<9}{coma(100 * r['reparto'][resto].sum()) + ' %':>8}  "
-          f"{'':>18}  " + "".join(f"{dec(v):>6}" for v in otras[:km]),
-          f"  {'':<39}{'-' * 18:>18}",
-          f"  {'la mezcla (la suma)':<39}" + "".join(f"{dec(v):>6}" for v in r["mezcla"][:km]), "",
-          "  LO QUE SIGUE ADELANTE DESDE LA «e»", "",
-          "  «lo traído»: la mezcla, pasada por la tabla que devuelve lo",
-          "  traído.", "",
-          f"  {'la lista que entró en el sitio 16':<39}" + "".join(f"{dec(v):>6}" for v in r["entra"][-1][:km]),
-          f"  {'más lo traído':<39}" + "".join(f"{dec(v):>6}" for v in r["traido"][:km]),
-          f"  {'':<39}{'-' * 18:>18}",
-          f"  {'da lo que pasa a los comités':<39}" + "".join(f"{dec(v):>6}" for v in r["sigue"][:km]), "",
-          "  La lista de la propia letra sigue adelante entera: la",
-          "  mirada le suma lo traído, no la sustituye. Sin mirar atrás,",
-          "  solo sigue la primera fila.", ""]
+    filas = [[f"{i + 1} {letra(tramo[i])}", f"{coma(100 * r['reparto'][i])} %"]
+             + [dec(v) for v in r["contenido"][i][:km]]
+             + [dec(v) for v in (r["reparto"][i] * r["contenido"][i])[:km]] for i in mayores]
+    filas.append([f"otras {len(resto)}", f"{coma(100 * r['reparto'][resto].sum())} %"] + [""] * km
+                 + [dec(v) for v in otras[:km]])
+    filas.append(neg(["la mezcla (la suma)", ""] + [""] * km + [dec(v) for v in r["mezcla"][:km]]))
+    L += ["--- 9. LA MEZCLA ---", ""] + tabla_editorial(
+        "La mezcla: cada contenido, por su porción, y todo sumado",
+        ["letra", "porción"] + [f"contenido: {j + 1}" for j in range(km)]
+        + [f"por su porción: {j + 1}" for j in range(km)], filas, "id" + "d" * (2 * km),
+        [f"Los {km} primeros de los {A} números de cada contenido."]) + [""]
     assert np.allclose(r["mezcla"], sum(r["reparto"][i] * r["contenido"][i] for i in range(T)))
+    L += tabla_editorial(
+        "Lo que sigue adelante desde la «e»", [""] + [num(j + 1) for j in range(km)],
+        [[f"la lista que entró en el sitio {T}"] + [dec(v) for v in r["entra"][-1][:km]],
+         ["más lo traído"] + [dec(v) for v in r["traido"][:km]],
+         neg(["da lo que pasa a los comités"] + [dec(v) for v in r["sigue"][:km]])],
+        "i" + "d" * km,
+        ["Lo traído: la mezcla, pasada por la tabla que devuelve lo traído.",
+         "La lista de la propia letra sigue adelante entera: la mirada le suma lo traído, no la "
+         "sustituye. Sin mirar atrás, solo sigue la primera fila."]) + [""]
 
     # 10. la apuesta
     orden = np.argsort(-r["apuesta"])
     viene = texto[i_frase + len(M.FRASE)]
-    L += ["10. LA LISTA DE LA «e»: QUÉ LETRA VIENE DETRÁS DE «acordarme»", "",
-          f"  {'puesto':<10}{'letra':<10}{'de cada cien':>14}",
-          f"  {'------':<10}{'-----':<10}{'------------':>14}"]
-    for pu, kk in enumerate(orden[:APUESTAS], 1):
-        L.append(f"  {pu:<10}{'«' + letra(M.LETRAS[kk]) + '»':<10}{coma(100 * r['apuesta'][kk]) + ' %':>14}")
     kv = M.INDICE[viene]
     pv = int(np.where(orden == kv)[0][0]) + 1
-    L += ["", f"  En el Quijote viene «{letra(viene)}», que está en el puesto {pv} "
-          f"con {coma(100 * r['apuesta'][kv])} %.", ""]
+    L += ["--- 10. LA LISTA DE LA «e» ---", ""] + tabla_editorial(
+        "La lista de la «e»: qué letra viene detrás de «acordarme»",
+        ["puesto", "letra", "de cada cien"],
+        [[str(pu), f"«{letra(M.LETRAS[kk])}»", f"{coma(100 * r['apuesta'][kk])} %"]
+         for pu, kk in enumerate(orden[:APUESTAS], 1)], "cid",
+        [f"En el Quijote viene «{letra(viene)}», que está en el puesto {pv} con "
+         f"{coma(100 * r['apuesta'][kv])} %."]) + [""]
 
     # 11. sumas de muchos números que van y vienen
     dist = distancias(np.random.default_rng(SEMILLA_SUMAS))
-    L += ["11. SUMAS DE MUCHOS NÚMEROS QUE VAN Y VIENEN",
-          "   (cada sumando: dos números al azar de tamaño 1,",
-          f"   multiplicados; {miles(TIRADAS_SUMAS)} sumas al azar por fila)", "",
-          f"  {'se suman':<10}{'la suma queda, de media,':>26}{'ajuste':>10}{'tras él':>10}",
-          f"  {'':<10}{'a esta distancia de cero':>26}{'entre':>10}{'':>10}",
-          f"  {'--------':<10}{'------------------------':>26}{'------':>10}{'-------':>10}"]
-    for nn, d in zip(SUMANDOS, dist):
-        L.append(f"  {nn:<10}{dec(d):>26}{dec(math.sqrt(nn)):>10}{dec(d / math.sqrt(nn)):>10}")
-    L += ["", "  «ajuste entre»: el número que, multiplicado por sí mismo, da",
-          "  cuántos se suman (2 por 2 son 4; 8 por 8, 64).",
-          f"  «de tamaño 1»: de cada cien, {coma(100 * dentro_de_uno(np.random.default_rng(SEMILLA_SUMAS)), 0)} caen entre menos 1 y 1.", ""]
+    L += ["--- 11. SUMAS DE MUCHOS NÚMEROS QUE VAN Y VIENEN ---", ""] + tabla_editorial(
+        "Sumas de muchos números que van y vienen",
+        ["se suman", "distancia a cero, de media", "ajuste entre", "tras el ajuste"],
+        [[str(nn), dec(d), dec(math.sqrt(nn)), dec(d / math.sqrt(nn))] for nn, d in zip(SUMANDOS, dist)],
+        "dddd",
+        [f"Cada sumando: dos números al azar de tamaño 1, multiplicados; {miles(TIRADAS_SUMAS)} "
+         "sumas al azar por fila. Distancia a cero: a qué distancia de cero queda la suma, de media.",
+         "Ajuste: el número que, multiplicado por sí mismo, da cuántos se suman (2 por 2 son 4; 8 "
+         "por 8, 64).",
+         f"De tamaño 1: de cada cien, "
+         f"{coma(100 * dentro_de_uno(np.random.default_rng(SEMILLA_SUMAS)), 0)} caen entre menos 1 y 1."])
     return L
 
 
@@ -464,7 +449,7 @@ def main():
     codigo = selftest(p, med, prueba)
     if codigo or args.selftest:
         return codigo
-    for l in comprobar_ancho([l.rstrip() for l in informe(texto, prueba, p, med)], ANCHO):
+    for l in informe(texto, prueba, p, med):
         print(l)
     return 0
 

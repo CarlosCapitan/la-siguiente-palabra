@@ -6,235 +6,259 @@
 SELFTEST: las tres pruebas pasan.
 
 ####### capítulo 8: la mirada de la «e», hecha a mano #######
-La máquina de mirada_a_mano.py, entrenada otra vez con su
-semilla (20260914) y sus 20.000 pasos: acierta 44,5 %,
-como en el libro. Las cuentas se hacen con todos los decimales;
-se enseñan con dos.
+La máquina de mirada_a_mano.py, entrenada otra vez con su semilla (20260914) y sus 20.000 pasos: acierta 44,5 %, como en el libro.
+Las cuentas se hacen con todos los decimales; se enseñan con dos.
 
-1. LA MÁQUINA, PIEZA A PIEZA
+--- 1. LA MÁQUINA, PIEZA A PIEZA ---
 
-  la pieza                                             números
-  --------                                             -------
-  las listas de las 42 letras, 32 números cada una       1.344
-  las marcas de los 16 sitios, 32 números cada una         512
-  la tabla de las preguntas                              1.024
-  la tabla de las etiquetas                              1.024
-  la tabla de los contenidos                             1.024
-  la tabla que devuelve lo traído                        1.024
-  los comités de después                                 8.352
-  de la lista a los porcentajes de las 42 letras         1.386
-                                                       -------
-  total                                                 15.690
+::: tabla
+La máquina, pieza a pieza
 
-  Sin mirar atrás se quitan las cuatro tablas: 4.096 números.
-  Quedan 11.594.
+| la pieza | números |
+|:--|--:|
+| las listas de las 42 letras, 32 números cada una | 1.344 |
+| las marcas de los 16 sitios, 32 números cada una | 512 |
+| la tabla de las preguntas | 1.024 |
+| la tabla de las etiquetas | 1.024 |
+| la tabla de los contenidos | 1.024 |
+| la tabla que devuelve lo traído | 1.024 |
+| los comités de después | 8.352 |
+| de la lista a los porcentajes de las 42 letras | 1.386 |
+| **total** | **15.690** |
 
-2. FRAGMENTOS: LO QUE VE, LO QUE VIENE, LO MÁS PROBABLE
+Sin mirar atrás se quitan las cuatro tablas: 4.096 números. Quedan 11.594.
+:::
 
-  Los tres primeros fragmentos de prueba, sin elegir, y la frase
-  de la figura. «acierta»: la letra a la que da más porcentaje
-  es la que viene de verdad.
+--- 2. FRAGMENTOS ---
 
-  fragmento de prueba 1
-    lo que ve:        «neración;_pero,_»
-    lo que viene:     «¿»
-    lo más probable:  «y» 26,9 %, «q» 10,8 %, «s» 10,0 %
-    ¿acierta?         no
+::: tabla
+Fragmentos: lo que ve, lo que viene, lo más probable
 
-  fragmento de prueba 2
-    lo que ve:        «das,_se_descubri»
-    lo que viene:     «e»
-    lo más probable:  «e» 18,7 %, «a» 18,2 %, «d» 17,4 %
-    ¿acierta?         sí
+| fragmento | lo que ve | viene | lo más probable | ¿acierta? |
+|:-:|:--|:--|:--|:-:|
+| 1 | `neración;_pero,_` | `¿` | `y` 26,9 %, `q` 10,8 %, `s` 10,0 % | no |
+| 2 | `das,_se_descubri` | `e` | `e` 18,7 %, `a` 18,2 %, `d` 17,4 % | sí |
+| 3 | `_del_jumento_y_a` | `c` | `_` 44,7 %, `l` 11,0 %, `n` 10,7 % | no |
+| el de la figura | `quiero_acordarme` | `,` | `_` 56,8 %, `,` 11,7 %, `t` 6,8 % | no |
 
-  fragmento de prueba 3
-    lo que ve:        «_del_jumento_y_a»
-    lo que viene:     «c»
-    lo más probable:  «_» 44,7 %, «l» 11,0 %, «n» 10,7 %
-    ¿acierta?         no
+Fragmento: los tres primeros de prueba, sin elegir, y el de la figura.
 
-  la frase de la figura
-    lo que ve:        «quiero_acordarme»
-    lo que viene:     «,»
-    lo más probable:  «_» 56,8 %, «,» 11,7 %, «t» 6,8 %
-    ¿acierta?         no
+¿Acierta?: la letra a la que da más porcentaje es la que viene de verdad. El guion bajo es un espacio.
+:::
 
-  «_» es un espacio.
+--- 3. LA MISMA «e» EN DOS SITIOS ---
 
-3. LA MISMA «e» EN DOS SITIOS: LA LISTA QUE ENTRA
-   (los 6 primeros de sus 32 números; en «quiero acordarme» hay
-   una «e» en el sitio 4 y otra en el 16)
+::: tabla
+La «e» del sitio 4: la lista que entra
 
-  número                         1     2     3     4     5     6
-  ------                        --    --    --    --    --    --
-  la lista de la «e»         -0,08  0,29  0,05  0,15 -0,42  0,41
-  más la marca del sitio 4   -0,53 -0,29  0,05 -0,20  0,75  0,18
-  da: lo que entra           -0,62  0,00  0,10 -0,06  0,34  0,60
+|  | número: 1 | número: 2 | número: 3 | número: 4 | número: 5 | número: 6 |
+|:--|--:|--:|--:|--:|--:|--:|
+| la lista de la «e» | -0,08 | 0,29 | 0,05 | 0,15 | -0,42 | 0,41 |
+| más la marca del sitio 4 | -0,53 | -0,29 | 0,05 | -0,20 | 0,75 | 0,18 |
+| **da: lo que entra** | **-0,62** | **0,00** | **0,10** | **-0,06** | **0,34** | **0,60** |
 
-  la lista de la «e»         -0,08  0,29  0,05  0,15 -0,42  0,41
-  más la marca del sitio 16   0,34  0,21 -0,44  0,61 -0,91  0,11
-  da: lo que entra            0,26  0,51 -0,39  0,76 -1,32  0,52
+Los 6 primeros de sus 32 números. En «quiero acordarme» hay una «e» en el sitio 4 y otra en el 16.
+:::
 
-  parecido entre las dos listas que entran, con sus 32 números:
-  0,21 (la medida del capítulo 5: 1 quiere decir idénticas)
+::: tabla
+La «e» del sitio 16: la lista que entra
 
-4. UN NÚMERO DE LA PREGUNTA DE LA «e», HECHO A MANO
-   (la lista que entra en el sitio 16, por la primera columna
-   de la tabla de las preguntas: un comité como el del
-   capítulo 3)
+|  | número: 1 | número: 2 | número: 3 | número: 4 | número: 5 | número: 6 |
+|:--|--:|--:|--:|--:|--:|--:|
+| la lista de la «e» | -0,08 | 0,29 | 0,05 | 0,15 | -0,42 | 0,41 |
+| más la marca del sitio 16 | 0,34 | 0,21 | -0,44 | 0,61 | -0,91 | 0,11 |
+| **da: lo que entra** | **0,26** | **0,51** | **-0,39** | **0,76** | **-1,32** | **0,52** |
 
-  número de la lista        vale     peso    aporta
-  ------------------        ----     ----    ------
-  número 1                  0,26     0,21      0,05
-  número 2                  0,51    -0,21     -0,11
-  número 3                 -0,39    -0,25      0,10
-  número 4                  0,76     0,20      0,15
-  los otros 28                                 0,46
-                                             ------
-  total: el número 1 de la pregunta            0,65
+Los 6 primeros de sus 32 números.
 
-  Lo mismo con cada una de las 32 columnas da los 32 números
-  de la pregunta; con la tabla de las etiquetas, los de la
-  etiqueta; con la de los contenidos, los del contenido. Los
-  4 primeros de cada una:
+Parecido entre las dos listas que entran, con sus 32 números: 0,21 (la medida del capítulo 5: 1 quiere decir idénticas).
+:::
 
-  de la «e» del sitio 16              1      2      3      4
-  --------------------               --     --     --     --
-  su pregunta                      0,65  -0,81   0,75   1,11
-  su etiqueta                      2,35  -1,19   2,49   4,59
-  su contenido                     0,59  -0,74  -0,60   0,08
+--- 4. UN NÚMERO DE LA PREGUNTA, HECHO A MANO ---
 
-5. CUÁNTO ENCAJA LA PREGUNTA DE LA «e» CON LA ETIQUETA DE LA «m»
-   (número a número: se multiplican y se suma todo)
+::: tabla
+Un número de la pregunta de la «e», hecho a mano
 
-  número        pregunta de la «e»  etiqueta de la «m»  producto
-  ------        ------------------  ------------------  --------
-  1                           0,65                3,55      2,32
-  2                          -0,81               -0,49      0,40
-  3                           0,75                2,57      1,93
-  4                           1,11                4,72      5,24
-  los otros 28                                             20,86
-                                                        --------
-  suma de los 32 productos                                 30,75
-  entre 5,66 (el ajuste de escala): la puntuación           5,44
+| número de la lista | vale | peso | aporta |
+|:--|--:|--:|--:|
+| número 1 | 0,26 | 0,21 | 0,05 |
+| número 2 | 0,51 | -0,21 | -0,11 |
+| número 3 | -0,39 | -0,25 | 0,10 |
+| número 4 | 0,76 | 0,20 | 0,15 |
+| los otros 28 |  |  | 0,46 |
+| **total: el número 1 de la pregunta** |  |  | **0,65** |
 
-6. DE LAS PUNTUACIONES AL REPARTO: LA «e» Y LAS 16 LETRAS
-   (la pregunta de la «e» contra la etiqueta de cada una)
+La lista que entra en el sitio 16, por la primera columna de la tabla de las preguntas: un comité como el del capítulo 3.
+:::
 
-  sitio  letra    puntuación      fuerza   de cada cien
-  -----  -----    ----------      ------   ------------
-  1      q            -1,429        0,24          0,0 %
-  2      u            -3,613        0,03          0,0 %
-  3      i            -3,770        0,02          0,0 %
-  4      e            -5,444        0,00          0,0 %
-  5      r            -2,806        0,06          0,0 %
-  6      o            -3,258        0,04          0,0 %
-  7      _            -1,448        0,24          0,0 %
-  8      a            -0,644        0,53          0,1 %
-  9      c             0,256        1,29          0,2 %
-  10     o             0,576        1,78          0,3 %
-  11     r             2,553       12,85          2,3 %
-  12     d             3,346       28,38          5,2 %
-  13     a             3,962       52,59          9,5 %
-  14     r             5,049      155,85         28,3 %
-  15     m             5,436      229,64         41,7 %
-  16     e             4,212       67,47         12,2 %
-                                  ------        -------
-  suma                            550,99        100,0 %
+::: tabla
+La pregunta, la etiqueta y el contenido de la «e» del sitio 16
 
-  «fuerza»: cada punto más de puntuación la multiplica por 2,72.
-  Con puntuación 0 vale 1; con 1, 2,72; con 2, 7,39;
-  con 3, 20,09; con menos 1, 0,37.
-  «de cada cien»: su fuerza entre la suma de todas, por cien.
-  «_» es un espacio.
+|  | número: 1 | número: 2 | número: 3 | número: 4 |
+|:--|--:|--:|--:|--:|
+| su pregunta | 0,65 | -0,81 | 0,75 | 1,11 |
+| su etiqueta | 2,35 | -1,19 | 2,49 | 4,59 |
+| su contenido | 0,59 | -0,74 | -0,60 | 0,08 |
 
-7. DOBLE PUNTUACIÓN NO ES DOBLE PORCIÓN
+Lo mismo con cada una de las 32 columnas da los 32 números de la pregunta; con la tabla de las etiquetas, los de la etiqueta; con la de los contenidos, los del contenido. Los 4 primeros de cada una.
+:::
 
-  dos letras, con puntuaciones         se llevan, de cada cien
-  ----------------------------         -----------------------
-  1 y 2                                            26,9 y 73,1
-  2 y 4                                            11,9 y 88,1
-  10 y 20                                          0,0 y 100,0
+--- 5. CUÁNTO ENCAJA UNA PREGUNTA CON UNA ETIQUETA ---
 
-  El reparto de la «e», con el ajuste y sin él (sin dividir
-  entre 5,66), en las seis últimas letras, de cada cien:
+::: tabla
+Cuánto encaja la pregunta de la «e» con la etiqueta de la «m»
 
-  sitio y letra   11 r  12 d  13 a  14 r  15 m  16 e  reparte
-  -------------   ----  ----  ----  ----  ----  ----  -------
-  con el ajuste      2     5    10    28    42    12      4,4
-  sin el ajuste      0     0     0    10    90     0      1,4
+| número | pregunta de la «e» | etiqueta de la «m» | producto |
+|:--|--:|--:|--:|
+| 1 | 0,65 | 3,55 | 2,32 |
+| 2 | -0,81 | -0,49 | 0,40 |
+| 3 | 0,75 | 2,57 | 1,93 |
+| 4 | 1,11 | 4,72 | 5,24 |
+| los otros 28 |  |  | 20,86 |
+| **suma de los 32 productos** |  |  | **30,75** |
+| **entre 5,66 (el ajuste de escala): la puntuación** |  |  | **5,44** |
 
-  «reparte»: entre cuántas letras reparte, contadas como en
-  «reparte entre».
+Número a número: se multiplican y se suma todo.
+:::
 
-8. «REPARTE ENTRE», CON REPARTOS DE EJEMPLO
+--- 6. DE LAS PUNTUACIONES AL REPARTO ---
 
-  el reparto, de cada cien                       reparte entre
-  ------------------------                       -------------
-  100 a una sola                                           1,0
-  50 y 50                                                  2,0
-  90 y 10                                                  1,4
-  25, 25, 25 y 25                                          4,0
-  por igual entre las 16                                  16,0
-  el de la «e»: 2, 5, 10, 28, 42, 12                       4,4
+::: tabla
+De las puntuaciones al reparto: la «e» y las 16 letras
 
-  «reparte entre»: cuántas letras, repartiendo a partes iguales,
-  darían un reparto igual de concentrado que éste.
+| sitio | letra | puntuación | fuerza | de cada cien |
+|:-:|:-:|--:|--:|--:|
+| 1 | q | -1,429 | 0,24 | 0,0 % |
+| 2 | u | -3,613 | 0,03 | 0,0 % |
+| 3 | i | -3,770 | 0,02 | 0,0 % |
+| 4 | e | -5,444 | 0,00 | 0,0 % |
+| 5 | r | -2,806 | 0,06 | 0,0 % |
+| 6 | o | -3,258 | 0,04 | 0,0 % |
+| 7 | _ | -1,448 | 0,24 | 0,0 % |
+| 8 | a | -0,644 | 0,53 | 0,1 % |
+| 9 | c | 0,256 | 1,29 | 0,2 % |
+| 10 | o | 0,576 | 1,78 | 0,3 % |
+| 11 | r | 2,553 | 12,85 | 2,3 % |
+| 12 | d | 3,346 | 28,38 | 5,2 % |
+| 13 | a | 3,962 | 52,59 | 9,5 % |
+| 14 | r | 5,049 | 155,85 | 28,3 % |
+| 15 | m | 5,436 | 229,64 | 41,7 % |
+| 16 | e | 4,212 | 67,47 | 12,2 % |
+| **suma** |  |  | **550,99** | **100,0 %** |
 
-9. LA MEZCLA: CADA CONTENIDO, POR SU PORCIÓN, Y TODO SUMADO
-   (los 3 primeros de los 32 números de cada contenido)
+La pregunta de la «e» contra la etiqueta de cada una.
 
-  letra     porción           contenido      por su porción
-  -----     -------           ---------      --------------
-  11 r        2,3 %   -0,25  0,22  0,47   -0,01  0,01  0,01
-  12 d        5,2 %   -0,18 -1,19 -0,27   -0,01 -0,06 -0,01
-  13 a        9,5 %   -1,40 -0,65 -0,11   -0,13 -0,06 -0,01
-  14 r       28,3 %   -0,24  0,29  0,44   -0,07  0,08  0,12
-  15 m       41,7 %    0,71 -1,82  1,34    0,30 -0,76  0,56
-  16 e       12,2 %    0,59 -0,74 -0,60    0,07 -0,09 -0,07
-  otras 10    0,8 %                       -0,01  0,00  0,00
-                                         ------------------
-  la mezcla (la suma)                      0,15 -0,89  0,60
+Fuerza: cada punto más de puntuación la multiplica por 2,72. Con puntuación 0 vale 1; con 1, 2,72; con 2, 7,39; con 3, 20,09; con menos 1, 0,37.
 
-  LO QUE SIGUE ADELANTE DESDE LA «e»
+De cada cien: su fuerza entre la suma de todas, por cien. El guion bajo es un espacio.
+:::
 
-  «lo traído»: la mezcla, pasada por la tabla que devuelve lo
-  traído.
+--- 7. DOBLE PUNTUACIÓN NO ES DOBLE PORCIÓN ---
 
-  la lista que entró en el sitio 16        0,26  0,51 -0,39
-  más lo traído                           -1,08  0,40 -0,09
-                                         ------------------
-  da lo que pasa a los comités            -0,82  0,91 -0,48
+::: tabla
+Doble puntuación no es doble porción
 
-  La lista de la propia letra sigue adelante entera: la
-  mirada le suma lo traído, no la sustituye. Sin mirar atrás,
-  solo sigue la primera fila.
+| dos letras, con puntuaciones | se llevan, de cada cien |
+|:--|--:|
+| 1 y 2 | 26,9 y 73,1 |
+| 2 y 4 | 11,9 y 88,1 |
+| 10 y 20 | 0,0 y 100,0 |
+:::
 
-10. LA LISTA DE LA «e»: QUÉ LETRA VIENE DETRÁS DE «acordarme»
+::: tabla
+El reparto de la «e», con el ajuste y sin él
 
-  puesto    letra       de cada cien
-  ------    -----       ------------
-  1         «_»               56,8 %
-  2         «,»               11,7 %
-  3         «t»                6,8 %
-  4         «n»                4,6 %
-  5         «s»                4,0 %
+|  | 11 r | 12 d | 13 a | 14 r | 15 m | 16 e | reparte |
+|:--|--:|--:|--:|--:|--:|--:|--:|
+| con el ajuste | 2 | 5 | 10 | 28 | 42 | 12 | 4,4 |
+| sin el ajuste | 0 | 0 | 0 | 10 | 90 | 0 | 1,4 |
 
-  En el Quijote viene «,», que está en el puesto 2 con 11,7 %.
+Sin el ajuste: sin dividir entre 5,66. En las seis últimas letras, de cada cien.
 
-11. SUMAS DE MUCHOS NÚMEROS QUE VAN Y VIENEN
-   (cada sumando: dos números al azar de tamaño 1,
-   multiplicados; 100.000 sumas al azar por fila)
+Reparte: entre cuántas letras reparte, contadas como en «reparte entre».
+:::
 
-  se suman    la suma queda, de media,    ajuste   tras él
-              a esta distancia de cero     entre
-  --------    ------------------------    ------   -------
-  4                               1,50      2,00      0,75
-  16                              3,14      4,00      0,79
-  32                              4,50      5,66      0,79
-  64                              6,34      8,00      0,79
+--- 8. «REPARTE ENTRE» ---
 
-  «ajuste entre»: el número que, multiplicado por sí mismo, da
-  cuántos se suman (2 por 2 son 4; 8 por 8, 64).
-  «de tamaño 1»: de cada cien, 68 caen entre menos 1 y 1.
+::: tabla
+«Reparte entre», con repartos de ejemplo
 
+| el reparto, de cada cien | reparte entre |
+|:--|--:|
+| 100 a una sola | 1,0 |
+| 50 y 50 | 2,0 |
+| 90 y 10 | 1,4 |
+| 25, 25, 25 y 25 | 4,0 |
+| por igual entre las 16 | 16,0 |
+| el de la «e»: 2, 5, 10, 28, 42, 12 | 4,4 |
+
+Reparte entre: cuántas letras, repartiendo a partes iguales, darían un reparto igual de concentrado que éste.
+:::
+
+--- 9. LA MEZCLA ---
+
+::: tabla
+La mezcla: cada contenido, por su porción, y todo sumado
+
+| letra | porción | contenido: 1 | contenido: 2 | contenido: 3 | por su porción: 1 | por su porción: 2 | por su porción: 3 |
+|:--|--:|--:|--:|--:|--:|--:|--:|
+| 11 r | 2,3 % | -0,25 | 0,22 | 0,47 | -0,01 | 0,01 | 0,01 |
+| 12 d | 5,2 % | -0,18 | -1,19 | -0,27 | -0,01 | -0,06 | -0,01 |
+| 13 a | 9,5 % | -1,40 | -0,65 | -0,11 | -0,13 | -0,06 | -0,01 |
+| 14 r | 28,3 % | -0,24 | 0,29 | 0,44 | -0,07 | 0,08 | 0,12 |
+| 15 m | 41,7 % | 0,71 | -1,82 | 1,34 | 0,30 | -0,76 | 0,56 |
+| 16 e | 12,2 % | 0,59 | -0,74 | -0,60 | 0,07 | -0,09 | -0,07 |
+| otras 10 | 0,8 % |  |  |  | -0,01 | 0,00 | 0,00 |
+| **la mezcla (la suma)** |  |  |  |  | **0,15** | **-0,89** | **0,60** |
+
+Los 3 primeros de los 32 números de cada contenido.
+:::
+
+::: tabla
+Lo que sigue adelante desde la «e»
+
+|  | número: 1 | número: 2 | número: 3 |
+|:--|--:|--:|--:|
+| la lista que entró en el sitio 16 | 0,26 | 0,51 | -0,39 |
+| más lo traído | -1,08 | 0,40 | -0,09 |
+| **da lo que pasa a los comités** | **-0,82** | **0,91** | **-0,48** |
+
+Lo traído: la mezcla, pasada por la tabla que devuelve lo traído.
+
+La lista de la propia letra sigue adelante entera: la mirada le suma lo traído, no la sustituye. Sin mirar atrás, solo sigue la primera fila.
+:::
+
+--- 10. LA LISTA DE LA «e» ---
+
+::: tabla
+La lista de la «e»: qué letra viene detrás de «acordarme»
+
+| puesto | letra | de cada cien |
+|:-:|:--|--:|
+| 1 | «_» | 56,8 % |
+| 2 | «,» | 11,7 % |
+| 3 | «t» | 6,8 % |
+| 4 | «n» | 4,6 % |
+| 5 | «s» | 4,0 % |
+
+En el Quijote viene «,», que está en el puesto 2 con 11,7 %.
+:::
+
+--- 11. SUMAS DE MUCHOS NÚMEROS QUE VAN Y VIENEN ---
+
+::: tabla
+Sumas de muchos números que van y vienen
+
+| se suman | distancia a cero, de media | ajuste entre | tras el ajuste |
+|--:|--:|--:|--:|
+| 4 | 1,50 | 2,00 | 0,75 |
+| 16 | 3,14 | 4,00 | 0,79 |
+| 32 | 4,50 | 5,66 | 0,79 |
+| 64 | 6,34 | 8,00 | 0,79 |
+
+Cada sumando: dos números al azar de tamaño 1, multiplicados; 100.000 sumas al azar por fila. Distancia a cero: a qué distancia de cero queda la suma, de media.
+
+Ajuste: el número que, multiplicado por sí mismo, da cuántos se suman (2 por 2 son 4; 8 por 8, 64).
+
+De tamaño 1: de cada cien, 68 caen entre menos 1 y 1.
+:::

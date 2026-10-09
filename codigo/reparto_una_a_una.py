@@ -85,7 +85,7 @@ import sys
 import numpy as np
 import torch
 
-from formato import ANCHO_CAJA_CITA, coma, comprobar_ancho, miles, pct
+from formato import coma, miles, muestra_editorial, pct, tabla_editorial
 
 
 def fijar_semilla(semilla):
@@ -179,16 +179,13 @@ def vuelco(M1, M2):
 
 
 def bloque_cabecera(modelo, n_capas, n_miradas, rasgos, numeros_por_trozo):
-    total = n_capas * n_miradas
-    lineas = [
-        "--- LA FORMA DE ESTA MÁQUINA ---",
-        f"capas (rondas de mirar y mezclar):        {n_capas}",
-        f"miradas dentro de cada capa:              {n_miradas}",
-        f"miradas en total:                         {miles(total)}",
-        f"rasgos que compara cada mirada:           {rasgos}",
-        f"números con que se representa cada trozo: {numeros_por_trozo}",
-    ]
-    return comprobar_ancho(lineas, ANCHO_CAJA_CITA)
+    return tabla_editorial(
+        "La forma de esta máquina", ["", "cuánto"],
+        [["capas (rondas de mirar y mezclar)", str(n_capas)],
+         ["miradas dentro de cada capa", str(n_miradas)],
+         ["miradas en total", miles(n_capas * n_miradas)],
+         ["rasgos que compara cada mirada", str(rasgos)],
+         ["números con que se representa cada trozo", str(numeros_por_trozo)]], "id")
 
 
 def bloque_promedios(datos, n_capas):
@@ -200,34 +197,24 @@ def bloque_promedios(datos, n_capas):
     desde = n_capas - max(1, int(round(n_capas * FRACCION_CAPAS_FINALES)))
     n_total = n_capas * next(iter(datos.values()))[1].shape[1]
     n_tercio = (n_capas - desde) * next(iter(datos.values()))[1].shape[1]
-    lineas = [
-        "--- ¿A QUIÉN LE LLEGA EL REPARTO DEL ADJETIVO? ---",
-        f"«todas»: promedio de las {n_total} miradas del modelo.",
-        f"«final»: promedio de las {n_tercio} miradas de las {n_capas - desde} últimas capas,",
-        # L24 (28 sep): tres líneas acortadas para que quepan en los 62 caracteres de la cita.
-        "        que es el recorte con el que mide reparto_atencion.py.",
-        "Cada casilla: la porción del pastel que se lleva esa palabra.",
-        "",
-        "adjetivo  miradas       «El»     «vaso»    «cajón»   adjetivo",
-        "--------  -------  ---------  ---------  ---------  ---------",
-    ]
+    filas = []
     for clave, (palabras, M) in datos.items():
         i_el = 0
         i_vaso = indice(palabras, "vaso")
         i_cajon = indice(palabras, "cajón")
         for etiqueta, trozo in (("todas", M), ("final", M[desde:])):
             p = trozo.mean(axis=(0, 1))
-            lineas.append(
-                f"{clave:<8}  {etiqueta:<7}  "
-                f"{pct(p[i_el], 1):>9}  {pct(p[i_vaso], 1):>9}  "
-                f"{pct(p[i_cajon], 1):>9}  {pct(p[-1], 1):>9}"
-            )
-    lineas += [
-        "",
-        "«El» es la primera palabra de la frase: la papelera.",
-        "«adjetivo» es lo que la palabra que pregunta se queda para sí.",
-    ]
-    return comprobar_ancho(lineas, ANCHO_CAJA_CITA)
+            filas.append([clave, etiqueta, pct(p[i_el], 1), pct(p[i_vaso], 1), pct(p[i_cajon], 1),
+                          pct(p[-1], 1)])
+    return tabla_editorial(
+        "¿A quién le llega el reparto del adjetivo?",
+        ["adjetivo", "miradas", "«El»", "«vaso»", "«cajón»", "el propio adjetivo"], filas, "iidddd",
+        [f"Todas: promedio de las {n_total} miradas del modelo. Final: promedio de las {n_tercio} "
+         f"miradas de las {n_capas - desde} últimas capas, que es el recorte con el que mide "
+         "reparto_atencion.py.",
+         "Cada casilla: la porción del pastel que se lleva esa palabra. «El» es la primera palabra "
+         "de la frase: la papelera. El propio adjetivo: lo que la palabra que pregunta se queda "
+         "para sí."])
 
 
 def bloque_especializada(datos, cual):
@@ -237,31 +224,18 @@ def bloque_especializada(datos, cual):
     v = M_ref[:, :, i]
     orden = np.dstack(np.unravel_index(np.argsort(-v, axis=None), v.shape))[0][:3]
     capa, mirada = int(orden[0][0]), int(orden[0][1])
-
-    lineas = [
-        f"--- ¿HAY ALGUNA MIRADA QUE SE FIJE EN «{cual.upper()}»? ---",
-        f"Las tres que más se fijan en «{cual}» con el adjetivo «alto»,",
-        f"de las {M_ref.shape[0] * M_ref.shape[1]} que tiene el modelo:",
-        "",
-        f"  capa  mirada  sobre «{cual}»",
-        "  ----  ------  ------------",
-    ]
-    for c, h in orden:
-        lineas.append(f"  {int(c)+1:>4}  {int(h)+1:>6}  {pct(v[int(c), int(h)], 1):>12}")
     cuantas = int((v > 0.5).sum())
-    lineas += [
-        "",
-        f"miradas que pasan de la mitad sobre «{cual}»: {cuantas} de {v.size}",
-        "",
-        f"La misma —capa {capa+1}, mirada {mirada+1}— en las tres frases:",
-        "",
-        "  adjetivo  sobre «" + cual + "»",
-        "  --------  ------------",
-    ]
-    for clave, (palabras, M) in datos.items():
-        j = indice(palabras, cual)
-        lineas.append(f"  {clave:<8}  {pct(M[capa, mirada, j], 1):>12}")
-    return comprobar_ancho(lineas, ANCHO_CAJA_CITA)
+    tres = tabla_editorial(
+        f"Las tres miradas que más se fijan en «{cual}»", ["capa", "mirada", f"sobre «{cual}»"],
+        [[str(int(c) + 1), str(int(h) + 1), pct(v[int(c), int(h)], 1)] for c, h in orden], "ccd",
+        [f"Con el adjetivo «alto», de las {M_ref.shape[0] * M_ref.shape[1]} que tiene el modelo. "
+         f"Miradas que pasan de la mitad sobre «{cual}»: {cuantas} de {v.size}."])
+    misma = tabla_editorial(
+        f"La misma mirada —capa {capa + 1}, mirada {mirada + 1}— en las tres frases",
+        ["adjetivo", f"sobre «{cual}»"],
+        [[clave, pct(M[capa, mirada, indice(palabras, cual)], 1)] for clave, (palabras, M) in datos.items()],
+        "id")
+    return tres + [""] + misma
 
 
 def bloque_vuelco(datos):
@@ -270,28 +244,19 @@ def bloque_vuelco(datos):
     pal_b, M_b = datos["bajo"]
     D = vuelco(M_a, M_b)
     c, h = np.unravel_index(D.argmax(), D.shape)
-
     dif = {}
     for cual in CANDIDATAS:
         dif[cual] = np.abs(M_a[:, :, indice(pal_a, cual)] - M_b[:, :, indice(pal_b, cual)]).max()
-
-    lineas = [
-        "--- ¿CAMBIA ALGUNA DE OPINIÓN AL CAMBIAR EL ADJETIVO? ---",
-        "«vuelco» es la parte del pastel que una mirada mueve de sitio",
-        "al cambiar «alto» por «bajo»: 0 = no mueve nada, 1 = lo mueve",
-        "todo. Se mide sobre las " + str(D.size) + " miradas del modelo.",
-        "",
-        f"  vuelco mayor:          {coma(D.max(), 3)}  (capa {int(c)+1}, mirada {int(h)+1})",
-        f"  vuelco medio:          {coma(D.mean(), 3)}",
-        f"  vuelco mediano:        {coma(float(np.median(D)), 3)}",
-        f"  miradas que mueven más de 0,10:  {int((D > 0.10).sum())} de {D.size}",
-        "",
-        "Y sobre las dos palabras candidatas, el mayor cambio de todas:",
-        "",
-        f"  sobre «vaso»:   {pct(dif['vaso'], 1)}",
-        f"  sobre «cajón»:  {pct(dif['cajón'], 1)}",
-    ]
-    return comprobar_ancho(lineas, ANCHO_CAJA_CITA)
+    return tabla_editorial(
+        "¿Cambia alguna de opinión al cambiar el adjetivo?", ["", "cuánto"],
+        [["vuelco mayor", f"{coma(D.max(), 3)} (capa {int(c) + 1}, mirada {int(h) + 1})"],
+         ["vuelco medio", coma(D.mean(), 3)],
+         ["vuelco mediano", coma(float(np.median(D)), 3)],
+         ["miradas que mueven más de 0,10", f"{int((D > 0.10).sum())} de {D.size}"],
+         ["el mayor cambio sobre «vaso», de todas", pct(dif["vaso"], 1)],
+         ["el mayor cambio sobre «cajón», de todas", pct(dif["cajón"], 1)]], "id",
+        ["Vuelco: la parte del pastel que una mirada mueve de sitio al cambiar «alto» por «bajo»: "
+         f"0, no mueve nada; 1, lo mueve todo. Se mide sobre las {D.size} miradas del modelo."])
 
 
 def bloque_sujeto(tok, modelo, datos, cual):
@@ -304,39 +269,28 @@ def bloque_sujeto(tok, modelo, datos, cual):
     palabras_ref, M_ref = datos["alto"]
     v = M_ref[:, :, indice(palabras_ref, cual)]
     capa, mirada = (int(x) for x in np.unravel_index(v.argmax(), v.shape))
-
-    lineas = [
-        "--- ¿SIGUE AL SUJETO, O AL PRINCIPIO DE LA FRASE? ---",
-        f"La mirada de la capa {capa+1}, número {mirada+1}, es la que más se fija en",
-        f"«{cual}» en la frase del vaso. Se le ponen delante otras frases",
-        "donde el sujeto y el primer sustantivo no son el mismo.",
-        "",
-    ]
-    for n, (frase, _, _) in enumerate(CONTROL_SUJETO, 1):
-        lineas.append(f"{n}  {frase}")
-    lineas += [
-        "",
-        "        sujeto    primer sust.  se fija en    ¿es el sujeto?",
-        "  -  ----------  ------------  ------------  --------------",
-    ]
+    frases = muestra_editorial(
+        "Las siete frases", [f"{n}  {frase}" for n, (frase, _, _) in enumerate(CONTROL_SUJETO, 1)],
+        [f"En {sum(s != p for _, s, p in CONTROL_SUJETO)} de ellas, el sujeto no es el primer "
+         "sustantivo."])
+    filas = []
     aciertos = distinguibles = 0
     for n, (frase, sujeto, primero) in enumerate(CONTROL_SUJETO, 1):
         palabras, M = reparto_por_mirada(tok, modelo, frase)
         fila = M[capa, mirada]
         elegida = palabras[int(fila.argmax())]
-        es_sujeto = "sí" if elegida == sujeto else "no"
         if sujeto != primero:
             distinguibles += 1
             aciertos += int(elegida == sujeto)
-        lineas.append(
-            f"  {n}  {sujeto:<10}  {primero:<12}  {elegida:<12}  {es_sujeto}"
-        )
-    lineas += [
-        "",
-        f"frases donde el sujeto NO es el primer sustantivo: {distinguibles}",
-        f"de ésas, en las que se fija en el sujeto:          {aciertos}",
-    ]
-    return comprobar_ancho(lineas, ANCHO_CAJA_CITA)
+        filas.append([str(n), sujeto, primero, elegida, "sí" if elegida == sujeto else "no"])
+    tabla = tabla_editorial(
+        "¿Sigue al sujeto, o al principio de la frase?",
+        ["frase", "sujeto", "primer sustantivo", "se fija en", "¿es el sujeto?"], filas, "ciiic",
+        [f"La mirada de la capa {capa + 1}, número {mirada + 1}: la que más se fija en «{cual}» en "
+         "la frase del vaso.",
+         f"Frases donde el sujeto no es el primer sustantivo: {distinguibles}. De ésas, en las que "
+         f"se fija en el sujeto: {aciertos}."])
+    return frases + [""] + tabla
 
 
 def escribir_csv(datos, ruta):

@@ -28,25 +28,27 @@ import re
 import sys
 from pathlib import Path
 
+from formato import leer_tablas
 from infografia import COLOR, GRIS, Lienzo
 
 AQUI = Path(__file__).resolve().parent
 
 
 def leer(ruta):
-    texto = Path(ruta).read_text(encoding="utf-8")
-    assert "5. EL REPARTO DE LA ÚLTIMA LETRA DE" in texto, f"se esperaba el apartado 5 en {ruta}"
-    tramo = texto.split("5. EL REPARTO DE LA ÚLTIMA LETRA DE", 1)[1].split("\n6.", 1)[0]
-    frase = re.search(r"«(.+?)»", tramo).group(1)
-    letras = re.search(r"^\s+letra\s+(.+)$", tramo, re.M).group(1).split()
-    filas = re.findall(r"^\s+tras ([\d.]+)\s+([\d ]+)$", tramo, re.M)
-    assert len(filas) == 2, f"se esperaban dos filas de reparto; hay {len(filas)}"
-    repartos = [(p, [int(v) for v in r.split()]) for p, r in filas]
-    assert len(letras) == CONTEXTO and all(len(r) == CONTEXTO for _, r in repartos), \
-        f"se esperaban {CONTEXTO} casillas; hay {len(letras)} letras y {[len(r) for _, r in repartos]}"
-    viene = re.search(r"en el Quijote viene detrás: «(.)»", tramo).group(1)
-    m = re.search(r"reparte entre: al empezar ([\d,]+) letras; al final ([\d,]+)\.", tramo)
-    apuesta = re.search(r"lo más probable detrás: al empezar «(.)», al final «(.)»", tramo)
+    """El reparto de la frase, de su tabla editorial (L24, 9 de octubre)."""
+    tablas = leer_tablas(Path(ruta).read_text(encoding="utf-8"))
+    titulos = [t for t in tablas if t.startswith("El reparto de la última letra de «")]
+    assert len(titulos) == 1, f"se esperaba la tabla del reparto en {ruta}; hay {titulos}"
+    frase = re.search(r"«(.+?)»", titulos[0]).group(1)
+    rotulos, filas, notas = tablas[titulos[0]]
+    letras = [f[1] for f in filas]
+    repartos = [(re.search(r"tras ([\d.]+) pasos", rotulos[k]).group(1), [int(f[k]) for f in filas])
+                for k in (2, 3)]
+    assert len(letras) == CONTEXTO, f"se esperaban {CONTEXTO} casillas; hay {len(letras)}"
+    nota = " ".join(notas)
+    viene = re.search(r"En el Quijote viene detrás: «(.)»", nota).group(1)
+    m = re.search(r"Reparte entre: al empezar ([\d,]+) letras; al final ([\d,]+)\.", nota)
+    apuesta = re.search(r"Lo más probable detrás: al empezar «(.)», al final «(.)»", nota)
     extra = dict(viene=viene, reparte=(m.group(1), m.group(2)),
                  apuesta=tuple("_" if a == " " else a for a in apuesta.groups()))
     return frase, letras, repartos, extra
