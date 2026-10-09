@@ -43,7 +43,7 @@ import re
 import sys
 from collections import Counter, defaultdict
 
-from formato import comprobar_ancho, ANCHO_CAJA
+from formato import tabla_editorial, trozo
 from ngrama import cargar_corpus, CORPUS
 
 PARTIR = re.compile(r" ?[^\W\d_]+| ?\d+| ?[^\s\w]+")
@@ -133,31 +133,38 @@ def miles(n):
 
 
 def tabla(juntas, letras):
-    lin = ["LAS PRIMERAS JUNTAS, CON EL QUIJOTE",
-           "cada junta suelda la pareja que más se repite; «_» es un espacio", "",
-           f"{'junta':>5}   {'pareja':<16}{'pieza nueva':<14}{'veces':>9}"]
-    for k, (a, b, n) in enumerate(juntas[:PRIMERAS], 1):
-        par = f"«{a_la_vista(a)}» + «{a_la_vista(b)}»"
-        lin.append(f"{k:>5}   {par:<16}{'«' + a_la_vista(a + b) + '»':<14}{miles(n):>9}")
+    """Las cuatro tablas editoriales (L24, 9 de octubre; regla 6 ter). Las cuentas no cambian."""
+    ver = lambda t: trozo(a_la_vista(t))
+    out = tabla_editorial(
+        "Las primeras juntas, con el Quijote", ["junta", "pareja", "pieza nueva", "veces"],
+        [[str(k), f"{ver(a)} y {ver(b)}", ver(a + b), miles(n)]
+         for k, (a, b, n) in enumerate(juntas[:PRIMERAS], 1)], "ciid",
+        ["Cada junta suelda la pareja que más se repite. El guion bajo es un espacio."])
     total = sum(n for _, n in letras)
-    lin += ["", f"se empieza con {total} piezas de una letra:"]
-    lin += [f"{n:>6}   {q}" for q, n in letras]
-    lin += [f"con {miles(JUNTAS)} juntas, la caja tiene {miles(total + JUNTAS)} piezas"]
+    out += [""] + tabla_editorial(
+        "Las piezas de una letra con que se empieza", ["de qué clase", "piezas"],
+        [[q, str(n)] for q, n in letras] + [["**en total**", f"**{total}**"]], "id",
+        [f"Con {miles(JUNTAS)} juntas, la caja tiene {miles(total + JUNTAS)} piezas."])
     todas = juntas
     juntas = juntas[:JUNTAS]
-    lin += ["", "", "UNA PALABRA, SEGÚN CUÁNTAS JUNTAS HAY EN LA CAJA"]
+    filas = []
     for w in PALABRAS:
-        lin += ["", a_la_vista(w)]
-        for m in MOMENTOS:
-            s = trocear(w, juntas[:m])
-            lin.append(f"{miles(m):>8}   " + " | ".join(a_la_vista(t) for t in s))
-    lin += ["", "", "CUÁNTAS JUNTAS CABEN EN EL QUIJOTE",
-            f"con {miles(len(todas))} juntas, cada palabra del Quijote es ya una sola",
-            "pieza, y no queda ninguna pareja que soldar", "",
-            f"{a_la_vista(PALABRAS[0])}, de {miles(JUNTAS)} juntas en adelante"]
-    for m, s in cambios(PALABRAS[0], todas, JUNTAS):
-        lin.append(f"{miles(m):>8}   " + " | ".join(a_la_vista(t) for t in s))
-    return comprobar_ancho(lin, ANCHO_CAJA)
+        for k, m in enumerate(MOMENTOS):
+            filas.append([ver(w) if k == 0 else "", miles(m),
+                          " ".join(ver(t) for t in trocear(w, juntas[:m]))])
+    out += [""] + tabla_editorial(
+        "Una palabra, según cuántas juntas hay en la caja",
+        ["la palabra", "juntas en la caja", "cómo queda cortada"], filas, "idi",
+        ["Cada trozo va aparte, en letra de máquina."])
+    out += [""] + tabla_editorial(
+        f"«{a_la_vista(PALABRAS[0])}», de {miles(JUNTAS)} juntas en adelante",
+        ["juntas en la caja", "cómo queda cortada"],
+        [[miles(m), " ".join(ver(t) for t in s)] for m, s in cambios(PALABRAS[0], todas, JUNTAS)],
+        "di",
+        [f"Cada fila, el número de juntas en el que la palabra pierde un corte. Con "
+         f"{miles(len(todas))} juntas, cada palabra del Quijote es ya una sola pieza, y no queda "
+         "ninguna pareja que soldar."])
+    return out
 
 
 def cambios(w, juntas, desde):
