@@ -29,6 +29,7 @@ LADO_TANGENTE = 0.9
 # ==========================================================
 
 import argparse
+from formato import coma as coma_fija, leer_tablas
 import re
 import sys
 from pathlib import Path
@@ -47,18 +48,30 @@ def num(s):
 
 
 def leer(ruta):
-    texto = Path(ruta).read_text(encoding="utf-8")
-    bloque = texto.split("4. UN EJEMPLO A MEDIO ENTRENAR", 1)[1].split("LA MISMA CULPA", 1)[0]
+    """Del ejemplo a medio entrenar (bloque 4): para cada neurona, cuánto pasa del listón, lo que
+    dice y lo que deja pasar su rampa. Desde el 9 de octubre de 2026 se lee de las tablas
+    editoriales de la salida, por su título (antes, de renglones sangrados que ya no existen)."""
+    T = leer_tablas(Path(ruta).read_text(encoding="utf-8"))
+    for t in ("Hacia delante", "Tramo 1: la culpa de la final",
+              "Tramo 3: cuánta le toca a cada una de las de en medio"):
+        assert t in T, f"se esperaba la tabla «{t}» en {ruta}"
+    rot, filas, _ = T["Hacia delante"]
+    assert rot == ["neurona", "le llega", "listón", "pasa del listón por", "dice"], rot
     puntos = {}
     for n in NOMBRES:
-        m = re.search(rf"^{n}\s+(-?\d+,\d+)\s+(-?\d+,\d+)\s+(-?\d+,\d+)\s+(\d+,\d+)\s*$", bloque, re.M)
-        assert m, f"no encuentro la fila de «{n}» en la tabla hacia delante"
-        puntos[n] = [num(m.group(3)), num(m.group(4))]
-    m = re.search(r"le falta para 1: \d+,\d+ por \d+,\d+ da (\d+,\d+)", bloque)
-    puntos["la final"].append(num(m.group(1)))
-    m = re.search(r"^   lo que deja pasar su rampa\s+(\d+,\d+)\s+(\d+,\d+)", bloque, re.M)
-    puntos["la primera"].append(num(m.group(1)))
-    puntos["la segunda"].append(num(m.group(2)))
+        f = [x for x in filas if x[0] == n]
+        assert len(f) == 1, f"no encuentro la fila de «{n}» en la tabla hacia delante"
+        puntos[n] = [num(f[0][3]), num(f[0][4])]
+    _, filas, _ = T["Tramo 1: la culpa de la final"]
+    f = [x for x in filas if x[0].startswith("lo que deja pasar su rampa")]
+    assert len(f) == 1, "no encuentro lo que deja pasar la rampa de la final"
+    puntos["la final"].append(num(f[0][1]))
+    rot, filas, _ = T["Tramo 3: cuánta le toca a cada una de las de en medio"]
+    assert rot[1:] == ["la primera", "la segunda"], rot
+    f = [x for x in filas if x[0] == "lo que deja pasar su rampa"]
+    assert len(f) == 1, "no encuentro lo que deja pasar la rampa de las de en medio"
+    puntos["la primera"].append(num(f[0][1]))
+    puntos["la segunda"].append(num(f[0][2]))
     return puntos           # nombre: [pasa del listón por, dice, deja pasar]
 
 
@@ -103,13 +116,13 @@ def selftest():
     # 1. TEST NULO — la regla «lo que dice, por lo que le falta para 1» da cero en los extremos de
     #    la rampa: una neurona que dijera 0 o 1 no dejaría pasar nada.
     nulo = [d * (1 - d) for d in (0.0, 1.0)]
-    print(f"[1] test nulo         con 0 y con 1, la regla da {nulo}")
+    print(f"[1] test nulo         con 0 y con 1, la regla da {' y '.join(coma_fija(x, 1) for x in nulo)}")
     if any(nulo):
         fallos.append("test nulo")
 
     # 2. SEÑAL — cada punto está en la rampa (lo que dice es la rampa de lo que le llega).
     peor = max(abs(float(sigmoide(x)) - y) for x, y, _ in puntos.values())
-    print(f"[2] señal             puntos contra la curva: diferencia máxima {peor:.4f}")
+    print(f"[2] señal             puntos contra la curva: diferencia máxima {coma_fija(peor, 4)}")
     if peor > 0.006:
         fallos.append("señal: algún punto no está en la rampa")
 
@@ -118,7 +131,7 @@ def selftest():
     peor2 = max(abs(y * (1 - y) - s) / s for _, y, s in puntos.values())
     for pal in (COLOR, GRIS):
         dibujar(puntos, pal, "/dev/null")
-    print(f"[3] invariante        inclinación contra la regla: {100 * peor2:.2f} % como mucho")
+    print(f"[3] invariante        inclinación contra la regla: {coma_fija(100 * peor2, 2)} % como mucho")
     if peor2 > 0.01:
         fallos.append("invariante: la inclinación no es lo que dice por lo que le falta para 1")
     print()

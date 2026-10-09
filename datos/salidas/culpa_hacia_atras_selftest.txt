@@ -1,6 +1,6 @@
 [1] test nulo         si no falla, la mayor culpa de un peso es 0.0e+00 (tiene que ser 0)
 [2] señal implantada  la red de la figura es la de la semilla 318265456: sí
 [2] señal implantada  la cuenta a mano del caso y el atajo del programa difieren en 3.0e-08
-[3] invariante        atajo contra fuerza bruta, diferencia máxima 5.3e-11; la rampa deja pasar como mucho 0.2500
+[3] invariante        atajo contra fuerza bruta, diferencia máxima 9.3e-11; la rampa deja pasar como mucho 0,2500
 
 SELFTEST: las tres pruebas pasan.

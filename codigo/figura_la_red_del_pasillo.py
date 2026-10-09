@@ -29,6 +29,7 @@ PREGUNTAS = ["«¿hay al menos\nuno subido?»", "«¿están los dos\nsubidos?»"
 # ==========================================================
 
 import argparse
+from formato import coma, leer_tablas
 import re
 import sys
 from pathlib import Path
@@ -44,23 +45,22 @@ def numero(s):
     return float(s.replace("+", "").replace(",", "."))
 
 
-def leer(ruta, bloque="2. LOS PESOS Y LOS LISTONES QUE APRENDIÓ"):
-    """Del bloque 2: pesos[neurona][de] y listones[neurona], con neurona en
-    («la primera», «la segunda», «la final»)."""
-    texto = Path(ruta).read_text(encoding="utf-8")
-    assert bloque in texto, f"se esperaba el bloque «{bloque}» en {ruta}"
-    trozo = texto.split(bloque, 1)[1].split("\n\n3.", 1)[0]
+def leer(ruta, titulo="Los pesos y los listones que aprendió"):
+    """De la tabla del bloque 2: pesos[neurona][de] y listones[neurona], con neurona en
+    («la primera», «la segunda», «la final»). Desde el 9 de octubre de 2026, de la tabla
+    editorial, por su título; la neurona solo va en la primera de sus dos filas."""
+    T = leer_tablas(Path(ruta).read_text(encoding="utf-8"))
+    assert titulo in T, f"se esperaba la tabla «{titulo}» en {ruta}"
+    rot, filas, _ = T[titulo]
+    assert rot == ["neurona", "la línea que viene de", "peso", "listón"], rot
     pesos, listones, actual = {}, {}, None
-    for linea in trozo.splitlines():
-        m = re.match(r"^(la primera|la segunda|la final)?\s+(el de abajo|el de arriba|la primera|la segunda)"
-                     r"\s+([+-]\d+,\d+)(?:\s+(\d+,\d+))?\s*$", linea)
-        if not m:
-            continue
-        if m.group(1):
-            actual = m.group(1)
-        pesos.setdefault(actual, {})[m.group(2)] = numero(m.group(3))
-        if m.group(4):
-            listones[actual] = numero(m.group(4))
+    for neurona, de, peso, liston in filas:
+        if neurona:
+            actual = neurona
+        assert actual in ("la primera", "la segunda", "la final"), f"neurona inesperada: {neurona!r}"
+        pesos.setdefault(actual, {})[de] = numero(peso)
+        if liston:
+            listones[actual] = numero(liston)
     assert sorted(pesos) == ["la final", "la primera", "la segunda"], f"neuronas leídas: {sorted(pesos)}"
     assert all(len(v) == 2 for v in pesos.values()), f"se esperaban dos líneas por neurona: {pesos}"
     assert sorted(listones) == sorted(pesos), f"se esperaba un listón por neurona: {listones}"
@@ -187,7 +187,7 @@ def selftest():
     for pal in (COLOR, GRIS):
         dibujar(pesos, listones, pal, "/dev/null")
     print(f"[3] invariante        las cuatro líneas de la primera capa suman: {'sí' if mismos else 'no'}; "
-          f"listones {listones['la primera']} y {listones['la segunda']}")
+          f"listones {coma(listones['la primera'], 2)} y {coma(listones['la segunda'], 2)}")
     if not mismos or not listones["la segunda"] > listones["la primera"]:
         fallos.append("invariante: las dos de en medio no se distinguen por el listón como dice el texto")
     print()

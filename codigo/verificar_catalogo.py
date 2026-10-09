@@ -95,7 +95,8 @@ faltan = revisar(catalogo, informes)
 # Y el recuento de verificadores, que también se quedó atrás dos veces.
 aqui = len([f for f in os.listdir(os.path.dirname(os.path.abspath(__file__)))
             if f.startswith('verificar_') and f.endswith('.py')])
-LETRAS = {7: 'siete', 8: 'ocho', 9: 'nueve', 10: 'diez', 11: 'once', 12: 'doce'}
+LETRAS = {7: 'siete', 8: 'ocho', 9: 'nueve', 10: 'diez', 11: 'once', 12: 'doce', 13: 'trece',
+          14: 'catorce', 15: 'quince'}
 dice = re.search(r'Pasar los (\w+) verificadores', catalogo)
 descuadre = dice and LETRAS.get(aqui) != dice.group(1)
 

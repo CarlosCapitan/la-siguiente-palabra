@@ -32,6 +32,7 @@ LADO_TANGENTE = 1.0
 # ==========================================================
 
 import argparse
+from formato import coma, leer_tablas
 import re
 import sys
 from pathlib import Path
@@ -49,17 +50,15 @@ def num(s):
 
 
 def leer(ruta):
-    """Del bloque 6: {x: (rampa dice, rampa deja pasar, codo dice, codo deja pasar o None)}."""
-    texto = Path(ruta).read_text(encoding="utf-8")
-    assert "6. LO QUE DEJA PASAR CADA UNA" in texto, f"se esperaba el bloque 6 en {ruta}"
-    trozo = texto.split("6. LO QUE DEJA PASAR CADA UNA", 1)[1].split("\n7.", 1)[0]
+    """Del bloque 6: {x: (rampa dice, rampa deja pasar, codo dice, codo deja pasar o None)}.
+    Desde el 9 de octubre de 2026, de la tabla editorial «Lo que deja pasar cada una»."""
+    T = leer_tablas(Path(ruta).read_text(encoding="utf-8"))
+    assert "Lo que deja pasar cada una" in T, f"se esperaba la tabla «Lo que deja pasar cada una» en {ruta}"
+    rot, filas_t, _ = T["Lo que deja pasar cada una"]
+    assert rot[0] == "pasa del listón por" and len(rot) == 5, rot
     filas = {}
-    for linea in trozo.splitlines():
-        m = re.match(r"^\s+([+-]?\d+(?:,\d+)?)\s+(\d+,\d+)\s+(\d+,\d+)\s+(\d+,\d+)\s+(\d+,\d+|\(el codo\))\s*$",
-                     linea)
-        if m:
-            codo = None if m.group(5).startswith("(") else num(m.group(5))
-            filas[num(m.group(1))] = (num(m.group(2)), num(m.group(3)), num(m.group(4)), codo)
+    for x, rd, rp, cd, cp in filas_t:
+        filas[num(x)] = (num(rd), num(rp), num(cd), None if cp.startswith("(") else num(cp))
     assert len(filas) >= 5, f"se esperaban al menos cinco filas; hay {len(filas)}"
     return filas
 
@@ -120,12 +119,12 @@ def selftest():
 
     # 1. TEST NULO — en lo plano de la rampa y por debajo del codo no pasa (casi) nada.
     nulos = [filas[4][1], filas[-4][1], filas[-2][3]]
-    print(f"[1] test nulo         en lo plano deja pasar {nulos}")
+    print(f"[1] test nulo         en lo plano deja pasar {', '.join(coma(x, 3) for x in nulos)}")
     if max(nulos) > 0.02:
         fallos.append("test nulo: en lo plano pasa algo")
 
     # 2. SEÑAL — la rampa deja pasar 0,25 en el centro; el codo, 1 por encima del listón.
-    print(f"[2] señal             rampa en 0: {filas[0][1]}; codo en +2: {filas[2][3]}")
+    print(f"[2] señal             rampa en 0: {coma(filas[0][1], 2)}; codo en +2: {coma(filas[2][3], 1)}")
     if abs(filas[0][1] - 0.25) > 1e-3 or abs(filas[2][3] - 1) > 1e-3:
         fallos.append("señal: la rampa no deja pasar 0,25 en el centro, o el codo no deja pasar 1")
 
@@ -135,7 +134,7 @@ def selftest():
     peor = max(max(abs(float(sigmoide(x)) - v[0]), abs(max(0, x) - v[2])) for x, v in filas.items())
     for pal in (COLOR, GRIS):
         dibujar(filas, pal, "/dev/null")
-    print(f"[3] invariante        curvas contra salida, diferencia máxima {peor:.4f}; misma escala en los dos cuadros")
+    print(f"[3] invariante        curvas contra salida, diferencia máxima {coma(peor, 4)}; misma escala en los dos cuadros")
     if peor > 0.001:
         fallos.append("invariante: las curvas no pasan por los puntos de la salida")
     print()

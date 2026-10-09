@@ -116,7 +116,7 @@ def selftest():
     igual = [(f"t{i}", 0.1) for i in range(10)] + [("(el resto)", 0.0)]
     _, diez, resto = bloque_papeletas(igual)
     k = cuentas([("x", 0.5, False)] * 10)
-    print(f"[1] test nulo         reparto igual: {diez} + {resto}; pasos al 50 %: casi seguro {k['casi seguro']}")
+    print(f"[1] test nulo         reparto igual: {diez} + {resto}; pasos al 50 %: casi seguro {pct(k['casi seguro'], 0)}")
     if (diez, resto) != (100, 0) or k["casi seguro"] != 0:
         fallos.append("test nulo")
     # 2. SEÑAL — la tabla del capítulo: «casi seguro» de las seis juntas es el 57 % y termina

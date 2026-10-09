@@ -30,11 +30,11 @@ PUNTO_SIN_TINTA = (1, 1)
 SALIDA_TABLA = "../datos/salidas/que_mira_cada_una.txt"
 SALIDA_CSV = "el_sorteo_del_arranque.csv"
 
-TITULO_1 = "LO QUE SORTEA LA SEMILLA: LOS PESOS CON LOS QUE ARRANCA"
+TITULO_1 = "LO QUE PONE AL AZAR LA SEMILLA: LOS PESOS CON LOS QUE ARRANCA"
 SUBTITULO_1 = ["un solo comité, cinco veces desde cero; de sus 64 pesos, los",
-               "de tres puntos, sorteados entre -1 y 1; y cuántos acierta al",
+               "de tres puntos, puestos al azar entre -1 y 1; y cuántos acierta al",
                "final, de cada 100 dígitos del examen"]
-TITULO_2 = "Y LO QUE TAMBIÉN SORTEA: QUÉ DÍGITOS VAN AL EXAMEN"
+TITULO_2 = "Y LO QUE TAMBIÉN PONE AL AZAR: QUÉ DÍGITOS VAN AL EXAMEN"
 SUBTITULO_2 = "de los {total} dígitos, {examen} se apartan y no se enseñan al entrenar"
 
 # ==========================================================
@@ -122,7 +122,7 @@ def tabla(tiradas, examenes, total):
                      + [signo(t["arranque"][indice(f, c)]) for f, c in PUNTOS]
                      + [pct(t["acierta"])])
     t1 = tabla_editorial(
-        "Lo que sortea la semilla: los pesos con los que arranca",
+        "Lo que pone al azar la semilla: los pesos con los que arranca",
         ["tirada", "semilla"]
         + [f"peso al arrancar: {f} y {c}" for f, c in PUNTOS]
         + ["acierta"], filas, "cd" + "d" * len(PUNTOS) + "d",
@@ -136,7 +136,7 @@ def tabla(tiradas, examenes, total):
         ["De cada 100 dígitos del examen."])
     primero = examenes[0]
     t2 = tabla_editorial(
-        "Y lo que también sortea: qué dígitos van al examen",
+        "Y lo que también pone al azar: qué dígitos van al examen",
         ["tirada", f"de los {len(primero)} de su examen, cuántos son los de la tirada 1"],
         [[str(k), f"{len(ex & primero)} de {len(ex)}"] for k, ex in enumerate(examenes[1:], 2)],
         "cd", [SUBTITULO_2.format(total=miles(total), examen=len(primero)).capitalize() + "."])

@@ -1,5 +1,5 @@
 ::: tabla
-Lo que sortea la semilla: los pesos con los que arranca
+Lo que pone al azar la semilla: los pesos con los que arranca
 
 | tirada | semilla | peso al arrancar: 6 y 4 | peso al arrancar: 4 y 6 | peso al arrancar: 2 y 6 | acierta |
 |:-:|--:|--:|--:|--:|--:|
@@ -9,7 +9,7 @@ Lo que sortea la semilla: los pesos con los que arranca
 | 4 | 20.263.916 | +0,19 | -0,87 | -0,44 | 93,0 % |
 | 5 | 20.264.916 | -0,93 | +0,37 | -0,92 | 92,6 % |
 
-Un solo comité, cinco veces desde cero; de sus 64 pesos, los de tres puntos, sorteados entre -1 y 1; y cuántos acierta al final, de cada 100 dígitos del examen.
+Un solo comité, cinco veces desde cero; de sus 64 pesos, los de tres puntos, puestos al azar entre -1 y 1; y cuántos acierta al final, de cada 100 dígitos del examen.
 
 Peso al arrancar: «6 y 4» es el punto de la fila 6, columna 4, y así los otros.
 :::
@@ -27,7 +27,7 @@ De cada 100 dígitos del examen.
 :::
 
 ::: tabla
-Y lo que también sortea: qué dígitos van al examen
+Y lo que también pone al azar: qué dígitos van al examen
 
 | tirada | de los 540 de su examen, cuántos son los de la tirada 1 |
 |:-:|--:|

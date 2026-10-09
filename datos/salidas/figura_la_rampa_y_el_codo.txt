@@ -1,6 +1,6 @@
-[1] test nulo         en lo plano deja pasar [0.018, 0.018, 0.0]
-[2] señal             rampa en 0: 0.25; codo en +2: 1.0
-[3] invariante        curvas contra salida, diferencia máxima 0.0005; misma escala en los dos cuadros
+[1] test nulo         en lo plano deja pasar 0,018, 0,018, 0,000
+[2] señal             rampa en 0: 0,25; codo en +2: 1,0
+[3] invariante        curvas contra salida, diferencia máxima 0,0005; misma escala en los dos cuadros
 
 SELFTEST: las tres pruebas pasan.
 escrita ../figuras/la_rampa_y_el_codo.png

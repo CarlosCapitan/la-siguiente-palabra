@@ -7,7 +7,7 @@ SELFTEST: las tres pruebas pasan.
 escritas ../figuras/cuadrado_redibujado.png y ../figuras/cuadrado_a_mano.png
 
 ::: tabla
-Los tres comités del final del capítulo 2
+Los tres comités del pasillo, posición a posición
 
 | los interruptores | el primero | el segundo | la luz |
 |:--|:-:|:-:|:-:|

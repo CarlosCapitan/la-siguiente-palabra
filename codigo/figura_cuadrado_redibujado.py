@@ -226,7 +226,7 @@ def tabla_a_mano():
         assert (luz == "encendida") == ENCIENDE[k], "el tercero no hace el o exclusivo"
         T.append([nombre, si_no[a], si_no[b], luz])
     print("\n".join(tabla_editorial(
-        "Los tres comités del final del capítulo 2",
+        "Los tres comités del pasillo, posición a posición",
         ["los interruptores", "el primero", "el segundo", "la luz"], T, "iccc",
         [f"El primero: «{MONTAJES_A_MANO[0]}». El segundo: «{MONTAJES_A_MANO[1]}». El tercero "
          "enciende la luz si los dos dicen que sí."])))

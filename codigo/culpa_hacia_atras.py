@@ -826,7 +826,7 @@ def selftest():
         peor = max(peor, abs((mas - menos) / (2 * PELIN) - gW[capa][i, j]))
     maximo = max(deja_pasar(rampa, float(x)) for x in np.linspace(-10, 10, 2001))
     print(f"[3] invariante        atajo contra fuerza bruta, diferencia máxima {peor:.1e}; "
-          f"la rampa deja pasar como mucho {maximo:.4f}")
+          f"la rampa deja pasar como mucho {coma(maximo, 4)}")
     if peor > TOL_BRUTA:
         fallos.append(f"invariante: atajo y fuerza bruta difieren en {peor}")
     if maximo > 0.25 + 1e-6:
