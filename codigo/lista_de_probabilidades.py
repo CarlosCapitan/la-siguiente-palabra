@@ -35,20 +35,19 @@ import re
 import sys
 from pathlib import Path
 
-from formato import pct, tabla_editorial, trozo
+from formato import leer_tablas, pct, tabla_editorial, trozo
 
 AQUI = Path(__file__).resolve().parent
 
 
 def leer_lista(ruta):
-    texto = Path(ruta).read_text(encoding="utf-8")
-    assert "--- 3. LA LISTA DE PROBABILIDADES ---" in texto, f"se esperaba el bloque 3 en {ruta}"
-    b = texto.split("--- 3. LA LISTA DE PROBABILIDADES ---", 1)[1].split("\n--- ", 1)[0]
-    filas = []
-    for l in b.splitlines():
-        m = re.match(r"^\s*(\S+|\(el resto\))\s+(\d+,\d+) %", l)
-        if m:
-            filas.append((m.group(1), float(m.group(2).replace(",", ".")) / 100))
+    """La lista de «La capital de Francia es», de la tabla editorial de maquina_entera.txt
+    (L24, 9 de octubre): [(trozo, probabilidad)], los diez y «(el resto)»."""
+    tablas = leer_tablas(Path(ruta).read_text(encoding="utf-8"))
+    titulos = [t for t in tablas if t.startswith("Qué viene después de «")]
+    assert len(titulos) == 1, f"se esperaba la tabla de la lista en {ruta}; hay {titulos}"
+    filas = [(f[0].strip("`"), float(f[1].replace(" %", "").replace(",", ".")) / 100)
+             for f in tablas[titulos[0]][1]]
     assert len(filas) == 11 and filas[-1][0] == "(el resto)", f"se esperaban 10 trozos y el resto; hay {filas}"
     return filas
 

@@ -32,6 +32,7 @@ from pathlib import Path
 
 from matplotlib.patches import Rectangle
 
+from formato import leer_tablas
 from infografia import COLOR, GRIS, Lienzo
 from lista_de_probabilidades import leer_lista
 
@@ -39,14 +40,19 @@ AQUI = Path(__file__).resolve().parent
 
 
 def leer(ruta):
+    """La lista, de maquina_entera.txt, y el puesto de «Par», de banco_y_paris.txt; de sus tablas
+    editoriales (L24, 9 de octubre)."""
     filas = leer_lista(ruta)
-    t = Path(AQUI / SALIDA_PARIS).read_text(encoding="utf-8")
-    m = re.search(r"_Par\s+(\d+,\d+) %\s+puesto (\d+) de ([\d.]+)", t)
-    assert m, "no se encontró el puesto de «Par»"
-    r = re.search(r"el resto se reparte entre las otras ([\d.]+) posibilidades",
-                  Path(ruta).read_text(encoding="utf-8"))
+    paris = leer_tablas(Path(AQUI / SALIDA_PARIS).read_text(encoding="utf-8"))
+    assert "París, trozo a trozo" in paris, "no se encontró el puesto de «Par»"
+    _, trozo_, prob, puesto = paris["París, trozo a trozo"][1][0]
+    m = re.match(r"^(\d+) de ([\d.]+)$", puesto)
+    assert trozo_ == "`_Par`" and m, "no se encontró el puesto de «Par»"
+    lista = leer_tablas(Path(ruta).read_text(encoding="utf-8"))
+    nota = " ".join(next(v for t, v in lista.items() if t.startswith("Qué viene después de «"))[2])
+    r = re.search(r"El resto se reparte entre las otras ([\d.]+) posibilidades", nota)
     assert r, "no se encontró cuántos trozos junta «el resto»"
-    return filas, (m.group(1), m.group(2), m.group(3), r.group(1))
+    return filas, (prob.replace(" %", ""), m.group(1), m.group(2), r.group(1))
 
 
 def dibujar(filas, paris, paleta, ruta):
