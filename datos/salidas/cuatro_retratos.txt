@@ -35,16 +35,22 @@ llaves, el «el» que se le dio para arrancar.
 {el} [rojo] [de] [la] [raza] [en] [peligro], ó [es] [muy] [sin] [que] [se] verifica [en] [el] [corazón], [en] [él] [su] debir [las] [bodas], [tienen]  [de] [la] [parte] [dando] sueldos, ó [seis] [personas], [y] [más] [amigos], [porque] [no] [les] [podría] [ver] [de] [todo] [el]
 
 --- 3. EL TRÍO «ten», DENTRO DE LAS PALABRAS ---
-los tríos de letras de una palabra: se toman tres letras
-seguidas, se corre una letra, y otra vez.
 
-tener     [ten], ene, ner
-tenía     [ten], ení, nía
-intento   int, nte, [ten], ent, nto
-atención  ate, [ten], enc, nci, ció, ión
-contento  con, ont, nte, [ten], ent, nto
+::: tabla
+El trío «ten», dentro de cinco palabras
 
-entre corchetes, el trío «ten».
+| palabra | sus tríos de letras |
+|:--|:--|
+| tener | **ten**, ene, ner |
+| tenía | **ten**, ení, nía |
+| intento | int, nte, **ten**, ent, nto |
+| atención | ate, **ten**, enc, nci, ció, ión |
+| contento | con, ont, nte, **ten**, ent, nto |
+
+Los tríos de letras de una palabra: se toman tres letras seguidas, se corre una letra, y otra vez.
+
+En negrita, el trío «ten».
+:::
 
 --- 4. LO QUE SE ENCUENTRA EN UN PASO, DE MEDIA ---
 peldaño, y lo que se cuenta de él                      veces
@@ -73,4 +79,50 @@ letras iguales y en el mismo sitio, entre la de 30 y la
 de 300 pasos: 101 de 202
 entre la de 300 y la de 3.000: 57 de 203
 entre la de 3.000 y la de 50.000: 61 de 202
+
+--- 7. LOS CUATRO RETRATOS, TAL CUAL ---
+
+::: muestra
+Lo que escribe tras 30 pasos
+
+    el ¿nin mpore :an pe s e  en s ónos méoro ddquopa énheriri, ta ve
+    esiel ielinménü qe n urra s mo co, tigasez s d, a   na. aara
+    ste:adideó dels pe elecares mántumspe e   ;uy s, y esasl de dos an,
+    ti tosy
+
+El «el» del principio se le da para arrancar.
+:::
+
+::: muestra
+Lo que escribe tras 300 pasos
+
+    el y lestrore : cuen ene cen sun es ménas de sopartistriride ten pas
+    lastel nes s. ede urra m mo co,   fusezas a, anarariora neste: diden
+    y l pechorecarto, ántumimpes pe; y s, y esasl r ro e an, ti tosci
+
+El «el» del principio se le da para arrancar.
+:::
+
+::: muestra
+Lo que escribe tras 3.000 pasos
+
+    el rodeanto estaba el perceto de la muy sino soparamente, que no
+    pasaba no en él de debergar  , ese, tiene pasar, aunque la vara el
+    dia ó debispetuo corto, á la separa cuando lo calle de los ansitos
+    ojos
+
+El «el» del principio se le da para arrancar.
+:::
+
+::: muestra
+Lo que escribe tras 50.000 pasos
+
+    el rojo de la raza en peligro, ó es muy sin que se verifica en el
+    corazón, en él su debir las bodas, tienen  de la parte dando
+    sueldos, ó seis personas, y más amigos, porque no les podría ver de
+    todo el
+
+El «el» del principio se le da para arrancar.
+:::
+
 

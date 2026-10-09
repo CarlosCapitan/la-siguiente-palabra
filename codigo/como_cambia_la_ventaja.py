@@ -44,6 +44,10 @@ EJECUCIONES = [
     ("en_serie_1024_gpu.txt",            "portátil, tarjeta",    1024, 1),
 ]
 CORTO, LARGO = 64, 1024      # las dos longitudes que el capítulo compara
+# Cómo se llama cada ordenador en el título de su tabla.
+NOMBRE_TABLA = {"contenedor, 2 núcleos": "el ordenador de 2 núcleos en la nube",
+                "portátil, procesador": "el procesador del portátil",
+                "portátil, tarjeta": "la tarjeta gráfica del portátil"}
 # Cuánta de la ventaja del texto corto queda al llegar al texto largo. Los dos cortes
 # están escritos aquí y en la leyenda impresa para que se vean: la columna «queda» es el
 # dato, y la palabra de al lado solo lo resume.
@@ -58,7 +62,7 @@ import os
 import re
 import sys
 
-from formato import comprobar_ancho, coma, miles, pct
+from formato import comprobar_ancho, coma, miles, pct, tabla_editorial
 
 FILA = re.compile(r"^\s*([\d.]+)\s+(\d+,\d+)\s+(\d+,\d+)\s+(\d+,\d+)x\s*$")
 
@@ -117,19 +121,34 @@ def sentido(filas):
 
 
 def informe(ejecuciones=EJECUCIONES, carpeta=CARPETA):
-    lineas = []
+    """La ventaja de cada ejecución, longitud a longitud, en tablas editoriales: una por
+    ordenador, con una fila por tamaño de modelo (L24, 9 de octubre de 2026; antes, renglones
+    sangrados que el capítulo copiaba)."""
+    por_maquina = {}
     for fichero, maquina, ancho, cual in ejecuciones:
         filas = leer(os.path.join(carpeta, fichero), cual)
         palabra, _, _, queda = sentido(filas)
-        if lineas:
-            lineas.append("")
-        lineas.append(f"{maquina}, modelo de {miles(ancho)} números por posición")
-        lineas.append("   longitud del texto" +
-                      "".join(f"{miles(n):>7}" for n, _, _, _ in filas))
-        lineas.append("              ventaja" +
-                      "".join(f"{coma(v, 1) + 'x':>7}" for _, _, _, v in filas))
-        lineas.append(f"   de la ventaja del texto más corto queda el {pct(queda, 0)}: "
-                      f"{palabra}")
+        por_maquina.setdefault(maquina, []).append((ancho, filas, palabra, queda))
+    lineas = []
+    for maquina, ejes in por_maquina.items():
+        longitudes = [n for n, _, _, _ in ejes[0][1]]
+        for _, filas, _, _ in ejes:
+            assert [n for n, _, _, _ in filas] == longitudes, (
+                f"Se esperaban las mismas longitudes en todas las tablas de {maquina}; "
+                f"hay {longitudes} y {[n for n, _, _, _ in filas]}")
+        lineas += tabla_editorial(
+            f"La ventaja en {NOMBRE_TABLA[maquina]}, con tres tamaños de modelo"
+            if len(ejes) == 3 else f"La ventaja en {NOMBRE_TABLA[maquina]}",
+            ["modelo, números por posición"] + [f"longitud del texto: {miles(n)}" for n in longitudes]
+            + ["queda"],
+            [[miles(ancho)] + [coma(v, 1) + "x" for _, _, _, v in filas]
+             + [f"{pct(queda, 0)}, {palabra}"] for ancho, filas, palabra, queda in ejes],
+            "d" * (len(longitudes) + 1) + "i",
+            ["Ventaja: cuántas veces más rápida es la máquina que lo mira todo a la vez; por "
+             "debajo de 1,0x, es más lenta.",
+             "Queda: qué parte de la ventaja del texto más corto queda en el más largo. Por "
+             "debajo del 75 % se dice que cae; por encima del 110 %, que crece; en medio, que "
+             "se mantiene."]) + [""]
     return lineas
 
 
@@ -193,55 +212,67 @@ def selftest():
 # dice en qué máquina se midieron, dos filas con la cuenta hecha, los segundos de las tres
 # máquinas con el texto más largo, y la tabla del procesador con el modelo grande.
 TABLAS_DE_SEGUNDOS = [
-    ("A", "en_serie_o_a_la_vez_2nucleos.txt", 2, "ordenador de 2 núcleos en la nube", 256),
-    ("B", "en_serie_o_a_la_vez_cpu.txt", 1, "portátil, su procesador", 256),
+    ("A", "en_serie_o_a_la_vez_2nucleos.txt", 2, "el ordenador de 2 núcleos en la nube", 256),
+    ("B", "en_serie_o_a_la_vez_cpu.txt", 1, "el procesador del portátil", 256),
 ]
 TRES_MAQUINAS = [
     ("ordenador de 2 núcleos", "en_serie_o_a_la_vez_2nucleos.txt", 2),
     ("portátil, procesador", "en_serie_o_a_la_vez_cpu.txt", 1),
     ("portátil, tarjeta gráfica", "en_serie_o_a_la_vez.txt", 1),
 ]
-GRANDE = ("en_serie_1024_cpu.txt", 1, "portátil, su procesador", 1024)
+GRANDE = ("en_serie_1024_cpu.txt", 1, "el procesador del portátil", 1024)
 
 
-def fila_de_segundos(n, t_s, t_v, v):
-    return f"  {miles(n):>8}{coma(t_s, 4):>15}{coma(t_v, 4):>15}{coma(v, 1) + 'x':>10}"
+NOTAS_SEGUNDOS = [
+    "Cada número de segundos es lo que tarda una pasada de entrenamiento con 16 textos de esa "
+    "longitud: la media de tres, tras una de calentamiento que se tira.",
+    "Ventaja: los segundos de «en orden» entre los de «a la vez». Por encima de 1,0x gana la "
+    "que mira todo a la vez; por debajo, la que lee en orden."]
+
+
+def tabla_de_segundos(titulo, filas, notas=NOTAS_SEGUNDOS):
+    return tabla_editorial(
+        titulo, ["longitud", "en orden (s)", "a la vez (s)", "ventaja"],
+        [[miles(n), coma(t_s, 4), coma(t_v, 4), coma(v, 1) + "x"] for n, t_s, t_v, v in filas],
+        "dddd", notas)
 
 
 def segundos(carpeta=CARPETA):
-    L = ["", "##### los segundos, ordenador a ordenador #####",
-         "Cada número de segundos es lo que tarda una pasada de",
-         "entrenamiento con 16 textos de esa longitud: la media de tres,",
-         "tras una de calentamiento que se tira.",
-         "«ventaja»: los segundos de «en orden» entre los de «a la vez».",
-         "Por encima de 1,0x gana la que mira todo a la vez; por debajo,",
-         "la que lee en orden.", ""]
-    cab = [f"  {'longitud':>8}{'en orden (s)':>15}{'a la vez (s)':>15}{'ventaja':>10}",
-           f"  {'--------':>8}{'------------':>15}{'------------':>15}{'-------':>10}"]
+    """Las tablas de segundos que enseña el capítulo 9, en tablas editoriales (L24, 9 de
+    octubre de 2026; antes, renglones sangrados con una letra, A, B y C, delante)."""
+    L = ["", "##### los segundos, ordenador a ordenador #####", ""]
     tablas = {}
     for letra, fichero, cual, maquina, ancho in TABLAS_DE_SEGUNDOS + [("C",) + GRANDE]:
-        filas = leer(os.path.join(carpeta, fichero), cual)
-        tablas[letra] = filas
-        L += [f"{letra}. {maquina};", f"   modelo de {miles(ancho)} números por posición", ""] + cab
-        L += [fila_de_segundos(*f) for f in filas] + [""]
-        if letra == "B":
-            L += ["La cuenta de la ventaja, en el ordenador de 2 núcleos:", ""]
-            for n, t_s, t_v, v in (tablas["A"][0], tablas["A"][-1]):
-                cociente = t_s / t_v
-                L.append(f"  {miles(n)} posiciones: en orden, {coma(t_s, 4)} segundos; a la vez, {coma(t_v, 4)}.")
-                L.append(f"  {coma(t_s, 4)} entre {coma(t_v, 4)} da {coma(cociente, 2)}, que la tabla redondea")
-                if cociente >= 1:
-                    L.append(f"  a {coma(v, 1)}x. La que mira todo a la vez es {coma(cociente, 1)} veces más rápida.")
-                else:
-                    L.append(f"  a {coma(v, 1)}x. La que mira todo a la vez tarda {coma(1 / cociente, 1)} veces más.")
-            L += ["", f"Con {miles(LARGO)} posiciones y el modelo de 256 números, los tres",
-                  "ordenadores:", "",
-                  f"  {'ordenador':<28}{'en orden (s)':>14}{'a la vez (s)':>14}",
-                  f"  {'---------':<28}{'------------':>14}{'------------':>14}"]
-            for nombre, fichero, cual in TRES_MAQUINAS:
-                f = [r for r in leer(os.path.join(carpeta, fichero), cual) if r[0] == LARGO][0]
-                L.append(f"  {nombre:<28}{coma(f[1], 4):>14}{coma(f[2], 4):>14}")
-            L.append("")
+        tablas[letra] = (leer(os.path.join(carpeta, fichero), cual), maquina, ancho)
+    for letra in ("A", "B"):
+        filas, maquina, ancho = tablas[letra]
+        L += tabla_de_segundos(f"Los segundos en {maquina}, modelo de {miles(ancho)} números "
+                               f"por posición", filas) + [""]
+    # la cuenta de la ventaja, hecha, con la primera y la última fila del ordenador de 2 núcleos
+    cuenta, quien = [], []
+    for n, t_s, t_v, v in (tablas["A"][0][0], tablas["A"][0][-1]):
+        cociente = t_s / t_v
+        quien.append(f"con {miles(n)} posiciones, " +
+                     (f"es {coma(cociente, 1)} veces más rápida" if cociente >= 1
+                      else f"tarda {coma(1 / cociente, 1)} veces más"))
+        cuenta.append([miles(n), coma(t_s, 4), coma(t_v, 4), coma(cociente, 2),
+                       coma(v, 1) + "x"])
+    L += tabla_editorial(
+        "La cuenta de la ventaja, en el ordenador de 2 núcleos",
+        ["posiciones", "en orden (s)", "a la vez (s)", "cociente", "redondeado"],
+        cuenta, "ddddd",
+        ["Cociente: los segundos de «en orden» entre los de «a la vez».",
+         "La que mira todo a la vez: " + "; ".join(quien) + "."]) + [""]
+    tres = []
+    for nombre, fichero, cual in TRES_MAQUINAS:
+        f = [r for r in leer(os.path.join(carpeta, fichero), cual) if r[0] == LARGO][0]
+        tres.append([nombre, coma(f[1], 4), coma(f[2], 4)])
+    L += tabla_editorial(
+        f"Con {miles(LARGO)} posiciones y el modelo de 256 números, los tres ordenadores",
+        ["ordenador", "en orden (s)", "a la vez (s)"], tres, "idd") + [""]
+    filas, maquina, ancho = tablas["C"]
+    L += tabla_de_segundos(f"Los segundos en {maquina}, modelo de {miles(ancho)} números "
+                           f"por posición", filas) + [""]
     return L
 
 
@@ -267,9 +298,15 @@ def main():
     ]
     for l in comprobar_ancho(cabecera):
         print(l)
-    for l in comprobar_ancho(informe()):
-        print(l)
-    for l in comprobar_ancho(segundos(), 64):
+    # El ancho se comprueba fuera de las tablas editoriales: ésas las compone el libro.
+    dentro = False
+    for l in informe() + segundos():
+        if l in ("::: tabla", "::: muestra"):
+            dentro = True
+        elif l == ":::":
+            dentro = False
+        elif not dentro:
+            comprobar_ancho([l], 64)
         print(l)
 
 

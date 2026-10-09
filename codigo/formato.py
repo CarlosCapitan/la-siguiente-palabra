@@ -158,6 +158,20 @@ def tabla_editorial(titulo, rotulos, filas, alineacion, notas=()):
     return out
 
 
+def partir(texto, ancho=ANCHO_CAJA):
+    """Un texto de máquina en renglones de `ancho` como mucho, cortando solo en un espacio, que
+    es lo único que se quita: unidos con un espacio, los renglones vuelven a dar el texto. Ni
+    los espacios dobles ni los signos se tocan. Para las muestras largas (L24, 9 oct 2026)."""
+    renglones = []
+    while len(texto) > ancho:
+        corte = texto.rfind(" ", 0, ancho + 1)
+        assert corte > 0, f"Se esperaba un espacio donde partir el texto: {texto[:ancho]!r}"
+        renglones.append(texto[:corte])
+        texto = texto[corte + 1:]
+    renglones.append(texto)
+    return renglones
+
+
 def muestra_editorial(titulo, lineas, notas=()):
     """Un texto literal (lo que escribe o lo que recibe la máquina), en monoespaciado, con su
     título y su nota, como las tablas. No lleva número: no es una tabla."""
