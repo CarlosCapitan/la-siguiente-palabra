@@ -35,7 +35,7 @@ import re
 import sys
 from pathlib import Path
 
-from formato import ANCHO_CAJA_CITA, comprobar_ancho, pct
+from formato import pct, tabla_editorial, trozo
 
 AQUI = Path(__file__).resolve().parent
 
@@ -64,16 +64,17 @@ def papeletas(filas):
 
 
 def bloque_papeletas(filas):
+    """L24 (9 de octubre): tabla editorial (regla 6 ter). La cuenta no cambia."""
     pap = papeletas(filas)
-    lin = ["--- CIEN PAPELETAS PARA «LA CAPITAL DE FRANCIA ES» ---",
-           "cada porcentaje, redondeado a papeletas de cien", "",
-           f"{'trozo':>12}   {'probabilidad':>12}   {'papeletas':>9}", "-" * 42]
-    for t, p, n in pap:
-        lin.append(f"{t:>12}   {pct(p, 2):>12}   {n:>9}")
     diez = sum(n for t, p, n in pap[:-1])
-    lin += ["-" * 42, f"{'las diez primeras juntas':<30}{diez:>12}",
-            f"{'el resto':<30}{pap[-1][2]:>12}", f"{'total':<30}{diez + pap[-1][2]:>12}"]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA), diez, pap[-1][2]
+    ver = lambda t: t if t == "(el resto)" else trozo(t)
+    lin = ["--- CIEN PAPELETAS PARA «LA CAPITAL DE FRANCIA ES» ---", ""] + tabla_editorial(
+        "Cien papeletas para «La capital de Francia es»", ["trozo", "probabilidad", "papeletas"],
+        [[ver(t), pct(p, 2), str(n)] for t, p, n in pap] +
+        [["**las diez primeras juntas**", "", f"**{diez}**"], ["el resto", "", str(pap[-1][2])],
+         ["total", "", str(diez + pap[-1][2])]], "idd",
+        [f"Cada porcentaje, redondeado a papeletas de {PAPELETAS}."])
+    return lin, diez, pap[-1][2]
 
 
 def cuentas(pasos):
@@ -85,26 +86,26 @@ def cuentas(pasos):
 
 
 def bloque_elecciones(pasos):
+    """L24 (9 de octubre): tabla editorial (regla 6 ter). La cuenta no cambia."""
     frases = list(dict.fromkeys(f for f, _, _ in pasos))
     c = ["casi seguro", "sin terminar", "eleccion", "renida"]
-    lin = ["--- DE CADA CIEN PASOS, ¿CUÁNTOS ESTÁN ABIERTOS? ---",
-           f"{'':<28}{'casi':>8}{'casi':>8}{'':>8}{'':>8}",
-           f"{'':<28}{'seguro':>8}{'seguro':>8}{'abierto':>8}{'reñido':>8}",
-           f"{'frase de arranque':<28}{'':>8}{'sin ter-':>8}{'':>8}{'':>8}",
-           f"{'':<28}{'':>8}{'minar':>8}{'':>8}{'':>8}", "-" * 60]
+    filas = []
     for f in frases:
         k = cuentas([x for x in pasos if x[0] == f])
-        nombre = f if len(f) <= 27 else f[:26] + "…"
-        lin.append(f"{nombre:<28}" + "".join(f"{pct(k[x], 0):>8}" for x in c))
+        filas.append([f] + [pct(k[x], 0) for x in c])
     k = cuentas(pasos)
-    lin += ["-" * 60, f"{'las seis juntas':<28}" + "".join(f"{pct(k[x], 0):>8}" for x in c), "",
-            "«casi seguro»: el trozo seleccionado tenía 90 % o más.",
-            "«casi seguro sin terminar»: casi seguro, y el trozo no se",
-            "pega a una palabra empezada, como «ia» detrás de «Franc».",
-            "«abierto»: el trozo seleccionado no llegaba al 90 %.",
-            "«reñido»: no llegaba al 50 %; las demás candidatas juntas",
-            "se llevaban más de la mitad."]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA), k
+    filas.append(["**las seis juntas**"] + [f"**{pct(k[x], 0)}**" for x in c])
+    lin = ["--- DE CADA CIEN PASOS, ¿CUÁNTOS ESTÁN ABIERTOS? ---", ""] + tabla_editorial(
+        "De cada cien pasos, ¿cuántos están abiertos?",
+        ["frase de arranque", "casi seguro", "casi seguro sin terminar", "abierto", "reñido"],
+        filas, "idddd",
+        [f"Casi seguro: el trozo seleccionado tenía {pct(CASI_SEGURO, 0)} o más.",
+         "Casi seguro sin terminar: casi seguro, y el trozo no se pega a una palabra empezada, "
+         "como «ia» detrás de «Franc».",
+         f"Abierto: el trozo seleccionado no llegaba al {pct(CASI_SEGURO, 0)}.",
+         f"Reñido: no llegaba al {pct(RENIDO, 0)}; las demás candidatas juntas se llevaban más de "
+         "la mitad."])
+    return lin, k
 
 
 def selftest():

@@ -1,53 +1,68 @@
-LAS PRIMERAS JUNTAS, CON EL QUIJOTE
-cada junta suelda la pareja que más se repite; «_» es un espacio
+::: tabla
+Las primeras juntas, con el Quijote
 
-junta   pareja          pieza nueva       veces
-    1   «_» + «d»       «_d»             40.941
-    2   «u» + «e»       «ue»             37.199
-    3   «_» + «e»       «_e»             33.055
-    4   «_» + «l»       «_l»             31.842
-    5   «_» + «a»       «_a»             28.646
-    6   «_d» + «e»      «_de»            27.864
-    7   «_» + «s»       «_s»             27.021
-    8   «q» + «ue»      «que»            25.827
-    9   «o» + «s»       «os»             25.728
-   10   «_» + «c»       «_c»             25.333
-   11   «_» + «p»       «_p»             23.748
-   12   «e» + «r»       «er»             23.683
+| junta | pareja | pieza nueva | veces |
+|:-:|:--|:--|--:|
+| 1 | `_` y `d` | `_d` | 40.941 |
+| 2 | `u` y `e` | `ue` | 37.199 |
+| 3 | `_` y `e` | `_e` | 33.055 |
+| 4 | `_` y `l` | `_l` | 31.842 |
+| 5 | `_` y `a` | `_a` | 28.646 |
+| 6 | `_d` y `e` | `_de` | 27.864 |
+| 7 | `_` y `s` | `_s` | 27.021 |
+| 8 | `q` y `ue` | `que` | 25.827 |
+| 9 | `o` y `s` | `os` | 25.728 |
+| 10 | `_` y `c` | `_c` | 25.333 |
+| 11 | `_` y `p` | `_p` | 23.748 |
+| 12 | `e` y `r` | `er` | 23.683 |
 
-se empieza con 91 piezas de una letra:
-     1   el espacio
-    24   minúsculas
-    25   mayúsculas
-    16   letras con tilde, diéresis o eñe
-     8   cifras
-    17   signos
-con 10.000 juntas, la caja tiene 10.091 piezas
+Cada junta suelda la pareja que más se repite. El guion bajo es un espacio.
+:::
 
+::: tabla
+Las piezas de una letra con que se empieza
 
-UNA PALABRA, SEGÚN CUÁNTAS JUNTAS HAY EN LA CAJA
+| de qué clase | piezas |
+|:--|--:|
+| el espacio | 1 |
+| minúsculas | 24 |
+| mayúsculas | 25 |
+| letras con tilde, diéresis o eñe | 16 |
+| cifras | 8 |
+| signos | 17 |
+| **en total** | **91** |
 
-_murciélago
-       0   _ | m | u | r | c | i | é | l | a | g | o
-      10   _ | m | u | r | c | i | é | l | a | g | o
-     100   _m | u | r | ci | é | la | go
-   1.000   _mu | r | ci | é | la | go
-  10.000   _mur | ci | é | la | go
+Con 10.000 juntas, la caja tiene 10.091 piezas.
+:::
 
-_Francia
-       0   _ | F | r | a | n | c | i | a
-      10   _ | F | r | a | n | c | i | a
-     100   _ | F | r | an | ci | a
-   1.000   _F | ran | cia
-  10.000   _Francia
+::: tabla
+Una palabra, según cuántas juntas hay en la caja
 
+| la palabra | juntas en la caja | cómo queda cortada |
+|:--|--:|:--|
+| `_murciélago` | 0 | `_` `m` `u` `r` `c` `i` `é` `l` `a` `g` `o` |
+|  | 10 | `_` `m` `u` `r` `c` `i` `é` `l` `a` `g` `o` |
+|  | 100 | `_m` `u` `r` `ci` `é` `la` `go` |
+|  | 1.000 | `_mu` `r` `ci` `é` `la` `go` |
+|  | 10.000 | `_mur` `ci` `é` `la` `go` |
+| `_Francia` | 0 | `_` `F` `r` `a` `n` `c` `i` `a` |
+|  | 10 | `_` `F` `r` `a` `n` `c` `i` `a` |
+|  | 100 | `_` `F` `r` `an` `ci` `a` |
+|  | 1.000 | `_F` `ran` `cia` |
+|  | 10.000 | `_Francia` |
 
-CUÁNTAS JUNTAS CABEN EN EL QUIJOTE
-con 35.246 juntas, cada palabra del Quijote es ya una sola
-pieza, y no queda ninguna pareja que soldar
+Cada trozo va aparte, en letra de máquina.
+:::
 
-_murciélago, de 10.000 juntas en adelante
-  10.000   _mur | ci | é | la | go
-  10.229   _mur | ci | éla | go
-  30.571   _murci | éla | go
-  30.572   _murciéla | go
+::: tabla
+«_murciélago», de 10.000 juntas en adelante
+
+| juntas en la caja | cómo queda cortada |
+|--:|:--|
+| 10.000 | `_mur` `ci` `é` `la` `go` |
+| 10.229 | `_mur` `ci` `éla` `go` |
+| 30.571 | `_murci` `éla` `go` |
+| 30.572 | `_murciéla` `go` |
+
+Cada fila, el número de juntas en el que la palabra pierde un corte. Con 35.246 juntas, cada palabra del Quijote es ya una sola pieza, y no queda ninguna pareja que soldar.
+:::

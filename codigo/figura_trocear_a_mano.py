@@ -31,6 +31,7 @@ from pathlib import Path
 
 from matplotlib.patches import FancyBboxPatch
 
+from formato import leer_tablas
 from infografia import COLOR, GRIS, Lienzo
 from trocear_a_mano import trocear, leer, a_la_vista, miles, MOMENTOS
 
@@ -42,14 +43,17 @@ def renglones(juntas):
 
 
 def de_la_salida(ruta):
-    """Los renglones de «_murciélago» tal como los imprimió trocear_a_mano.py."""
-    texto = Path(ruta).read_text(encoding="utf-8")
-    bloque = texto.split("\n" + a_la_vista(PALABRA) + "\n", 1)[1].split("\n\n", 1)[0]
-    fuera = []
-    for l in bloque.splitlines():
-        m = re.match(r"^\s*([\d.]+)\s{3}(.*)$", l)
-        assert m, f"no entiendo el renglón {l!r} de {ruta}"
-        fuera.append((int(m.group(1).replace(".", "")), m.group(2).split(" | ")))
+    """Los renglones de «_murciélago» tal como los imprimió trocear_a_mano.py, de su tabla
+    editorial (L24, 9 de octubre)."""
+    tablas = leer_tablas(Path(ruta).read_text(encoding="utf-8"))
+    titulo = "Una palabra, según cuántas juntas hay en la caja"
+    assert titulo in tablas, f"se esperaba la tabla «{titulo}» en {ruta}"
+    fuera, dentro = [], False
+    for palabra, m, cortes in tablas[titulo][1]:
+        if palabra:
+            dentro = palabra == f"`{a_la_vista(PALABRA)}`"
+        if dentro:
+            fuera.append((int(m.replace(".", "")), re.findall(r"`([^`]*)`", cortes)))
     assert len(fuera) == len(MOMENTOS), f"se esperaban {len(MOMENTOS)} renglones; hay {len(fuera)}"
     return fuera
 
