@@ -23,29 +23,32 @@ DESTINO = "../figuras/maquina_entera"                   # se escribe DESTINO_col
 # ==========================================================
 
 import argparse, re, sys
+from formato import leer_tablas
 from infografia import Lienzo, COLOR, GRIS
 
 
 def leer(ruta):
-    """Saca de la salida de máquina lo que la figura necesita. Si falta algo, revienta."""
-    t = open(ruta, encoding="utf-8").read()
+    """Saca de la salida de máquina lo que la figura necesita, de sus tablas editoriales (L24,
+    9 de octubre). Si falta algo, revienta."""
+    tablas = leer_tablas(open(ruta, encoding="utf-8").read())
+    for t in ("El texto, partido en trozos", "El tamaño de la máquina", "Y se vuelve a empezar"):
+        assert t in tablas, f"no encuentro la tabla «{t}» en la salida"
+    assert any(t.startswith("Qué viene después de «") for t in tablas), "no encuentro la lista"
     d = {}
-    m = re.search(r"«(.+?)»\n\s*(\d+) trozos: (.+)", t)
-    assert m, "no encuentro la frase y sus trozos en la salida"
-    d["frase"], d["n_trozos"], d["trozos"] = m.group(1), int(m.group(2)), \
-        [x.strip() for x in m.group(3).split("|")]
-    for clave, patron in (("numeros", r"números por trozo: ([\d.]+)"),
-                          ("rondas", r"rondas, una detrás de otra: ([\d.]+)"),
-                          ("miradas", r"miradas a la vez dentro de cada ronda: ([\d.]+)"),
-                          ("total_miradas", r"miradas en total: ([\d.]+)"),
-                          ("vocabulario", r"trozos posibles en la salida: ([\d.]+)"),
-                          ("ajustables", r"números ajustables en total: ([\d.]+)")):
-        m = re.search(patron, t)
-        assert m, f"no encuentro «{clave}» en la salida"
-        d[clave] = m.group(1)
-    d["probs"] = re.findall(r"^\s*(\S+)\s+([\d,]+) %$", t, re.M)
+    frase, n, cortes = tablas["El texto, partido en trozos"][1][0]
+    d["frase"], d["n_trozos"], d["trozos"] = frase, int(n), re.findall(r"`([^`]*)`", cortes)
+    tam = dict((f[0], f[1]) for f in tablas["El tamaño de la máquina"][1])
+    for clave, rotulo in (("numeros", "números por trozo"), ("rondas", "rondas, una detrás de otra"),
+                          ("miradas", "miradas a la vez dentro de cada ronda"),
+                          ("total_miradas", "miradas en total"),
+                          ("vocabulario", "trozos posibles en la salida"),
+                          ("ajustables", "números ajustables en total")):
+        assert rotulo in tam, f"no encuentro «{clave}» en la salida"
+        d[clave] = tam[rotulo]
+    lista = next(v for t, v in tablas.items() if t.startswith("Qué viene después de «"))
+    d["probs"] = [(f[0].strip("`"), f[1].replace(" %", "")) for f in lista[1] if f[0] != "(el resto)"]
     assert len(d["probs"]) >= 5, "esperaba al menos cinco filas de probabilidad"
-    d["pasos"] = re.findall(r"^\s*(\d)\s+(\S+)\s+([\d,]+) %$", t, re.M)
+    d["pasos"] = [(f[0], f[1].strip("`"), f[2].replace(" %", "")) for f in tablas["Y se vuelve a empezar"][1]]
     assert len(d["pasos"]) >= 4, "esperaba al menos cuatro pasos de la cadena"
     return d
 

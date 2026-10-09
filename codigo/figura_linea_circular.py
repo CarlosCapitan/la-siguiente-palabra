@@ -43,19 +43,22 @@ from pathlib import Path
 
 from matplotlib.patches import Arc, Circle, FancyArrowPatch
 
+from formato import leer_tablas
 from infografia import COLOR, GRIS, Lienzo
 
 AQUI = Path(__file__).resolve().parent
 
 
 def leer(ruta):
-    texto = Path(ruta).read_text(encoding="utf-8")
+    """Las cifras de las estaciones, de la tabla «El tamaño de la máquina» (L24, 9 de octubre)."""
+    tablas = leer_tablas(Path(ruta).read_text(encoding="utf-8"))
+    assert "El tamaño de la máquina" in tablas, f"se esperaba la tabla del tamaño en {ruta}"
+    filas = dict((f[0], f[1]) for f in tablas["El tamaño de la máquina"][1])
     cifras = {}
     for _, _, clave in ESTACIONES:
         if clave:
-            m = re.search(rf"^{re.escape(clave)}: ([\d.]+)$", texto, re.M)
-            assert m, f"no se encontró «{clave}» en {ruta}"
-            cifras[clave] = m.group(1)
+            assert clave in filas, f"no se encontró «{clave}» en {ruta}"
+            cifras[clave] = filas[clave]
     return cifras
 
 

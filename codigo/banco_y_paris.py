@@ -38,7 +38,7 @@ import sys
 import torch
 
 import maquina_entera_detalle as M
-from formato import ANCHO_CAJA_CITA, coma, comprobar_ancho, miles, pct
+from formato import coma, miles, pct, tabla_editorial, trozo
 
 FRASES = {"A": M.BANCO_A, "B": M.BANCO_B, "C": M.BANCO_C, "D": M.BANCO_D}
 
@@ -70,49 +70,50 @@ def posicion(tok, frase, palabra):
 
 
 def bloque_paris(tok, modelo):
+    """L24 (9 de octubre): tablas editoriales (regla 6 ter). La cuenta no cambia."""
     frase = M.FRASES_PARIS[0]
     ids = M.ids_de(tok, frase)
-    lin = ["--- 1. PARÍS, TROZO A TROZO ---",
-           "cada trozo se mira en la lista que da la máquina detrás",
-           "del texto que tiene delante", ""]
-    total, texto, valores = 1.0, frase, []
+    total, texto, valores, filas = 1.0, frase, [], []
     for i in M.ids_de(tok, M.PALABRA_BUSCADA):
         p = lista(modelo, ids)
         v, pu = float(p[i]), M.puesto(p, i)
-        trozo = tok.decode([i])
-        lin += [f"detrás de «{texto}»",
-                f"   {M.visible(trozo):>6}  {pct(v, 4 if v < 0.01 else 2):>10}   "
-                f"puesto {miles(pu)} de {miles(len(p))}"]
+        t = tok.decode([i])
+        filas.append([f"«{texto}»", trozo(M.visible(t)), pct(v, 4 if v < 0.01 else 2),
+                      f"{miles(pu)} de {miles(len(p))}"])
         valores.append(v)
         total *= v
-        texto += trozo
+        texto += t
         ids = ids + [i]
-    lin += ["", f"«{M.PALABRA_BUSCADA.strip()}» entera: el {pct(valores[1], 2)} del {pct(valores[0], 4)}"
-            f", que da {pct(total, 4)}",
-            f"de cada {miles(POR_CADA)} veces, «Par» sale {coma(POR_CADA * valores[0], 2)};",
-            f"de esas, «ís» sigue en {coma(100 * valores[1], 2)} de cada 100:",
-            f"{coma(POR_CADA * total, 2)} de cada {miles(POR_CADA)}"]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA), total
+    trozos_ = tabla_editorial(
+        "París, trozo a trozo", ["detrás de", "trozo", "probabilidad", "puesto"], filas, "iidd",
+        ["Cada trozo se mira en la lista que da la máquina detrás del texto que tiene delante."])
+    entera = tabla_editorial(
+        f"«{M.PALABRA_BUSCADA.strip()}» entera", ["", "cuánto"],
+        [[f"de cada {miles(POR_CADA)} veces, «Par» sale", coma(POR_CADA * valores[0], 2)],
+         ["de esas, «ís» sigue, de cada 100", coma(100 * valores[1], 2)],
+         [f"**«{M.PALABRA_BUSCADA.strip()}» entera, de cada {miles(POR_CADA)}**",
+          f"**{coma(POR_CADA * total, 2)}**"]], "id",
+        [f"El {pct(valores[1], 2)} del {pct(valores[0], 4)}, que da {pct(total, 4)}."])
+    return trozos_ + [""] + entera, total
 
 
 def bloque_banco(tok, modelo):
+    """L24 (9 de octubre): tabla editorial (regla 6 ter). La cuenta no cambia."""
     banco = M.ids_de(tok, M.TROZO_BANCO)[0]
-    lin = ["--- 2. «BANCO» Y OTRA PALABRA DE SU MISMA FRASE ---",
-           "la escala para leer la tabla del capítulo: el parecido de",
-           "«banco» con una palabra distinta, en la misma frase y en",
-           "las mismas capas; 1 es lo más parecido posible; la otra", "palabra no dice nada del sentido de «banco»", ""]
-    cab = f"{'':<14}" + "".join(f"{'banco y ' + w.strip() + ' (' + f + ')':>22}" for f, w in REFERENCIAS)
-    lin += [cab, "-" * len(cab)]
     datos = {}
     for f, w in REFERENCIAS:
         ids, pos = posicion(tok, FRASES[f], w)
         assert ids[-1] == banco
         e = estados(modelo, ids)
         datos[(f, w)] = [M.parecido(e[c][-1], e[c][pos]) for c in CAPAS]
-    for k, c in enumerate(CAPAS):
-        nombre = "entrada" if c == 0 else f"tras capa {c}"
-        lin.append(f"{nombre:<14}" + "".join(f"{coma(datos[r][k], 3):>22}" for r in REFERENCIAS))
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA), datos
+    filas = [["entrada" if c == 0 else f"tras capa {c}"] + [coma(datos[r][k], 3) for r in REFERENCIAS]
+             for k, c in enumerate(CAPAS)]
+    return tabla_editorial(
+        "«Banco» y otra palabra de su misma frase",
+        [""] + [f"banco y {w.strip()} ({f})" for f, w in REFERENCIAS], filas, "i" + "d" * len(REFERENCIAS),
+        ["La escala para leer la tabla del capítulo: el parecido de «banco» con una palabra "
+         "distinta, en la misma frase y en las mismas capas; 1 es lo más parecido posible. La otra "
+         "palabra no dice nada del sentido de «banco»."]), datos
 
 
 def selftest(tok, modelo):
@@ -160,8 +161,10 @@ def main():
         sys.exit(codigo)
     print(f"\nmáquina: {platform.machine()}, {platform.system()} {platform.release()}, procesador")
     print(f"modelo: {M.MODELO} en {M.DTYPE}   fecha: {datetime.date.today().isoformat()}\n")
+    print("--- 1. PARÍS, TROZO A TROZO ---\n")
     lin, _ = bloque_paris(tok, modelo)
     print("\n".join(lin) + "\n")
+    print("--- 2. «BANCO» Y OTRA PALABRA DE SU MISMA FRASE ---\n")
     lin, _ = bloque_banco(tok, modelo)
     print("\n".join(lin))
 

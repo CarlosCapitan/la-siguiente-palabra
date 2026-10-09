@@ -1,5 +1,5 @@
-máquina: x86_64, Linux 6.18.44-fc-v33, procesador
-modelo: Qwen/Qwen2.5-0.5B en float32   fecha: 2026-09-18
+máquina: arm64, Darwin 25.6.0, procesador
+modelo: Qwen/Qwen2.5-0.5B en float32   fecha: 2026-10-09
 se seleccionan siempre los trozos más probables, 150 por frase
 
 --- 1. DE CADA CIEN PASOS, ¿CUÁNTOS ESTÁN ABIERTOS? ---
@@ -27,11 +27,11 @@ paso       trozo  probabilidad  ¿qué es?
    1         _la       17,46 %  hay varias posibles
    2     _ciudad       30,85 %  hay varias posibles
    3        _más       25,45 %  hay varias posibles
-   4     _grande       65,84 %  hay varias posibles
+   4     _grande       65,83 %  hay varias posibles
    5         _de       41,75 %  hay varias posibles
    6      _Franc       56,68 %  hay varias posibles
    7          ia       99,95 %  termina una palabra
-   8           ,       40,17 %  hay varias posibles
+   8           ,       40,16 %  hay varias posibles
 
 de los ocho pasos, 1 termina una palabra y en 7 hay varias posibles.
 

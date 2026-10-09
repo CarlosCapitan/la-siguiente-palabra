@@ -1,57 +1,72 @@
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
 --- 1. EL TEXTO SE PARTE EN TROZOS ---
-«La capital de Francia es»
-   6 trozos: La | _capital | _de | _Franc | ia | _es
-«El murciélago hambriento vigilaba»
-   11 trozos: El | _mur | ci | él | ago | _h | amb | rient | o | _vigil | aba
-«anticonstitucionalmente»
-   6 trozos: ant | icon | stit | uc | ional | mente
+
+::: tabla
+El texto, partido en trozos
+
+| el texto | trozos | cómo se parte |
+|:--|--:|:--|
+| La capital de Francia es | 6 | `La` `_capital` `_de` `_Franc` `ia` `_es` |
+| El murciélago hambriento vigilaba | 11 | `El` `_mur` `ci` `él` `ago` `_h` `amb` `rient` `o` `_vigil` `aba` |
+| anticonstitucionalmente | 6 | `ant` `icon` `stit` `uc` `ional` `mente` |
+
+El guion bajo marca que ahí había un espacio.
+:::
 
 --- 2. EL TAMAÑO DE LA MÁQUINA ---
-modelo: Qwen/Qwen2.5-0.5B
-números por trozo: 896
-rondas, una detrás de otra: 24
-miradas a la vez dentro de cada ronda: 14
-miradas en total: 336
-trozos posibles en la salida: 151.936
-números ajustables en total: 494.032.768
+
+::: tabla
+El tamaño de la máquina
+
+|  | cuánto |
+|:--|--:|
+| modelo | Qwen/Qwen2.5-0.5B |
+| números por trozo | 896 |
+| rondas, una detrás de otra | 24 |
+| miradas a la vez dentro de cada ronda | 14 |
+| miradas en total | 336 |
+| trozos posibles en la salida | 151.936 |
+| números ajustables en total | 494.032.768 |
+:::
 
 --- 3. LA LISTA DE PROBABILIDADES ---
-«La capital de Francia es» -> ¿qué viene después?
 
-       trozo   probabilidad
-------------   ------------
-         _la        17,46 %  #####
-        _una        12,80 %  ####
-         _un        11,51 %  ###
-         _el         7,11 %  ##
-      _conoc         4,99 %  #
-        _uno         3,64 %  #
-         _de         1,41 %  #
-         _en         1,07 %  #
-        _muy         0,96 %  #
-          _a         0,83 %  #
-  (el resto)        38,22 %  ###########
+::: tabla
+Qué viene después de «La capital de Francia es»
 
-el resto se reparte entre las otras 151.926 posibilidades
+| trozo | probabilidad |  |
+|:--|--:|:--|
+| `_la` | 17,46 % | [barra:17.5] |
+| `_una` | 12,80 % | [barra:12.8] |
+| `_un` | 11,51 % | [barra:11.5] |
+| `_el` | 7,11 % | [barra:7.1] |
+| `_conoc` | 4,99 % | [barra:5.0] |
+| `_uno` | 3,64 % | [barra:3.6] |
+| `_de` | 1,41 % | [barra:1.4] |
+| `_en` | 1,07 % | [barra:1.1] |
+| `_muy` | 0,96 % | [barra:1.0] |
+| `_a` | 0,83 % | [barra:0.8] |
+| (el resto) | 38,22 % | [barra:38.2] |
+
+Los 10 trozos más probables. El resto se reparte entre las otras 151.926 posibilidades.
+:::
 
 --- 4. Y SE VUELVE A EMPEZAR ---
-paso         trozo  probabilidad
-   1           _la       17,46 %
-      La capital de Francia es la
-   2       _ciudad       30,85 %
-      La capital de Francia es la ciudad
-   3          _más       25,45 %
-      La capital de Francia es la ciudad más
-   4       _grande       65,84 %
-      La capital de Francia es la ciudad más grande
-   5           _de       41,75 %
-      La capital de Francia es la ciudad más grande de
-   6        _Franc       56,68 %
-      La capital de Francia es la ciudad más grande de Franc
-   7            ia       99,95 %
-      La capital de Francia es la ciudad más grande de Francia
-   8             ,       40,17 %
-      … capital de Francia es la ciudad más grande de Francia,
+
+::: tabla
+Y se vuelve a empezar
+
+| paso | trozo | probabilidad | el texto, con el trozo pegado |
+|:-:|:--|--:|:--|
+| 1 | `_la` | 17,46 % | La capital de Francia es la |
+| 2 | `_ciudad` | 30,85 % | La capital de Francia es la ciudad |
+| 3 | `_más` | 25,45 % | La capital de Francia es la ciudad más |
+| 4 | `_grande` | 65,83 % | La capital de Francia es la ciudad más grande |
+| 5 | `_de` | 41,75 % | La capital de Francia es la ciudad más grande de |
+| 6 | `_Franc` | 56,68 % | La capital de Francia es la ciudad más grande de Franc |
+| 7 | `ia` | 99,95 % | La capital de Francia es la ciudad más grande de Francia |
+| 8 | `,` | 40,16 % | La capital de Francia es la ciudad más grande de Francia, |
+
+Cada paso pega al texto el trozo más probable y vuelve a empezar, 8 veces.
+:::
 
 Escrito maquina_entera.csv

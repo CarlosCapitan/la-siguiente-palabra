@@ -18,7 +18,7 @@ Uso:
 # ======================= CONSTANTES =======================
 
 MODELO = "Qwen/Qwen2.5-0.5B"
-DTYPE = "float32"          # float32 para que el resultado sea el mismo en cualquier máquina
+DTYPE = "float32"          # los números del modelo; la lista final, en float64 (ver siguientes())
 
 FRASE = "La capital de Francia es"
 FRASES_TROCEADO = [
@@ -39,8 +39,7 @@ SALIDA_CSV = "maquina_entera.csv"
 
 # ==========================================================
 
-from formato import (ANCHO_CAJA_CITA, coma, comprobar_ancho, pct, miles, tabla_de_probabilidades,
-                     ANCHO_TROZO, ANCHO_PROB)
+from formato import barra, coma, miles, pct, tabla_editorial, trozo
 
 import argparse
 import csv
@@ -67,7 +66,12 @@ def siguientes(tok, modelo, texto, n=TOP_N):
     ids = tok(texto, return_tensors="pt")["input_ids"]
     with torch.no_grad():
         logits = modelo(ids).logits[0, -1]
-    p = torch.softmax(logits.float(), dim=-1)
+    # L24 (9 de octubre): la lista se saca en float64. Con torch 2.14 en el Mac (procesador ARM),
+    # la de float32 suma 1,000131 y no pasa la comprobación de abajo (tolerancia 1e-4); en float64
+    # suma 1 con un error de 1e-15. Medido contra la salida anterior (float32, 18 de septiembre):
+    # cambian dos cifras de los ocho pasos en la segunda decimal (65,84 % → 65,83 %; 40,17 % →
+    # 40,16 %); el resto, igual.
+    p = torch.softmax(logits.double(), dim=-1)
     suma = float(p.sum())
     assert abs(suma - 1.0) < TOL_SUMA, \
         f"Invariante roto: se esperaba que las probabilidades sumaran 1; se encontró {suma:.6f}"
@@ -134,64 +138,57 @@ def main():
 
     filas = []
 
-    print("--- 1. EL TEXTO SE PARTE EN TROZOS ---")
+    # L24 (9 de octubre): cada bloque, una tabla editorial (regla 6 ter). Las cuentas no cambian.
+    print("--- 1. EL TEXTO SE PARTE EN TROZOS ---\n")
+    filas_t = []
     for t in FRASES_TROCEADO:
         piezas = trozos(tok, t)
-        print(f"«{t}»")
-        print(f"   {len(piezas)} trozos: " + " | ".join(p.replace(' ', '_') for p in piezas))
+        filas_t.append([t, str(len(piezas)), " ".join(trozo(p.replace(" ", "_")) for p in piezas)])
+    print("\n".join(tabla_editorial(
+        "El texto, partido en trozos", ["el texto", "trozos", "cómo se parte"], filas_t, "idi",
+        ["El guion bajo marca que ahí había un espacio."])))
     print()
 
-    print("--- 2. EL TAMAÑO DE LA MÁQUINA ---")
+    print("--- 2. EL TAMAÑO DE LA MÁQUINA ---\n")
     cfg = modelo.config
     total = sum(p.numel() for p in modelo.parameters())
-    print(f"modelo: {MODELO}")
-    print(f"números por trozo: {cfg.hidden_size}")
-    print(f"rondas, una detrás de otra: {cfg.num_hidden_layers}")
-    print(f"miradas a la vez dentro de cada ronda: {cfg.num_attention_heads}")
-    print(f"miradas en total: {cfg.num_hidden_layers * cfg.num_attention_heads}")
-    print(f"trozos posibles en la salida: {miles(cfg.vocab_size)}")
-    print(f"números ajustables en total: {miles(total)}")
+    print("\n".join(tabla_editorial(
+        "El tamaño de la máquina", ["", "cuánto"],
+        [["modelo", MODELO],
+         ["números por trozo", str(cfg.hidden_size)],
+         ["rondas, una detrás de otra", str(cfg.num_hidden_layers)],
+         ["miradas a la vez dentro de cada ronda", str(cfg.num_attention_heads)],
+         ["miradas en total", str(cfg.num_hidden_layers * cfg.num_attention_heads)],
+         ["trozos posibles en la salida", miles(cfg.vocab_size)],
+         ["números ajustables en total", miles(total)]], "id")))
     print()
 
-    print("--- 3. LA LISTA DE PROBABILIDADES ---")
+    print("--- 3. LA LISTA DE PROBABILIDADES ---\n")
     top, p = siguientes(tok, modelo, FRASE)
-    # La tabla lleva rótulo de columna y una barra a escala fija: el número dice cuánto,
-    # y la barra deja verlo sin leerlo. El rótulo no es adorno; sin él son dos columnas
-    # de cifras y el lector que se encuentre la tabla al volver la página no sabe de qué.
+    # Con su barra a escala fija: el número dice cuánto, y la barra deja verlo sin leerlo.
     resto = 1.0 - sum(v for _, v in top)
-    pares = [(w.replace(" ", "_"), v) for w, v in top] + [("(el resto)", resto)]
-    lineas = [f"«{FRASE}» -> ¿qué viene después?", ""]
-    lineas += tabla_de_probabilidades(pares)
-    lineas += ["", f"el resto se reparte entre las otras {miles(len(p)-TOP_N)} posibilidades"]
-    comprobar_ancho(lineas)
-    for l in lineas:
-        print(l)
+    print("\n".join(tabla_editorial(
+        f"Qué viene después de «{FRASE}»", ["trozo", "probabilidad", ""],
+        [[trozo(w.replace(" ", "_")), pct(v, 2), barra(v)] for w, v in top] +
+        [["(el resto)", pct(resto, 2), barra(resto)]], "idi",
+        [f"Los {TOP_N} trozos más probables. El resto se reparte entre las otras "
+         f"{miles(len(p) - TOP_N)} posibilidades."])))
     filas += [["probabilidad", FRASE, w, f"{v:.6f}"] for w, v in top]
     print()
 
-    print("--- 4. Y SE VUELVE A EMPEZAR ---")
+    print("--- 4. Y SE VUELVE A EMPEZAR ---\n")
     texto = FRASE
-    # Dos líneas por paso, y no una. Con el texto entero en la misma fila la línea llegaba a 91
-    # caracteres: en el libro eso no cabe, se convierte en tabla, y una tabla de Markdown no la
-    # mide ningún verificador —ni se desborda en el PDF: se dobla—. Acabó impresa partida en
-    # cuatro renglones por fila, ocupando una página entera e ilegible (fallo 4.27). Así se lee
-    # como una escalera, que además es lo que la tabla quiere enseñar.
-    lineas = [f"{'paso':>4}  {'trozo':>{ANCHO_TROZO}}  {'probabilidad':>{ANCHO_PROB}}"]
+    filas_b = []
     for i in range(1, PASOS_BUCLE + 1):
         top, _ = siguientes(tok, modelo, texto, 1)
         palabra, prob = top[0]
         texto += palabra
-        lineas.append(f"{i:>4}  {palabra.replace(' ', '_'):>{ANCHO_TROZO}}  "
-                      f"{pct(prob, 2):>{ANCHO_PROB}}")
-        # Si el texto ya no cabe, se corta por la IZQUIERDA y se marca con puntos suspensivos:
-        # un corte que no se ve es una mentira pequeña, y aquí el lector tiene que poder saber
-        # que lo que ve es el final de algo más largo.
-        visible = texto if len(texto) <= 56 else "…" + texto[-55:]
-        lineas.append(f"      {visible}")
+        filas_b.append([str(i), trozo(palabra.replace(" ", "_")), pct(prob, 2), texto])
         filas.append(["bucle", str(i), palabra, f"{prob:.6f}"])
-    comprobar_ancho(lineas, ANCHO_CAJA_CITA)
-    for l in lineas:
-        print(l)
+    print("\n".join(tabla_editorial(
+        "Y se vuelve a empezar", ["paso", "trozo", "probabilidad", "el texto, con el trozo pegado"],
+        filas_b, "cidi",
+        [f"Cada paso pega al texto el trozo más probable y vuelve a empezar, {PASOS_BUCLE} veces."])))
 
     with open(SALIDA_CSV, "w", newline="", encoding="utf-8") as fh:
         csv.writer(fh).writerows([["medicion", "contexto", "palabra", "probabilidad"]] + filas)

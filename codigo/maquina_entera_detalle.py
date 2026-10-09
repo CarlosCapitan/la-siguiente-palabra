@@ -24,12 +24,14 @@ Uso:
 # ======================= CONSTANTES =======================
 
 MODELO = "Qwen/Qwen2.5-0.5B"      # el mismo de maquina_entera.py
-DTYPE = "float32"                 # float32: mismo resultado en cualquier máquina x86
-# L24 (28 sep 2026): en procesadores ARM (el Mac, y el Linux del portátil) no. La suma de las
-# 151.936 probabilidades da 1,000131 y revienta la comprobación de más abajo; y con el softmax en
-# float64, que sí pasa, las cifras cambian en la cuarta decimal (97,8717 % → 97,8714 %; 15,5138 %
-# → 15,5139 %). El capítulo 7 cita la salida de x86 del 25 de septiembre. Esta salida, por tanto,
-# se genera en x86.
+DTYPE = "float32"                 # los números del modelo
+# L24 (9 de octubre): la lista de probabilidades se saca en float64, y todo se ejecuta en el Mac.
+# Con torch 2.14 en el Mac (procesador ARM), la de float32 suma 1,000131 y no pasa la comprobación
+# de lista(); en float64 suma 1. Contra la salida anterior (float32, x86, 25 de septiembre) cambian
+# cuatro cifras en la cuarta decimal (97,8717 % → 97,8714 %; 15,5138 % → 15,5139 %; 96,1958 % →
+# 96,1953 %; 14,9236 % → 14,9237 %) y una en la cuarta de «Paris» sin tilde; el resto, igual.
+# (El comentario anterior, del 28 de septiembre, decía que esta salida se generaba en x86: lo puso
+# el asistente sin que Carlos lo hubiera decidido.)
 SEMILLA = 0                       # no hay nada al azar; se fija igual, por regla
 
 FRASE = "La capital de Francia es"
@@ -78,7 +80,7 @@ TOL_IDENTICO = 1e-6
 
 # ==========================================================
 
-from formato import ANCHO_CAJA_CITA, coma, comprobar_ancho, miles, pct
+from formato import coma, miles, pct, tabla_editorial, trozo
 
 import argparse
 import datetime
@@ -131,7 +133,8 @@ def lista(modelo, ids):
     """La lista de probabilidades del trozo siguiente, sobre todas las entradas."""
     with torch.no_grad():
         logits = modelo(torch.tensor([ids])).logits[0, -1]
-    p = torch.softmax(logits.float(), dim=-1)
+    # L24 (9 de octubre): en float64; ver el comentario de DTYPE.
+    p = torch.softmax(logits.double(), dim=-1)
     assert abs(float(p.sum()) - 1.0) < 1e-4, \
         f"Se esperaba que la lista sumara 1; suma {float(p.sum()):.6f}"
     return p
@@ -172,84 +175,85 @@ def parecido(u, v):
 
 # ------------------------------------------------------------------ las cuatro mediciones
 
+def chips(piezas):
+    return " ".join(trozo(visible(x)) for x in piezas)
+
+
 def bloque_troceado(tok):
-    lin = ["--- 1. QUÉ SE PARTE Y QUÉ NO ---",
-           f"{'palabra':<24}{'trozos':>4}   cómo se parte"]
-    for p in PALABRAS_CORRIENTES + [PALABRA_RARA]:
-        t = trozos(tok, p)
-        lin.append(f"{p.strip():<24}{len(t):>4}   " + "|".join(visible(x) for x in t))
-    lin += ["", f"{'castellano':<14}{'trozos':>6}     {'inglés':<10}{'trozos':>6}"]
-    for es, en in PAREJAS_IDIOMA:
-        lin.append(f"{es.strip():<14}{len(trozos(tok, es)):>6}     "
-                   f"{en.strip():<10}{len(trozos(tok, en)):>6}")
-    n_trozos = len(tok)
-    lin += ["", f"trozos distintos en el repertorio: {miles(n_trozos)}"]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+    partes = tabla_editorial(
+        "Qué se parte y qué no", ["palabra", "trozos", "cómo se parte"],
+        [[p.strip(), str(len(trozos(tok, p))), chips(trozos(tok, p))]
+         for p in PALABRAS_CORRIENTES + [PALABRA_RARA]], "idi",
+        ["El guion bajo es el espacio de delante, que la palabra lleva dentro de una frase."])
+    idiomas = tabla_editorial(
+        "La misma palabra, en castellano y en inglés",
+        ["castellano", "trozos", "inglés", "trozos"],
+        [[es.strip(), str(len(trozos(tok, es))), en.strip(), str(len(trozos(tok, en)))]
+         for es, en in PAREJAS_IDIOMA], "idid",
+        [f"Trozos distintos en el repertorio: {miles(len(tok))}."])
+    return partes + [""] + idiomas
 
 
 def bloque_paris(tok, modelo):
-    lin = ["--- 2. DÓNDE ESTÁ PARÍS ---",
-           f"«{PALABRA_BUSCADA.strip()}» son {len(ids_de(tok, PALABRA_BUSCADA))} trozos: "
-           + " | ".join(visible(x) for x in trozos(tok, PALABRA_BUSCADA))]
+    out = []
     for f in FRASES_PARIS:
         total, desglose = prob_palabra(tok, modelo, f, PALABRA_BUSCADA)
         sin_tilde, d2 = prob_palabra(tok, modelo, f, VARIANTE_SIN_TILDE)
         n = len(lista(modelo, ids_de(tok, f)))
-        lin += ["", f"«{f}»"]
-        for t, v, pu in desglose:
-            lin.append(f"   {visible(t):>6}  {pct(v, 4):>10}   puesto {miles(pu)} de {miles(n)}")
-        lin.append(f"   «{PALABRA_BUSCADA.strip()}» entera: {pct(total, 4)}")
-        lin.append(f"   «{VARIANTE_SIN_TILDE.strip()}» (sin tilde, un trozo): {pct(sin_tilde, 4)}, "
-                   f"puesto {miles(d2[0][2])}")
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA)
+        filas = [[trozo(visible(t)), pct(v, 4), f"{miles(pu)} de {miles(n)}"] for t, v, pu in desglose]
+        filas += [[f"**«{PALABRA_BUSCADA.strip()}» entera**", f"**{pct(total, 4)}**", ""],
+                  [f"«{VARIANTE_SIN_TILDE.strip()}», sin tilde, un trozo", pct(sin_tilde, 4),
+                   miles(d2[0][2])]]
+        out += tabla_editorial(
+            f"Dónde está París detrás de «{f}»", ["trozo", "probabilidad", "puesto"], filas, "idd",
+            [f"«{PALABRA_BUSCADA.strip()}» son {len(ids_de(tok, PALABRA_BUSCADA))} trozos: "
+             f"{chips(trozos(tok, PALABRA_BUSCADA))}. Cada uno, en la lista que da la máquina "
+             "detrás del texto que tiene delante; «entera», los dos multiplicados."]) + [""]
+    return out[:-1]
 
 
 def bloque_candidatas(tok, modelo):
-    # Una cifra decimal, no dos: con dos, «_importante» (11 letras) no cabe en la cita. Las
-    # de dos cifras ya están en maquina_entera.txt, y la clave lo dice.
-    cab = "".join(f"{f'{k}.ª opción':>19}" for k in range(1, CANDIDATAS + 1))
-    lin = ["--- 3. LAS TRES PRIMERAS CANDIDATAS DE CADA PASO ---",
-           "se elige siempre la 1.ª; las otras dos son las que perdieron", "",
-           f"{'paso':>4}" + cab]
     ids = ids_de(tok, FRASE)
-    elegidas = []
+    elegidas, filas = [], []
     for paso in range(1, PASOS + 1):
         p = lista(modelo, ids)
         top = torch.topk(p, CANDIDATAS)
-        celdas = [f" {visible(tok.decode([int(i)])):>11} {pct(float(v), 1):>6}"
-                  for v, i in zip(top.values, top.indices)]
-        lin.append(f"{paso:>4}" + "".join(celdas))
+        filas.append([str(paso)] + [f"{trozo(visible(tok.decode([int(i)])))} {pct(float(v), 1)}"
+                                    for v, i in zip(top.values, top.indices)])
         elegido = int(top.indices[0])
         elegidas.append((tok.decode([elegido]), float(top.values[0])))
         ids = ids + [elegido]
-    # El texto en su propia línea: con «texto: » delante no cabía en la cita (64 de 62).
-    lin += ["", "porcentajes con una cifra decimal: 0,0 % es menos de 0,05 %",
-            "", "texto al acabar:", "   " + tok.decode(ids)]
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA), elegidas
+    tabla = tabla_editorial(
+        "Las tres primeras candidatas de cada paso",
+        ["paso"] + [f"{k}.ª opción" for k in range(1, CANDIDATAS + 1)], filas, "c" + "i" * CANDIDATAS,
+        ["Se elige siempre la 1.ª; las otras dos son las que perdieron. Porcentajes con una cifra "
+         "decimal: 0,0 % es menos de 0,05 %.",
+         f"Texto al acabar: «{tok.decode(ids)}»."])
+    return tabla, elegidas
 
 
 def bloque_banco(tok, modelo):
     e = {k: estados_del_ultimo(modelo, ids_de(tok, f))
          for k, f in (("A", BANCO_A), ("B", BANCO_B), ("C", BANCO_C), ("D", BANCO_D))}
     parejas = [("A", "C"), ("B", "D"), ("A", "B"), ("C", "D")]
-    lin = ["--- 4. PARA QUÉ SIRVE MIRAR: «BANCO» EN CUATRO FRASES ---",
-           f"A: «{BANCO_A}»", "   (asiento)",
-           f"B: «{BANCO_B}»", "   (dinero; misma forma que A)",
-           f"C: «{BANCO_C}»", "   (asiento)",
-           f"D: «{BANCO_D}»", "   (dinero; misma forma que C)",
-           "", "parecido de la lista de «banco» entre dos frases",
-           "(1 = idéntica; es la misma medida del capítulo 5)", ""]
-    lin += [f"{'':<14}{'mismo sentido':>22}{'misma forma':>22}",
-            f"{'':<14}{'distinta forma':>22}{'distinto sentido':>22}",
-            f"{'':<14}" + "".join(f"{a + ' con ' + b:>11}" for a, b in parejas),
-            "-" * 58]
+    frases = tabla_editorial(
+        "Las cuatro frases de «banco»", ["", "la frase", "sentido", "forma de la frase"],
+        [["A", f"«{BANCO_A}»", "asiento", "la de A"], ["B", f"«{BANCO_B}»", "dinero", "la de A"],
+         ["C", f"«{BANCO_C}»", "asiento", "la de C"], ["D", f"«{BANCO_D}»", "dinero", "la de C"]],
+        "ciii")
     filas = []
+    tabla = []
     for c in CAPAS_A_IMPRIMIR:
         nombre = "entrada" if c == 0 else f"tras capa {c}"
         v = [parecido(e[a][c], e[b][c]) for a, b in parejas]
         filas.append((c, *v))
-        lin.append(f"{nombre:<14}" + "".join(f"{coma(x, 3):>11}" for x in v))
-    return comprobar_ancho(lin, ANCHO_CAJA_CITA), filas
+        tabla.append([nombre] + [coma(x, 3) for x in v])
+    grupos = ["mismo sentido, distinta forma"] * 2 + ["misma forma, distinto sentido"] * 2
+    parecidos = tabla_editorial(
+        "Parecido de la lista de «banco» entre dos frases",
+        [""] + [f"{g}: {a} con {b}" for g, (a, b) in zip(grupos, parejas)], tabla, "idddd",
+        ["1 quiere decir idéntica; es la misma medida del capítulo 5."])
+    return frases + [""] + parecidos, filas
 
 
 # ------------------------------------------------------------------------------ selftest
@@ -331,19 +335,16 @@ def main():
     print(f"torch {torch.__version__}   transformers {transformers.__version__}")
     print(f"fecha: {datetime.date.today().isoformat()}")
     print()
-    for l in bloque_troceado(tok):
-        print(l)
-    print()
-    for l in bloque_paris(tok, modelo):
-        print(l)
-    print()
+    print("--- 1. QUÉ SE PARTE Y QUÉ NO ---\n")
+    print("\n".join(bloque_troceado(tok)))
+    print("\n--- 2. DÓNDE ESTÁ PARÍS ---\n")
+    print("\n".join(bloque_paris(tok, modelo)))
+    print("\n--- 3. LAS TRES PRIMERAS CANDIDATAS DE CADA PASO ---\n")
     lin, _ = bloque_candidatas(tok, modelo)
-    for l in lin:
-        print(l)
-    print()
+    print("\n".join(lin))
+    print("\n--- 4. PARA QUÉ SIRVE MIRAR: «BANCO» EN CUATRO FRASES ---\n")
     lin, _ = bloque_banco(tok, modelo)
-    for l in lin:
-        print(l)
+    print("\n".join(lin))
 
 
 if __name__ == "__main__":
