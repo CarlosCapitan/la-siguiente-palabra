@@ -1,23 +1,18 @@
-de 200 arranques distintos, 177 resolvieron el o exclusivo
-y sus dos neuronas de en medio acabaron en 8 parejas distintas:
+::: tabla
+Lo que acaban mirando las dos neuronas de en medio
 
-                                        de cada
-lo que mira una de las dos neuronas         100
-  y lo que mira la otra
---------------------------------------  -------
-con al menos uno subido                      21
-  y con los dos subidos
-salvo si solo el de arriba está subido       18
-  y solo con el de abajo subido
-con al menos uno bajado                      14
-  y con los dos bajados
-solo con el de abajo subido                  13
-  y solo con el de arriba subido
-salvo si solo el de abajo está subido        12
-  y solo con el de arriba subido
-con al menos uno bajado                       8
-  y con al menos uno subido
-con los dos bajados                           7
-  y con los dos subidos
-salvo si solo el de abajo está subido         7
-  y salvo si solo el de arriba está subido
+| lo que mira una | lo que mira la otra | de cada 100 |
+|:--|:--|--:|
+| con al menos uno subido | con los dos subidos | 21 |
+| salvo si solo el de arriba está subido | solo con el de abajo subido | 18 |
+| con al menos uno bajado | con los dos bajados | 14 |
+| solo con el de abajo subido | solo con el de arriba subido | 13 |
+| salvo si solo el de abajo está subido | solo con el de arriba subido | 12 |
+| con al menos uno bajado | con al menos uno subido | 8 |
+| con los dos bajados | con los dos subidos | 7 |
+| salvo si solo el de abajo está subido | salvo si solo el de arriba está subido | 7 |
+
+De 200 arranques distintos, 177 resolvieron el o exclusivo, y sus dos neuronas de en medio acabaron en 8 parejas distintas.
+
+De cada 100: de las redes que lo resolvieron.
+:::

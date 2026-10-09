@@ -76,7 +76,7 @@ from pathlib import Path
 
 import numpy as np
 
-from formato import coma, comprobar_ancho, miles, ANCHO_CAJA_CITA
+from formato import coma, miles, tabla_editorial
 from retropropagacion import Red, TABLA_XOR, Y_XOR, sigmoide, SEMILLA, ANCHO
 from que_inventan_las_capas import SEMILLA_BASE, TASA, PASOS, OCULTAS, ARRANQUES
 
@@ -187,10 +187,17 @@ def culpas_por_posicion(red):
 
 # ---------------------------------------------------------------- impresión
 
-def tabla(lineas):
-    comprobar_ancho(lineas, ANCHO_CAJA_CITA)
-    for l in lineas:
-        print(l.rstrip())
+def tabla(*bloques):
+    """Imprime tablas de libro (formato.py, tabla_editorial; REGLAS 6 ter). Desde el 9 oct 2026
+    todas las cuentas de este capítulo salen así: cada número en su casilla, con su rótulo, en vez
+    de frases con varias cifras seguidas. Las cuentas y las comprobaciones no cambian."""
+    for b in bloques:
+        print("\n".join(b))
+        print()
+
+
+def titulo(texto):
+    print(texto)
     print()
 
 
@@ -206,70 +213,69 @@ def firmado(x, d=2):
 def bloque_1(red):
     act = red.adelante(TABLA_XOR)
     dice = act[-1].ravel()
-    L = ["1. LO QUE DICE LA RED ENTRENADA EN LAS CUATRO POSICIONES",
-         "(de 0 a 1: cerca de 0 es «no» y cerca de 1 es «sí»; lo que",
-         "falla es lo que dice menos lo que tendría que decir)",
-         "",
-         f"{'posición':<19}{'la luz tiene':<14}{'la red':>8}{'lo que':>10}",
-         f"{'':<19}{'que estar':<14}{'dice':>8}{'falla':>10}",
-         f"{'-'*17:<19}{'-'*12:<14}{'-'*6:>8}{'-'*6:>10}"]
-    for p in range(4):
-        luz = "encendida" if Y_XOR[p] else "apagada"
-        L.append(f"{POSICIONES[p]:<19}{luz:<14}{c3(dice[p]):>8}{firmado(dice[p]-Y_XOR[p], 3):>10}")
-    tabla(L)
+    titulo("1. LO QUE DICE LA RED ENTRENADA EN LAS CUATRO POSICIONES")
+    tabla(tabla_editorial(
+        "Lo que dice la red entrenada en las cuatro posiciones",
+        ["posición", "la luz tiene que estar", "la red dice", "lo que falla"],
+        [[POSICIONES[p], "encendida" if Y_XOR[p] else "apagada", c3(dice[p]),
+          firmado(dice[p] - Y_XOR[p], 3)] for p in range(4)], "iidd",
+        ["La red dice un número de 0 a 1: cerca de 0 es «no» y cerca de 1 es «sí».",
+         "Lo que falla: lo que dice menos lo que tendría que decir."]))
     return dice
 
 
 def bloque_2(red):
     W0, b0, W1, b1 = red.W[0], red.b[0], red.W[1][:, 0], red.b[1][0]
-    L = ["2. LOS PESOS Y LOS LISTONES QUE APRENDIÓ",
-         "(peso de cada línea: positivo suma, negativo resta)",
-         "",
-         f"{'neurona':<13}{'la línea que viene de':<24}{'peso':>8}{'listón':>9}",
-         f"{'-'*11:<13}{'-'*21:<24}{'-'*6:>8}{'-'*6:>9}"]
+    filas = []
     for j in range(2):
         for i in range(2):
-            L.append(f"{(NEURONAS[j] if i == 0 else ''):<13}{ENTRADAS[i]:<24}"
-                     f"{firmado(W0[i, j]):>8}{(coma(-b0[j], 2) if i == 0 else ''):>9}")
+            filas.append([NEURONAS[j] if i == 0 else "", ENTRADAS[i], firmado(W0[i, j]),
+                          coma(-b0[j], 2) if i == 0 else ""])
     for j in range(2):
-        L.append(f"{('la final' if j == 0 else ''):<13}{NEURONAS[j]:<24}"
-                 f"{firmado(W1[j]):>8}{(coma(-b1, 2) if j == 0 else ''):>9}")
-    tabla(L)
+        filas.append(["la final" if j == 0 else "", NEURONAS[j], firmado(W1[j]),
+                      coma(-b1, 2) if j == 0 else ""])
+    titulo("2. LOS PESOS Y LOS LISTONES QUE APRENDIÓ")
+    tabla(tabla_editorial(
+        "Los pesos y los listones que aprendió",
+        ["neurona", "la línea que viene de", "peso", "listón"], filas, "iidd",
+        ["Peso de cada línea: positivo suma, negativo resta."]))
 
 
 def bloque_3(red):
-    L = ["3. LA CUENTA DE CADA NEURONA, POSICIÓN A POSICIÓN",
-         "(le llega: la suma de lo que trae cada línea por su peso;",
-         "dice: cerca de 1 si le llega más que su listón, cerca de 0",
-         "si le llega menos)",
-         ""]
+    titulo("3. LA CUENTA DE CADA NEURONA, POSICIÓN A POSICIÓN")
+    nota = ("Le llega: la suma de lo que trae cada línea por su peso. Dice: cerca de 1 si le llega "
+            "más que su listón, cerca de 0 si le llega menos.")
+    T = []
     for j in range(2):
-        L += [f"{NEURONAS[j].upper()}, «{PREGUNTAS[j]}»",
-              f"listón: {coma(-red.b[0][j], 2)}",
-              f"{'posición':<19}{'le llega':>10}{'¿pasa del listón?':>20}{'dice':>8}"]
+        filas = []
         for p in range(4):
             c = caso(red, p)
-            L.append(f"{POSICIONES[p]:<19}{coma(c['llega_medio'][j], 2):>10}"
-                     f"{('sí' if c['pasa_medio'][j] > 0 else 'no'):>20}{coma(c['dice_medio'][j], 2):>8}")
-        L.append("")
-    L += [f"LA FINAL, que escucha a las dos",
-          f"listón: {coma(-red.b[1][0], 2)}",
-          f"{'posición':<19}{'le llega':>10}{'¿pasa del listón?':>20}{'dice':>8}"]
+            filas.append([POSICIONES[p], coma(c["llega_medio"][j], 2),
+                          "sí" if c["pasa_medio"][j] > 0 else "no", coma(c["dice_medio"][j], 2)])
+        T.append(tabla_editorial(
+            f"{NEURONAS[j].capitalize()}, «{PREGUNTAS[j]}»",
+            ["posición", "le llega", "¿pasa del listón?", "dice"], filas, "idcd",
+            [f"Listón: {coma(-red.b[0][j], 2)}. " + nota]))
+    filas = []
     for p in range(4):
         c = caso(red, p)
-        L.append(f"{POSICIONES[p]:<19}{coma(c['llega_final'], 2):>10}"
-                 f"{('sí' if c['pasa_final'] > 0 else 'no'):>20}{coma(c['dice_final'], 2):>8}")
-    tabla(L)
+        filas.append([POSICIONES[p], coma(c["llega_final"], 2),
+                      "sí" if c["pasa_final"] > 0 else "no", coma(c["dice_final"], 2)])
+    T.append(tabla_editorial(
+        "La final, que escucha a las dos", ["posición", "le llega", "¿pasa del listón?", "dice"],
+        filas, "idcd", [f"Listón: {coma(-red.b[1][0], 2)}. " + nota]))
+    tabla(*T)
     # la regla de la final, en palabras, comprobada en las cuatro esquinas del cuadrado nuevo
     W1, b1 = red.W[1][:, 0], red.b[1][0]
     esquinas = {(a, b): (a * W1[0] + b * W1[1] + b1) > 0 for a in (0, 1) for b in (0, 1)}
     regla = [k for k, v in esquinas.items() if v]
     nombre = {0: "no", 1: "sí"}
-    L = ["LA FINAL, SI LAS DE EN MEDIO DIJERAN UN SÍ O UN NO SECOS",
-         f"{'la primera':<13}{'la segunda':<13}{'le llega':>10}{'¿pasa?':>9}"]
-    for (a, b), v in esquinas.items():
-        L.append(f"{nombre[a]:<13}{nombre[b]:<13}{firmado(a*W1[0]+b*W1[1], 2):>10}{('sí' if v else 'no'):>9}")
-    tabla(L)
+    tabla(tabla_editorial(
+        "La final, si las de en medio dijeran un sí o un no secos",
+        ["la primera", "la segunda", "le llega", "¿pasa?"],
+        [[nombre[a], nombre[b], firmado(a * W1[0] + b * W1[1], 2), "sí" if v else "no"]
+         for (a, b), v in esquinas.items()], "ccdc",
+        [f"Sí vale 1 y no vale 0. Listón de la final: {coma(-b1, 2)}."]))
     return regla
 
 
@@ -325,78 +331,90 @@ def bloque_4(red, p):
     c = caso(red, p)
     m = cadena_a_mano(red, c)
     W1 = m["pesos_final"]
-    L = [f"4. UN EJEMPLO A MEDIO ENTRENAR: EL PASO {miles(PASO_DEL_CASO)} DE {miles(PASOS)}",
-         f"posición: {POSICIONES[p]}; la luz tiene que estar "
-         f"{'encendida' if c['deberia'] else 'apagada'},",
-         f"así que la final tendría que decir {int(c['deberia'])}",
-         "",
-         "HACIA DELANTE",
-         f"{'':<12}{'le llega':>10}{'listón':>9}{'pasa del':>11}{'dice':>9}",
-         f"{'':<12}{'':>10}{'':>9}{'listón por':>11}{'':>9}"]
+    deberia = int(c["deberia"])
+    print(f"4. UN EJEMPLO A MEDIO ENTRENAR: EL PASO {miles(PASO_DEL_CASO)} DE {miles(PASOS)}")
+    print()
+    filas = []
     for j in range(2):
-        L.append(f"{NEURONAS[j]:<12}{coma(c['llega_medio'][j], 2):>10}{coma(c['liston_medio'][j], 2):>9}"
-                 f"{coma(c['pasa_medio'][j], 2):>11}{s4(m['dice_medio'][j]):>9}")
-    L.append(f"{'la final':<12}{coma(c['llega_final'], 2):>10}{coma(c['liston_final'], 2):>9}"
-             f"{coma(c['pasa_final'], 2):>11}{s4(m['dice_final']):>9}")
-    L += ["",
-          f"lo que le llega a la final: {s4(m['dice_medio'][0])} por {coma(W1[0], 2)},",
-          f"más {s4(m['dice_medio'][1])} por {coma(W1[1], 2)}: {coma(c['llega_final'], 2)}",
-          f"lo que falla: dice {s4(m['dice_final'])} y tendría que decir {int(c['deberia'])}: "
-          f"{s4(m['falla'], True)}",
-          f"el error en esta posición: lo que falla por sí mismo, {s4(r4(m['falla']) ** 2)}",
-          ""]
-    tabla(L)
+        filas.append([NEURONAS[j], coma(c["llega_medio"][j], 2), coma(c["liston_medio"][j], 2),
+                      coma(c["pasa_medio"][j], 2), s4(m["dice_medio"][j])])
+    filas.append(["la final", coma(c["llega_final"], 2), coma(c["liston_final"], 2),
+                  coma(c["pasa_final"], 2), s4(m["dice_final"])])
+    contexto = (f"Paso {miles(PASO_DEL_CASO)} de {miles(PASOS)}. Posición: {POSICIONES[p]}; la luz "
+                f"tiene que estar {'encendida' if c['deberia'] else 'apagada'}, así que la final "
+                f"tendría que decir {deberia}.")
+    dos = [r4(m["dice_medio"][j] * W1[j]) for j in range(2)]
+    tabla(
+        tabla_editorial(
+            "Hacia delante", ["neurona", "le llega", "listón", "pasa del listón por", "dice"],
+            filas, "idddd", [contexto]),
+        tabla_editorial(
+            "Lo que le llega a la final",
+            ["viene de", "lo que dice", "por el peso de su línea", "da"],
+            [[NEURONAS[j], s4(m["dice_medio"][j]), coma(W1[j], 2), s4(dos[j])] for j in range(2)]
+            + [["**la suma**", "", "", f"**{coma(c['llega_final'], 2)}**"]], "iddd",
+            ["La suma, redondeada a dos decimales, como en la tabla anterior."]),
+        tabla_editorial(
+            "Lo que falla, y el error", ["", "cuánto"],
+            [["lo que dice la final", s4(m["dice_final"])],
+             ["lo que tendría que decir", str(deberia)],
+             ["lo que falla: lo que dice menos lo que tendría que decir", s4(m["falla"], True)],
+             ["**el error en esta posición: lo que falla por sí mismo**",
+              f"**{s4(r4(m['falla']) ** 2)}**"]], "id",
+            ["Los números, redondeados a cuatro cifras, y cada cuenta hecha con los números "
+             "redondeados."]))
 
     s = c["dice_final"]
     e_mas = (s + PELIN - c["deberia"]) ** 2
-    L = ["HACIA ATRÁS (los números, redondeados a cuatro cifras, y",
-         "cada cuenta hecha con los números redondeados)",
-         "",
-         "TRAMO 1: LA CULPA DE LA FINAL",
-         "   cuánto se mueve el error si se mueve lo que dice:",
-         f"   si dijera una millonésima más, el error pasaría",
-         f"   de {coma(c['error'], 9)} a {coma(e_mas, 9)}: sube {coma((e_mas - c['error']) / PELIN, 3)}",
-         f"   millonésimas; el doble de lo que falla, {s4(m['falla'])}",
-         "",
-         "   lo que deja pasar su rampa: si le llegara una",
-         f"   millonésima más, lo que dice pasaría de {coma(c['dice_final'], 9)}",
-         f"   a {coma(float(rampa(c['pasa_final'] + PELIN)), 9)}: sube "
-         f"{coma((float(rampa(c['pasa_final'] + PELIN)) - c['dice_final']) / PELIN, 4)} millonésimas;",
-         "   y con la regla de la rampa, lo que dice, por lo que",
-         f"   le falta para 1: {s4(m['dice_final'])} por {s4(m['falta_final'])} da {s4(m['pasa_final'])}",
-         "",
-         f"   el doble de lo que falla                 {s4(m['doble']):>7}",
-         f"   por lo que deja pasar su rampa           {s4(m['pasa_final']):>7}",
-         f"   da la culpa de la final                  {s4(m['culpa_final']):>7}",
-         "",
-         "TRAMO 2: LAS DOS LÍNEAS QUE LLEGAN A LA FINAL",
-         "   (la culpa de la final, por lo que trajo esa línea)",
-         f"   la de la primera: {s4(m['culpa_final'])} por {s4(m['dice_medio'][0])}"
-         f" da {s4(m['lineas_final'][0])}",
-         f"   la de la segunda: {s4(m['culpa_final'])} por {s4(m['dice_medio'][1])}"
-         f" da {s4(m['lineas_final'][1])}",
-         "",
-         "TRAMO 3: CUÁNTA LE TOCA A CADA UNA DE LAS DE EN MEDIO",
-         f"{'':<31}{'la primera':>12}{'la segunda':>12}",
-         f"{'   culpa de la final':<31}{s4(m['culpa_final']):>12}{s4(m['culpa_final']):>12}",
-         f"{'   por el peso de su línea':<31}{firmado(W1[0], 2):>12}{firmado(W1[1], 2):>12}",
-         f"{'   le toca':<31}{s4(m['le_toca'][0]):>12}{s4(m['le_toca'][1]):>12}",
-         "",
-         f"{'   lo que dice':<31}{s4(m['dice_medio'][0]):>12}{s4(m['dice_medio'][1]):>12}",
-         f"{'   lo que le falta para 1':<31}{s4(m['falta_medio'][0]):>12}{s4(m['falta_medio'][1]):>12}",
-         f"{'   lo que deja pasar su rampa':<31}{s4(m['pasa_medio'][0]):>12}{s4(m['pasa_medio'][1]):>12}",
-         "",
-         f"{'   su culpa: lo que le toca,':<31}{s4(m['culpa_medio'][0]):>12}{s4(m['culpa_medio'][1]):>12}",
-         "   por lo que deja pasar su rampa",
-         "",
-         "TRAMO 4: LAS CUATRO LÍNEAS DE LA PRIMERA CAPA",
-         "   (la culpa de su neurona, por lo que trajo la línea:",
-         "   1 si el interruptor está subido, 0 si está bajado)"]
-    for j in range(2):
-        for i in range(2):
-            L.append(f"   {NEURONAS[j]}, del {ENTRADAS[i][3:]:<10}{s4(m['culpa_medio'][j]):>9} por "
-                     f"{int(c['x'][i])} da {s4(m['lineas_primera'][i][j])}")
-    tabla(L)
+    dice_mas = float(rampa(c["pasa_final"] + PELIN))
+    print("HACIA ATRÁS")
+    print()
+    tabla(
+        tabla_editorial(
+            "Tramo 1, medido: cuánto se mueven el error y lo que dice la final",
+            ["qué se mide", "tal cual", "una millonésima más arriba", "sube, en millonésimas"],
+            [["el error, si se mueve lo que dice", coma(c["error"], 9), coma(e_mas, 9),
+              coma((e_mas - c["error"]) / PELIN, 3)],
+             ["lo que dice, si se mueve lo que le llega", coma(c["dice_final"], 9),
+              coma(dice_mas, 9), coma((dice_mas - c["dice_final"]) / PELIN, 4)]], "iddd",
+            ["Lo que sube el error es el doble de lo que falla; lo que sube lo que dice es lo que "
+             "deja pasar su rampa. La tabla siguiente lo saca con cuentas."]),
+        tabla_editorial(
+            "Tramo 1: la culpa de la final", ["", "cuánto"],
+            [["lo que falla", s4(m["falla"])],
+             ["el doble de lo que falla", s4(m["doble"])],
+             ["lo que dice", s4(m["dice_final"])],
+             ["lo que le falta para 1", s4(m["falta_final"])],
+             ["lo que deja pasar su rampa: lo que dice, por lo que le falta para 1",
+              s4(m["pasa_final"])],
+             ["**la culpa de la final: el doble de lo que falla, por lo que deja pasar su rampa**",
+              f"**{s4(m['culpa_final'])}**"]], "id",
+            ["Cada cuenta, con los números redondeados a cuatro cifras."]),
+        tabla_editorial(
+            "Tramo 2: las dos líneas que llegan a la final",
+            ["la línea que viene de", "la culpa de la final", "por lo que trajo esa línea", "da"],
+            [[NEURONAS[j], s4(m["culpa_final"]), s4(m["dice_medio"][j]),
+              s4(m["lineas_final"][j])] for j in range(2)], "iddd",
+            ["Lo que trajo esa línea: lo que dice la neurona de la que viene."]),
+        tabla_editorial(
+            "Tramo 3: cuánta le toca a cada una de las de en medio",
+            ["", NEURONAS[0], NEURONAS[1]],
+            [["la culpa de la final", s4(m["culpa_final"]), s4(m["culpa_final"])],
+             ["por el peso de su línea", firmado(W1[0], 2), firmado(W1[1], 2)],
+             ["le toca", s4(m["le_toca"][0]), s4(m["le_toca"][1])],
+             ["lo que dice", s4(m["dice_medio"][0]), s4(m["dice_medio"][1])],
+             ["lo que le falta para 1", s4(m["falta_medio"][0]), s4(m["falta_medio"][1])],
+             ["lo que deja pasar su rampa", s4(m["pasa_medio"][0]), s4(m["pasa_medio"][1])],
+             ["**su culpa: lo que le toca, por lo que deja pasar su rampa**",
+              f"**{s4(m['culpa_medio'][0])}**", f"**{s4(m['culpa_medio'][1])}**"]], "idd",
+            ["Lo que deja pasar su rampa: lo que dice, por lo que le falta para 1."]),
+        tabla_editorial(
+            "Tramo 4: las cuatro líneas de la primera capa",
+            ["línea", "culpa de su neurona", "por lo que trajo", "da"],
+            [[f"{NEURONAS[j]}, del {ENTRADAS[i][3:]}", s4(m["culpa_medio"][j]),
+              str(int(c["x"][i])), s4(m["lineas_primera"][i][j])]
+             for j in range(2) for i in range(2)], "iddd",
+            ["Lo que trajo la línea: 1 si el interruptor está subido, 0 si está bajado."]))
     c["mano"] = m
     return c
 
@@ -404,11 +422,6 @@ def bloque_4(red, p):
 def bloque_4_bruto(red, p, c):
     """La comprobación a lo bruto de los pesos: moverlos un pelín y ver cuánto cambia el error."""
     gW, _ = red.gradiente_retro(TABLA_XOR[p:p + 1], Y_XOR[p:p + 1])
-    L = ["LA MISMA CULPA, A LO BRUTO",
-         "   se sube el peso una cienmilésima y se mira el error; se",
-         "   baja una cienmilésima y se mira otra vez; la culpa es lo",
-         "   que va de uno a otro, entre lo que se ha movido",
-         ""]
     filas = []
     for (capa, i, j, nombre) in ((0, 1, 1, "la segunda, del de arriba"),
                                  (1, 1, 0, "la final, de la segunda")):
@@ -419,21 +432,22 @@ def bloque_4_bruto(red, p, c):
         # cambia de un ordenador a otro (redondeo), y el libro no imprime nada que dependa
         # de la máquina (regla 10).
         assert abs(atajo - bruta) < 1e-10, f"atajo y fuerza bruta difieren en {abs(atajo - bruta)}"
-        L += [f"   {nombre}",
-              f"      por el atajo    {coma(atajo, 10)}",
-              f"      a lo bruto      {coma(bruta, 10)}"]
     nombre, atajo, bruta, mas, menos = filas[0]
-    L += ["",
-          "   las dos, iguales en sus diez primeros decimales; lo que",
-          "   va de una a otra no llega a una diezmilmillonésima",
-          "",
-          f"   ({nombre}: con el peso una cienmilésima",
-          f"   más arriba, el error es {coma(mas, 10)};",
-          f"   una cienmilésima más abajo, {coma(menos, 10)})",
-          "",
-          f"   el redondeo, en una calculadora de seis decimales: un",
-          f"   tercio es {coma(round(1/3, 6), 6)}, y por tres da {coma(3 * round(1/3, 6), 6)}"]
-    tabla(L)
+    tabla(
+        tabla_editorial(
+            "La misma culpa, a lo bruto", ["peso", "por el atajo", "a lo bruto"],
+            [[n, coma(a, 10), coma(b, 10)] for n, a, b, _, _ in filas], "idd",
+            ["A lo bruto: se sube el peso una cienmilésima y se mira el error; se baja una "
+             "cienmilésima y se mira otra vez; la culpa es lo que va de uno a otro, entre lo que "
+             "se ha movido.",
+             "Las dos, iguales en sus diez primeros decimales: lo que va de una a otra no llega a "
+             "una diezmilmillonésima."]),
+        tabla_editorial(
+            f"El error, con {nombre} movido", ["el peso", "el error"],
+            [["una cienmilésima más arriba", coma(mas, 10)],
+             ["una cienmilésima más abajo", coma(menos, 10)]], "id",
+            [f"El redondeo, en una calculadora de seis decimales: un tercio es "
+             f"{coma(round(1/3, 6), 6)}, y por tres da {coma(3 * round(1/3, 6), 6)}."]))
     return filas
 
 
@@ -443,46 +457,38 @@ def bloque_5(red):
     gW, gb = red.gradiente_retro(TABLA_XOR, Y_XOR)
     siguiente = copia(red)
     un_paso(siguiente)
-    L = ["5. EL PASO: CADA PESO SE MUEVE CONTRA SU CULPA",
-         f"(la culpa de cada peso es la media de su culpa en las",
-         f"cuatro posiciones; se mueve {coma(POQUITO, 1)} veces esa culpa, en",
-         "contra: si la culpa es negativa, sube; si es positiva, baja)",
-         "",
-         "LA CULPA DE LA SEGUNDA, DEL DE ARRIBA, POSICIÓN A POSICIÓN",
-         f"{'posición':<19}{'culpa':>10}"]
-    for p in range(4):
-        L.append(f"{POSICIONES[p]:<19}{coma(por_pos[p][0][1, 1], 4):>10}")
     media = float(np.mean([por_pos[p][0][1, 1] for p in range(4)]))
-    L += [f"{'-'*17:<19}{'-'*7:>10}", f"{'la media':<19}{coma(media, 4):>10}", ""]
     assert abs(media - gW[0][1, 1]) < 1e-12, "la media de las cuatro no es la culpa del programa"
-    L += [f"{'peso':<26}{'culpa':>8}{'se mueve':>10}{'antes':>9}{'después':>9}",
-          f"{'-'*24:<26}{'-'*7:>8}{'-'*8:>10}{'-'*6:>9}{'-'*7:>9}"]
     filas = []
     for j in range(2):
         for i in range(2):
             filas.append((f"{NEURONAS[j]}, del {ENTRADAS[i][3:]}", 0, i, j))
     for j in range(2):
         filas.append((f"la final, de {NEURONAS[j]}", 1, j, 0))
+    pasos = []
     for nombre, capa, i, j in filas:
         culpa = gW[capa][i, j]
         antes, despues = red.W[capa][i, j], siguiente.W[capa][i, j]
         assert abs((antes - POQUITO * culpa) - despues) < 1e-12, "el paso no es el del programa"
-        L.append(f"{nombre:<26}{firmado(culpa, 4):>8}{firmado(-POQUITO * culpa, 4):>10}"
-                 f"{coma(antes, 4):>9}{coma(despues, 4):>9}")
-    tabla(L)
+        pasos.append([nombre, firmado(culpa, 4), firmado(-POQUITO * culpa, 4), coma(antes, 4),
+                      coma(despues, 4)])
+    titulo("5. EL PASO: CADA PESO SE MUEVE CONTRA SU CULPA")
+    tabla(
+        tabla_editorial(
+            "La culpa de la segunda, del de arriba, posición a posición", ["posición", "culpa"],
+            [[POSICIONES[p], coma(por_pos[p][0][1, 1], 4)] for p in range(4)]
+            + [["**la media**", f"**{coma(media, 4)}**"]], "id",
+            ["La culpa de cada peso es la media de su culpa en las cuatro posiciones."]),
+        tabla_editorial(
+            "El paso: cada peso se mueve contra su culpa",
+            ["peso", "culpa", "se mueve", "antes", "después"], pasos, "idddd",
+            [f"Se mueve {coma(POQUITO, 1)} veces su culpa, en contra: si la culpa es negativa, "
+             "sube; si es positiva, baja."]))
     return gW
 
 
 def bloque_6():
-    L = ["6. LO QUE DEJA PASAR CADA UNA",
-         "(cuánto se mueve lo que dice la neurona por cada unidad",
-         "que se mueve lo que le llega; medido subiendo lo que le",
-         "llega una millonésima)",
-         "",
-         f"{'pasa del':>9}{'la rampa corta':>22}{'el codo':>22}",
-         f"{'listón':>9}{'dice':>10}{'deja pasar':>12}{'dice':>10}{'deja pasar':>12}",
-         f"{'por':>9}",
-         f"{'-'*7:>9}{'-'*6:>10}{'-'*10:>12}{'-'*6:>10}{'-'*10:>12}"]
+    filas = []
     for x in PUNTOS_RAMPA:
         etiqueta = "0" if x == 0 else ("+" if x > 0 else "-") + coma(abs(x), 1 if x % 1 else 0)
         if x == 0:
@@ -491,13 +497,19 @@ def bloque_6():
             codo_dice, codo_pasa = coma(0.0, 1), "(el codo)"
         else:
             codo_dice, codo_pasa = coma(float(el_codo(x)), 1), coma(deja_pasar(el_codo, x), 3)
-        L.append(f"{etiqueta:>9}{coma(float(rampa(x)), 3):>10}{coma(deja_pasar(rampa, x), 3):>12}"
-                 f"{codo_dice:>10}{codo_pasa:>12}")
+        filas.append([etiqueta, coma(float(rampa(x)), 3), coma(deja_pasar(rampa, x), 3),
+                      codo_dice, codo_pasa])
     xs = np.linspace(-10, 10, 20001)
     maximo = max(deja_pasar(rampa, float(x)) for x in xs)
-    L += ["", f"lo más que deja pasar la rampa corta, en cualquier sitio:",
-          f"{coma(maximo, 3)} (en el centro, donde pasa del listón por 0)"]
-    tabla(L)
+    titulo("6. LO QUE DEJA PASAR CADA UNA")
+    tabla(tabla_editorial(
+        "Lo que deja pasar cada una",
+        ["pasa del listón por", "la rampa corta: dice", "la rampa corta: deja pasar",
+         "el codo: dice", "el codo: deja pasar"], filas, "ddddd",
+        ["Deja pasar: cuánto se mueve lo que dice la neurona por cada unidad que se mueve lo que "
+         "le llega; medido subiendo lo que le llega una millonésima.",
+         f"Lo más que deja pasar la rampa corta, en cualquier sitio: {coma(maximo, 3)}, en el "
+         "centro, donde pasa del listón por 0."]))
     return maximo
 
 
@@ -513,43 +525,40 @@ def bloque_7():
     gW, _ = red.gradiente_retro(Xc, yc)
     m = [float(np.abs(g).mean()) for g in gW]
     n = len(m)
-    L = [f"7. LA CULPA, CAPA A CAPA, EN LA RED DE {PROFUNDIDAD_CADENA} CAPAS EN MEDIO",
-         f"(como en los 80: {ANCHO} neuronas por capa, recién arrancada,",
-         f"sin entrenar; la culpa se mide con {len(Xc)} ejemplos de {ANCHO}",
-         "números puestos al azar, cada uno con un sí o un no al azar)",
-         "",
-         f"entre la entrada, las {PROFUNDIDAD_CADENA} capas de en medio y la final hay",
-         f"{n} capas de líneas, cada una con sus pesos; se cuentan desde",
-         "la entrada: la 1.ª es la que sale de la entrada, y la de",
-         "encima de cada una es la siguiente, más cerca de la final",
-         "",
-         "la culpa de una capa de líneas es la media de la culpa de",
-         "sus pesos, sin mirar el signo",
-         "",
-         f"{'capa de líneas':<24}{'culpa':>12}{'de cada 1 de':>16}",
-         f"{'(de la final hacia':<24}{'':>12}{'la de encima,':>16}",
-         f"{'la entrada)':<24}{'':>12}{'le llega':>16}",
-         f"{'-'*22:<24}{'-'*9:>12}{'-'*14:>16}"]
+    filas = []
     for k in range(n - 1, -1, -1):
         nombre = (f"la {k + 1}.ª, la última" if k == n - 1 else
                   "la 1.ª, la primera" if k == 0 else f"la {k + 1}.ª")
         factor = "" if k == n - 1 else coma(m[k] / m[k + 1], 3)
-        L.append(f"{nombre:<24}{coma(m[k], 7):>12}{factor:>16}")
+        filas.append([nombre, coma(m[k], 7), factor])
     veces = m[-1] / m[0]
     factores = [r4(float(f"{m[k] / m[k + 1]:.3f}")) for k in range(n - 2, -1, -1)]
     producto = 1.0
     for f in factores:
         producto *= f
-    L += ["",
-          f"de la última a la primera: {coma(m[-1], 7)} entre {coma(m[0], 7)};",
-          f"la culpa se queda en una {miles(round(veces))}.ª parte: {miles(round(veces))} veces menos",
-          "",
-          "los cinco números de la última columna, multiplicados:",
-          "   " + " por ".join(coma(f, 3) for f in factores[:3]) + " por",
-          "   " + " por ".join(coma(f, 3) for f in factores[3:]) + f" da {s4(producto)}",
-          f"uno entre {s4(producto)} da {miles(round(1 / producto))}: casi el {miles(round(veces))} (lo que falta",
-          "es el redondeo de los cinco números)"]
-    tabla(L)
+    titulo(f"7. LA CULPA, CAPA A CAPA, EN LA RED DE {PROFUNDIDAD_CADENA} CAPAS EN MEDIO")
+    tabla(
+        tabla_editorial(
+            f"La culpa, capa a capa, en la red de {PROFUNDIDAD_CADENA} capas en medio",
+            ["capa de líneas, de la final hacia la entrada", "culpa",
+             "de cada 1 de la de encima, le llega"], filas, "idd",
+            [f"Como en los 80: {ANCHO} neuronas por capa, recién arrancada, sin entrenar; la "
+             f"culpa se mide con {len(Xc)} ejemplos de {ANCHO} números puestos al azar, cada uno "
+             "con un sí o un no al azar.",
+             f"Entre la entrada, las {PROFUNDIDAD_CADENA} capas de en medio y la final hay {n} "
+             "capas de líneas; se cuentan desde la entrada: la 1.ª es la que sale de la entrada. "
+             "La culpa de una capa de líneas es la media de la culpa de sus pesos, sin mirar el "
+             "signo."]),
+        tabla_editorial(
+            "De la última capa de líneas a la primera", ["", "cuánto"],
+            [["la culpa de la última", coma(m[-1], 7)],
+             ["la culpa de la primera", coma(m[0], 7)],
+             ["**la última entre la primera: cuántas veces menos le llega**",
+              f"**{miles(round(veces))}**"],
+             ["los cinco números de la última columna, multiplicados", s4(producto)],
+             ["uno entre ese producto", miles(round(1 / producto))]], "id",
+            [f"Uno entre el producto da casi el {miles(round(veces))}: lo que falta es el "
+             "redondeo de los cinco números."]))
     suma_de_encima(red, Xc[:1], yc[:1])
     return m
 
@@ -572,19 +581,13 @@ def suma_de_encima(red, X, y):
     pesos = red.W[capa][j, :]
     orden = list(np.argsort(-np.abs(encima * pesos)))
     vistas, resto = orden[:CUANTAS_SE_ENSENAN], orden[CUANTAS_SE_ENSENAN:]
-    L = [f"UNA NEURONA DE LA {capa}.ª CAPA DE EN MEDIO, CON UN EJEMPLO",
-         f"(la de su capa a la que más culpa le llega; recibe culpa de",
-         f"las {len(encima)} neuronas de la capa de encima, cada una por el peso",
-         "de la línea que las une, y la suma pasa por su rampa)",
-         "",
-         f"{'de la de encima':<18}{'su culpa':>11}{'por el peso':>13}{'da':>12}",
-         f"{'-' * 16:<18}{'-' * 9:>11}{'-' * 11:>13}{'-' * 9:>12}"]
+    filas = []
     total = 0.0
     for k in vistas:
         c, w = r4(float(encima[k])), round(float(pesos[k]), 3)
         v = r4(c * w)
         total += v
-        L.append(f"{'la ' + str(k + 1) + '.ª':<18}{s4(c):>11}{firmado(w, 3):>13}{s4(v):>12}")
+        filas.append([f"la {k + 1}.ª", s4(c), firmado(w, 3), s4(v)])
     otras = r4(float((encima[resto] * pesos[resto]).sum()))
     total += otras
     total = r4(total)
@@ -594,25 +597,33 @@ def suma_de_encima(red, X, y):
     exacto = float(deltas[capa - 1][0, j])
     assert abs(culpa - exacto) <= 0.02 * abs(exacto), f"la suma a mano se aleja: {culpa} y {exacto}"
     media = float(np.abs(encima).mean())
-    L += [f"{'las otras ' + str(len(resto)) + ', juntas':<42}{s4(otras):>12}",
-          f"{'':<42}{'-' * 9:>12}",
-          f"{'la suma':<42}{s4(total):>12}",
-          f"por lo que deja pasar su rampa (dice {s4(dice)})",
-          f"{'   (' + s4(dice) + ' por ' + s4(r4(1 - dice)) + ')':<42}{s4(pasa):>12}",
-          f"{'su culpa':<42}{s4(culpa):>12}",
-          "",
-          f"culpa media de las {len(encima)} de encima, sin mirar el signo: {s4(media)}",
-          f"la de ésta, {s4(culpa)}: más que la media de las de encima,",
-          "porque las que llegan por sus líneas se suman"]
-    tabla(L)
+    filas.append([f"las otras {len(resto)}, juntas", "", "", s4(otras)])
+    filas.append(["**la suma**", "", "", f"**{s4(total)}**"])
+    tabla(
+        tabla_editorial(
+            f"Una neurona de la {capa}.ª capa de en medio, con un ejemplo",
+            ["de la de encima", "su culpa", "por el peso", "da"], filas, "iddd",
+            [f"La de su capa a la que más culpa le llega. Recibe culpa de las {len(encima)} "
+             "neuronas de la capa de encima, cada una por el peso de la línea que las une."]),
+        tabla_editorial(
+            "Y la suma pasa por su rampa", ["", "cuánto"],
+            [["la suma", s4(total)], ["lo que dice", s4(dice)],
+             ["lo que le falta para 1", s4(r4(1 - dice))],
+             ["lo que deja pasar su rampa: lo que dice, por lo que le falta", s4(pasa)],
+             ["**su culpa: la suma, por lo que deja pasar**", f"**{s4(culpa)}**"],
+             [f"culpa media de las {len(encima)} de encima, sin mirar el signo", s4(media)]],
+            "id",
+            ["Su culpa es más que la media de las de encima, porque las que llegan por sus "
+             "líneas se suman."]))
 
 
 def bloque_7_escala(factor_20):
     mm = KILOMETRO_EN_MM / factor_20
-    L = ["A ESCALA: SI LA CULPA DE LA ÚLTIMA CAPA DE LÍNEAS FUERA",
-         "UN KILÓMETRO",
-         f"con 20 capas en medio, a la primera le llegarían {coma(mm, 3)} mm"]
-    tabla(L)
+    tabla(tabla_editorial(
+        "A escala", ["la culpa de la capa de líneas", "con 20 capas en medio"],
+        [["la última", "1 kilómetro"], ["la primera", f"{coma(mm, 3)} mm"]], "id",
+        ["Si la culpa de la última capa de líneas fuera un kilómetro, lo que le llegaría a la "
+         "primera, como en los 80."]))
 
 
 def terreno(red):
@@ -675,48 +686,49 @@ def un_arranque(s):
 def bloque_8(red, xs, ys, camino, malas, buenas):
     capa, i, j = PESO_DEL_TERRENO
     k = int(np.argmin(ys))
-    L = ["8. EL TERRENO DEL ERROR, CON UN SOLO PESO",
-         f"(la red entrenada; se mueve solo la línea de la primera a",
-         "la final, y los demás pesos se quedan quietos; el error es",
-         "la media de las cuatro posiciones)",
-         "",
-         f"donde lo dejó el entrenamiento: peso {coma(red.W[capa][i, j], 2)}, "
-         f"error {coma(red.error(TABLA_XOR, Y_XOR), 4)}",
-         f"el fondo de esta curva: peso {coma(xs[k], 1)}, error {coma(ys[k], 4)}",
-         f"con el peso en {firmado(xs[0], 0)}: error {coma(ys[0], 4)}; "
-         f"en {firmado(xs[-1], 0)}: {coma(ys[-1], 4)}",
-         "",
-         f"cuesta abajo, moviendo solo ese peso, desde {coma(INICIO_CUESTA_ABAJO, 1)}:",
-         f"{'paso':>6}{'peso':>10}{'error':>10}{'lo que se movió':>20}",
-         f"{'':>6}{'':>10}{'':>10}{'en esos pasos':>20}"]
+    titulo("8. EL TERRENO DEL ERROR, CON UN SOLO PESO")
+    filas = []
     for n in range(0, len(camino), CADA_CUANTOS):
         v, e = camino[n]
         movido = "" if n == 0 else coma(v - camino[n - CADA_CUANTOS][0], 2)
-        L.append(f"{n:>6}{coma(v, 2):>10}{coma(e, 4):>10}{movido:>20}")
-    tabla(L)
+        filas.append([str(n), coma(v, 2), coma(e, 4), movido])
+    tabla(
+        tabla_editorial(
+            "El terreno del error, con un solo peso", ["dónde", "peso", "error"],
+            [["donde lo dejó el entrenamiento", coma(red.W[capa][i, j], 2),
+              coma(red.error(TABLA_XOR, Y_XOR), 4)],
+             ["el fondo de esta curva", coma(xs[k], 1), coma(ys[k], 4)],
+             ["un extremo", firmado(xs[0], 0), coma(ys[0], 4)],
+             ["el otro extremo", firmado(xs[-1], 0), coma(ys[-1], 4)]], "idd",
+            ["La red entrenada; se mueve solo la línea de la primera a la final, y los demás "
+             "pesos se quedan quietos. El error es la media de las cuatro posiciones."]),
+        tabla_editorial(
+            f"Cuesta abajo, moviendo solo ese peso, desde {coma(INICIO_CUESTA_ABAJO, 1)}",
+            ["paso", "peso", "error", f"lo que se movió en esos {CADA_CUANTOS} pasos"], filas,
+            "dddd", [f"Cada paso mueve el peso {coma(POQUITO, 1)} veces su culpa, en contra."]))
     siguen = [m for m in malas if not m[2]]
     salen = [m for m in malas if m[2]]
     rango = lambda xs: (coma(min(xs), 4) if abs(min(xs) - max(xs)) < 5e-5
                         else f"{coma(min(xs), 4)} a {coma(max(xs), 4)}")
-    L = [f"LAS QUE SE ATASCAN: {len(malas)} DE {len(malas) + len(buenas)} ARRANQUES",
-         f"(error tras {miles(PASOS)} pasos, y después de darles",
-         f"{miles(PASOS_EXTRA_ATASCADAS)} pasos más)",
-         "",
-         f"{'':<22}{'tras':>18}{'con los pasos':>20}",
-         f"{'':<22}{miles(PASOS) + ' pasos':>18}{'de más':>20}",
-         f"{'las ' + str(len(siguen)) + ' que siguen':<22}{rango([m[0] for m in siguen]):>18}"
-         f"{rango([m[1] for m in siguen]):>20}",
-         f"{('la que sale' if len(salen) == 1 else 'las ' + str(len(salen)) + ' que salen'):<22}"
-         f"{rango([m[0] for m in salen]):>18}{rango([m[1] for m in salen]):>20}",
-         f"{'las que resuelven':<22}{rango(buenas):>18}",
-         "",
-         f"de las {len(siguen)} que siguen, dicen entre 0,45 y 0,55, «no lo",
-         f"tengo claro», en dos posiciones: {sum(1 for m in siguen if m[3] == 2)}",
-         "",
-         "el error de decir 0,5 en dos posiciones y acertar las otras",
-         f"dos: 0,5 por 0,5 es {coma(0.25, 2)}; dos veces, {coma(0.5, 1)}; entre cuatro, {coma(0.125, 3)}"]
     assert salen, "se esperaba que alguna saliera con los pasos de más"
-    tabla(L)
+    tabla(
+        tabla_editorial(
+            f"Las que se atascan: {len(malas)} de {len(malas) + len(buenas)} arranques",
+            ["", f"error tras {miles(PASOS)} pasos", f"con {miles(PASOS_EXTRA_ATASCADAS)} pasos más"],
+            [[f"las {len(siguen)} que siguen", rango([m[0] for m in siguen]),
+              rango([m[1] for m in siguen])],
+             ["la que sale" if len(salen) == 1 else f"las {len(salen)} que salen",
+              rango([m[0] for m in salen]), rango([m[1] for m in salen])],
+             ["las que resuelven", rango(buenas), ""]], "idd",
+            [f"Las que dicen entre 0,45 y 0,55, «no lo tengo claro», en dos de las cuatro "
+             f"posiciones: {sum(1 for m in siguen if m[3] == 2)} de las {len(siguen)} que siguen."]),
+        tabla_editorial(
+            "El error de decir 0,5 en dos posiciones y acertar las otras dos", ["", "cuánto"],
+            [["lo que falla en cada una de las dos", "0,5"],
+             ["por sí mismo", coma(0.25, 2)],
+             ["dos veces", coma(0.5, 1)],
+             ["**entre cuatro posiciones: el error**", f"**{coma(0.125, 3)}**"]], "id",
+            ["En las otras dos acierta: no falla nada."]))
 
 
 def guardar_datos(red_final, red_caso, c, xs, ys, camino, malla, mapa):
