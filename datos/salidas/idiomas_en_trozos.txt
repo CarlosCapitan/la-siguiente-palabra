@@ -1,0 +1,72 @@
+máquina: arm64, Darwin 25.6.0
+troceador: Qwen/Qwen2.5-0.5B   transformers 5.17.0
+fecha: 2026-10-10
+
+--- 1. CUÁNTOS TROZOS CUESTA LO MISMO ---
+
+::: tabla
+La Declaración Universal de Derechos Humanos, entera, en trozos
+
+| idioma | letras | trozos | por cada 100 del castellano |
+|:--|:--|--:|--:|
+| inglés | latinas | 1.996 | 69 |
+| castellano | latinas | 2.897 | 100 |
+| francés | latinas | 3.074 | 106 |
+| alemán | latinas | 3.221 | 111 |
+| catalán | latinas | 3.440 | 119 |
+| ruso | cirílicas | 3.500 | 121 |
+| euskera | latinas | 4.079 | 141 |
+| hindi | del hindi | 10.603 | 366 |
+| griego | griegas | 10.638 | 367 |
+
+El mismo texto en cada idioma, contado con la caja de la máquina del capítulo.
+:::
+castellano: 1.927 palabras, 11.964 caracteres, 2.897 trozos
+inglés: 1.747 palabras, 10.637 caracteres, 1.996 trozos
+francés: 1.949 palabras, 11.901 caracteres, 3.074 trozos
+catalán: 1.833 palabras, 11.066 caracteres, 3.440 trozos
+alemán: 1.642 palabras, 11.936 caracteres, 3.221 trozos
+euskera: 1.378 palabras, 11.000 caracteres, 4.079 trozos
+ruso: 1.602 palabras, 11.805 caracteres, 3.500 trozos
+griego: 1.910 palabras, 12.431 caracteres, 10.638 trozos
+hindi: 2.128 palabras, 11.500 caracteres, 10.603 trozos
+bytes que ocupa una letra: «a» 1, «á» 2, «ñ» 2, «ж» 2, «λ» 2, «न» 3
+
+--- 2. EL COMIENZO DEL ARTÍCULO 1 ---
+
+::: tabla
+El comienzo del artículo 1, trozo a trozo
+
+| idioma | trozos | cómo se parte |
+|:--|--:|:--|
+| castellano | 18 | `Todos` `_los` `_ser` `es` `_human` `os` `_n` `acen` `_lib` `res` `_e` `_ig` `uales` `_en` `_dign` `idad` `_y` `_derechos` |
+| inglés | 12 | `All` `_human` `_beings` `_are` `_born` `_free` `_and` `_equal` `_in` `_dignity` `_and` `_rights` |
+
+El guion bajo es el espacio de delante, que la palabra lleva dentro de una frase.
+:::
+
+--- 3. QUÉ HAY EN LA CAJA ---
+
+::: tabla
+Las piezas de la caja, según sus letras
+
+| letras | piezas | de cada cien |
+|:--|--:|--:|
+| latinas | 94.600 | 62,4 |
+| chinas | 25.922 | 17,1 |
+| sin letras | 8.726 | 5,8 |
+| cirílicas | 4.149 | 2,7 |
+| árabes | 3.979 | 2,6 |
+| coreanas | 3.589 | 2,4 |
+| hebreas | 3.183 | 2,1 |
+| tailandesas | 2.550 | 1,7 |
+| japonesas | 1.678 | 1,1 |
+| otras | 1.631 | 1,1 |
+| pedazos de letra | 1.348 | 0,9 |
+| griegas | 232 | 0,2 |
+| del hindi | 56 | 0,0 |
+| marcas especiales | 22 | 0,0 |
+| **en total** | **151.665** | **100** |
+
+Cada pieza cuenta por la primera letra que lleva. «Pedazos de letra»: bytes que solos no forman ninguna.
+:::
