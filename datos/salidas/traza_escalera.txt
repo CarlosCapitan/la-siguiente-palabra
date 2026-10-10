@@ -7,7 +7,7 @@
 SELFTEST: las tres pruebas pasan.
 
 ########## capítulo 1: la escalera, paso a paso ##########
-fecha: 2026-10-09 18:42 UTC
+fecha: 2026-10-10 09:17 UTC
 máquina: Darwin arm64. La medición no
 depende de la máquina: repite los sorteos de ngrama.py con su
 semilla (20260914) y sale lo mismo en cualquier ordenador
@@ -114,7 +114,7 @@ De media en todos los sorteos: cuántas letras distintas pueden venir en la casi
 ::: tabla
 Palabras del Quijote en cada muestra
 
-| perilla | trozos | palabras del Quijote | de cada cien |
+| perilla | grupos de letras | palabras del Quijote | de cada cien |
 |:--|--:|--:|--:|
 | nada | 32 | 5 | 16 % |
 | 1 letra | 40 | 12 | 30 % |
@@ -122,7 +122,7 @@ Palabras del Quijote en cada muestra
 | 3 letras | 39 | 24 | 62 % |
 | 5 letras | 43 | 41 | 95 % |
 
-Trozos: lo que hay entre espacio y espacio, sin los signos pegados.
+Grupos de letras: lo que hay entre espacio y espacio, sin los signos pegados.
 
 Las de la perilla en nada: «et» «o» «es» «o» «es».
 :::
