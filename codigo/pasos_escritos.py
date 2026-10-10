@@ -19,6 +19,10 @@ Predicciones, escritas ANTES de ejecutar (10 de octubre de 2026):
 El resultado se lee del número que sigue al último «Resultado:»; si no lo hay, del último número
 de la respuesta, y se cuenta aparte.
 
+Rótulo (auditoría del 10 de octubre de 2026): la primera columna de la tabla, que no tenía
+cabecera, pasa a llamarse «lo que se cuenta». No se volvió a ejecutar: se cambió aquí y, con la
+misma sustitución de texto, en la salida guardada. Es el procedimiento de L25.
+
 Uso (desde codigo/, con HF_HUB_OFFLINE=1 para no descargar nada):
     python pasos_escritos.py --selftest
     python pasos_escritos.py > ../datos/salidas/pasos_escritos.txt
@@ -132,7 +136,7 @@ def main():
     mediana = (largos[9] + largos[10]) // 2
     print("\n".join(tabla_editorial(
         f"Multiplicar escribiendo la cuenta paso a paso ({nombre.split()[0]})",
-        ["", "de 20"],
+        ["lo que se cuenta", "de 20"],
         [["aciertos", f"{aciertos}"],
          ["terminan con «Resultado:»", f"{con_resultado}"],
          ["se cortan sin terminar", f"{cortadas}"]], "id",

@@ -44,6 +44,14 @@ con cuatro, el rótulo «la pregunta» no cabía en la página. Mismo procedimie
 Para esa última, el límite de trozos sube de 160 a 600 (MAX_NUEVOS_LIBRE): una multiplicación
 escrita paso a paso no cabe en 160, y cortarla la daría por fallada sin haber terminado.
 
+Auditoría del 10 de octubre de 2026, mismo procedimiento (rótulos y notas, ningún número): la
+última columna de la tabla del 7.000M pasa a «probabilidad media», con una nota que dice que es la
+de que el primer trozo abra una orden, que es lo que mide `p_abre` (un rótulo que lo dijera entero
+estrechaba tanto la primera columna que la partía en tres renglones); la última de la tabla del
+32.000M, a «termina con el 0», que es la clave que ya usaba su nota, por lo mismo; la nota de la orden bien escrita deja de decir «JSON»; y la
+muestra del crudo dice que se corta al llegar al límite de trozos cuando llega (se comprueba
+volviendo a trocear lo que escribió: la primera respuesta del crudo da 160).
+
 Uso (desde codigo/, con HF_HUB_OFFLINE=1 para no descargar nada):
     python ordenes_escritas.py --selftest
     python ordenes_escritas.py > ../datos/salidas/ordenes_escritas.txt
@@ -437,7 +445,7 @@ def main():
                   fila(f"{forma}, con calculadora y frase colada", res[forma, "colada"], True)]
     print("\n".join(tabla_editorial(
         f"Multiplicar con y sin calculadora ({nombre.split()[0]})",
-        ["cómo se le pregunta", "aciertos", "escribe una orden", "termina con el 0 de la frase"],
+        ["cómo se le pregunta", "aciertos", "escribe una orden", "termina con el 0"],
         filas, "iddd",
         [f"Modelo de {nombre.split()[0]}, adiestrado y comprimido ({repo.split('/')[-1]}).",
          NOTA_PREGUNTAS, NOTA_FORMAS,
@@ -517,7 +525,8 @@ def main():
                 bien += expresion is not None
                 p_abre.append(float(p[id_orden]))
                 if crudo_ejemplo is None and "crudo" in nombre and forma == "con restricción":
-                    crudo_ejemplo = (a, b, escrito)
+                    cortado = len(tok.encode(escrito, add_special_tokens=False)) >= MAX_NUEVOS
+                    crudo_ejemplo = (a, b, escrito, cortado)
                 registros.append([nombre, f"{forma}, primera respuesta", a, b, prod, None,
                                   int(expresion is not None), expresion or motivo, escrito])
             filas.append([f"{nombre.split(' ', 1)[1]}, {forma}", f"{bien} de {N_PREGUNTAS}",
@@ -527,20 +536,23 @@ def main():
     print("\n".join(tabla_editorial(
         "¿Escribe órdenes sin adiestrar? (7.000M)",
         ["el modelo y la pregunta", "órdenes bien escritas",
-         "probabilidad media de abrir una orden"], filas, "idd",
+         "probabilidad media"], filas, "idd",
         ["La misma familia de 7.000 millones, antes y después del adiestramiento, con el mismo "
          "enunciado: la pregunta y la descripción de la calculadora, en el formato de conversación.",
-         "Orden bien escrita: «`<tool_call>`», un JSON con la calculadora y su expresión, y "
-         "«`</tool_call>`». Solo la primera respuesta.", NOTA_PREGUNTAS, NOTA_FORMAS,
+         "Orden bien escrita: «`<tool_call>`», entre llaves el nombre de la calculadora y la "
+         "cuenta, y «`</tool_call>`». Solo la primera respuesta.",
+         "Probabilidad media: la de que el primer trozo de la respuesta sea la marca que abre "
+         f"una orden, en las {N_PREGUNTAS} preguntas.", NOTA_PREGUNTAS, NOTA_FORMAS,
          NOTA_ESCRIBIR])))
     print()
     if crudo_ejemplo is not None:
-        a, b, escrito = crudo_ejemplo
+        a, b, escrito, cortado = crudo_ejemplo
         print("\n".join(muestra_editorial(
             "Lo que escribe el modelo en crudo, ante la primera pregunta",
             [f"Pregunta: {PREGUNTA.format(a=a, b=b)}", ""] + renglones(escrito.strip()),
             ["Modelo de 7.000M, sin adiestrar. Texto literal; los renglones largos se parten "
-             "donde caben.", NOTA_ESCRIBIR])))
+             "donde caben." + (f" Se corta al llegar al límite de {MAX_NUEVOS} trozos."
+                               if cortado else ""), NOTA_ESCRIBIR])))
         print()
 
     with open(SALIDA_CSV, "w", encoding="utf-8", newline="") as fh:
