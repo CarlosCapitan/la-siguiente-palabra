@@ -29,10 +29,29 @@ def norm(s):
                    if unicodedata.category(c) != 'Mn')
 
 
+# Lo que escribe un modelo, letra por letra, dentro de un bloque «::: muestra» (los renglones con
+# sangría de cuatro espacios) no es notación del libro: es salida de máquina, que la regla 6
+# prohíbe editar y que verificar_muestras coteja con su salida. Desde el capítulo 14 (10 de
+# octubre de 2026) esas muestras llevan lo que el modelo escribe de verdad —una orden con llaves
+# y un asterisco, una cuenta con su «=»— y eso es justo lo que el capítulo enseña; la prosa lo
+# explica símbolo a símbolo. Se exentan solo esos renglones: el título y las notas de la muestra,
+# y toda la prosa, se siguen vigilando igual.
+SANGRIA_MUESTRA = '    '
+
+
 def revisar(lineas, es_el_mapa=False):
     """Devuelve la lista de incidencias: (número de línea, clase, término, trozo)."""
     fallos = []
+    en_muestra = False
     for i, l in enumerate(lineas, 1):
+        if l.strip() == '::: muestra':
+            en_muestra = True
+            continue
+        if en_muestra and l.strip() == ':::':
+            en_muestra = False
+            continue
+        if en_muestra and l.startswith(SANGRIA_MUESTRA):
+            continue
         if l.strip().startswith('*[') or l.strip().startswith('[NO EJECUTADO'):
             continue
         l = MARCADO.sub(r'\1', l)
@@ -94,11 +113,19 @@ def selftest():
     en_el_mapa = revisar([implantadas['jerga'], implantadas['notacion']], es_el_mapa=True)
     solo_notacion = clases(en_el_mapa) == ['notacion']
     envuelto = revisar(["La máquina escribió `\\textcjk{下}`{=latex} y siguió."])
+    # Tercera: lo que escribe la máquina dentro de una muestra no cuenta, pero lo mismo en la
+    # prosa, o en el título de la muestra, sí.
+    muestra = ["::: muestra", "Lo que escribe la máquina", "", "    6396 * 7576 = 48406576", ":::"]
+    fuera = revisar(["La cuenta es 6396 * 7576 = 48406576."])
+    titulo = revisar(["::: muestra", "Lo que escribe: 3 × 4", "", "    texto", ":::"])
+    exenta = not revisar(muestra) and clases(fuera) == ['notacion'] and clases(titulo) == ['notacion']
     print(f"[3] invariante        en el mapa queda {clases(en_el_mapa)} "
           f"({'bien: solo la notación' if solo_notacion else 'MAL'}); "
-          f"envoltorio de imprenta: {len(envuelto)} incidencias")
-    if not solo_notacion or envuelto:
-        fallos.append("invariante: el mapa levanta solo la jerga, y el envoltorio no es notación")
+          f"envoltorio de imprenta: {len(envuelto)} incidencias; texto de máquina en una muestra "
+          f"exento, y fuera de ella o en su título, no: {exenta}")
+    if not solo_notacion or envuelto or not exenta:
+        fallos.append("invariante: el mapa levanta solo la jerga, el envoltorio no es notación y "
+                      "solo el texto de máquina de una muestra está exento")
 
     print()
     if fallos:
