@@ -1,0 +1,413 @@
+a,b,producto,leido,de_donde,trozos,cortada,respuesta
+6737,4820,32472340,32470340,Resultado,257,0,"Vamos a resolver la multiplicación paso a paso:
+
+1. Primero, multiplicamos 6737 por 0 (la unidad de 4820):
+   6737 * 0 = 0
+
+2. Luego, multiplicamos 6737 por 20 (la decena de 4820):
+   6737 * 20 = 134740
+
+3. Multiplicamos 6737 por 800 (la centena de 4820):
+   6737 * 800 = 5389600
+
+4. Finalmente, multiplicamos 6737 por 4000 (la unidad de mil de 4820):
+   6737 * 4000 = 26948000
+
+5. Ahora sumamos todos los resultados:
+   0 + 134740 + 5389600 + 26948000 = 32470340
+
+Resultado: 32470340"
+1691,5212,8813492,8807492,Resultado,253,0,"Vamos a resolver la multiplicación paso a paso:
+
+1. Primero, multiplicamos 1691 por 2 (la unidad de 5212):
+   1691 * 2 = 3382
+
+2. Luego, multiplicamos 1691 por 10 (la decena de 5212):
+   1691 * 10 = 16910
+
+3. Multiplicamos 1691 por 200 (las centenas de 5212):
+   1691 * 200 = 338200
+
+4. Finalmente, multiplicamos 1691 por 5000 (los miles de 5212):
+   1691 * 5000 = 8455000
+
+5. Ahora sumamos todos estos resultados:
+   3382 + 16910 + 338200 + 8455000 = 8807492
+
+Resultado: 8807492"
+6396,7576,48456096,48456096,Resultado,270,0,"Vamos a resolver la multiplicación paso a paso:
+
+1. Primero, multiplicamos 6396 por 6 (la unidad de 7576):
+   - 6396 * 6 = 38376
+
+2. Luego, multiplicamos 6396 por 70 (la decena de 7576):
+   - 6396 * 70 = 447720
+
+3. Multiplicamos 6396 por 500 (la centena de 7576):
+   - 6396 * 500 = 3198000
+
+4. Finalmente, multiplicamos 6396 por 7000 (la unidad de mil de 7576):
+   - 6396 * 7000 = 44772000
+
+5. Ahora sumamos todos los resultados:
+   - 38376 + 447720 + 3198000 + 44772000 = 48456096
+
+Resultado: 48456096"
+6357,6843,43500951,43486951,Resultado,444,0,"Vamos a resolver la multiplicación paso a paso:
+
+1. Primero, multiplicamos 6357 por 3 (la unidad de 6843):
+   - 6357 * 3 = 19071
+
+2. Luego, multiplicamos 6357 por 40 (la decena de 6843, recordemos que estamos multiplicando por 4 y luego desplazamos un lugar a la izquierda):
+   - 6357 * 4 = 25428
+   - 25428 desplazado un lugar a la izquierda = 254280
+
+3. Multiplicamos 6357 por 800 (la centena de 6843, multiplicamos por 8 y desplazamos dos lugares a la izquierda):
+   - 6357 * 8 = 50856
+   - 50856 desplazado dos lugares a la izquierda = 5085600
+
+4. Finalmente, multiplicamos 6357 por 6000 (la unidad de mil de 6843, multiplicamos por 6 y desplazamos tres lugares a la izquierda):
+   - 6357 * 6 = 38142
+   - 38142 desplazado tres lugares a la izquierda = 38142000
+
+5. Ahora sumamos todos los resultados:
+   - 19071
+   - 254280
+   - 5085600
+   - 38142000
+   - Suma total: 19071 + 254280 + 5085600 + 38142000 = 43486951
+
+Resultado: 43486951"
+5157,3844,19823508,19823508,Resultado,270,0,"Vamos a resolver la multiplicación paso a paso:
+
+1. Primero, multiplicamos 5157 por 4 (la unidad de 3844):
+   - 5157 * 4 = 20628
+
+2. Luego, multiplicamos 5157 por 40 (la decena de 3844):
+   - 5157 * 40 = 206280
+
+3. Multiplicamos 5157 por 800 (la centena de 3844):
+   - 5157 * 800 = 4125600
+
+4. Finalmente, multiplicamos 5157 por 3000 (la unidad de mil de 3844):
+   - 5157 * 3000 = 15471000
+
+5. Ahora sumamos todos los resultados:
+   - 20628 + 206280 + 4125600 + 15471000 = 19823508
+
+Resultado: 19823508"
+3724,7434,27684216,27678216,Resultado,678,0,"Vamos a resolver la multiplicación paso a paso:
+
+1. Primero, multiplicamos 3724 por 4 (la unidad de 7434):
+   - 4 * 4 = 16, escribimos 6 y llevamos 1
+   - 4 * 2 = 8, más el 1 que llevamos, son 9
+   - 4 * 7 = 28, escribimos 8 y llevamos 2
+   - 4 * 3 = 12, más el 2 que llevamos, son 14
+   - Resultado parcial: 14896
+
+2. Luego, multiplicamos 3724 por 30 (la decena de 7434):
+   - 3 * 4 = 12, escribimos 2 y llevamos 1
+   - 3 * 2 = 6, más el 1 que llevamos, son 7
+   - 3 * 7 = 21, escribimos 1 y llevamos 2
+   - 3 * 3 = 9, más el 2 que llevamos, son 11
+   - Resultado parcial: 111720 (desplazado una posición a la izquierda)
+
+3. Luego, multiplicamos 3724 por 400 (la centena de 7434):
+   - 4 * 4 = 16, escribimos 6 y llevamos 1
+   - 4 * 2 = 8, más el 1 que llevamos, son 9
+   - 4 * 7 = 28, escribimos 8 y llevamos 2
+   - 4 * 3 = 12, más el 2 que llevamos, son 14
+   - Resultado parcial: 1489600 (desplazado dos posiciones a la izquierda)
+
+4. Finalmente, multiplicamos 3724 por 7000 (la unidad de millar de 7434):
+   - 7 * 4 = 28, escribimos 8 y llevamos 2
+   - 7 * 2 = 14, más el 2 que llevamos, son 16
+   - 7 * 7 = 49, escribimos 9 y llevamos 4
+   - 7 * 3 = 21, más el 4 que llevamos, son 25
+   - Resultado parcial: 26068000 (desplazado tres posiciones a la izquierda)
+
+5. Ahora sumamos todos los resultados parciales:
+   - 14896
+   - 111720
+   - 1489600
+   - 26068000
+   - Suma total: 27678216
+
+Resultado: 27678216"
+8424,1042,8777808,8777808,Resultado,270,0,"Vamos a resolver la multiplicación paso a paso:
+
+1. Primero, multiplicamos 8424 por 2 (la unidad de 1042):
+   8424 * 2 = 16848
+
+2. Luego, multiplicamos 8424 por 40 (la decena de 1042, recordemos que el 4 representa 40):
+   8424 * 40 = 336960
+
+3. Luego, multiplicamos 8424 por 0 (la centena de 1042, que es 0):
+   8424 * 0 = 0
+
+4. Finalmente, multiplicamos 8424 por 1000 (el millar de 1042, que es 1000):
+   8424 * 1000 = 8424000
+
+5. Ahora sumamos todos los resultados:
+   16848 + 336960 + 0 + 8424000 = 8777808
+
+Resultado: 8777808"
+9407,5827,54814589,55011589,Resultado,295,0,"Vamos a resolver la multiplicación paso a paso:
+
+1. Primero, multiplicamos 9407 por 7 (la unidad de 5827):
+   9407 * 7 = 65849
+
+2. Luego, multiplicamos 9407 por 20 (la decena de 5827, que es 2 * 10):
+   9407 * 20 = 188140
+
+3. Multiplicamos 9407 por 800 (la centena de 5827, que es 8 * 100):
+   9407 * 800 = 7525600
+
+4. Finalmente, multiplicamos 9407 por 5000 (la unidad de mil de 5827, que es 5 * 1000):
+   9407 * 5000 = 47035000
+
+5. Ahora sumamos todos los resultados:
+   65849 + 188140 + 7525600 + 47035000 = 55011589
+
+Resultado: 55011589"
+6367,8222,52349474,52340514,Resultado,317,0,"Vamos a resolver la multiplicación paso a paso:
+
+1. Primero, multiplicamos 6367 por 22 (últimos dos dígitos de 8222):
+   - 6367 * 2 = 12734
+   - 6367 * 20 = 127340
+   - Sumamos: 12734 + 127340 = 130114
+
+2. Luego, multiplicamos 6367 por 200 (siguientes dos dígitos de 8222):
+   - 6367 * 2 = 12734
+   - 12734 * 100 = 1273400
+
+3. Ahora, multiplicamos 6367 por 8000 (primeros dos dígitos de 8222):
+   - 6367 * 8 = 50936
+   - 50936 * 1000 = 50936000
+
+4. Sumamos todos los resultados:
+   - 130114 + 1273400 + 50936000 = 52340514
+
+Resultado: 52340514"
+3791,4148,15725068,1698368,Resultado,424,0,"Vamos a resolver la multiplicación paso a paso:
+
+1. Primero, multiplicamos 3791 por 8 (la unidad de 4148):
+   - 1 * 8 = 8
+   - 9 * 8 = 72, llevamos 7
+   - 7 * 8 = 56, más 7 que llevamos = 63, llevamos 6
+   - 3 * 8 = 24, más 6 que llevamos = 30
+   - Resultado parcial: 30328
+
+2. Luego, multiplicamos 3791 por 40 (la decena de 4148):
+   - 1 * 40 = 40
+   - 9 * 40 = 360
+   - 7 * 40 = 280
+   - 3 * 40 = 120
+   - Resultado parcial: 151640 (desplazado una posición a la izquierda)
+
+3. Finalmente, multiplicamos 3791 por 400 (la centena de 4148):
+   - 1 * 400 = 400
+   - 9 * 400 = 3600
+   - 7 * 400 = 2800
+   - 3 * 400 = 1200
+   - Resultado parcial: 1516400 (desplazado dos posiciones a la izquierda)
+
+4. Ahora sumamos todos los resultados parciales:
+   - 30328
+   - 151640
+   - 1516400
+   - _______
+   - 1698368
+
+Resultado: 1698368"
+6654,5764,38353656,38313656,Resultado,300,0,"Vamos a resolver la multiplicación paso a paso:
+
+1. Primero, multiplicamos 6654 por 4 (la unidad de 5764):
+   - 6654 * 4 = 26616
+
+2. Luego, multiplicamos 6654 por 60 (la decena de 5764, que es 6 * 10):
+   - 6654 * 60 = 399240
+
+3. Multiplicamos 6654 por 700 (la centena de 5764, que es 7 * 100):
+   - 6654 * 700 = 4657800
+
+4. Finalmente, multiplicamos 6654 por 5000 (la unidad de mil de 5764, que es 5 * 1000):
+   - 6654 * 5000 = 33270000
+
+5. Ahora sumamos todos los resultados:
+   - 26616 + 399240 + 4657800 + 33270000 = 38313656
+
+Resultado: 38313656"
+5899,2771,16346129,16346129,Resultado,262,0,"Vamos a resolver la multiplicación paso a paso:
+
+1. Primero, multiplicamos 5899 por 1 (la unidad de 2771):
+   5899 x 1 = 5899
+
+2. Luego, multiplicamos 5899 por 70 (la decena de 2771):
+   5899 x 70 = 412930
+
+3. Multiplicamos 5899 por 700 (la centena de 2771):
+   5899 x 700 = 4129300
+
+4. Finalmente, multiplicamos 5899 por 2000 (el millar de 2771):
+   5899 x 2000 = 11798000
+
+5. Ahora sumamos todos los resultados:
+   5899 + 412930 + 4129300 + 11798000 = 16346129
+
+Resultado: 16346129"
+2515,1960,4929400,4929400,Resultado,161,0,"Vamos a resolver la multiplicación paso a paso:
+
+1. Primero, multiplicamos 2515 por 60 (la parte derecha del 1960):
+   - 2515 * 60 = 150900
+
+2. Luego, multiplicamos 2515 por 1900 (la parte izquierda del 1960):
+   - 2515 * 1900 = 4778500
+
+3. Finalmente, sumamos los dos resultados:
+   - 150900 + 4778500 = 4929400
+
+Resultado: 4929400"
+2394,5362,12836628,12836628,Resultado,266,0,"Vamos a resolver la multiplicación paso a paso:
+
+1. Primero, multiplicamos 2394 por 2 (la unidad de 5362):
+   - 2394 * 2 = 4788
+
+2. Luego, multiplicamos 2394 por 60 (la decena de 5362):
+   - 2394 * 60 = 143640
+
+3. Multiplicamos 2394 por 300 (la centena de 5362):
+   - 2394 * 300 = 718200
+
+4. Finalmente, multiplicamos 2394 por 5000 (la unidad de mil de 5362):
+   - 2394 * 5000 = 11970000
+
+5. Ahora sumamos todos los resultados:
+   - 4788 + 143640 + 718200 + 11970000 = 12836628
+
+Resultado: 12836628"
+6220,7451,46345220,46345220,Resultado,263,0,"Vamos a resolver la multiplicación paso a paso:
+
+1. Primero, multiplicamos 6220 por 1 (la unidad de 7451):
+   6220 * 1 = 6220
+
+2. Luego, multiplicamos 6220 por 50 (la decena de 7451):
+   6220 * 50 = 311000
+
+3. Multiplicamos 6220 por 400 (la centena de 7451):
+   6220 * 400 = 2488000
+
+4. Finalmente, multiplicamos 6220 por 7000 (la unidad de mil de 7451):
+   6220 * 7000 = 43540000
+
+5. Ahora sumamos todos los resultados:
+   6220 + 311000 + 2488000 + 43540000 = 46345220
+
+Resultado: 46345220"
+5843,1948,11382164,11382164,Resultado,284,0,"Vamos a resolver la multiplicación paso a paso:
+
+1. Primero, multiplicamos 5843 por 8 (la unidad de 1948):
+   - 5843 * 8 = 46744
+
+2. Luego, multiplicamos 5843 por 40 (la decena de 1948, que es 4*10):
+   - 5843 * 40 = 233720
+
+3. Multiplicamos 5843 por 900 (la centena de 1948, que es 9*100):
+   - 5843 * 900 = 5258700
+
+4. Finalmente, multiplicamos 5843 por 1000 (el millar de 1948):
+   - 5843 * 1000 = 5843000
+
+5. Ahora sumamos todos los resultados:
+   - 46744 + 233720 + 5258700 + 5843000 = 11382164
+
+Resultado: 11382164"
+8444,7335,61936740,61936740,Resultado,327,0,"Vamos a resolver la multiplicación paso a paso:
+
+1. Primero, multiplicamos 8444 por 5 (el último dígito de 7335):
+   - 8444 * 5 = 42220
+
+2. Luego, multiplicamos 8444 por 30 (el segundo dígito de 7335, pero como está en la decena, multiplicamos por 30):
+   - 8444 * 30 = 253320
+
+3. Multiplicamos 8444 por 300 (el tercer dígito de 7335, pero como está en la centena, multiplicamos por 300):
+   - 8444 * 300 = 2533200
+
+4. Finalmente, multiplicamos 8444 por 7000 (el primer dígito de 7335, pero como está en la unidad de mil, multiplicamos por 7000):
+   - 8444 * 7000 = 59108000
+
+5. Ahora sumamos todos los resultados:
+   - 42220 + 253320 + 2533200 + 59108000 = 61936740
+
+Resultado: 61936740"
+3226,7467,24088542,23991542,Resultado,771,0,"Vamos a resolver la multiplicación paso a paso:
+
+1. Primero, multiplicamos 3226 por 7:
+   - 6 * 7 = 42, escribimos 2 y llevamos 4
+   - 2 * 7 = 14, más el 4 que llevamos, da 18, escribimos 8 y llevamos 1
+   - 2 * 7 = 14, más el 1 que llevamos, da 15, escribimos 5 y llevamos 1
+   - 3 * 7 = 21, más el 1 que llevamos, da 22, escribimos 22
+   Resultado parcial: 22582
+
+2. Luego, multiplicamos 3226 por 60 (6 de 7467, pero en la posición de las decenas):
+   - 6 * 6 = 36, escribimos 6 y llevamos 3
+   - 2 * 6 = 12, más el 3 que llevamos, da 15, escribimos 5 y llevamos 1
+   - 2 * 6 = 12, más el 1 que llevamos, da 13, escribimos 3 y llevamos 1
+   - 3 * 6 = 18, más el 1 que llevamos, da 19, escribimos 19
+   Resultado parcial: 193560 (teniendo en cuenta que estamos en la decena)
+
+3. Ahora, multiplicamos 3226 por 400 (4 de 7467, pero en la posición de las centenas):
+   - 6 * 4 = 24, escribimos 4 y llevamos 2
+   - 2 * 4 = 8, más el 2 que llevamos, da 10, escribimos 0 y llevamos 1
+   - 2 * 4 = 8, más el 1 que llevamos, da 9
+   - 3 * 4 = 12
+   Resultado parcial: 1290400 (teniendo en cuenta que estamos en la centena)
+
+4. Finalmente, multiplicamos 3226 por 7000 (7 de 7467, pero en la posición de las unidades de mil):
+   - 6 * 7 = 42, escribimos 2 y llevamos 4
+   - 2 * 7 = 14, más el 4 que llevamos, da 18, escribimos 8 y llevamos 1
+   - 2 * 7 = 14, más el 1 que llevamos, da 15, escribimos 5 y llevamos 1
+   - 3 * 7 = 21, más el 1 que llevamos, da 22
+   Resultado parcial: 22582000 (teniendo en cuenta que estamos en la unidad de mil)
+
+5. Sumamos todos los resultados parciales:
+   - 22582
+   - 193560
+   - 1290400
+   - 22582000
+   Resultado final: 23991542
+
+Resultado: 23991542"
+9906,1640,16245840,16245840,Resultado,225,0,"Vamos a resolver la multiplicación paso a paso:
+
+1. Primero, multiplicamos 9906 por 40 (la parte derecha del número 1640):
+   - 9906 * 40 = 396240
+
+2. Luego, multiplicamos 9906 por 600 (la parte del centro del número 1640):
+   - 9906 * 600 = 5943600
+
+3. Finalmente, multiplicamos 9906 por 1000 (la parte izquierda del número 1640):
+   - 9906 * 1000 = 9906000
+
+4. Ahora sumamos todos estos resultados:
+   - 396240 + 5943600 + 9906000 = 16245840
+
+Resultado: 16245840"
+9946,7862,78195452,78234452,Resultado,286,0,"Vamos a resolver la multiplicación paso a paso:
+
+1. Primero, multiplicamos 9946 por 2 (la unidad de 7862):
+   9946 * 2 = 19892
+
+2. Luego, multiplicamos 9946 por 60 (la decena de 7862, recordemos que estamos trabajando con decenas):
+   9946 * 60 = 596760
+
+3. Multiplicamos 9946 por 800 (la centena de 7862, trabajando con centenas):
+   9946 * 800 = 7956800
+
+4. Finalmente, multiplicamos 9946 por 7000 (la unidad de mil de 7862, trabajando con miles):
+   9946 * 7000 = 69622000
+
+5. Ahora sumamos todos los resultados:
+   19892 + 596760 + 7956800 + 69622000 = 78234452
+
+Resultado: 78234452"
