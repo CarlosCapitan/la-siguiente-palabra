@@ -356,8 +356,8 @@ def main():
     _, reales = palabras_reales(muestras_libro[0], vocabulario)
     E += tabla_editorial(
         "Palabras del Quijote en cada muestra",
-        ["perilla", "trozos", "palabras del Quijote", "de cada cien"], filas, "iddd",
-        ["Trozos: lo que hay entre espacio y espacio, sin los signos pegados.",
+        ["perilla", "grupos de letras", "palabras del Quijote", "de cada cien"], filas, "iddd",
+        ["Grupos de letras: lo que hay entre espacio y espacio, sin los signos pegados.",
          "Las de la perilla en nada: " + " ".join(f"«{r}»" for r in reales) + "."])
 
     # 6. Las muestras, tal como las imprimió ngrama.py, partidas en renglones solo por espacios.

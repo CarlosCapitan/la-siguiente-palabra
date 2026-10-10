@@ -6,11 +6,14 @@
 # no alcanza el Metal del Mac. Cualquier cifra del libro que lleve un TIEMPO dentro tiene que
 # salir de aquí, ejecutado por Carlos en su propio Terminal de macOS.
 #
-# Las cifras que NO dependen de la máquina (aciertos, recuentos, proporciones, vecinas más
-# próximas) dan lo mismo en cualquier sitio con la misma semilla y no hace falta repetirlas.
+# Las cifras sin tiempo (aciertos, recuentos, proporciones, vecinas más próximas) tampoco son
+# siempre iguales en otra máquina: en los capítulos 5 y 7 cambian puestos y decimales entre un
+# procesador x86 y uno ARM. Por eso, desde el 9 de octubre de 2026, todas las salidas del libro
+# se generan en el Mac del autor (Apple Silicon); en otra máquina pueden salir distintas en la
+# última cifra.
 #
 # Uso, desde Terminal de macOS (no desde la aplicación):
-#     cd ~/Documents/libro-ia-publico/codigo
+#     cd la-siguiente-palabra/codigo     (la carpeta donde hayas clonado el repositorio)
 #     bash medir_en_mac.sh
 #
 # Deja la salida en resultados_mac.txt, que es lo que hay que pasarme.
