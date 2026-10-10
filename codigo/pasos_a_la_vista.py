@@ -90,8 +90,10 @@ def main():
         a, b, prod, leido = int(f["a"]), int(f["b"]), int(f["producto"]), int(f["leido"])
         falta = faltan(f["respuesta"], a, b)
         al_sumar += not falta
-        # Los factores, de cuatro cifras, sin punto: como los escribe la pregunta que recibió.
-        filas.append([f"{a} × {b}", miles(leido), miles(prod),
+        # Los factores, de cuatro cifras, sin punto: como los escribe la pregunta que recibió. Con
+        # «por» y no con el signo: la regla 1 (cero notación) vale también para lo que imprime un
+        # programa del libro, como en el capítulo 3.
+        filas.append([f"{a} por {b}", miles(leido), miles(prod),
                       "bien" if not falta else f"falta {', '.join(miles(x) for x in falta)}"])
     print("\n".join(tabla_editorial(
         "Las cuentas escritas paso a paso que fallan (32.000M)",
