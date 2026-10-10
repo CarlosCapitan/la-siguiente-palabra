@@ -4,7 +4,7 @@ mlx 0.32.2; mlx-lm 0.31.3
 ::: tabla
 Multiplicar escribiendo la cuenta paso a paso (32.000M)
 
-|  | de 20 |
+| lo que se cuenta | de 20 |
 |:--|--:|
 | aciertos | 10 |
 | terminan con «Resultado:» | 20 |

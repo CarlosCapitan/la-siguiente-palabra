@@ -11,6 +11,11 @@ torció al sumar; si falta alguno, se torció antes.
 
 Un producto parcial que vale 0 (una cifra 0 en el segundo número) se da por escrito.
 
+Y, en las 20, si está escrito lo que se lleva de una columna a la siguiente («llevamos 1»): al
+multiplicar los parciales, o en la suma. La suma empieza donde la respuesta dice por primera vez
+«suma», «sumamos» o «sumar» (auditoría del 10 de octubre de 2026: el capítulo decía que lo que se
+lleva «casi nunca» está escrito, y hacía falta el recuento).
+
 Uso (desde codigo/):
     python pasos_a_la_vista.py --selftest
     python pasos_a_la_vista.py > ../datos/salidas/pasos_a_la_vista.txt
@@ -31,6 +36,15 @@ import sys
 from formato import miles, tabla_editorial
 
 ENTERO = re.compile(r"\d+")
+LLEVA = re.compile(r"llev|acarre", re.I)       # «llevamos 1», «me llevo», «acarreo»
+SUMA = re.compile(r"\bsum", re.I)              # donde empieza la suma
+
+
+def lleva(texto):
+    """¿Está escrito lo que se lleva? (al multiplicar los parciales, en la suma)."""
+    m = SUMA.search(texto)
+    corte = m.start() if m else len(texto)
+    return bool(LLEVA.search(texto[:corte])), bool(LLEVA.search(texto[corte:]))
 
 
 def parciales(a, b):
@@ -55,6 +69,8 @@ def selftest():
     # [1] test nulo: una cuenta que no escribe ningún parcial no los tiene todos
     f1 = faltan("El producto es 32470340.", 6737, 4820)
     p1 = len(f1) == 3          # 4820 tiene un 0: quedan tres parciales distintos de 0
+    p1 &= lleva("6737 por 4820: 0 + 134740 + 5389600 + 26948000. Sumamos: 32472340.") == (
+        False, False)
     ok &= p1
     print(f"[1] test nulo         sin parciales escritos, faltan {len(f1)} de 3: "
           f"{'bien' if p1 else 'MAL'}")
@@ -63,6 +79,9 @@ def selftest():
     t = "0 + 134740 + 5389600 + 26948000 = 32470340"
     t2 = "0 + 134740 + 26948000 = 27082740"
     p2 = faltan(t, 6737, 4820) == [] and faltan(t2, 6737, 4820) == [5389600]
+    p2 &= lleva("4 * 4 = 16, escribimos 6 y llevamos 1. Sumamos: 6 + 9 = 15, me llevo 1") == (
+        True, True)
+    p2 &= lleva("4 * 4 = 16, escribimos 6 y llevamos 1. Sumamos: 16 + 40 = 56") == (True, False)
     ok &= p2
     print(f"[2] señal implantada  con los cuatro parciales: faltan {faltan(t, 6737, 4820)}; sin "
           f"uno: faltan {faltan(t2, 6737, 4820)}: {'bien' if p2 else 'MAL'}")
@@ -104,7 +123,11 @@ def main():
          "en la cuenta de la escuela. Bien: los cuatro están escritos en la respuesta, así que "
          "la cuenta se torció al sumar. Falta: el que no aparece en ninguna parte.",
          f"Al sumar: {al_sumar} de {len(mal)}. Antes de sumar: {len(mal) - al_sumar} de "
-         f"{len(mal)}."])))
+         f"{len(mal)}.",
+         f"Lo que se lleva de una columna a la siguiente, en las {len(fs)} cuentas: escrito en "
+         f"la suma, {sum(lleva(f['respuesta'])[1] for f in fs)} de {len(fs)}; escrito al "
+         f"multiplicar los parciales, {sum(lleva(f['respuesta'])[0] for f in fs)} de "
+         f"{len(fs)}."])))
 
 
 if __name__ == "__main__":

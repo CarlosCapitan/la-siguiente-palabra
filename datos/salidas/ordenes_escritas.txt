@@ -4,7 +4,7 @@ mlx 0.32.2; mlx-lm 0.31.3
 ::: tabla
 Multiplicar con y sin calculadora (32.000M)
 
-| cómo se le pregunta | aciertos | escribe una orden | termina con el 0 de la frase |
+| cómo se le pregunta | aciertos | escribe una orden | termina con el 0 |
 |:--|--:|--:|--:|
 | con restricción, sin herramienta | 0 de 20 | 0 de 20 | — |
 | con restricción, con calculadora | 6 de 20 | 6 de 20 | — |
@@ -121,7 +121,7 @@ Cada respuesta, cogiendo siempre el trozo más probable.
 ::: tabla
 ¿Escribe órdenes sin adiestrar? (7.000M)
 
-| el modelo y la pregunta | órdenes bien escritas | probabilidad media de abrir una orden |
+| el modelo y la pregunta | órdenes bien escritas | probabilidad media |
 |:--|--:|--:|
 | en crudo, con restricción | 0 de 20 | 0,0 % |
 | en crudo, libre | 0 de 20 | 0,0 % |
@@ -130,7 +130,9 @@ Cada respuesta, cogiendo siempre el trozo más probable.
 
 La misma familia de 7.000 millones, antes y después del adiestramiento, con el mismo enunciado: la pregunta y la descripción de la calculadora, en el formato de conversación.
 
-Orden bien escrita: «`<tool_call>`», un JSON con la calculadora y su expresión, y «`</tool_call>`». Solo la primera respuesta.
+Orden bien escrita: «`<tool_call>`», entre llaves el nombre de la calculadora y la cuenta, y «`</tool_call>`». Solo la primera respuesta.
+
+Probabilidad media: la de que el primer trozo de la respuesta sea la marca que abre una orden, en las 20 preguntas.
 
 Las preguntas: 20 multiplicaciones de dos números de cuatro cifras, sacadas con una semilla fija.
 
@@ -167,7 +169,7 @@ Lo que escribe el modelo en crudo, ante la primera pregunta
     user: ¿Cuánto es 6737 por 4820? Contesta solo con el número.
     assistant: <response>{"name": "calcul
 
-Modelo de 7.000M, sin adiestrar. Texto literal; los renglones largos se parten donde caben.
+Modelo de 7.000M, sin adiestrar. Texto literal; los renglones largos se parten donde caben. Se corta al llegar al límite de 160 trozos.
 
 Cada respuesta, cogiendo siempre el trozo más probable.
 :::
