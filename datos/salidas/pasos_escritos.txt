@@ -1,0 +1,77 @@
+máquina: macOS-26.6.2-arm64-arm-64bit; Python 3.12.14
+mlx 0.32.2; mlx-lm 0.31.3
+
+::: tabla
+Multiplicar escribiendo la cuenta paso a paso (32.000M)
+
+|  | de 20 |
+|:--|--:|
+| aciertos | 10 |
+| terminan con «Resultado:» | 20 |
+| se cortan sin terminar | 0 |
+
+Modelo de 32.000M, adiestrado y comprimido, sin herramienta. Las mismas 20 multiplicaciones de dos números de cuatro cifras que en «Multiplicar con y sin calculadora».
+
+La pregunta: «¿Cuánto es 1234 por 5678? Escribe la cuenta paso a paso y termina con una línea «Resultado: » y el número.»
+
+Largo de las respuestas: mediana de 277 trozos; la más corta, 161; la más larga, 771 (límite, 900).
+
+Acierto: el número que sigue al último «Resultado:» (o, si no lo hay, el último número) es el producto exacto. Cada respuesta, cogiendo siempre el trozo más probable.
+:::
+
+::: muestra
+Una cuenta escrita paso a paso que acierta
+
+    Pregunta: ¿Cuánto es 6396 por 7576?
+    
+    Vamos a resolver la multiplicación paso a paso:
+    
+    1. Primero, multiplicamos 6396 por 6 (la unidad de 7576):
+       - 6396 * 6 = 38376
+    
+    2. Luego, multiplicamos 6396 por 70 (la decena de 7576):
+       - 6396 * 70 = 447720
+    
+    3. Multiplicamos 6396 por 500 (la centena de 7576):
+       - 6396 * 500 = 3198000
+    
+    4. Finalmente, multiplicamos 6396 por 7000 (la unidad de mil de
+    7576):
+       - 6396 * 7000 = 44772000
+    
+    5. Ahora sumamos todos los resultados:
+       - 38376 + 447720 + 3198000 + 44772000 = 48456096
+    
+    Resultado: 48456096
+
+Modelo de 32.000M, adiestrado, sin herramienta. Producto exacto: 48456096; leído: 48456096. Texto literal; los renglones largos se parten donde caben.
+:::
+
+::: muestra
+Una cuenta escrita paso a paso que falla
+
+    Pregunta: ¿Cuánto es 6737 por 4820?
+    
+    Vamos a resolver la multiplicación paso a paso:
+    
+    1. Primero, multiplicamos 6737 por 0 (la unidad de 4820):
+       6737 * 0 = 0
+    
+    2. Luego, multiplicamos 6737 por 20 (la decena de 4820):
+       6737 * 20 = 134740
+    
+    3. Multiplicamos 6737 por 800 (la centena de 4820):
+       6737 * 800 = 5389600
+    
+    4. Finalmente, multiplicamos 6737 por 4000 (la unidad de mil de
+    4820):
+       6737 * 4000 = 26948000
+    
+    5. Ahora sumamos todos los resultados:
+       0 + 134740 + 5389600 + 26948000 = 32470340
+    
+    Resultado: 32470340
+
+Modelo de 32.000M, adiestrado, sin herramienta. Producto exacto: 32472340; leído: 32470340. Texto literal; los renglones largos se parten donde caben.
+:::
+
