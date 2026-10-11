@@ -64,6 +64,12 @@ EPSILON = 0.2                     # una de cada cinco veces, la tabla prueba un 
 SEMILLAS = list(range(20))        # veinte tablas, cada una con su sorteo
 MOMENTOS = [0, 10, 25, 50, 100, 200, 400, 1000, 2000]   # partidas aprendidas al mirar
 
+# Otros valores de ALFA y GAMMA, para ver si el resultado depende de los elegidos (Carlos, 11 oct:
+# «lo que quedaría por explicar es por qué se hacen esos cálculos»). Predicción, escrita ANTES de
+# ejecutar: las cuatro variantes dan lo mismo (A y D al letrero, B y C a la meta) en las nueve
+# combinaciones, salvo quizá con ALFA 0,1, que aprende más despacio y en la D podría no llegar.
+OTROS_ALFA = [0.1, 0.5, 0.9]
+OTROS_GAMMA = [0.9, 0.95, 0.99]
 PARTIDAS_RASTRO = 10              # las primeras partidas de la primera tabla, una a una
 
 # selftest
@@ -167,8 +173,10 @@ def tabla_nueva():
     return {(i, j): [0.0] * len(MOVIMIENTOS) for i in range(LADO) for j in range(LADO)}
 
 
-def partida(tabla, rng, juez, letrero, muros=SIN_MUROS):
+def partida(tabla, rng, juez, letrero, muros=SIN_MUROS, alfa=None, gamma=None):
     """Una partida aprendiendo. Devuelve cómo acabó, la nota y cuántos movimientos hizo."""
+    alfa = ALFA if alfa is None else alfa
+    gamma = GAMMA if gamma is None else gamma
     c = SALIDA
     for k in range(1, PASOS_MAX + 1):
         m = rng.randrange(len(MOVIMIENTOS)) if rng.random() < EPSILON else mejor(tabla, c, rng)
@@ -178,7 +186,7 @@ def partida(tabla, rng, juez, letrero, muros=SIN_MUROS):
             r, siguiente = nota(juez, final), 0.0          # se acaba: no hay nada después
         else:
             r, siguiente = 0.0, max(tabla[n])
-        tabla[c][m] += ALFA * (r + GAMMA * siguiente - tabla[c][m])
+        tabla[c][m] += alfa * (r + gamma * siguiente - tabla[c][m])
         if final:
             return final, r, k
         c = n
@@ -229,23 +237,38 @@ def camino(tabla, letrero, muros=SIN_MUROS):
     return cs
 
 
-def aprender(semilla, juez, letrero, muros=SIN_MUROS):
+def aprender(semilla, juez, letrero, muros=SIN_MUROS, alfa=None, gamma=None):
     """Una tabla aprendiendo PARTIDAS partidas; qué hace a la vista en cada momento."""
     rng = random.Random(semilla)
     tabla, fotos, notas = tabla_nueva(), {}, []
     if 0 in MOMENTOS:
         fotos[0] = a_la_vista(tabla, letrero, muros)
     for k in range(1, PARTIDAS + 1):
-        _, r, _ = partida(tabla, rng, juez, letrero, muros)
+        _, r, _ = partida(tabla, rng, juez, letrero, muros, alfa, gamma)
         notas.append(r)
         if k in MOMENTOS:
             fotos[k] = a_la_vista(tabla, letrero, muros)
     return tabla, fotos, notas
 
 
-def ejecutar(clave):
+def ejecutar(clave, alfa=None, gamma=None):
     _, juez, letrero, muros = MONTAJES[clave]
-    return [aprender(s, juez, letrero, muros) for s in SEMILLAS]
+    return [aprender(s, juez, letrero, muros, alfa, gamma) for s in SEMILLAS]
+
+
+ESPERADO = {"A": "letrero", "B": "meta", "C": "meta", "D": "letrero"}
+
+
+def otros_valores():
+    """Para cada combinación de OTROS_ALFA y OTROS_GAMMA, cuántas de las tablas de cada variante
+    acaban donde acaban con los valores elegidos (A y D en el letrero, B y C en la meta)."""
+    filas = []
+    for alfa in OTROS_ALFA:
+        for gamma in OTROS_GAMMA:
+            cuenta = {k: recuento(ejecutar(k, alfa, gamma), PARTIDAS, ESPERADO[k])
+                      for k in MONTAJES}
+            filas.append((alfa, gamma, cuenta))
+    return filas
 
 
 def recuento(resultados, momento, final):
@@ -351,6 +374,20 @@ def bloque_longitudes():
          f"rebaja; con uno de 6, cinco."])
 
 
+def bloque_otros_valores(filas):
+    def pon(x):
+        return coma(x, 2).rstrip("0").rstrip(",") if x != 0.95 else "0,95"
+    return tabla_editorial(
+        "Lo mismo, con otros valores en las dos cuentas",
+        ["parte del camino", "un paso más lejos", "A: al letrero", "B: a la meta",
+         "C: a la meta", "D: al letrero"],
+        [[pon(a), pon(g)] + [str(c[k]) for k in MONTAJES] for a, g, c in filas], "dddddd",
+        [f"Parte del camino: cuánto sube o baja el número hacia lo que vino detrás (0,5 es «a "
+         f"medio camino»; 0,1, una décima parte). Un paso más lejos: por cuánto se multiplica. Cada casilla, cuántas de las "
+         f"{len(SEMILLAS)} tablas acaban ahí, tras {miles(PARTIDAS)} partidas.",
+         f"En la fila de {pon(ALFA)} y {pon(GAMMA)} están los valores del resto del apartado."])
+
+
 def nota_final(resultados, ultimas=100):
     notas = [r for _, _, ns in resultados for r in ns[-ultimas:]]
     return sum(notas) / len(notas)
@@ -425,12 +462,42 @@ def selftest():
     if malos:
         fallos.append(f"caminos: {len(malos)} no acaban donde dice a_la_vista ({set(malos)})")
 
+    # 5. OTROS VALORES — que la tabla de otros valores sale de verdad de esos valores, y no de
+    #    los de siempre: con ALFA 0,1, la primera nota de la primera tabla deja el número en 0,1
+    #    (y no en 0,5); con GAMMA 0,9, el número de la salida en A acaba cerca de 0,9 y no de
+    #    0,95. Y la fila de los valores de siempre da lo mismo que la tabla resumen.
+    t01 = tabla_nueva()
+    rng = random.Random(SEMILLAS[0])
+    _, juez_a, letrero_a, muros_a = MONTAJES["A"]
+    primera01 = None
+    for _ in range(PARTIDAS_RASTRO):
+        _, r, _ = partida(t01, rng, juez_a, letrero_a, muros_a, alfa=0.1)
+        if r > 0:
+            primera01 = max(v for f in t01.values() for v in f)
+            break
+    t09, _, _ = aprender(SEMILLAS[0], juez_a, letrero_a, muros_a, gamma=0.9)
+    salida09 = t09[SALIDA][0]
+    filas = otros_valores()
+    de_siempre = [c for a_, g_, c in filas if a_ == ALFA and g_ == GAMMA]
+    resumen = {k: recuento(r_, PARTIDAS, ESPERADO[k])
+               for k, r_ in [("A", a), ("B", b)]}
+    cuadra = bool(de_siempre) and all(de_siempre[0][k] == v for k, v in resumen.items())
+    print(f"[5] otros valores     con alfa 0,1 la primera nota deja {coma(primera01 or 0, 3)}; con "
+          f"gamma 0,9 la salida de A vale {coma(salida09, 3)}; la fila de siempre cuadra con el "
+          f"resumen: {cuadra}")
+    if primera01 is None or abs(primera01 - 0.1) > TOL:
+        fallos.append("otros valores: con alfa 0,1 la primera nota no deja el número en 0,1")
+    if abs(salida09 - 0.9) > 0.01:
+        fallos.append(f"otros valores: con gamma 0,9 la salida de A vale {salida09}, no ≈ 0,9")
+    if not cuadra:
+        fallos.append("otros valores: la fila de los valores de siempre no cuadra con el resumen")
+
     print()
     if fallos:
         for f in fallos:
             print("FALLA:", f)
         return 1
-    print("SELFTEST: las cuatro pruebas pasan.")
+    print("SELFTEST: las cinco pruebas pasan.")
     return 0
 
 
@@ -459,6 +526,8 @@ def main():
     print("\n".join(bloque_rastro(rastro())))
     print()
     print("\n".join(bloque_longitudes()))
+    print()
+    print("\n".join(bloque_otros_valores(otros_valores())))
 
 
 if __name__ == "__main__":
