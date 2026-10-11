@@ -99,6 +99,29 @@ def parrafo(lineas, i):
     return texto if len(texto) <= MAX_PARRAFO else texto[:MAX_PARRAFO] + " […]"
 
 
+def primera_linea(lineas, pat):
+    """Índice de la línea donde empieza el primer acierto del patrón, buscando párrafo a
+    párrafo para no perder un término partido por un salto de línea («el o / exclusivo»)."""
+    i, n = 0, len(lineas)
+    while i < n:
+        if not lineas[i].strip():
+            i += 1
+            continue
+        j = i
+        while j + 1 < n and lineas[j + 1].strip():
+            j += 1
+        trozos, inicio = [], []
+        for k in range(i, j + 1):
+            inicio.append(sum(len(x) + 1 for x in trozos))
+            trozos.append(lineas[k].strip())
+        m = pat.search(" ".join(trozos))
+        if m:
+            k = max(x for x in range(len(inicio)) if inicio[x] <= m.start())
+            return i + k
+        i = j + 1
+    return None
+
+
 def patron(formas):
     alternativas = "|".join(re.escape(f) for f in sorted(formas, key=len, reverse=True))
     return re.compile(rf'(?<![{LETRA}])(?:{alternativas})(?![{LETRA}])', re.IGNORECASE)
@@ -132,11 +155,10 @@ def buscar(raiz, con_borradores=False):
         pat = patron(t["formas"])
         for f in nombres[b + 1:]:
             lineas = textos[f]
-            for i, linea in enumerate(lineas):
-                if pat.search(linea):
-                    usos.append({"termino": t["termino"], "bautizo": numero_de(t["fichero"]),
-                                 "fichero": f, "linea": i + 1, "parrafo": parrafo(lineas, i)})
-                    break
+            i = primera_linea(lineas, pat)
+            if i is not None:
+                usos.append({"termino": t["termino"], "bautizo": numero_de(t["fichero"]),
+                             "fichero": f, "linea": i + 1, "parrafo": parrafo(lineas, i)})
     referencias = []
     for f in nombres:
         aqui = numero_de(f)
@@ -175,12 +197,14 @@ def montar_libro(dir_, capitulos):
         with open(os.path.join(dir_, MANUSCRITO, nombre), "w", encoding="utf-8") as fh:
             fh.write(texto)
     with open(os.path.join(dir_, VOCABULARIO), "w", encoding="utf-8") as fh:
-        fh.write("## Términos\n\ncodo | codo, codos | cap01-a.md | que aquí llamaré **el codo**\n")
+        fh.write("## Términos\n\ncodo | codo, codos | cap01-a.md | que aquí llamaré **el codo**\n"
+                 "o exclusivo | o exclusivo | cap01-a.md | **el o exclusivo**\n")
 
 
 def selftest(raiz):
     """Tres pruebas: nula, señal implantada e invariante sobre el libro de verdad."""
-    base = "# 1. A\n\nUna neurona que aquí llamaré **el codo** dice lo que sobra.\n"
+    base = ("# 1. A\n\nUna neurona que aquí llamaré **el codo** dice lo que sobra.\n\n"
+            "Y **el o exclusivo**.\n")
     tmp = tempfile.mkdtemp()
     try:
         # 1. Nula: el término no vuelve a salir; las referencias son al mismo capítulo o a
@@ -199,13 +223,15 @@ def selftest(raiz):
         #    en la línea 3. Una referencia al capítulo 1 en el cap. 3, línea 5.
         d = os.path.join(tmp, "senal")
         c2 = ("# 2. Los codos\n\n::: tabla\nel codo | 2\n:::\n\n"
-              "Aquí vuelve el Codo, sin más.\n\nY otra vez los codos.\n")
+              "Aquí vuelve el Codo, sin más.\n\nY otra vez los codos.\n\n"
+              "Una frase larga que parte el o\nexclusivo en dos líneas.\n")
         c3 = "# 3. C\n\nCon codos.\n\nComo en el capítulo 1 y en el capítulo 3.\n"
         montar_libro(d, {"cap01-a.md": base, "cap02-b.md": c2, "cap03-c.md": c3})
         usos, refs = buscar(d)
         sitios = [(u["fichero"], u["linea"]) for u in usos]
-        assert sitios == [("cap02-b.md", 7), ("cap03-c.md", 3)], \
-            f"Prueba implantada: se esperaban cap02-b.md:7 y cap03-c.md:3; salió {sitios}"
+        esperado = [("cap02-b.md", 7), ("cap03-c.md", 3), ("cap02-b.md", 11)]
+        assert sitios == esperado, \
+            f"Prueba implantada: se esperaba {esperado} (el último, partido en dos líneas); salió {sitios}"
         rs = [(r["fichero"], r["linea"], r["citados"]) for r in refs]
         assert rs == [("cap03-c.md", 5, [1])], \
             f"Prueba implantada: se esperaba la referencia cap03-c.md:5 al cap. 1; salió {rs}"
