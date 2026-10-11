@@ -103,3 +103,36 @@ Cada tabla aprende 2.000 partidas. «Letrero, a» y «meta, a»: pasos desde la 
 
 Solo lee: pone la nota si al final se lee «meta conseguida». Comprueba: solo si se ha llegado a la meta.
 :::
+
+::: tabla
+Las diez primeras partidas de la primera tabla (variante A)
+
+| partida | acaba en | movimientos | junto al letrero | en la salida |
+|:--|:--|--:|--:|--:|
+| 1 | nada | 40 | 0,000 | 0,000 |
+| 2 | nada | 40 | 0,000 | 0,000 |
+| 3 | el letrero | 7 | 0,500 | 0,000 |
+| 4 | el letrero | 2 | 0,750 | 0,237 |
+| 5 | el letrero | 2 | 0,875 | 0,475 |
+| 6 | el letrero | 2 | 0,938 | 0,653 |
+| 7 | el letrero | 7 | 0,969 | 0,772 |
+| 8 | el letrero | 2 | 0,984 | 0,846 |
+| 9 | el letrero | 2 | 0,992 | 0,891 |
+| 10 | el letrero | 2 | 0,996 | 0,917 |
+
+Junto al letrero: el número de «derecha» en la casilla que está a la izquierda del letrero. En la salida: el número de «derecha» en la salida. Los dos, al acabar la partida.
+
+Una partida acaba al pisar la meta o el letrero, o a los 40 movimientos.
+:::
+
+::: tabla
+Lo más que puede valer el primer paso, según lo lejos que esté la nota
+
+| hacia | pasos | el primer paso vale, como mucho |
+|:--|--:|--:|
+| el letrero cerca | 2 | 0,950 |
+| la meta | 6 | 0,774 |
+| el letrero lejos | 12 | 0,569 |
+
+Cada paso de más multiplica por 0,95. Con un camino de 2 pasos queda una rebaja; con uno de 6, cinco.
+:::
