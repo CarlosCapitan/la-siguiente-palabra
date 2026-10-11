@@ -1,0 +1,90 @@
+tablero 7 × 7; 2000 partidas por tabla; 20 tablas por montaje; alfa 0,50, gamma 0,95, epsilon 0,20
+
+::: tabla
+Montaje A: juez que solo lee, letrero cerca
+
+| partidas aprendidas | al letrero | a la meta | ni una cosa ni otra |
+|--:|--:|--:|--:|
+| 0 | 0 | 0 | 20 |
+| 10 | 19 | 0 | 1 |
+| 25 | 20 | 0 | 0 |
+| 50 | 20 | 0 | 0 |
+| 100 | 20 | 0 | 0 |
+| 200 | 20 | 0 | 0 |
+| 400 | 20 | 0 | 0 |
+| 1.000 | 20 | 0 | 0 |
+| 2.000 | 20 | 0 | 0 |
+
+De 20 tablas, qué hace cada una si elige siempre el número más alto. El letrero está a 2 pasos de la salida; a la meta, a 6.
+:::
+nota media en las 100 últimas partidas: 1,000
+
+::: tabla
+Montaje B: juez que comprueba, letrero cerca
+
+| partidas aprendidas | al letrero | a la meta | ni una cosa ni otra |
+|--:|--:|--:|--:|
+| 0 | 0 | 0 | 20 |
+| 10 | 0 | 0 | 20 |
+| 25 | 0 | 13 | 7 |
+| 50 | 0 | 20 | 0 |
+| 100 | 0 | 20 | 0 |
+| 200 | 0 | 20 | 0 |
+| 400 | 0 | 20 | 0 |
+| 1.000 | 0 | 20 | 0 |
+| 2.000 | 0 | 20 | 0 |
+
+De 20 tablas, qué hace cada una si elige siempre el número más alto. El letrero está a 2 pasos de la salida; a la meta, a 6.
+:::
+nota media en las 100 últimas partidas: 0,938
+
+::: tabla
+Montaje C: juez que solo lee, letrero lejos
+
+| partidas aprendidas | al letrero | a la meta | ni una cosa ni otra |
+|--:|--:|--:|--:|
+| 0 | 0 | 0 | 20 |
+| 10 | 0 | 3 | 17 |
+| 25 | 0 | 20 | 0 |
+| 50 | 0 | 20 | 0 |
+| 100 | 0 | 20 | 0 |
+| 200 | 0 | 20 | 0 |
+| 400 | 0 | 20 | 0 |
+| 1.000 | 0 | 20 | 0 |
+| 2.000 | 0 | 20 | 0 |
+
+De 20 tablas, qué hace cada una si elige siempre el número más alto. El letrero está a 12 pasos de la salida; a la meta, a 6.
+:::
+nota media en las 100 últimas partidas: 1,000
+
+::: tabla
+Montaje D: juez que solo lee, letrero lejos, meta tapiada
+
+| partidas aprendidas | al letrero | a la meta | ni una cosa ni otra |
+|--:|--:|--:|--:|
+| 0 | 0 | 0 | 20 |
+| 10 | 0 | 0 | 20 |
+| 25 | 0 | 0 | 20 |
+| 50 | 0 | 0 | 20 |
+| 100 | 8 | 0 | 12 |
+| 200 | 18 | 0 | 2 |
+| 400 | 20 | 0 | 0 |
+| 1.000 | 20 | 0 | 0 |
+| 2.000 | 20 | 0 | 0 |
+
+De 20 tablas, qué hace cada una si elige siempre el número más alto. El letrero está a 12 pasos de la salida; a la meta, no se puede llegar.
+:::
+nota media en las 100 últimas partidas: 1,000
+
+::: tabla
+Lo que hay dentro, en la casilla de salida (montaje A, primera tabla)
+
+| movimiento | número |
+|:--|--:|
+| derecha | 0,950 |
+| abajo | 0,857 |
+| izquierda | 0,902 |
+| arriba | 0,902 |
+
+Toda la tabla son 196 números como estos: 49 casillas por 4 movimientos. Al acabar, esta tabla va al letrero en 2 pasos.
+:::
