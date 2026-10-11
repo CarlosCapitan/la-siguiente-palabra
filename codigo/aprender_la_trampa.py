@@ -64,6 +64,8 @@ EPSILON = 0.2                     # una de cada cinco veces, la tabla prueba un 
 SEMILLAS = list(range(20))        # veinte tablas, cada una con su sorteo
 MOMENTOS = [0, 10, 25, 50, 100, 200, 400, 1000, 2000]   # partidas aprendidas al mirar
 
+PARTIDAS_RASTRO = 10              # las primeras partidas de la primera tabla, una a una
+
 # selftest
 UMBRAL_SENAL = 0.9                # fracción de tablas que tienen que aprender el atajo en A
 TOL = 1e-9
@@ -166,9 +168,9 @@ def tabla_nueva():
 
 
 def partida(tabla, rng, juez, letrero, muros=SIN_MUROS):
-    """Una partida aprendiendo. Devuelve cómo acabó y la nota."""
+    """Una partida aprendiendo. Devuelve cómo acabó, la nota y cuántos movimientos hizo."""
     c = SALIDA
-    for _ in range(PASOS_MAX):
+    for k in range(1, PASOS_MAX + 1):
         m = rng.randrange(len(MOVIMIENTOS)) if rng.random() < EPSILON else mejor(tabla, c, rng)
         n = mover(c, m, muros)
         final = donde(n, letrero)
@@ -178,9 +180,9 @@ def partida(tabla, rng, juez, letrero, muros=SIN_MUROS):
             r, siguiente = 0.0, max(tabla[n])
         tabla[c][m] += ALFA * (r + GAMMA * siguiente - tabla[c][m])
         if final:
-            return final, r
+            return final, r, k
         c = n
-    return "nada", nota(juez, "nada")
+    return "nada", nota(juez, "nada"), PASOS_MAX
 
 
 def a_la_vista(tabla, letrero, muros=SIN_MUROS):
@@ -209,6 +211,24 @@ def a_la_vista(tabla, letrero, muros=SIN_MUROS):
     return "nada", pasos
 
 
+def camino(tabla, letrero, muros=SIN_MUROS):
+    """Las casillas por las que pasa la tabla a la vista, de la salida al final. Con la misma
+    regla que a_la_vista(); el selftest comprueba que las dos acaban en el mismo sitio."""
+    c, cs = SALIDA, [SALIDA]
+    while len(cs) <= PASOS_MAX:
+        ms = mejores(tabla, c)
+        if max(tabla[c]) <= TOL and len(ms) > 1:
+            return cs
+        n = mover(c, ms[0], muros)
+        if n in cs:
+            return cs
+        cs.append(n)
+        if donde(n, letrero):
+            return cs
+        c = n
+    return cs
+
+
 def aprender(semilla, juez, letrero, muros=SIN_MUROS):
     """Una tabla aprendiendo PARTIDAS partidas; qué hace a la vista en cada momento."""
     rng = random.Random(semilla)
@@ -216,7 +236,7 @@ def aprender(semilla, juez, letrero, muros=SIN_MUROS):
     if 0 in MOMENTOS:
         fotos[0] = a_la_vista(tabla, letrero, muros)
     for k in range(1, PARTIDAS + 1):
-        _, r = partida(tabla, rng, juez, letrero, muros)
+        _, r, _ = partida(tabla, rng, juez, letrero, muros)
         notas.append(r)
         if k in MOMENTOS:
             fotos[k] = a_la_vista(tabla, letrero, muros)
@@ -284,6 +304,53 @@ def bloque_resumen(resultados):
          "llegado a la meta."])
 
 
+def rastro(semilla=SEMILLAS[0], clave="A", partidas=PARTIDAS_RASTRO):
+    """Las primeras partidas de una tabla, una a una: cómo acabó, cuántos movimientos, la nota, y
+    los dos números del camino corto al letrero (el de «derecha» en la casilla de al lado del
+    letrero y el de «derecha» en la salida), además de cuántos números han dejado de ser cero.
+    Es la misma tabla que aprender(semilla, …): mismo sorteo, mismas partidas."""
+    _, juez, letrero, muros = MONTAJES[clave]
+    rng, tabla, filas = random.Random(semilla), tabla_nueva(), []
+    al_lado = (letrero[0], letrero[1] - 1)
+    assert mover(al_lado, 0, muros) == letrero and mover(SALIDA, 0, muros) == al_lado, (
+        "El rastro supone que el camino corto es «derecha, derecha»; con este tablero no lo es")
+    for k in range(1, partidas + 1):
+        final, r, movs = partida(tabla, rng, juez, letrero, muros)
+        filas.append({"partida": k, "final": final, "movimientos": movs, "nota": r,
+                      "al_lado": tabla[al_lado][0], "salida": tabla[SALIDA][0],
+                      "no_cero": sum(1 for f in tabla.values() for v in f if v > TOL)})
+    return filas
+
+
+def bloque_rastro(filas):
+    nombre = {"letrero": "el letrero", "meta": "la meta", "nada": "nada"}
+    return tabla_editorial(
+        "Las diez primeras partidas de la primera tabla (variante A)",
+        ["partida", "acaba en", "movimientos", "junto al letrero", "en la salida"],
+        [[str(f["partida"]), nombre[f["final"]], str(f["movimientos"]),
+          coma(f["al_lado"], 3), coma(f["salida"], 3)] for f in filas],
+        "iiddd",
+        ["Junto al letrero: el número de «derecha» en la casilla que está a la izquierda del "
+         "letrero. En la salida: el número de «derecha» en la salida. Los dos, al acabar la "
+         "partida.",
+         f"Una partida acaba al pisar la meta o el letrero, o a los {PASOS_MAX} movimientos."])
+
+
+def bloque_longitudes():
+    """Lo más que puede valer el primer movimiento de un camino de n pasos: la nota, 1, rebajada
+    un GAMMA por cada paso que falta después del primero."""
+    filas = []
+    for nombre, destino in [("el letrero cerca", LETRERO_CERCA), ("la meta", META),
+                            ("el letrero lejos", LETRERO_LEJOS)]:
+        n = distancia(SALIDA, destino)
+        filas.append([nombre, str(n), coma(GAMMA ** (n - 1), 3)])
+    return tabla_editorial(
+        "Lo más que puede valer el primer paso, según lo lejos que esté la nota",
+        ["hacia", "pasos", "el primer paso vale, como mucho"], filas, "idd",
+        [f"Cada paso de más multiplica por {coma(GAMMA, 2)}. Con un camino de 2 pasos queda una "
+         f"rebaja; con uno de 6, cinco."])
+
+
 def nota_final(resultados, ultimas=100):
     notas = [r for _, _, ns in resultados for r in ns[-ultimas:]]
     return sum(notas) / len(notas)
@@ -329,12 +396,41 @@ def selftest():
     if notas_raras:
         fallos.append(f"invariante: {len(notas_raras)} notas que no son 0 ni 1")
 
+    # 4. EL RASTRO Y LOS CAMINOS — el rastro es la misma tabla que la primera de A (mismas notas
+    #    en las mismas partidas); antes de la primera nota no cambia ningún número, y la primera
+    #    nota cambia exactamente uno, a ALFA; y el camino que se dibuja acaba donde dice
+    #    a_la_vista(), con tantos pasos como él.
+    filas = rastro()
+    _, _, notas_a0 = a[0]
+    iguales = [f["nota"] for f in filas] == notas_a0[:len(filas)]
+    primera = next((i for i, f in enumerate(filas) if f["nota"] > 0), None)
+    antes = all(f["no_cero"] == 0 for f in filas[:primera]) if primera is not None else False
+    justo = primera is not None and filas[primera]["no_cero"] == 1 and \
+        abs(filas[primera]["al_lado"] - ALFA) < TOL
+    malos = []
+    for clave in MONTAJES:
+        _, _, letrero, muros = MONTAJES[clave]
+        for t_, fotos, _ in (ejecutar(clave) if clave not in "AB" else (a if clave == "A" else b)):
+            cs = camino(t_, letrero, muros)
+            final, pasos = fotos[PARTIDAS]
+            if (donde(cs[-1], letrero) or "nada") != final or len(cs) - 1 != pasos:
+                malos.append(clave)
+    print(f"[4] rastro y caminos  mismas notas que la primera tabla de A: {iguales}; primera nota "
+          f"en la partida {None if primera is None else primera + 1}, cambia un solo número, a "
+          f"{coma(ALFA, 1)}: {antes and justo}; caminos que no cuadran: {len(malos)}")
+    if not iguales:
+        fallos.append("rastro: no da las mismas notas que la primera tabla de A")
+    if not (antes and justo):
+        fallos.append("rastro: la primera nota no cambia exactamente un número a ALFA")
+    if malos:
+        fallos.append(f"caminos: {len(malos)} no acaban donde dice a_la_vista ({set(malos)})")
+
     print()
     if fallos:
         for f in fallos:
             print("FALLA:", f)
         return 1
-    print("SELFTEST: las tres pruebas pasan.")
+    print("SELFTEST: las cuatro pruebas pasan.")
     return 0
 
 
@@ -359,6 +455,10 @@ def main():
     print("\n".join(bloque_dentro(resultados["A"])))
     print()
     print("\n".join(bloque_resumen(resultados)))
+    print()
+    print("\n".join(bloque_rastro(rastro())))
+    print()
+    print("\n".join(bloque_longitudes()))
 
 
 if __name__ == "__main__":
