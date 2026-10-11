@@ -328,7 +328,7 @@ def bloque_rastro(filas):
         "Las diez primeras partidas de la primera tabla (variante A)",
         ["partida", "acaba en", "movimientos", "junto al letrero", "en la salida"],
         [[str(f["partida"]), nombre[f["final"]], str(f["movimientos"]),
-          coma(f["al_lado"], 3), coma(f["salida"], 3)] for f in filas],
+          coma(f["al_lado"], 4), coma(f["salida"], 4)] for f in filas],
         "iiddd",
         ["Junto al letrero: el número de «derecha» en la casilla que está a la izquierda del "
          "letrero. En la salida: el número de «derecha» en la salida. Los dos, al acabar la "
