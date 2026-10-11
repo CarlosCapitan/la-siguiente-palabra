@@ -136,3 +136,23 @@ Lo más que puede valer el primer paso, según lo lejos que esté la nota
 
 Cada paso de más multiplica por 0,95. Con un camino de 2 pasos queda una rebaja; con uno de 6, cinco.
 :::
+
+::: tabla
+Lo mismo, con otros valores en las dos cuentas
+
+| parte del camino | un paso más lejos | A: al letrero | B: a la meta | C: a la meta | D: al letrero |
+|--:|--:|--:|--:|--:|--:|
+| 0,1 | 0,9 | 20 | 20 | 20 | 20 |
+| 0,1 | 0,95 | 20 | 20 | 20 | 20 |
+| 0,1 | 0,99 | 20 | 20 | 20 | 20 |
+| 0,5 | 0,9 | 20 | 20 | 20 | 20 |
+| 0,5 | 0,95 | 20 | 20 | 20 | 20 |
+| 0,5 | 0,99 | 20 | 20 | 20 | 20 |
+| 0,9 | 0,9 | 20 | 20 | 20 | 20 |
+| 0,9 | 0,95 | 20 | 20 | 20 | 20 |
+| 0,9 | 0,99 | 20 | 20 | 20 | 20 |
+
+Parte del camino: cuánto sube o baja el número hacia lo que vino detrás (0,5 es «a medio camino»; 0,1, una décima parte). Un paso más lejos: por cuánto se multiplica. Cada casilla, cuántas de las 20 tablas acaban ahí, tras 2.000 partidas.
+
+En la fila de 0,5 y 0,95 están los valores del resto del apartado.
+:::
