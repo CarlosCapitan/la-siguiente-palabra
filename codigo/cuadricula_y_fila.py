@@ -126,17 +126,18 @@ def main():
         for f, fila in enumerate(cuadricula(n)):
             L.append(f"  {str(f + 1) + ' ' + pal[f]:<{w}}" + "".join(f"{'x' if v else '·':>3}" for v in fila))
         L += [f"  {n} palabras: {casillas(n)} casillas de {n * n}.", ""]
-    # L24 (9 de octubre): el apartado 2, en tabla editorial (regla 6 ter). El 1 se queda como
+    # L24 (9 de octubre): el apartado 2, en tabla editorial (regla 6 ter). 12 oct: «comparaciones»
+    # y no «casillas», que en el cap. 8 ya son las de la máquina de contar (una cosa, un nombre). El 1 se queda como
     # estaba: lo lee la figura de la cuadrícula.
     filas, antes = [], None
     for n in LONGITUDES:
         v = casillas(n)
         filas.append([miles(n), miles(v), coma(v / antes, 2) if antes else ""])
         antes = v
-    L += ["2. CUÁNTAS CASILLAS, SEGÚN LO LARGO QUE SEA EL TEXTO", ""] + tabla_editorial(
-        "Cuántas casillas, según lo largo que sea el texto",
-        ["palabras", "casillas", "veces las de la fila de arriba"], filas, "ddd",
-        ["Doble de texto, casi cuatro veces más casillas: el cuadrado."]) + [""]
+    L += ["2. CUÁNTAS COMPARACIONES, SEGÚN LO LARGO QUE SEA EL TEXTO", ""] + tabla_editorial(
+        "Cuántas comparaciones, según lo largo que sea el texto",
+        ["palabras", "comparaciones", "veces las de la fila de arriba"], filas, "ddd",
+        ["Doble de texto, casi cuatro veces más comparaciones: el cuadrado."]) + [""]
     fp = FRASE_FILA.split()
     n = len(fp)
     L += ["3. CUÁNTAS TANDAS HAY QUE HACER UNA DETRÁS DE OTRA",
