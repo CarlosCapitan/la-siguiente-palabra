@@ -19,7 +19,8 @@ la nota (1 o 0). Hay dos jueces:
   - el que solo lee: pone un 1 si al final se lee «meta conseguida», lo diga la meta o el letrero;
   - el que comprueba: pone un 1 solo si se ha llegado a la meta.
 
-Tres montajes:
+Cuatro variantes del tablero (no «montajes»: en el libro, «montaje» es la palabra del capítulo 2
+para otra cosa, y la regla 5 ter no deja que una palabra nombre dos):
 
   A. juez que solo lee, letrero cerca de la salida (a 2 pasos; la meta está a 6);
   B. juez que comprueba, el mismo tablero (test nulo: el atajo no da nota);
@@ -69,7 +70,7 @@ TOL = 1e-9
 
 # ==========================================================
 
-from formato import coma, tabla_editorial
+from formato import coma, miles, tabla_editorial
 
 import argparse
 import random
@@ -243,7 +244,7 @@ def bloque_montaje(clave, resultados):
                   - recuento(resultados, k, "meta"))]
              for k in MOMENTOS]
     return tabla_editorial(
-        f"Montaje {clave}: {titulo}",
+        f"Variante {clave}: {titulo}",
         ["partidas aprendidas", "al letrero", "a la meta", "ni una cosa ni otra"], filas, "dddd",
         [f"De {len(SEMILLAS)} tablas, qué hace cada una si elige siempre el número más alto. "
          f"El letrero está a {distancia(SALIDA, letrero, muros)} pasos de la salida; a la meta, "
@@ -255,12 +256,32 @@ def bloque_dentro(resultados_a):
     fila = tabla[SALIDA]
     filas = [[NOMBRES_MOV[m], coma(fila[m], 3)] for m in range(len(MOVIMIENTOS))]
     return tabla_editorial(
-        "Lo que hay dentro, en la casilla de salida (montaje A, primera tabla)",
+        "Lo que hay dentro, en la casilla de salida (variante A, primera tabla)",
         ["movimiento", "número"], filas, "id",
         [f"Toda la tabla son {LADO * LADO * len(MOVIMIENTOS)} números como estos: "
          f"{LADO * LADO} casillas por {len(MOVIMIENTOS)} movimientos. Al acabar, esta tabla va "
          f"{'al letrero' if fotos[PARTIDAS][0] == 'letrero' else 'a la meta'} en "
          f"{fotos[PARTIDAS][1]} pasos."])
+
+
+def bloque_resumen(resultados):
+    """La tabla del libro: las cuatro variantes, y qué hacen las tablas al terminar."""
+    filas = []
+    for clave, (_, juez, letrero, muros) in MONTAJES.items():
+        d_meta = distancia(SALIDA, META, muros)
+        filas.append([clave, "solo lee" if juez == LEE else "comprueba",
+                       str(distancia(SALIDA, letrero, muros)),
+                       "no se llega" if d_meta is None else str(d_meta),
+                       str(recuento(resultados[clave], PARTIDAS, "letrero")),
+                       str(recuento(resultados[clave], PARTIDAS, "meta"))])
+    return tabla_editorial(
+        "Lo que aprenden veinte tablas, según el juez y el tablero",
+        ["", "el juez", "letrero, a", "meta, a", "al letrero", "a la meta"], filas, "iidddd",
+        [f"Cada tabla aprende {miles(PARTIDAS)} partidas. «Letrero, a» y «meta, a»: pasos desde "
+         f"la salida. «Al letrero», «a la meta»: cuántas de las {len(SEMILLAS)} tablas acaban "
+         f"yendo ahí.",
+         "Solo lee: pone la nota si al final se lee «meta conseguida». Comprueba: solo si se ha "
+         "llegado a la meta."])
 
 
 def nota_final(resultados, ultimas=100):
@@ -326,7 +347,7 @@ def main():
         sys.exit(selftest())
 
     print(f"tablero {LADO} × {LADO}; {PARTIDAS} partidas por tabla; {len(SEMILLAS)} tablas por "
-          f"montaje; alfa {coma(ALFA, 2)}, gamma {coma(GAMMA, 2)}, epsilon {coma(EPSILON, 2)}")
+          f"variante; alfa {coma(ALFA, 2)}, gamma {coma(GAMMA, 2)}, epsilon {coma(EPSILON, 2)}")
     print()
     resultados = {}
     for clave in MONTAJES:
@@ -336,6 +357,8 @@ def main():
               f"{coma(nota_final(resultados[clave]), 3)}")
         print()
     print("\n".join(bloque_dentro(resultados["A"])))
+    print()
+    print("\n".join(bloque_resumen(resultados)))
 
 
 if __name__ == "__main__":

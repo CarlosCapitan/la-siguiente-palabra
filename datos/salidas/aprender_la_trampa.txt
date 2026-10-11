@@ -1,7 +1,7 @@
-tablero 7 × 7; 2000 partidas por tabla; 20 tablas por montaje; alfa 0,50, gamma 0,95, epsilon 0,20
+tablero 7 × 7; 2000 partidas por tabla; 20 tablas por variante; alfa 0,50, gamma 0,95, epsilon 0,20
 
 ::: tabla
-Montaje A: juez que solo lee, letrero cerca
+Variante A: juez que solo lee, letrero cerca
 
 | partidas aprendidas | al letrero | a la meta | ni una cosa ni otra |
 |--:|--:|--:|--:|
@@ -20,7 +20,7 @@ De 20 tablas, qué hace cada una si elige siempre el número más alto. El letre
 nota media en las 100 últimas partidas: 1,000
 
 ::: tabla
-Montaje B: juez que comprueba, letrero cerca
+Variante B: juez que comprueba, letrero cerca
 
 | partidas aprendidas | al letrero | a la meta | ni una cosa ni otra |
 |--:|--:|--:|--:|
@@ -39,7 +39,7 @@ De 20 tablas, qué hace cada una si elige siempre el número más alto. El letre
 nota media en las 100 últimas partidas: 0,938
 
 ::: tabla
-Montaje C: juez que solo lee, letrero lejos
+Variante C: juez que solo lee, letrero lejos
 
 | partidas aprendidas | al letrero | a la meta | ni una cosa ni otra |
 |--:|--:|--:|--:|
@@ -58,7 +58,7 @@ De 20 tablas, qué hace cada una si elige siempre el número más alto. El letre
 nota media en las 100 últimas partidas: 1,000
 
 ::: tabla
-Montaje D: juez que solo lee, letrero lejos, meta tapiada
+Variante D: juez que solo lee, letrero lejos, meta tapiada
 
 | partidas aprendidas | al letrero | a la meta | ni una cosa ni otra |
 |--:|--:|--:|--:|
@@ -77,7 +77,7 @@ De 20 tablas, qué hace cada una si elige siempre el número más alto. El letre
 nota media en las 100 últimas partidas: 1,000
 
 ::: tabla
-Lo que hay dentro, en la casilla de salida (montaje A, primera tabla)
+Lo que hay dentro, en la casilla de salida (variante A, primera tabla)
 
 | movimiento | número |
 |:--|--:|
@@ -87,4 +87,19 @@ Lo que hay dentro, en la casilla de salida (montaje A, primera tabla)
 | arriba | 0,902 |
 
 Toda la tabla son 196 números como estos: 49 casillas por 4 movimientos. Al acabar, esta tabla va al letrero en 2 pasos.
+:::
+
+::: tabla
+Lo que aprenden veinte tablas, según el juez y el tablero
+
+|  | el juez | letrero, a | meta, a | al letrero | a la meta |
+|:--|:--|--:|--:|--:|--:|
+| A | solo lee | 2 | 6 | 20 | 0 |
+| B | comprueba | 2 | 6 | 0 | 20 |
+| C | solo lee | 12 | 6 | 0 | 20 |
+| D | solo lee | 12 | no se llega | 20 | 0 |
+
+Cada tabla aprende 2.000 partidas. «Letrero, a» y «meta, a»: pasos desde la salida. «Al letrero», «a la meta»: cuántas de las 20 tablas acaban yendo ahí.
+
+Solo lee: pone la nota si al final se lee «meta conseguida». Comprueba: solo si se ha llegado a la meta.
 :::
