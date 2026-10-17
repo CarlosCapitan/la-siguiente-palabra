@@ -215,11 +215,11 @@ def selftest(secuencia, muestras_libro, vocabulario):
     # 2. SEÑAL IMPLANTADA — una palabra inventada, repetida, deja una página con una sola letra,
     #    y exactamente tantas veces como se metió.
     implantado = secuencia[:200_000] + (" " + MARCA) * REPETICIONES_MARCA
-    casilla = N.construir(implantado, 2)[tuple(MARCA[:2])]
-    print(f"[2] señal implantada  casilla «{MARCA[:2]}»: {dict(casilla)}")
-    if dict(casilla) != {MARCA[2]: REPETICIONES_MARCA}:
+    pagina = N.construir(implantado, 2)[tuple(MARCA[:2])]
+    print(f"[2] señal implantada  página «{MARCA[:2]}»: {dict(pagina)}")
+    if dict(pagina) != {MARCA[2]: REPETICIONES_MARCA}:
         fallos.append(f"señal implantada: se esperaba la página «{MARCA[:2]}» = "
-                      f"{{'{MARCA[2]}': {REPETICIONES_MARCA}}}; salió {dict(casilla)}")
+                      f"{{'{MARCA[2]}': {REPETICIONES_MARCA}}}; salió {dict(pagina)}")
 
     # 3. INVARIANTES — los sorteos repetidos dan las muestras del libro, letra por letra; cada
     #    letra que sale estaba en su urna; y lo que se cuenta de las palabras cuadra.
@@ -229,7 +229,7 @@ def selftest(secuencia, muestras_libro, vocabulario):
     fuera = sum(1 for o in todas for _, u, s in repetidas[o][3] if s not in u)
     print(f"[3] invariante        muestras repetidas iguales a las de ngrama.txt: "
           f"{len(todas) - len(distintas)} de {len(todas)}; "
-          f"letras que salieron sin estar en su casilla: {fuera}")
+          f"letras que salieron sin estar en su página: {fuera}")
     if distintas:
         fallos.append(f"invariante: las muestras de las perillas {distintas} no salen iguales "
                       f"que en {MUESTRAS}; este programa ya no repite los sorteos de ngrama.py")
@@ -307,8 +307,8 @@ def main():
     E += tabla_editorial(
         f"Los {SORTEOS_A_MANO} primeros sorteos con la perilla en {perilla(PELDANO_A_MANO)}",
         ["ha escrito", "mira", "pueden venir", "la que más sale", "sale"], filas, "iidii",
-        ["Mira: las dos últimas letras escritas, que dicen a qué casilla va. Pueden venir: "
-         "cuántas letras distintas hay en esa casilla. La que más sale: y cuántas veces de "
+        ["Mira: las dos últimas letras escritas, que dicen a qué página va. Pueden venir: "
+         "cuántas letras distintas hay en esa página. La que más sale: y cuántas veces de "
          "cada cien.", f"Escrito al final: «{escrito}»."])
 
     tabla, texto, arranque, pasos = repetidas[("palabras", 2)]
