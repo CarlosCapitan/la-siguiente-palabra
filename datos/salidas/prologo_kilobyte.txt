@@ -1,8 +1,8 @@
 ########## prólogo: el kilobyte del ZX81, las dos cuentas ##########
-fecha: 2026-10-17 16:17 UTC
+fecha: 2026-10-17 17:32 UTC
 máquina: Darwin arm64. La medición no depende de la máquina:
 se cuentan letras de un PDF y se dividen dos números
-PDF medido: PDF/La-siguiente-palabra-lectura.pdf, 393 páginas, compilado 2026-10-17 16:17 UTC
+PDF medido: PDF/La-siguiente-palabra-lectura.pdf, 395 páginas, compilado 2026-10-17 17:32 UTC
 página física 7: la que contiene «En la Navidad de 1983»
 
 --- selftest ---
@@ -15,13 +15,13 @@ SELFTEST: las tres pruebas pasan.
 LA PÁGINA CONTRA EL KILOBYTE
 primera página impresa del prólogo, sin cabecera ni número de página
 
-  letras (incluidos espacios y saltos)             2.412
-  bytes en texto plano de un byte por letra        2.412
-  bytes en texto plano moderno (UTF-8)             2.475
+  letras (incluidos espacios y saltos)             2.467
+  bytes en texto plano de un byte por letra        2.467
+  bytes en texto plano moderno (UTF-8)             2.531
   memoria del Sinclair ZX81                        1.024
 
   ¿cabe la página en el kilobyte?                     no
-  veces que la página pasa del kilobyte             2,36
+  veces que la página pasa del kilobyte             2,41
 
 CUÁNTAS VECES MÁS MEMORIA TIENE EL PORTÁTIL
 el kilobyte del ZX81 son 1.024 bytes, no 1.000

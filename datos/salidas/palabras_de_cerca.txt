@@ -5,7 +5,7 @@
 SELFTEST: las tres pruebas pasan.
 
 Máquina: arm64, Darwin 25.6.0.
-Medido el 2026-10-09. Semilla: 20260914.
+Medido el 2026-10-17. Semilla: 20260914.
 Biblioteca: 21.313.324 palabras, 68.927 distintas.
 Mismo modelo que palabras_numeros.txt: las vecinas de las ocho palabras coinciden.
 
@@ -43,7 +43,7 @@ Las 5 palabras de cada lado; «caballo», entre corchetes.
 
 De 0 (seguro que no) a 100 (seguro que sí).
 
-Media después de entrenar: las de alrededor, 31; las sacadas al azar, 22.
+Media después de entrenar: las de alrededor, 31,4; las sacadas al azar, 21,7.
 :::
 
 --- 2. LOS NÚMEROS DE TRES PALABRAS ---

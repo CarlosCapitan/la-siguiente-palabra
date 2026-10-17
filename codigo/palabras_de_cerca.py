@@ -269,8 +269,8 @@ def bloque_tarea(m, frases, antes_sal, rng):
         f"¿Van juntas «{PALABRA_TAREA}» y esta palabra?",
         ["de dónde sale", "la palabra", "antes de entrenar", "después de entrenar"], tabla, "iidd",
         ["De 0 (seguro que no) a 100 (seguro que sí).",
-         f"Media después de entrenar: las de alrededor, {coma(media(True), 0)}; "
-         f"las sacadas al azar, {coma(media(False), 0)}."])
+         f"Media después de entrenar: las de alrededor, {coma(media(True), 1)}; "
+         f"las sacadas al azar, {coma(media(False), 1)}."])
     return [muestra, tabla_], filas
 
 
