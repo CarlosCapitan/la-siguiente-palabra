@@ -18,7 +18,7 @@ La batería del capítulo 11 con tres máquinas
 | razonar sobre una frase | 3 de 5 | 4 de 5 | 3 de 5 |
 | **en total** | **14 de 30** | **17 de 30** | **19 de 30** |
 
-Cada casilla: cuántas de las 5 preguntas de la tarea acierta. 7.000M, 32.000M: millones de números (nominal).
+Cada número: cuántas de las 5 preguntas de la tarea acierta. 7.000M, 32.000M: millones de números (nominal).
 
 Comprimido: guardado con menos detalle en cada número. Sin comprimir: tal como salió del entrenamiento. Las tres máquinas están adiestradas (capítulo 12).
 :::
