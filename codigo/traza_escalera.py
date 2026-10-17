@@ -8,9 +8,9 @@ los pasos que llevan a él (L11 y T27 de `notas/auditoria/PENDIENTES.md`). Este 
 esos pasos, con las mismas muestras:
 
   1. cómo arranca cada muestra: las primeras letras no salen de un sorteo;
-  2. un peldaño hecho a mano: los primeros sorteos de la muestra de dos letras, casilla a casilla;
+  2. un peldaño hecho a mano: los primeros sorteos de la muestra de dos letras, página a página;
   3. por qué al subir salen palabras: cuantas más letras mira la máquina, menos letras distintas
-     caben en la urna de cada casilla;
+     caben en la urna de cada página;
   4. cuántas palabras del Quijote hay en cada muestra.
 
 Las muestras NO se escriben aquí: se repiten los sorteos de `ngrama.py` con su misma semilla, en
@@ -102,7 +102,7 @@ def generar_con_traza(tabla, orden, largo, rng):
     for _ in range(largo - orden):
         clave = tuple(estado[-orden:])
         assert clave in tabla, (
-            f"Se esperaba que todo contexto escrito estuviera en la tabla (lo que sigue a un "
+            f"Se esperaba que todo contexto escrito estuviera en la libreta (lo que sigue a un "
             f"contexto del libro también está en el libro); no está «{''.join(clave)}»")
         siguiente = N.elegir(tabla[clave], rng)
         pasos.append((clave, tabla[clave], siguiente))
@@ -131,8 +131,8 @@ def repetir_sorteos(secuencia):
 
 
 def letras_por_urna(tabla):
-    """De media, cada vez que la máquina hace un sorteo, cuántas letras distintas pueden venir en su casilla. Cada
-    casilla pesa tantas veces como se usa: una casilla que sale mil veces cuenta mil."""
+    """De media, cada vez que la máquina hace un sorteo, cuántas letras distintas pueden venir en su página. Cada
+    página pesa tantas veces como se usa: una página que sale mil veces cuenta mil."""
     usos = sum(sum(c.values()) for c in tabla.values())
     return sum(len(c) * sum(c.values()) for c in tabla.values()) / usos
 
@@ -152,7 +152,7 @@ def nombre_simbolo(s):
 
 
 def la_que_mas(contador, palabra=False):
-    """La letra (o palabra) que más sale en una casilla, con cuántas veces de cada cien. Si
+    """La letra (o palabra) que más sale en una página, con cuántas veces de cada cien. Si
     empatan varias en cabeza, lo dice, porque nombrar una sola sería elegir por el lector."""
     total = sum(contador.values())
     orden = contador.most_common()
@@ -165,7 +165,7 @@ def la_que_mas(contador, palabra=False):
 
 
 def urna(contador, cuantas, unidad="letra"):
-    """Las `cuantas` letras más frecuentes de una casilla, con su parte de cada cien, y el resto
+    """Las `cuantas` letras más frecuentes de una página, con su parte de cada cien, y el resto
     agrupado. Devuelve líneas."""
     total = sum(contador.values())
     orden = contador.most_common()
@@ -212,13 +212,13 @@ def selftest(secuencia, muestras_libro, vocabulario):
         fallos.append(f"test nulo: se esperaba barajado > {COCIENTE_NULO_MIN} y real < "
                       f"{COCIENTE_REAL_MAX}; salió barajado={c_nulo:.3f}, real={c_real:.3f}")
 
-    # 2. SEÑAL IMPLANTADA — una palabra inventada, repetida, deja una casilla con una sola letra,
+    # 2. SEÑAL IMPLANTADA — una palabra inventada, repetida, deja una página con una sola letra,
     #    y exactamente tantas veces como se metió.
     implantado = secuencia[:200_000] + (" " + MARCA) * REPETICIONES_MARCA
     casilla = N.construir(implantado, 2)[tuple(MARCA[:2])]
     print(f"[2] señal implantada  casilla «{MARCA[:2]}»: {dict(casilla)}")
     if dict(casilla) != {MARCA[2]: REPETICIONES_MARCA}:
-        fallos.append(f"señal implantada: se esperaba la casilla «{MARCA[:2]}» = "
+        fallos.append(f"señal implantada: se esperaba la página «{MARCA[:2]}» = "
                       f"{{'{MARCA[2]}': {REPETICIONES_MARCA}}}; salió {dict(casilla)}")
 
     # 3. INVARIANTES — los sorteos repetidos dan las muestras del libro, letra por letra; cada
@@ -234,7 +234,7 @@ def selftest(secuencia, muestras_libro, vocabulario):
         fallos.append(f"invariante: las muestras de las perillas {distintas} no salen iguales "
                       f"que en {MUESTRAS}; este programa ya no repite los sorteos de ngrama.py")
     if fuera:
-        fallos.append(f"invariante: {fuera} letras salieron sin estar en su casilla")
+        fallos.append(f"invariante: {fuera} letras salieron sin estar en su página")
     trozos, reales = palabras_reales(muestras_libro[1], vocabulario)
     print(f"[3] invariante        muestra de 1 letra: {len(reales)} palabras del Quijote en "
           f"{len(trozos)} trozos (casillas_vacias.txt dice 12 en 40)")
@@ -341,10 +341,10 @@ def main():
          "Lo que mira depende de la perilla."])
     E += [""] + tabla_editorial(
         "Cuántas letras pueden venir, de media, según la perilla",
-        ["perilla", "casillas", "pueden venir, de media"],
+        ["perilla", "páginas", "pueden venir, de media"],
         [[perilla(o), miles(len(repetidas[o][0])), coma(letras_por_urna(repetidas[o][0]), 1)]
          for o in N.ORDENES_LETRA], "idd",
-        ["De media en todos los sorteos: cuántas letras distintas pueden venir en la casilla "
+        ["De media en todos los sorteos: cuántas letras distintas pueden venir en la página "
          "que le toca a la máquina."])
 
     E += ["", "5. PALABRAS DEL QUIJOTE EN CADA MUESTRA", ""]

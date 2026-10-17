@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """
-Capítulo 1 — lo poco que hay dentro de las casillas llenas, y lo que costaría llenarlas.
+Capítulo 1 — lo poco que hay apuntado en las páginas que tienen algo, y lo que costaría llenarlas.
 
-La figura anterior enseña cuántas casillas están vacías. Ésta enseña las dos cosas que el
-capítulo dice a continuación y que también son números grandes que se leen y se pasan de largo:
-que de las pocas casillas con algo dentro, siete de cada diez tienen una sola pareja (71,4 %, casillas_vacias.txt); y
-que mirar una palabra más hacia atrás multiplica por 22.952 el texto que haría falta.
+La figura anterior enseña cuántas páginas de la libreta están en blanco. Ésta enseña las dos
+cosas que el capítulo dice a continuación y que también son números grandes que se leen y se
+pasan de largo: que de las pocas páginas con algo apuntado, siete de cada diez tienen un solo
+palito (71,4 %, casillas_vacias.txt); y que mirar una palabra más hacia atrás multiplica por
+22.952 el texto que haría falta.
 
 Todos los números salen de `datos/salidas/casillas_vacias.txt`. Los dos que no están escritos
-allí —las casillas vistas más de una vez y el cociente entre los dos montones de Quijotes— los
+allí —las páginas con más de un palito y el cociente entre los dos montones de Quijotes— los
 calcula esta figura a partir de los que sí están, y el pie enseña las dos cuentas para que el
 lector pueda rehacerlas.
 
@@ -48,15 +49,15 @@ def leer(ruta):
     assert corte > 0, "no encuentro la sección de las tres palabras en la salida"
     dos, tres = t[:corte], t[corte:]
     d = {
-        "ocupadas":   buscar(dos, r"casillas con algo dentro \(parejas vistas\)\s+([\d.]+)",
-                             "las casillas ocupadas"),
-        "una_vez":    buscar(dos, r"parejas vistas una sola vez en todo el libro\s+([\d.]+)",
-                             "las parejas vistas una sola vez"),
-        "pc_una_vez": buscar(dos, r"las de una sola vez\s+([\d,]+) %",
-                             "el porcentaje de las de una sola vez"),
-        "quijotes2":  buscar(dos, r"palabra en cada casilla\s+([\d.]+)",
+        "ocupadas":   buscar(dos, r"páginas con algo apuntado \(parejas vistas\)\s+([\d.]+)",
+                             "las páginas con algo apuntado"),
+        "una_vez":    buscar(dos, r"parejas con un solo palito en todo el libro\s+([\d.]+)",
+                             "las parejas con un solo palito"),
+        "pc_una_vez": buscar(dos, r"las de un solo palito\s*([\d,]+) %",
+                             "el porcentaje de las de un solo palito"),
+        "quijotes2":  buscar(dos, r"palabra en cada página\s+([\d.]+)",
                              "los Quijotes de dos palabras"),
-        "quijotes3":  buscar(tres, r"palabra en cada casilla\s+([\d.]+)",
+        "quijotes3":  buscar(tres, r"palabra en cada página\s+([\d.]+)",
                              "los Quijotes de tres palabras"),
         # Cuánto más texto cuesta una palabra más: exactamente el número de trozos distintos.
         # Se lee de la salida; dividir los dos Quijotes, que van redondeados, daba 22.954 en vez
@@ -73,15 +74,15 @@ def dibujar(d, paleta, ruta):
     from matplotlib.patches import Rectangle
     p = paleta
     L = Lienzo("Y lo poco que hay, casi no se repite",
-               "De las casillas que sí tienen algo dentro, la mayoría lo tiene una sola vez\n"
-               "en todo el libro. Y con una palabra más de memoria, la tabla se dispara.",
+               "De las páginas que sí tienen algo apuntado, la mayoría tiene un solo palito.\n"
+               "Y con una palabra más de memoria, la libreta se dispara.",
                paleta, alto=4.35)
 
     # --- 1. de las llenas, casi todas con una sola pareja ------------------------------------
-    x, y, w = L.panel(1, "Vistas una vez, y nunca más", 31.0)
-    L.texto(x, y + 0.4, f"Las {d['ocupadas']} casillas con algo dentro, repartidas según cuántas "
-                        f"veces", tam=7.2, color=p.suave)
-    L.texto(x, y - 2.8, "aparece esa pareja de palabras en el libro entero:", tam=7.2,
+    x, y, w = L.panel(1, "Un solo palito, y nunca más", 31.0)
+    L.texto(x, y + 0.4, f"Las {d['ocupadas']} páginas con algo apuntado, repartidas según cuántos "
+                        f"palitos", tam=7.2, color=p.suave)
+    L.texto(x, y - 2.8, "tiene cada una, uno solo o más de uno:", tam=7.2,
             color=p.suave)
 
     frac = numero(d["una_vez"]) / numero(d["ocupadas"])
@@ -95,15 +96,15 @@ def dibujar(d, paleta, ruta):
     # El 21,2 % va encima de su trozo: escrito dentro, las rayas se lo comen.
     L.texto(x + w, yb + hb + 2.6, f"{d['pc_repetidas']:.1f} %".replace(".", ","), tam=8,
             ha="right", negrita=True)
-    L.texto(x, yb - 4.2, f"{d['una_vez']} vistas una sola vez", tam=7.2, color=p.suave)
-    L.texto(x + w, yb - 4.2, f"{miles(d['repetidas'])} vistas más de una vez", tam=7.2,
+    L.texto(x, yb - 4.2, f"{d['una_vez']} con un solo palito", tam=7.2, color=p.suave)
+    L.texto(x + w, yb - 4.2, f"{miles(d['repetidas'])} con más de un palito", tam=7.2,
             color=p.suave, ha="right")
 
     # --- 2. y esto mirando solo dos palabras --------------------------------------------------
     x, y, w = L.panel(2, "Y esto mirando solo dos palabras", 34.0)
-    L.texto(x, y + 0.4, "Cuántos Quijotes de texto harían falta para escribir una sola palabra",
+    L.texto(x, y + 0.4, "Cuántos Quijotes de texto harían falta para apuntar una sola palabra",
             tam=7.2, color=p.suave)
-    L.texto(x, y - 2.8, "en cada casilla de la tabla:", tam=7.2, color=p.suave)
+    L.texto(x, y - 2.8, "en cada página de la libreta:", tam=7.2, color=p.suave)
     L.ficha(x, y - 9.6, f"mirando 2 palabras atrás:  {d['quijotes2']} Quijotes", w, alto=5.6,
             relleno=p.fondo, tam=8.0)
     L.ficha(x, y - 17.0, f"mirando 3 palabras atrás:  {d['quijotes3']} Quijotes", w, alto=5.6,
@@ -123,7 +124,7 @@ def selftest():
     fallos, d = [], leer(SALIDA)
     crudo = open(SALIDA, encoding="utf-8").read()
 
-    # 1. TEST NULO — sin la sección de las tres palabras, «palabra en cada casilla» solo casa una
+    # 1. TEST NULO — sin la sección de las tres palabras, «palabra en cada página» solo casa una
     #    vez y la figura pintaría el número de dos palabras en las dos fichas: el panel diría que
     #    mirar una palabra más no cuesta nada, que es lo contrario de lo que pasa.
     import tempfile, os
