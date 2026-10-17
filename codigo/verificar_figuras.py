@@ -122,7 +122,10 @@ def figuras_del_manuscrito(raiz):
             # Una cita por número, `\ref{fig-x}`{=latex}, sale en el PDF como un número que aquí no
             # se conoce: el ancla se corta delante de ella, o se toma detrás si delante no queda
             # bastante texto.
-            trozos = re.split(r"`\\ref\{[^}]+\}`\{=latex\}", siguiente)
+            # Desde el 17 de octubre de 2026 detrás de cada cita va su macro \dondeesta{fig-x} («, en la
+            # página siguiente,»): se corta también por ella, o su texto sin expandir se colaría en
+            # el ancla y no se encontraría en el PDF.
+            trozos = re.split(r"`\\(?:ref|dondeesta)\{[^}]+\}`\{=latex\}", siguiente)
             siguiente = max(trozos, key=lambda x: len(limpia(x))) \
                 if len(limpia(trozos[0])) < 15 else trozos[0]
             fl = re.search(FLOTA, l)

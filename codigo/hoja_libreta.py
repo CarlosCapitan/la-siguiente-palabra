@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Las páginas de la libreta, dibujadas como hojas de libreta con sus palitos.
+Las hojas de la libreta, dibujadas como hojas de libreta con sus palitos.
 
-La máquina de contar del capítulo 1 es una libreta: una página por cada contexto, con el contexto
+La máquina de contar del capítulo 1 es una libreta: una hoja por cada contexto, con el contexto
 de título y, debajo, un palito por cada vez que vino detrás cada letra (o palabra). Este módulo
 dibuja eso y nada más: la hoja (con su margen, sus agujeros y sus renglones) y los palitos
 agrupados de cinco en cinco, cuatro rayas y la quinta cruzada. Aquí no hay ningún dato: cada
@@ -113,7 +113,7 @@ def selftest():
         plt.close(L.fig)
         return hechas, x_fin
 
-    # 1. TEST NULO — cero palitos no dibujan nada, y un recuento negativo revienta: una página
+    # 1. TEST NULO — cero palitos no dibujan nada, y un recuento negativo revienta: una hoja
     #    sin nada apuntado se queda en blanco, y no hay palitos «de menos uno».
     hechas, _ = lineas_nuevas(0)
     try:

@@ -4,7 +4,7 @@ Capítulo 1 — la escalera, presentada antes de enseñarla.
 
 La sección «La escalera» del capítulo suelta el primer bloque de texto generado tras una sola
 línea de presentación, y el lector no sabe qué está mirando hasta varios párrafos después. Esta
-figura es la presentación: el mismo texto, la misma máquina, una sola perilla, y lo que escupe
+figura es la presentación: el mismo texto, la misma máquina, un solo selector, y lo que escupe
 en cada posición.
 
 Las muestras no se escriben aquí: se leen de `datos/salidas/ngrama.txt`, que es lo que imprimió
@@ -20,7 +20,7 @@ Uso:
 SALIDA = "../datos/salidas/ngrama.txt"
 DESTINO = "../figuras/la_escalera.png"
 
-# Los peldaños que se enseñan, con el rótulo de la perilla. Son los de letras: el capítulo pasa
+# Los peldaños que se enseñan, con el rótulo del selector. Son los de letras: el capítulo pasa
 # a palabras después, y mezclarlos aquí sería enseñar dos experimentos como si fueran uno.
 PELDANOS = [("azar puro", "nada"), ("1 letra de contexto", "1 letra"),
             ("2 letras de contexto", "2 letras"), ("3 letras de contexto", "3 letras"),
@@ -47,7 +47,7 @@ def leer(ruta):
 
 
 def dibujar(d, paleta, ruta):
-    L = Lienzo("La escalera: una sola perilla",
+    L = Lienzo("La escalera: un solo selector",
                "Una máquina que cuenta cuántas veces va cada letra detrás de cada trozo, y luego\n"
                "escribe echando a suertes con esos recuentos. Lo único que se le cambia es cuántas\n"
                "letras mira hacia atrás. El texto contado es siempre el mismo.",
@@ -57,8 +57,8 @@ def dibujar(d, paleta, ruta):
                           f"{d['distintas']} distintas.", tam=7.2, color=p.suave)
     L.y -= 5.0
 
-    for n, (rotulo, perilla) in enumerate(PELDANOS, start=1):
-        x, y, w = L.panel(n, f"La perilla en «{perilla}»", 16.6)
+    for n, (rotulo, selector) in enumerate(PELDANOS, start=1):
+        x, y, w = L.panel(n, f"El selector en «{selector}»", 16.6)
         texto = d["muestras"][rotulo][:LETRAS_MUESTRA]
         for i, linea in enumerate(textwrap.wrap(texto, 62)[:3]):
             L.texto(x, y - i * 3.2, linea, tam=6.6, mono=True)
@@ -95,7 +95,7 @@ def selftest():
         fallos.append(f"señal implantada: estas muestras no están literales: {fuera}")
 
     # 3. INVARIANTE DEL DOMINIO — las cinco muestras son distintas entre sí. Si dos salieran
-    #    iguales, la perilla no estaría haciendo nada y la figura estaría mintiendo.
+    #    iguales, el selector no estaría haciendo nada y la figura estaría mintiendo.
     distintas = len({v[:LETRAS_MUESTRA] for v in d["muestras"].values()})
     print(f"[3] invariante        {distintas} muestras distintas de {len(PELDANOS)} peldaños")
     if distintas != len(PELDANOS):

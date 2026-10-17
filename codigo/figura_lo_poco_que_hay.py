@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-Capítulo 1 — lo poco que hay apuntado en las páginas que tienen algo, y lo que costaría llenarlas.
+Capítulo 1 — lo poco que hay apuntado en las hojas que tienen algo, y lo que costaría llenarlas.
 
-La figura anterior enseña cuántas páginas de la libreta están en blanco. Ésta enseña las dos
+La figura anterior enseña cuántas hojas de la libreta están en blanco. Ésta enseña las dos
 cosas que el capítulo dice a continuación y que también son números grandes que se leen y se
-pasan de largo: que de las pocas páginas con algo apuntado, siete de cada diez tienen un solo
+pasan de largo: que de las pocas hojas con algo apuntado, siete de cada diez tienen un solo
 palito (71,4 %, casillas_vacias.txt); y que mirar una palabra más hacia atrás multiplica por
 22.952 el texto que haría falta.
 
-Todos los números salen de `datos/salidas/casillas_vacias.txt`, también las páginas con más de un
+Todos los números salen de `datos/salidas/casillas_vacias.txt`, también las hojas con más de un
 palito, que desde el 17 de octubre de 2026 (Orden 4.2) imprime esa salida y antes calculaba esta
 figura. La figura ya no lleva pie: la procedencia de los datos la dice el libro.
 
@@ -48,17 +48,17 @@ def leer(ruta):
     assert corte > 0, "no encuentro la sección de las tres palabras en la salida"
     dos, tres = t[:corte], t[corte:]
     d = {
-        "ocupadas":   buscar(dos, r"páginas con algo apuntado \(parejas vistas\)\s+([\d.]+)",
-                             "las páginas con algo apuntado"),
+        "ocupadas":   buscar(dos, r"hojas con algo apuntado \(parejas vistas\)\s+([\d.]+)",
+                             "las hojas con algo apuntado"),
         "una_vez":    buscar(dos, r"parejas con un solo palito en todo el libro\s+([\d.]+)",
                              "las parejas con un solo palito"),
-        "repetidas_txt": buscar(dos, r"páginas con más de un palito\s+([\d.]+)",
-                                "las páginas con más de un palito"),
+        "repetidas_txt": buscar(dos, r"hojas con más de un palito\s+([\d.]+)",
+                                "las hojas con más de un palito"),
         "pc_una_vez": buscar(dos, r"las de un solo palito\s*([\d,]+) %",
                              "el porcentaje de las de un solo palito"),
-        "quijotes2":  buscar(dos, r"palabra en cada página\s+([\d.]+)",
+        "quijotes2":  buscar(dos, r"palabra en cada hoja\s+([\d.]+)",
                              "los Quijotes de dos palabras"),
-        "quijotes3":  buscar(tres, r"palabra en cada página\s+([\d.]+)",
+        "quijotes3":  buscar(tres, r"palabra en cada hoja\s+([\d.]+)",
                              "los Quijotes de tres palabras"),
         # Cuánto más texto cuesta una palabra más: exactamente el número de trozos distintos.
         # Se lee de la salida; dividir los dos Quijotes, que van redondeados, daba 22.954 en vez
@@ -75,13 +75,13 @@ def dibujar(d, paleta, ruta):
     from matplotlib.patches import Rectangle
     p = paleta
     L = Lienzo("Y lo poco que hay, casi no se repite",
-               "De las páginas que sí tienen algo apuntado, la mayoría tiene un solo palito.\n"
+               "De las hojas que sí tienen algo apuntado, la mayoría tiene un solo palito.\n"
                "Y con una palabra más de memoria, la libreta se dispara.",
                paleta, alto=4.13)  # sin el hueco del pie (Orden 4; era 4,35)
 
     # --- 1. de las llenas, casi todas con una sola pareja ------------------------------------
     x, y, w = L.panel(1, "Un solo palito, y nunca más", 31.0)
-    L.texto(x, y + 0.4, f"Las {d['ocupadas']} páginas con algo apuntado, repartidas según cuántos "
+    L.texto(x, y + 0.4, f"Las {d['ocupadas']} hojas con algo apuntado, repartidas según cuántos "
                         f"palitos", tam=7.2, color=p.suave)
     L.texto(x, y - 2.8, "tiene cada una, uno solo o más de uno:", tam=7.2,
             color=p.suave)
@@ -105,7 +105,7 @@ def dibujar(d, paleta, ruta):
     x, y, w = L.panel(2, "Y esto mirando solo dos palabras", 34.0)
     L.texto(x, y + 0.4, "Cuántos Quijotes de texto harían falta para apuntar una sola palabra",
             tam=7.2, color=p.suave)
-    L.texto(x, y - 2.8, "en cada página de la libreta:", tam=7.2, color=p.suave)
+    L.texto(x, y - 2.8, "en cada hoja de la libreta:", tam=7.2, color=p.suave)
     L.ficha(x, y - 9.6, f"mirando 2 palabras atrás:  {d['quijotes2']} Quijotes", w, alto=5.6,
             relleno=p.fondo, tam=8.0)
     L.ficha(x, y - 17.0, f"mirando 3 palabras atrás:  {d['quijotes3']} Quijotes", w, alto=5.6,
@@ -122,7 +122,7 @@ def selftest():
     fallos, d = [], leer(SALIDA)
     crudo = open(SALIDA, encoding="utf-8").read()
 
-    # 1. TEST NULO — sin la sección de las tres palabras, «palabra en cada página» solo casa una
+    # 1. TEST NULO — sin la sección de las tres palabras, «palabra en cada hoja» solo casa una
     #    vez y la figura pintaría el número de dos palabras en las dos fichas: el panel diría que
     #    mirar una palabra más no cuesta nada, que es lo contrario de lo que pasa.
     import tempfile, os

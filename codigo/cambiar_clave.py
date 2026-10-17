@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 """
-Cambia una clave de tabla en las salidas guardadas, sin volver a ejecutar nada, y demuestra que
+Cambia una o varias cadenas en las salidas guardadas, sin volver a ejecutar nada, y demuestra que
 no se ha tocado nada más.
 
 Nace de la excepción de `REGLAS.md` (regla 6, 17 de octubre de 2026): un cambio de rótulo o de
 clave que no toca ninguna cifra puede aplicarse a la vez al programa y a la salida guardada. Este
-programa hace la parte de la salida: sustituye UNA cadena en cada `datos/salidas/*.txt` que la
-contenga (hoy, «Cada casilla:» por «Cada número:»), y para cada fichero
+programa hace la parte de la salida: sustituye las cadenas que se le dan (por defecto, una:
+«Cada casilla:» por «Cada número:»; con `--cambio ANTES=>DESPUES`, las que se quiera, en ese
+orden) en cada `datos/salidas/*.txt` que las contenga (o solo en los que se nombren con
+`--fichero`), y para cada fichero
 
   - cuenta las apariciones antes y después;
-  - comprueba línea a línea que las únicas líneas que cambian son las que contenían la cadena, y
-    que cada una es exactamente la anterior con la cadena sustituida; si cambia cualquier otra,
-    revienta y no escribe nada;
+  - comprueba línea a línea que las únicas líneas que cambian son las que contenían alguna de las
+    cadenas, y que cada una es exactamente la anterior con las cadenas sustituidas; si cambia
+    cualquier otra, revienta y no escribe nada;
   - imprime cuántas líneas ha cambiado.
 
 También sirve para comprobar un cambio ya hecho: con `--contra CARPETA`, no escribe nada y mira si
@@ -23,12 +25,15 @@ Uso:
     python cambiar_clave.py                       # aplica en ../datos/salidas
     python cambiar_clave.py --contra /ruta/vieja  # solo comprueba, no escribe
     python cambiar_clave.py --carpeta /ruta       # aplica en otra carpeta
+    python cambiar_clave.py --fichero mirada_a_mano.txt \
+        --cambio 'uno=>UNO' --cambio 'dos=>DOS'    # varias cadenas, en un fichero
 """
 
 # ======================= CONSTANTES =======================
 
 ANTES = "Cada casilla:"
 DESPUES = "Cada número:"
+CAMBIOS = [(ANTES, DESPUES)]       # lo que se cambia si no se dice otra cosa
 CARPETA = "../datos/salidas"
 
 # ==========================================================
@@ -41,40 +46,50 @@ from pathlib import Path
 AQUI = Path(__file__).resolve().parent
 
 
-def sustituir(texto, antes=ANTES, despues=DESPUES):
-    """El texto con la cadena sustituida y cuántas líneas la contenían."""
+def aplica(linea, cambios):
+    """Una línea con todas las cadenas sustituidas, en orden."""
+    for antes, despues in cambios:
+        linea = linea.replace(antes, despues)
+    return linea
+
+
+def sustituir(texto, cambios=CAMBIOS):
+    """El texto con las cadenas sustituidas y cuántas líneas tenían alguna."""
     lineas = texto.split("\n")
-    return texto.replace(antes, despues), sum(1 for l in lineas if antes in l)
+    return aplica(texto, cambios), sum(1 for l in lineas if any(a in l for a, _ in cambios))
 
 
-def comprobar(viejo, nuevo, antes=ANTES, despues=DESPUES):
-    """Revienta si `nuevo` no es `viejo` con la cadena sustituida, línea a línea: el mismo número
-    de líneas, y solo difieren las que contenían la cadena. Devuelve cuántas difieren."""
+def comprobar(viejo, nuevo, cambios=CAMBIOS):
+    """Revienta si `nuevo` no es `viejo` con las cadenas sustituidas, línea a línea: el mismo
+    número de líneas, y solo difieren las que contenían alguna. Devuelve cuántas difieren."""
     a, b = viejo.split("\n"), nuevo.split("\n")
     assert len(a) == len(b), f"Se esperaban {len(a)} líneas y hay {len(b)}"
     cambiadas = 0
     for i, (x, y) in enumerate(zip(a, b), 1):
         if x == y:
-            assert antes not in x, f"línea {i}: tiene «{antes}» y no se ha cambiado"
+            assert not any(c in x for c, _ in cambios), f"línea {i}: tiene una cadena y no se ha cambiado"
             continue
-        assert antes in x and y == x.replace(antes, despues), (
-            f"línea {i}: ha cambiado sin contener «{antes}», o no solo por la sustitución:\n"
+        assert any(c in x for c, _ in cambios) and y == aplica(x, cambios), (
+            f"línea {i}: ha cambiado sin contener ninguna de las cadenas, o no solo por la sustitución:\n"
             f"  antes:   {x[:100]}\n  después: {y[:100]}")
         cambiadas += 1
     return cambiadas
 
 
-def aplicar(carpeta):
-    """Sustituye en cada .txt de la carpeta; escribe solo si la comprobación pasa."""
+def aplicar(carpeta, cambios=CAMBIOS, ficheros=None):
+    """Sustituye en cada .txt de la carpeta (o solo en `ficheros`); escribe solo si la
+    comprobación pasa."""
     total = 0
-    for ruta in sorted(Path(carpeta).glob("*.txt")):
+    rutas = [Path(carpeta) / f for f in ficheros] if ficheros else sorted(Path(carpeta).glob("*.txt"))
+    for ruta in rutas:
         viejo = ruta.read_text(encoding="utf-8")
-        antes = viejo.count(ANTES)
+        antes = sum(viejo.count(a) for a, _ in cambios)
         if not antes:
+            assert not ficheros, f"{ruta.name}: no tiene ninguna de las cadenas"
             continue
-        nuevo, lineas = sustituir(viejo)
-        cambiadas = comprobar(viejo, nuevo)
-        assert cambiadas == lineas and nuevo.count(ANTES) == 0
+        nuevo, lineas = sustituir(viejo, cambios)
+        cambiadas = comprobar(viejo, nuevo, cambios)
+        assert cambiadas == lineas and not any(a in nuevo for a, _ in cambios)
         ruta.write_text(nuevo, encoding="utf-8")
         print(f"{ruta.name:<44}{antes} apariciones, {cambiadas} líneas cambiadas")
         total += cambiadas
@@ -82,7 +97,7 @@ def aplicar(carpeta):
     return total
 
 
-def contra(actual, vieja):
+def contra(actual, vieja, cambios=CAMBIOS):
     """Comprueba que `actual` es `vieja` con la sustitución: cada fichero, y que no sobra ni falta
     ninguno. No escribe nada."""
     a = {p.name: p for p in Path(actual).glob("*.txt")}
@@ -95,8 +110,8 @@ def contra(actual, vieja):
         if viejo == nuevo:
             continue
         distintos += 1
-        esperado, _ = sustituir(viejo)
-        cambiadas = comprobar(viejo, nuevo)
+        esperado, _ = sustituir(viejo, cambios)
+        cambiadas = comprobar(viejo, nuevo, cambios)
         assert nuevo == esperado, f"{nombre}: no es la versión vieja con la sustitución"
         print(f"{nombre:<44}{cambiadas} líneas cambiadas, solo esas")
         total += cambiadas
@@ -121,6 +136,11 @@ def selftest():
     #    y las cifras quedan como estaban.
     nuevo, n = sustituir(base)
     cambiadas = comprobar(base, nuevo)
+    # y con varias cadenas a la vez, en una línea y en otra
+    varios = [("uno", "UNO"), ("cuatro", "CUATRO")]
+    mult, n2 = sustituir(base, varios)
+    if (n2, comprobar(base, mult, varios)) != (2, 2) or "UNO" not in mult or "CUATRO" not in mult:
+        fallos.append(f"señal implantada: con varias cadenas salió {n2} líneas y {mult!r}")
     print(f"[2] señal implantada  dos líneas con la cadena: {n} contadas, {cambiadas} cambiadas")
     if (n, cambiadas) != (2, 2) or ANTES in nuevo or "3,5" not in nuevo:
         fallos.append(f"señal implantada: se esperaban 2 y 2; salieron {n} y {cambiadas}")
@@ -137,6 +157,13 @@ def selftest():
             sin_reventar.append(nombre)
         except AssertionError:
             pass
+    # con varias cadenas, tocar una línea que no contiene ninguna también revienta
+    try:
+        comprobar(base, mult.replace("tres", "TRES"), varios)
+        sin_reventar.append("varias cadenas y una línea ajena tocada")
+    except AssertionError:
+        pass
+    malos["varias cadenas y una línea ajena tocada"] = None
     print(f"[3] invariante        {len(malos) - len(sin_reventar)} de {len(malos)} cambios indebidos "
           f"hacen reventar")
     if sin_reventar:
@@ -156,13 +183,20 @@ def main():
     ap.add_argument("--selftest", action="store_true")
     ap.add_argument("--contra", help="carpeta de salidas anterior: solo comprueba, no escribe")
     ap.add_argument("--carpeta", default=str(AQUI / CARPETA), help="dónde aplicar (por defecto, las salidas)")
+    ap.add_argument("--cambio", action="append", metavar="ANTES=>DESPUES",
+                    help="una cadena y su sustitución; se puede repetir")
+    ap.add_argument("--fichero", action="append", help="solo este fichero de la carpeta; se puede repetir")
     args = ap.parse_args()
     if args.selftest:
         sys.exit(selftest())
+    cambios = CAMBIOS
+    if args.cambio:
+        assert all("=>" in c for c in args.cambio), "cada --cambio es ANTES=>DESPUES"
+        cambios = [tuple(c.split("=>", 1)) for c in args.cambio]
     if args.contra:
-        contra(args.carpeta, args.contra)
+        contra(args.carpeta, args.contra, cambios)
     else:
-        aplicar(args.carpeta)
+        aplicar(args.carpeta, cambios, args.fichero)
 
 
 if __name__ == "__main__":

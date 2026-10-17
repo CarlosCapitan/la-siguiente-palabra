@@ -2,15 +2,15 @@
 """
 Capítulo 1 — la escalera, paso a paso.
 
-La sección «La escalera» enseña lo que escribe la máquina de `ngrama.py` con la perilla en cero,
+La sección «La escalera» enseña lo que escribe la máquina de `ngrama.py` con el selector en cero,
 una, dos, tres y cinco letras. El lector ve el resultado de doscientos sorteos por peldaño y no
 los pasos que llevan a él (L11 y T27 de `notas/auditoria/PENDIENTES.md`). Este programa imprime
 esos pasos, con las mismas muestras:
 
   1. cómo arranca cada muestra: las primeras letras no salen de un sorteo;
-  2. un peldaño hecho a mano: los primeros sorteos de la muestra de dos letras, página a página;
+  2. un peldaño hecho a mano: los primeros sorteos de la muestra de dos letras, hoja a hoja;
   3. por qué al subir salen palabras: cuantas más letras mira la máquina, menos letras distintas
-     caben en la urna de cada página;
+     caben en la urna de cada hoja;
   4. cuántas palabras del Quijote hay en cada muestra.
 
 Las muestras NO se escriben aquí: se repiten los sorteos de `ngrama.py` con su misma semilla, en
@@ -25,19 +25,19 @@ Uso:
 
 MUESTRAS = "../datos/salidas/ngrama.txt"   # lo que el libro imprime, tal como salió
 
-PELDANO_A_MANO = 2        # la perilla del peldaño que se sigue sorteo a sorteo
+PELDANO_A_MANO = 2        # el selector del peldaño que se sigue sorteo a sorteo
 SORTEOS_A_MANO = 6        # cuántos sorteos se enseñan
-SORTEOS_PALABRAS = 4      # cuántos sorteos de la máquina de palabras (perilla en dos) se enseñan
+SORTEOS_PALABRAS = 4      # cuántos sorteos de la máquina de palabras (selector en dos) se enseñan
 LETRAS_POR_URNA = 4       # cuántas letras de cada urna se enseñan una a una; el resto se agrupa
 
-# El mismo momento de escribir, visto con la perilla en cada posición: la máquina acaba de
-# escribir «quijo» y va a sacar en un sorteo la letra siguiente. Con la perilla en uno solo ve «o»; en dos,
+# El mismo momento de escribir, visto con el selector en cada posición: la máquina acaba de
+# escribir «quijo» y va a sacar en un sorteo la letra siguiente. Con el selector en uno solo ve «o»; en dos,
 # «jo»; en tres, «ijo»; en cinco, «quijo». Es la misma letra por salir, con más o menos pasado.
 MOMENTO = "quijo"
 
 # Selftest
 TROZO_NULO = 400_000              # letras del corpus con las que se hace el test nulo
-PERILLA_NULA = 2
+SELECTOR_NULA = 2
 COCIENTE_NULO_MIN = 0.75          # barajado: la urna de dos letras casi tan llena como la de cero
 COCIENTE_REAL_MAX = 0.65          # real: la urna de dos letras claramente más vacía
 MARCA = "wñk"                     # señal implantada: una palabra que no existe (ni «wñ» en el libro)
@@ -65,7 +65,7 @@ def rotulo(orden):
     return f"--- LETRAS, {orden} letra{'s' if orden > 1 else ''} de contexto ---"
 
 
-def perilla(orden):
+def selector(orden):
     return {0: "nada", 1: "1 letra"}.get(orden, f"{orden} letras")
 
 
@@ -131,8 +131,8 @@ def repetir_sorteos(secuencia):
 
 
 def letras_por_urna(tabla):
-    """De media, cada vez que la máquina hace un sorteo, cuántas letras distintas pueden venir en su página. Cada
-    página pesa tantas veces como se usa: una página que sale mil veces cuenta mil."""
+    """De media, cada vez que la máquina hace un sorteo, cuántas letras distintas pueden venir en su hoja. Cada
+    hoja pesa tantas veces como se usa: una hoja que sale mil veces cuenta mil."""
     usos = sum(sum(c.values()) for c in tabla.values())
     return sum(len(c) * sum(c.values()) for c in tabla.values()) / usos
 
@@ -152,7 +152,7 @@ def nombre_simbolo(s):
 
 
 def la_que_mas(contador, palabra=False):
-    """La letra (o palabra) que más sale en una página, con cuántas veces de cada cien. Si
+    """La letra (o palabra) que más sale en una hoja, con cuántas veces de cada cien. Si
     empatan varias en cabeza, lo dice, porque nombrar una sola sería elegir por el lector."""
     total = sum(contador.values())
     orden = contador.most_common()
@@ -165,7 +165,7 @@ def la_que_mas(contador, palabra=False):
 
 
 def urna(contador, cuantas, unidad="letra"):
-    """Las `cuantas` letras más frecuentes de una página, con su parte de cada cien, y el resto
+    """Las `cuantas` letras más frecuentes de una hoja, con su parte de cada cien, y el resto
     agrupado. Devuelve líneas."""
     total = sum(contador.values())
     orden = contador.most_common()
@@ -204,21 +204,21 @@ def selftest(secuencia, muestras_libro, vocabulario):
     barajado = list(secuencia[:TROZO_NULO])
     random.Random(N.SEMILLA).shuffle(barajado)
     real = secuencia[:TROZO_NULO]
-    c_nulo = letras_por_urna(N.construir(barajado, PERILLA_NULA)) / letras_por_urna(N.construir(barajado, 0))
-    c_real = letras_por_urna(N.construir(real, PERILLA_NULA)) / letras_por_urna(N.construir(real, 0))
-    print(f"[1] test nulo         letras posibles mirando {PERILLA_NULA} / sin mirar: "
+    c_nulo = letras_por_urna(N.construir(barajado, SELECTOR_NULA)) / letras_por_urna(N.construir(barajado, 0))
+    c_real = letras_por_urna(N.construir(real, SELECTOR_NULA)) / letras_por_urna(N.construir(real, 0))
+    print(f"[1] test nulo         letras posibles mirando {SELECTOR_NULA} / sin mirar: "
           f"barajado={coma(c_nulo, 2)}  real={coma(c_real, 2)}")
     if not (c_nulo > COCIENTE_NULO_MIN and c_real < COCIENTE_REAL_MAX):
         fallos.append(f"test nulo: se esperaba barajado > {COCIENTE_NULO_MIN} y real < "
                       f"{COCIENTE_REAL_MAX}; salió barajado={c_nulo:.3f}, real={c_real:.3f}")
 
-    # 2. SEÑAL IMPLANTADA — una palabra inventada, repetida, deja una página con una sola letra,
+    # 2. SEÑAL IMPLANTADA — una palabra inventada, repetida, deja una hoja con una sola letra,
     #    y exactamente tantas veces como se metió.
     implantado = secuencia[:200_000] + (" " + MARCA) * REPETICIONES_MARCA
     pagina = N.construir(implantado, 2)[tuple(MARCA[:2])]
-    print(f"[2] señal implantada  página «{MARCA[:2]}»: {dict(pagina)}")
+    print(f"[2] señal implantada  hoja «{MARCA[:2]}»: {dict(pagina)}")
     if dict(pagina) != {MARCA[2]: REPETICIONES_MARCA}:
-        fallos.append(f"señal implantada: se esperaba la página «{MARCA[:2]}» = "
+        fallos.append(f"señal implantada: se esperaba la hoja «{MARCA[:2]}» = "
                       f"{{'{MARCA[2]}': {REPETICIONES_MARCA}}}; salió {dict(pagina)}")
 
     # 3. INVARIANTES — los sorteos repetidos dan las muestras del libro, letra por letra; cada
@@ -229,12 +229,12 @@ def selftest(secuencia, muestras_libro, vocabulario):
     fuera = sum(1 for o in todas for _, u, s in repetidas[o][3] if s not in u)
     print(f"[3] invariante        muestras repetidas iguales a las de ngrama.txt: "
           f"{len(todas) - len(distintas)} de {len(todas)}; "
-          f"letras que salieron sin estar en su página: {fuera}")
+          f"letras que salieron sin estar en su hoja: {fuera}")
     if distintas:
-        fallos.append(f"invariante: las muestras de las perillas {distintas} no salen iguales "
+        fallos.append(f"invariante: las muestras de los selectores {distintas} no salen iguales "
                       f"que en {MUESTRAS}; este programa ya no repite los sorteos de ngrama.py")
     if fuera:
-        fallos.append(f"invariante: {fuera} letras salieron sin estar en su página")
+        fallos.append(f"invariante: {fuera} letras salieron sin estar en su hoja")
     trozos, reales = palabras_reales(muestras_libro[1], vocabulario)
     print(f"[3] invariante        muestra de 1 letra: {len(reales)} palabras del Quijote en "
           f"{len(trozos)} trozos (casillas_vacias.txt dice 12 en 40)")
@@ -276,13 +276,13 @@ def main():
         "Las primeras letras no salen de un sorteo: la máquina coge al azar",
         "un contexto de la tabla, lo escribe, y detrás empiezan los sorteos.",
         "",
-        f"  {'perilla':<10}{'arranque':<12}principio de la muestra",
+        f"  {'selector':<10}{'arranque':<12}principio de la muestra",
         f"  {'-------':<10}{'--------':<12}-----------------------",
     ]
     for orden in N.ORDENES_LETRA:
         _, texto, arranque, _ = repetidas[orden]
         a = "(ninguno)" if arranque is None else f"«{arranque}»"
-        L.append(f"  {perilla(orden):<10}{a:<12}{texto[:24]}…")
+        L.append(f"  {selector(orden):<10}{a:<12}{texto[:24]}…")
 
     # L24 (9 de octubre de 2026): del apartado 2 en adelante, tablas y muestras editoriales;
     # antes, renglones sangrados que el capítulo 1 copiaba. El apartado 1 no sale en el libro.
@@ -290,7 +290,7 @@ def main():
     tabla, texto, arranque, pasos = repetidas[PELDANO_A_MANO]
     clave, u, sale = pasos[0]
     total = sum(u.values())
-    E += ["", f"2. EL PRIMER SORTEO DE LA PERILLA EN {PELDANO_A_MANO}, ENTERO", ""]
+    E += ["", f"2. EL PRIMER SORTEO DEL SELECTOR EN {PELDANO_A_MANO}, ENTERO", ""]
     E += tabla_editorial(
         f"Qué letra viene detrás de «{''.join(clave)}»",
         ["letra que sigue", "veces", "de cada cien veces"],
@@ -305,14 +305,14 @@ def main():
                       letra(sale)])
         escrito += sale
     E += tabla_editorial(
-        f"Los {SORTEOS_A_MANO} primeros sorteos con la perilla en {perilla(PELDANO_A_MANO)}",
+        f"Los {SORTEOS_A_MANO} primeros sorteos con el selector en {selector(PELDANO_A_MANO)}",
         ["ha escrito", "mira", "pueden venir", "la que más sale", "sale"], filas, "iidii",
-        ["Mira: las dos últimas letras escritas, que dicen a qué página va. Pueden venir: "
-         "cuántas letras distintas hay en esa página. La que más sale: y cuántas veces de "
+        ["Mira: las dos últimas letras escritas, que dicen a qué hoja va. Pueden venir: "
+         "cuántas letras distintas hay en esa hoja. La que más sale: y cuántas veces de "
          "cada cien.", f"Escrito al final: «{escrito}»."])
 
     tabla, texto, arranque, pasos = repetidas[("palabras", 2)]
-    E += ["", f"3 BIS. LA MÁQUINA DE PALABRAS, PERILLA EN 2: LOS {SORTEOS_PALABRAS} PRIMEROS "
+    E += ["", f"3 BIS. LA MÁQUINA DE PALABRAS, SELECTOR EN 2: LOS {SORTEOS_PALABRAS} PRIMEROS "
               "SORTEOS", ""]
     filas, escrito = [], list(arranque)
     for clave, u, sale in pasos[:SORTEOS_PALABRAS]:
@@ -320,7 +320,7 @@ def main():
                       la_que_mas(u, palabra=True), f"«{sale}»"])
         escrito.append(sale)
     E += tabla_editorial(
-        f"Los {SORTEOS_PALABRAS} primeros sorteos de la máquina de palabras, con la perilla en 2",
+        f"Los {SORTEOS_PALABRAS} primeros sorteos de la máquina de palabras, con el selector en 2",
         ["mira", "veces", "pueden venir", "la que más sale", "sale"], filas, "iddii",
         [f"Arranque: «{' '.join(arranque)}». Cada sorteo mira las dos últimas palabras; "
          "«pueden venir» cuenta palabras distintas.",
@@ -332,40 +332,40 @@ def main():
         t = repetidas[orden][0]
         clave = tuple(MOMENTO[len(MOMENTO) - orden:]) if orden else ()
         u = t[clave]
-        filas.append([perilla(orden), "nada" if orden == 0 else "«" + "".join(clave) + "»",
+        filas.append([selector(orden), "nada" if orden == 0 else "«" + "".join(clave) + "»",
                       str(len(u)), coma(100 * u["t"] / sum(u.values()), 1)])
     E += tabla_editorial(
-        f"La letra que viene detrás de «{MOMENTO}», según la perilla",
-        ["perilla", "mira", "pueden venir", "la «t», de cada cien"], filas, "iidd",
+        f"La letra que viene detrás de «{MOMENTO}», según el selector",
+        ["selector", "mira", "pueden venir", "la «t», de cada cien"], filas, "iidd",
         [f"La máquina ha escrito «{MOMENTO}» y tiene que sacar en un sorteo la letra siguiente. "
-         "Lo que mira depende de la perilla."])
+         "Lo que mira depende del selector."])
     E += [""] + tabla_editorial(
-        "Cuántas letras pueden venir, de media, según la perilla",
-        ["perilla", "páginas", "pueden venir, de media"],
-        [[perilla(o), miles(len(repetidas[o][0])), coma(letras_por_urna(repetidas[o][0]), 1)]
+        "Cuántas letras pueden venir, de media, según el selector",
+        ["selector", "hojas", "pueden venir, de media"],
+        [[selector(o), miles(len(repetidas[o][0])), coma(letras_por_urna(repetidas[o][0]), 1)]
          for o in N.ORDENES_LETRA], "idd",
-        ["De media en todos los sorteos: cuántas letras distintas pueden venir en la página "
+        ["De media en todos los sorteos: cuántas letras distintas pueden venir en la hoja "
          "que le toca a la máquina."])
 
     E += ["", "5. PALABRAS DEL QUIJOTE EN CADA MUESTRA", ""]
     filas = []
     for orden in N.ORDENES_LETRA:
         trozos, reales = palabras_reales(muestras_libro[orden], vocabulario)
-        filas.append([perilla(orden), str(len(trozos)), str(len(reales)),
+        filas.append([selector(orden), str(len(trozos)), str(len(reales)),
                       pct(len(reales) / len(trozos), 0)])
     _, reales = palabras_reales(muestras_libro[0], vocabulario)
     E += tabla_editorial(
         "Palabras del Quijote en cada muestra",
-        ["perilla", "grupos de letras", "palabras del Quijote", "de cada cien"], filas, "iddd",
+        ["selector", "grupos de letras", "palabras del Quijote", "de cada cien"], filas, "iddd",
         ["Grupos de letras: lo que hay entre espacio y espacio, sin los signos pegados.",
-         "Las de la perilla en nada: " + " ".join(f"«{r}»" for r in reales) + "."])
+         "Las del selector en nada: " + " ".join(f"«{r}»" for r in reales) + "."])
 
     # 6. Las muestras, tal como las imprimió ngrama.py, partidas en renglones solo por espacios.
     E += ["", "6. LAS MUESTRAS, TAL CUAL", ""]
     titulos = [(o, "Lo que escribe sin mirar nada" if o == 0 else
-                f"Lo que escribe con la perilla en {perilla(o)}") for o in N.ORDENES_LETRA]
+                f"Lo que escribe con el selector en {selector(o)}") for o in N.ORDENES_LETRA]
     titulos += [(("palabras", o), "Lo que escribe palabra a palabra, sin mirar ninguna"
-                 if o == 1 else f"Lo que escribe palabra a palabra, con la perilla en {o} palabras")
+                 if o == 1 else f"Lo que escribe palabra a palabra, con el selector en {o} palabras")
                 for o in N.ORDENES_PALABRA]
     for clave, titulo in titulos:
         m = muestras_libro[clave].rstrip()

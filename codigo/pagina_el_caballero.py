@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Capítulo 1 — la página de «el caballero», entera.
+Capítulo 1 — la hoja de «el caballero», entera.
 
-La máquina de palabras con la perilla en 2 (la de la Tabla 7 del capítulo: cada signo de
-puntuación cuenta como una palabra más) tiene en su libreta una página por cada pareja de
+La máquina de palabras con el selector en 2 (la de la Tabla 7 del capítulo: cada signo de
+puntuación cuenta como una palabra más) tiene en su libreta una hoja por cada pareja de
 palabras seguidas. Esta es la de «el caballero»: cada palabra o signo que vino detrás en el
 Quijote, y cuántas veces, de más a menos. Es la tercera fila de esa tabla (97 palitos repartidos
 entre 24 palabras, la primera «de» con el 42 %), pero con todas las líneas.
@@ -24,19 +24,19 @@ Uso:
 
 CORPUS = "../datos/quijote.txt"
 TABLA_7 = "../datos/salidas/traza_escalera.txt"
-TITULO_TABLA_7 = "Los 4 primeros sorteos de la máquina de palabras, con la perilla en 2"
+TITULO_TABLA_7 = "Los 4 primeros sorteos de la máquina de palabras, con el selector en 2"
 
-PAGINA = ("el", "caballero")     # el título de la página
-PERILLA = 2
+PAGINA = ("el", "caballero")     # el título de la hoja
+SELECTOR = 2
 
-# Lo que el capítulo afirma de esta página, y el programa comprueba al medir
-TOTAL_ESPERADO = 97              # palitos en la página
+# Lo que el capítulo afirma de esta hoja, y el programa comprueba al medir
+TOTAL_ESPERADO = 97              # palitos en la hoja
 DISTINTAS_ESPERADAS = 24         # palabras o signos distintos
 PRIMERA_ESPERADA = "de"          # la que más vino
 PORCENTAJE_PRIMERA = 42          # de cada cien, redondeado
 
 # Selftest
-COCIENTE_NULO_MAX = 0.20         # barajado: la página sale de pocas apariciones y la más repetida es
+COCIENTE_NULO_MAX = 0.20         # barajado: la hoja sale de pocas apariciones y la más repetida es
                                  # una al azar, con la coma (9 % de los trozos) a la cabeza; con esta
                                  # semilla salió 14 %. El umbral es 20 %: el real es 42 %
 COCIENTE_REAL_MIN = 0.30         # real: la más repetida pasa del 30 %
@@ -57,7 +57,7 @@ AQUI = Path(__file__).resolve().parent
 
 
 def pagina(trozos, titulo=PAGINA):
-    """La página de `titulo` en la libreta de la máquina de palabras con la perilla en 2: qué
+    """La hoja de `titulo` en la libreta de la máquina de palabras con el selector en 2: qué
     vino detrás de esas dos palabras y cuántas veces, de más a menos (los empates, por orden
     alfabético, para que la lista salga siempre igual)."""
     cuenta = N.construir(trozos, len(titulo))[tuple(titulo)]
@@ -65,9 +65,9 @@ def pagina(trozos, titulo=PAGINA):
 
 
 def la_que_mas_sale(pag):
-    """La primera de la página y su parte de cada cien, tal como la imprime la Tabla 7."""
+    """La primera de la hoja y su parte de cada cien, tal como la imprime la Tabla 7."""
     total = sum(n for _, n in pag)
-    assert total, "Se esperaba una página con algo apuntado; está en blanco"
+    assert total, "Se esperaba una hoja con algo apuntado; está en blanco"
     return pag[0][0], pag[0][1] / total
 
 
@@ -82,7 +82,7 @@ def selftest(trozos):
     random.Random(N.SEMILLA).shuffle(barajado)
     _, parte_nula = la_que_mas_sale(pagina(barajado))
     _, parte_real = la_que_mas_sale(pagina(trozos))
-    print(f"[1] test nulo         la que más sale en la página de «{' '.join(PAGINA)}»: "
+    print(f"[1] test nulo         la que más sale en la hoja de «{' '.join(PAGINA)}»: "
           f"barajado={pct(parte_nula, 0)}  real={pct(parte_real, 0)}")
     if not (parte_nula < COCIENTE_NULO_MAX and parte_real > COCIENTE_REAL_MIN):
         fallos.append(f"test nulo: se esperaba barajado < {COCIENTE_NULO_MAX} y real > "
@@ -95,7 +95,7 @@ def selftest(trozos):
     if p != [("de", 2), ("andante", 1)]:
         fallos.append(f"señal implantada: se esperaba [('de', 2), ('andante', 1)]; salió {p}")
 
-    # 3. INVARIANTES — la página tiene los 97 palitos y las 24 distintas que dice el capítulo, la
+    # 3. INVARIANTES — la hoja tiene los 97 palitos y las 24 distintas que dice el capítulo, la
     #    primera es «de» con el 42 %, la lista va de más a menos y suma el total, y todo coincide
     #    con la fila de «el caballero» de la Tabla 7 que imprime traza_escalera.py.
     pag = pagina(trozos)
@@ -114,7 +114,7 @@ def selftest(trozos):
                       f"distintas y «{PRIMERA_ESPERADA}» con el {PORCENTAJE_PRIMERA} %; salieron "
                       f"{total}, {len(pag)} y «{primera}» con el {100 * parte:.1f} %")
     if not orden:
-        fallos.append("invariante: la página no va de más a menos")
+        fallos.append("invariante: la hoja no va de más a menos")
     if not coincide:
         fallos.append(f"invariante: la fila de la Tabla 7 dice {fila}, y aquí salen "
                       f"{miles(total)}, {len(pag)} y «{primera}»")
@@ -144,7 +144,7 @@ def main():
     titulo = " ".join(PAGINA)
     L = [
         "",
-        "########## capítulo 1: la página de «el caballero» ##########",
+        "########## capítulo 1: la hoja de «el caballero» ##########",
         f"fecha: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M')} UTC",
         f"máquina: {platform.system()} {platform.machine()}. La medición no",
         "depende de la máquina: cuenta palabras de un fichero de texto",
@@ -156,8 +156,8 @@ def main():
         f"Qué viene detrás de «{titulo}», de más a menos",
         ["palabra o signo", "veces", "de cada cien veces"],
         [[f"«{t}»", miles(n), pct(n / total, 1)] for t, n in pag], "idd",
-        [f"Las {miles(total)} veces que aparece «{titulo}» en el Quijote, con la perilla en "
-         f"{PERILLA}: un palito en la página de «{titulo}» por cada una.",
+        [f"Las {miles(total)} veces que aparece «{titulo}» en el Quijote, con el selector en "
+         f"{SELECTOR}: un palito en la hoja de «{titulo}» por cada una.",
          f"Palabras o signos distintos detrás de «{titulo}»: {len(pag)}."])
     for l in comprobar_ancho([l.rstrip() for l in L], ANCHO_CAJA):
         print(l)

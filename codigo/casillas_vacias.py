@@ -10,12 +10,12 @@ nada de esto. Aquí se cuenta, sobre el mismo Quijote y con la misma limpieza qu
   (b) «después de "qu" vino una "e" tantas miles de veces, una "i" tantas, y nada más,
       porque en castellano detrás de "qu" no va otra cosa»
   (c) «En el Quijote hay treinta y seis mil palabras distintas»
-  (d) «las páginas posibles son treinta y seis mil por treinta y seis mil: mil
+  (d) «las hojas posibles son treinta y seis mil por treinta y seis mil: mil
       trescientos millones. ¿Cuántas de ellas aparecen realmente en el Quijote?
       Ciento setenta y ocho mil. El cero coma cero uno por ciento.»
   (e) «de esas ciento setenta y ocho mil combinaciones que sí aparecen, ciento cuarenta
       mil aparecen una sola vez en todo el libro. Casi cuatro de cada cinco.»
-  (f) «harían falta unos cuarenta y siete billones de páginas»
+  (f) «harían falta unos cuarenta y siete billones de hojas»
 
 Y una séptima, que es la única del capítulo que se podía comprobar sobre la propia
 muestra impresa:
@@ -28,7 +28,7 @@ muestra impresa:
 CÓMO SE CUENTAN LAS PALABRAS (T24, decidido por Carlos el 25 de septiembre de 2026). Con el
 mismo corte que `ngrama.trocear`: cada palabra es un trozo y cada signo de puntuación, otro.
 Antes se cortaba por los espacios, y «figura», «figura,» y «figura.» eran tres palabras. Las
-páginas se cuentan sobre los trozos, porque es lo que cuenta la máquina; las palabras que se le
+hojas se cuentan sobre los trozos, porque es lo que cuenta la máquina; las palabras que se le
 dicen al lector se cuentan sin los signos.
 
 Y dos cosas más, que pidió el capítulo 1 al reescribirse (T3 y T5):
@@ -58,8 +58,8 @@ PAR_VIGILADO = "qu"          # el par de letras que el capítulo dice que solo a
 
 # (h) Las frases que se cuentan, en el orden en que salen en el capítulo. Todas en minúsculas y
 #     sin tildes de mayúscula, porque así queda el texto limpio.
-CONTEXTO_CORTO = "la triste"                       # lo que mira la perilla en dos
-FRASES_HIDALGO = ["hidalgo de la triste",          # lo que mira la perilla en cuatro
+CONTEXTO_CORTO = "la triste"                       # lo que miral selector en dos
+FRASES_HIDALGO = ["hidalgo de la triste",          # lo que miral selector en cuatro
                   "hidalgo",
                   "caballero de la triste figura"]
 FRASES_DECIR = ["dijo don quijote", "respondió don quijote",
@@ -105,12 +105,12 @@ def parejas(palabras):
 
 
 def casillas(vocabulario, palabras_de_contexto):
-    """Páginas que tendría la libreta si se miran esas palabras hacia atrás.
+    """Hojas que tendría la libreta si se miran esas palabras hacia atrás.
 
-    Una página por cada combinación posible de palabras de contexto; dentro de cada
-    página van los palitos de lo que vino después. Es el vocabulario elevado al
+    Una hoja por cada combinación posible de palabras de contexto; dentro de cada
+    hoja van los palitos de lo que vino después. Es el vocabulario elevado al
     número de palabras que se miran, que es como las cuenta el capítulo: mirando una
-    palabra hay tantas páginas como palabras distintas, y mirando dos hay ese número
+    palabra hay tantas hojas como palabras distintas, y mirando dos hay ese número
     al cuadrado."""
     return vocabulario ** palabras_de_contexto
 
@@ -180,7 +180,7 @@ def selftest(secuencia=None, palabras=None):
 
     # [2] SEÑAL IMPLANTADA — un texto diminuto cuyas respuestas se cuentan con el dedo.
     #     «a b a b a c»: parejas ab, ba, ab, ba, ac -> 3 distintas, de ellas 1 una sola
-    #     vez; vocabulario de 3 palabras -> 9 páginas posibles. Y «quxquxqux»: detrás
+    #     vez; vocabulario de 3 palabras -> 9 hojas posibles. Y «quxquxqux»: detrás
     #     de «qu» solo hay una letra, tres veces.
     mini = "a b a b a c".split()
     p = parejas(mini)
@@ -196,7 +196,7 @@ def selftest(secuencia=None, palabras=None):
     trozos, reales = palabras_reales("hola, xqz hola", {"hola"})
     assert (len(trozos), len(reales)) == (3, 2), (trozos, reales)
     print("[2] señal implantada  texto de seis palabras: 3 parejas, 1 con un solo palito, "
-          "9 páginas mirando dos palabras; «quxquxqux»: una letra detrás, 3 veces")
+          "9 hojas mirando dos palabras; «quxquxqux»: una letra detrás, 3 veces")
 
     # [3] INVARIANTE DEL DOMINIO — cosas que tienen que ser verdad pase lo que pase,
     #     comprobadas sobre el Quijote entero.
@@ -212,7 +212,7 @@ def selftest(secuencia=None, palabras=None):
         assert veces(palabras, frase) <= veces(palabras, frase.split(" ", 1)[1]), frase
     assert sum(lo_que_sigue(palabras, CONTEXTO_CORTO).values()) <= veces(palabras, CONTEXTO_CORTO)
     print(f"[3] invariante        parejas contadas = trozos menos uno ({miles(sum(p.values()))}); "
-          f"parejas vistas <= páginas; todo lo que va tras «{PAR_VIGILADO}» está en el alfabeto")
+          f"parejas vistas <= hojas; todo lo que va tras «{PAR_VIGILADO}» está en el alfabeto")
 
     print("\nSELFTEST: las tres pruebas pasan.\n")
 
@@ -223,7 +223,7 @@ def main():
     crudo = cargar_corpus(str(AQUI / CORPUS))
     secuencia = normalizar(crudo, ALFABETO)
     trozos_libro = trocear(secuencia)          # lo que cuenta la máquina: palabras y signos
-    palabras = trozos_libro                     # las páginas se cuentan sobre esto
+    palabras = trozos_libro                     # las hojas se cuentan sobre esto
     solo = solo_palabras(trozos_libro)          # lo que se le dice al lector: palabras
     vocabulario = sorted(set(palabras))
 
@@ -236,7 +236,7 @@ def main():
     p = parejas(palabras)
     posibles = casillas(len(vocabulario), 2)
     una_vez = de_una_sola_vez(p)
-    # La línea «páginas con más de un palito» (Orden 4.2) es páginas con algo apuntado menos las de
+    # La línea «hojas con más de un palito» (Orden 4.2) es hojas con algo apuntado menos las de
     # un solo palito; la lee figura_lo_poco_que_hay.py, que antes la calculaba ella.
     muestra = leer_muestra(AQUI / MUESTRA, ROTULO_MUESTRA)
     trozos, reales = palabras_reales(muestra, set(solo))
@@ -263,7 +263,7 @@ def main():
         f"  trozos distintos (palabras y {len(SIGNOS)} signos) {miles(len(vocabulario)):>13}",
         "",
     ]
-    # L24 (9 de octubre de 2026): la página de «qu», en tabla editorial; antes, renglones
+    # L24 (9 de octubre de 2026): la hoja de «qu», en tabla editorial; antes, renglones
     # sangrados que el capítulo 1 copiaba. Ninguna figura lee esta parte.
     filas_qu = []
     for letra, n in t.most_common():
@@ -280,16 +280,16 @@ def main():
     lineas += [
         "",
         "LA LIBRETA DE PAREJAS DE TROZOS",
-        "una página por cada pareja de trozos que podría existir",
+        "una hoja por cada pareja de trozos que podría existir",
         "",
-        f"  páginas posibles (trozos distintos al cuadrado)   "
+        f"  hojas posibles (trozos distintos al cuadrado)     "
         f"{miles(posibles):>16}",
-        f"  páginas con algo apuntado (parejas vistas)       "
+        f"  hojas con algo apuntado (parejas vistas)         "
         f"{miles(len(p)):>16}",
-        f"  páginas con algo apuntado, por cada cien posibles"
+        f"  hojas con algo apuntado, por cada cien posibles"
         f"{pct(len(p) / posibles, 4):>16}",
         "",
-        f"  una página con algo apuntado de cada           "
+        f"  una hoja con algo apuntado de cada             "
         f"{miles(round(posibles / len(p))):>18}",
         "",
         f"  parejas que hay dentro del libro (trozos menos uno)  "
@@ -299,21 +299,21 @@ def main():
         "",
         f"  parejas con un solo palito en todo el libro      "
         f"{miles(una_vez):>16}",
-        f"  páginas con más de un palito                     "
+        f"  hojas con más de un palito                       "
         f"{miles(len(p) - una_vez):>16}",
         f"  de cada cien parejas vistas, las de un solo palito"
         f"{pct(una_vez / len(p), 1):>15}",
         "",
         "  Quijotes de texto que harían falta para poner una sola",
-        "  palabra en cada página                          "
+        "  palabra en cada hoja                            "
         f"{miles(round(posibles / len(palabras))):>16}",
         "",
         "SI SE MIRARAN TRES PALABRAS HACIA ATRÁS",
         "",
-        f"  páginas posibles                        "
+        f"  hojas posibles                          "
         f"{miles(tres):>16}",
         "  Quijotes de texto que harían falta para poner una sola",
-        "  palabra en cada página                  "
+        "  palabra en cada hoja                    "
         f"{miles(quijotes_tres):>16}",
         "",
         "  libros publicados en el mundo según Google (2010,",
