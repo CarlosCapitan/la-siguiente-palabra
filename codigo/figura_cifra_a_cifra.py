@@ -3,7 +3,7 @@
 Capítulo 14 — qué cifras salen bien cuando la máquina multiplica sin calculadora.
 
 Figura de medición. Una fila por cada una de las 40 respuestas del modelo de 32.000 millones sin
-herramienta (20 con la pregunta libre y 20 con restricción), una casilla por cifra, alineadas por
+herramienta (20 con la pregunta libre y 20 con restricción), un cuadro por cifra, alineadas por
 la derecha como en una cuenta escrita. Gris: la cifra es la misma que en el producto exacto, en
 el mismo sitio. Blanco: es otra. Las respuestas de siete cifras dejan vacía la primera columna.
 
@@ -24,7 +24,7 @@ Uso (desde codigo/):
 DESTINO = "../figuras/cifra_a_cifra.png"
 TABLA = "../datos/salidas/ordenes_a_la_vista.txt"
 TITULO_TABLA = "Qué cifras salen bien sin calculadora, de izquierda a derecha (32.000M)"
-ALTO = 5.4
+ALTO = 5.1                      # pulgadas (sin el hueco del pie, Orden 7; era 5,4)
 COLUMNAS = 8                # cifras del producto más largo
 ANCHO_CASILLA = 4.5         # en unidades del lienzo (100 de ancho)
 ALTO_FILA = 2.0
@@ -74,7 +74,7 @@ def por_columna_ocho(bloques):
 def dibujar(bloques, paleta, ruta):
     L = Lienzo("Qué cifras salen bien sin calculadora",
                "Cada fila es una de las cuarenta respuestas del modelo de 32.000M sin\n"
-               "calculadora; cada casilla, una cifra, alineadas por la derecha como en una\n"
+               "calculadora; cada cuadro, una cifra, alineadas por la derecha como en una\n"
                "cuenta escrita. Gris: la misma cifra que en el producto exacto.",
                paleta, alto=ALTO)
     p, ax = L.p, L.ax
@@ -104,9 +104,8 @@ def dibujar(bloques, paleta, ruta):
         ax.add_patch(Rectangle((xc, yc - 6.0 * k - ALTO_FILA / 2), ANCHO_CASILLA, ALTO_FILA,
                                facecolor=relleno, edgecolor=p.marco, linewidth=0.4))
         L.texto(xc + ANCHO_CASILLA + 2.0, yc - 6.0 * k, s, tam=7.0, color=p.suave)
-    assert y > 8.0, f"la rejilla baja hasta {y:.1f} y pisa el pie"
-    L.pie("Cada respuesta, comparada cifra a cifra con el producto exacto. Los datos salen de\n"
-          "datos/salidas/ordenes_escritas.csv.")
+    # (Orden 7: la figura ya no lleva pie; el suelo de 8 unidades que se le dejaba pasa a 0.)
+    assert y > 0.0, f"la rejilla baja hasta {y:.1f} y se sale de la figura"
     L.guardar(ruta)
     return casillas
 
