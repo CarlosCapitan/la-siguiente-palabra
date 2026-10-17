@@ -1,12 +1,12 @@
 --- selftest ---
 [1] test nulo         una figura sin programa, con dos programas y con otra numeración: 3 de 3 revientan
-[2] señal implantada  dos figuras: a lee x; una_capa: ninguna: construida a mano; con y sin borradores: bien
-[3] invariante        58 figuras, cada una con su programa; numeradas de 1 a 58; 12 construidas a mano; en 4 tablas de 20 filas como mucho
+[2] señal implantada  dos figuras: a lee x; una_capa: ninguna; con y sin borradores: bien
+[3] invariante        58 figuras, cada una con su programa; numeradas de 1 a 58; 12 sin fichero; en 4 tablas de 20 filas como mucho
 
 SELFTEST: las tres pruebas pasan.
 
 ########## de dónde sale cada figura del libro ##########
-fecha: 2026-10-17 09:28 UTC
+fecha: 2026-10-17 10:16 UTC
 máquina: Darwin arm64. La medición no
 depende de la máquina: lee ficheros de texto
 libro: con los borradores de en-curso/;
@@ -22,23 +22,23 @@ De dónde sale cada figura, de la 1 a la 20
 | 3 | 1 | pagina_el_caballero | pagina_el_caballero, *quijote.txt |
 | 4 | 1 | casillas_vacias | casillas_vacias |
 | 5 | 1 | lo_poco_que_hay | casillas_vacias |
-| 6 | 2 | el_comite | ninguna: construida a mano |
-| 7 | 2 | que_es_aprender | ninguna: construida a mano |
-| 8 | 2 | cuatro_posiciones | ninguna: construida a mano |
-| 9 | 2 | dieciseis_montajes | ninguna: construida a mano |
-| 10 | 2 | una_raya | ninguna: construida a mano |
+| 6 | 2 | el_comite | ninguna |
+| 7 | 2 | que_es_aprender | ninguna |
+| 8 | 2 | cuatro_posiciones | ninguna |
+| 9 | 2 | dieciseis_montajes | ninguna |
+| 10 | 2 | una_raya | ninguna |
 | 11 | 2 | ochos_sin_raya | el_ocho_y_la_raya |
 | 12 | 3 | figuras_el_comite_por_dentro | el_comite_por_dentro |
 | 13 | 3 | figuras_el_comite_por_dentro | el_comite_por_dentro |
 | 14 | 3 | figuras_el_comite_por_dentro | el_comite_por_dentro |
 | 15 | 3 | figuras_el_comite_por_dentro | el_comite_por_dentro |
 | 16 | 3 | figuras_el_comite_por_dentro | el_comite_por_dentro |
-| 17 | 3 | que_es_una_capa | ninguna: construida a mano |
-| 18 | 3 | diez_digitos | ninguna: construida a mano |
+| 17 | 3 | que_es_una_capa | ninguna |
+| 18 | 3 | diez_digitos | ninguna |
 | 19 | 3 | saltan_la_regla | reloj_a_mano |
 | 20 | 3 | reloj_a_mano | reloj_a_mano |
 
-Programa: el fichero codigo/figura_<programa>.py (el que no empieza así, entero). Salidas: datos/salidas/<nombre>.txt, o con su extensión si no es .txt; con un asterisco, un fichero de datos/ que no está en salidas/. «Ninguna: construida a mano»: el programa no lee ningún fichero y los números del dibujo los trae él.
+Programa: el fichero codigo/figura_<programa>.py (el que no empieza así, entero). Salidas: datos/salidas/<nombre>.txt, o con su extensión si no es .txt; con un asterisco, un fichero de datos/ que no está en salidas/. Ninguna: el programa no lee ningún fichero; dibuja un esquema, o calcula él mismo los números, o los trae escritos como ejemplo.
 :::
 
 ::: tabla
@@ -46,9 +46,9 @@ De dónde sale cada figura, de la 21 a la 40
 
 | fig. | cap. | programa | salidas que lee |
 |--:|--:|:--|:--|
-| 21 | 3 | siete_segmentos | ninguna: construida a mano |
+| 21 | 3 | siete_segmentos | ninguna |
 | 22 | 3 | sorteo_del_arranque | el_sorteo_del_arranque |
-| 23 | 3 | una_capa | ninguna: construida a mano |
+| 23 | 3 | una_capa | ninguna |
 | 24 | 3 | los_dos_que_mas_se_parecen | que_mira_cada_una |
 | 25 | 3 | cuadrado_redibujado | culpa_hacia_atras_datos.csv |
 | 26 | 4 | la_red_del_pasillo | culpa_hacia_atras |
@@ -67,7 +67,7 @@ De dónde sale cada figura, de la 21 a la 40
 | 39 | 8 | maquina_del_quijote | la_e_de_acordarme |
 | 40 | 8 | mirada_a_mano | mirada_a_mano |
 
-Programa: el fichero codigo/figura_<programa>.py (el que no empieza así, entero). Salidas: datos/salidas/<nombre>.txt, o con su extensión si no es .txt; con un asterisco, un fichero de datos/ que no está en salidas/. «Ninguna: construida a mano»: el programa no lee ningún fichero y los números del dibujo los trae él.
+Programa: el fichero codigo/figura_<programa>.py (el que no empieza así, entero). Salidas: datos/salidas/<nombre>.txt, o con su extensión si no es .txt; con un asterisco, un fichero de datos/ que no está en salidas/. Ninguna: el programa no lee ningún fichero; dibuja un esquema, o calcula él mismo los números, o los trae escritos como ejemplo.
 :::
 
 ::: tabla
@@ -82,7 +82,7 @@ De dónde sale cada figura, de la 41 a la 46
 | 45 | 10 | cuatro_retratos | cuatro_retratos, en_que_orden_aprende |
 | 46 | 10 | lo_que_encuentra_en_un_paso | cuatro_retratos |
 
-Programa: el fichero codigo/figura_<programa>.py (el que no empieza así, entero). Salidas: datos/salidas/<nombre>.txt, o con su extensión si no es .txt; con un asterisco, un fichero de datos/ que no está en salidas/. «Ninguna: construida a mano»: el programa no lee ningún fichero y los números del dibujo los trae él.
+Programa: el fichero codigo/figura_<programa>.py (el que no empieza así, entero). Salidas: datos/salidas/<nombre>.txt, o con su extensión si no es .txt; con un asterisco, un fichero de datos/ que no está en salidas/. Ninguna: el programa no lee ningún fichero; dibuja un esquema, o calcula él mismo los números, o los trae escritos como ejemplo.
 :::
 
 ::: tabla
@@ -96,13 +96,13 @@ De dónde sale cada figura, de la 47 a la 58
 | 50 | 11 | todo_o_nada | todo_o_nada.csv |
 | 51 | 13 | cien_papeletas | temperatura_a_mano.csv |
 | 52 | 14 | cifra_a_cifra | ordenes_a_la_vista, ordenes_escritas.csv |
-| 53 | 14 | con_manos | ninguna: construida a mano |
-| 54 | 15 | la_salamandra | ninguna: construida a mano |
+| 53 | 14 | con_manos | ninguna |
+| 54 | 15 | la_salamandra | ninguna |
 | 55 | 15 | el_empujon | cuentas_a_mano.csv |
 | 56 | 15 | prueba_de_chollet | *arc_25ff71a9.json |
-| 57 | 15 | tablero | ninguna: construida a mano |
+| 57 | 15 | tablero | ninguna |
 | 58 | 16 | dos_valles | dos_valles.csv |
 
-Programa: el fichero codigo/figura_<programa>.py (el que no empieza así, entero). Salidas: datos/salidas/<nombre>.txt, o con su extensión si no es .txt; con un asterisco, un fichero de datos/ que no está en salidas/. «Ninguna: construida a mano»: el programa no lee ningún fichero y los números del dibujo los trae él.
+Programa: el fichero codigo/figura_<programa>.py (el que no empieza así, entero). Salidas: datos/salidas/<nombre>.txt, o con su extensión si no es .txt; con un asterisco, un fichero de datos/ que no está en salidas/. Ninguna: el programa no lee ningún fichero; dibuja un esquema, o calcula él mismo los números, o los trae escritos como ejemplo.
 :::
 

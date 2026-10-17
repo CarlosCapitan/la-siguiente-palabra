@@ -6,7 +6,7 @@ Desde el 17 de octubre de 2026 (Orden 4) las figuras ya no llevan debajo, escrit
 programa que las dibuja, el texto de dónde vienen sus datos. Eso no se pierde: se junta aquí,
 en una sola tabla, calculada y no escrita a mano. Para cada figura del libro, por orden de
 lectura: su número, el capítulo, el programa que la dibuja y las salidas guardadas que ese
-programa lee (o «ninguna: construida a mano»).
+programa lee (o «ninguna»: el programa no lee ningún fichero).
 
 Cómo se sabe cada cosa, sin que nadie lo apunte:
 
@@ -174,7 +174,7 @@ def filas_de(figuras, programas, datos):
                 f"«{prog}» nombra «{d}» y ese fichero no existe")
         corto = [nombre_de_salida(d) for d in leidos]
         filas.append([str(f["numero"]), f["capitulo"], nombre_corto(prog),
-                      ", ".join(corto) if corto else "ninguna: construida a mano"])
+                      ", ".join(corto) if corto else "ninguna"])
     return filas
 
 
@@ -224,7 +224,7 @@ def repartir(filas):
     trozos, actual, prog, salida = [], [], 0, 0
     for f in filas:
         p = len(f[2])
-        s = max(len(x) for x in f[3].split(", ")) if not f[3].startswith("ninguna") else 0
+        s = max(len(x) for x in f[3].split(", ")) if f[3] != "ninguna" else 0
         if actual and (len(actual) == FILAS_POR_TABLA or max(prog, p) + max(salida, s) > ANCHO_MAXIMO):
             trozos.append(actual)
             actual, prog, salida = [], 0, 0
@@ -247,8 +247,9 @@ def tablas(filas):
             titulo, ["fig.", "cap.", "programa", "salidas que lee"], trozo, "ddii",
             ["Programa: el fichero codigo/figura_<programa>.py (el que no empieza así, entero). "
              "Salidas: datos/salidas/<nombre>.txt, o con su extensión si no es .txt; con un "
-             "asterisco, un fichero de datos/ que no está en salidas/. «Ninguna: construida a "
-             "mano»: el programa no lee ningún fichero y los números del dibujo los trae él."]))
+             "asterisco, un fichero de datos/ que no está en salidas/. Ninguna: el programa no lee "
+             "ningún fichero; dibuja un esquema, o calcula él mismo los números, o los trae "
+             "escritos como ejemplo."]))
     return out
 
 
@@ -300,7 +301,7 @@ def selftest():
         con = figuras_del_libro(t / "libro")
         sin = figuras_del_libro(t / "libro", con_borradores=False)
         filas = filas_de(con, leer_programas(t / "codigo"), t / "datos")
-    ok = (filas == [["1", "1", "a", "x"], ["2", "2", "una_capa", "ninguna: construida a mano"]]
+    ok = (filas == [["1", "1", "a", "x"], ["2", "2", "una_capa", "ninguna"]]
           and [f["nombre"] for f in sin] == ["a", "zzz"])
     print(f"[2] señal implantada  dos figuras: {filas[0][2]} lee {filas[0][3]}; {filas[1][2]}: "
           f"{filas[1][3]}; con y sin borradores: {'bien' if ok else 'MAL'}")
@@ -315,8 +316,8 @@ def selftest():
     filas = filas_de(figuras, programas, AQUI / DATOS)
     trozos = tablas(filas)
     print(f"[3] invariante        {len(figuras)} figuras, cada una con su programa; numeradas de 1 a "
-          f"{figuras[-1]['numero']}; {sum(1 for f in filas if f[3].startswith('ninguna'))} "
-          f"construidas a mano; en {len(trozos)} tablas de {FILAS_POR_TABLA} filas como mucho")
+          f"{figuras[-1]['numero']}; {sum(1 for f in filas if f[3] == 'ninguna')} "
+          f"sin fichero; en {len(trozos)} tablas de {FILAS_POR_TABLA} filas como mucho")
     if sum(len(x) for x in repartir(filas)) != len(filas) or len(trozos) < -(-len(filas) // FILAS_POR_TABLA):
         fallos.append("invariante: las tablas no reparten todas las filas")
     if [f["numero"] for f in figuras] != list(range(1, len(figuras) + 1)) or len(filas) != len(figuras):

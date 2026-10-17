@@ -1,0 +1,102 @@
+--- selftest ---
+[1] test nulo         una carpeta sin programas: [0, 0, 0, 0]
+[2] señal implantada  8 programas, 1 .sh y 4 salidas: [1, 2, 3, 2]; como se espera: sí
+[3] invariante        161 programas en cuatro clases (13, 59, 81, 8); de los 161 .py de codigo/, cada uno en una sola: sí
+
+SELFTEST: las tres pruebas pasan.
+
+########## cuántos programas hay en codigo/ ##########
+fecha: 2026-10-17 10:15 UTC
+máquina: Darwin arm64. La medición no
+depende de la máquina: cuenta ficheros
+
+La regla, por orden: verificador (verificar_*), figura (figura_*
+o figuras_*), medición (tiene salida en datos/salidas/ con su
+nombre) y, si no, ayuda a los demás.
+
+::: tabla
+Programas de codigo/, por clase
+
+| clase | programas |
+|:--|--:|
+| verificadores | 13 |
+| programas de figuras | 59 |
+| programas de medición | 81 |
+| programas que ayudan a los demás | 8 |
+| **en total** | **161** |
+
+Cada programa está en una sola clase.
+:::
+
+VERIFICADORES (13)
+
+  verificar_anchos, verificar_asepsia, verificar_catalogo,
+  verificar_cifras, verificar_conclusiones, verificar_figuras,
+  verificar_muestras, verificar_notas, verificar_referencias,
+  verificar_reglas, verificar_selftests, verificar_trato,
+  verificar_vocabulario.
+
+PROGRAMAS DE FIGURAS (59)
+
+  figura_apilar, figura_casillas_vacias, figura_cien_papeletas,
+  figura_cifra_a_cifra, figura_con_manos, figura_copias_muestra,
+  figura_cuadrado_redibujado, figura_cuadricula,
+  figura_cuanto_ha_leido, figura_cuatro_posiciones,
+  figura_cuatro_retratos, figura_culpa_hacia_atras,
+  figura_dieciseis_montajes, figura_diez_digitos, figura_dos_valles,
+  figura_el_comite, figura_el_empujon, figura_el_reparto,
+  figura_el_terreno, figura_en_fila, figura_encuesta,
+  figura_la_escalera, figura_la_marca_del_sitio, figura_la_mezcla,
+  figura_la_rampa_del_ejemplo, figura_la_rampa_y_el_codo,
+  figura_la_red_del_pasillo, figura_la_salamandra,
+  figura_linea_circular, figura_lo_mal_que_lo_hace,
+  figura_lo_poco_que_hay, figura_lo_que_encuentra_en_un_paso,
+  figura_los_dos_que_mas_se_parecen, figura_mapa_de_palabras,
+  figura_maquina_del_quijote, figura_maquina_entera,
+  figura_mirada_a_mano, figura_misma_direccion,
+  figura_ochos_sin_raya, figura_pagina_el_caballero,
+  figura_paginas_libreta, figura_prueba_de_chollet,
+  figura_que_es_aprender, figura_que_es_una_capa,
+  figura_red_desenrollada, figura_reloj_a_mano,
+  figura_saltan_la_regla, figura_seguir_entrenando,
+  figura_seis_maneras, figura_siete_segmentos,
+  figura_sorteo_del_arranque, figura_tablero, figura_todo_o_nada,
+  figura_tres_fases, figura_trocear_a_mano, figura_una_capa,
+  figura_una_neurona, figura_una_raya, figuras_el_comite_por_dentro.
+
+PROGRAMAS DE MEDICIÓN (81)
+
+  aprender_la_trampa, banco_segun_el_diccionario, banco_y_paris,
+  bateria_una_a_una, casillas_vacias, cola_larga,
+  como_cambia_la_ventaja, comprimir, comprimir_a_la_vista,
+  comprimir_cinco_numeros, comprimir_en_preguntas,
+  copias_de_una_muestra, crecer, crudo_o_adiestrado,
+  crudo_o_adiestrado_una_a_una, cuadricula_y_fila,
+  cuantas_veces_sale, cuatro_retratos, cuenta_el_repositorio,
+  cuentas_a_mano, culpa_hacia_atras, culpa_que_se_desvanece,
+  de_cuando_es_la_biblioteca, de_donde_sale_cada_figura, dos_valles,
+  editar_contexto, el_comite_por_dentro, el_ocho_y_la_raya,
+  el_sorteo_del_arranque, elegir_lo_mas_probable,
+  en_que_orden_aprende, en_serie_o_a_la_vez, eres_consciente,
+  es_un_cuatro, es_un_ocho_con_capa, idiomas_en_trozos,
+  la_e_de_acordarme, la_misma_direccion, la_papelera_por_dentro,
+  la_seguridad_por_dentro, las_capas_que_resumen, ley_de_2020,
+  lista_de_probabilidades, lo_habia_visto_ya, lo_que_cuesta_cambiar,
+  lo_que_dicen_los_articulos, lo_que_mas_abunda, lo_que_recibe,
+  maquina_entera, maquina_entera_detalle, memoria_recurrente,
+  mirada_a_mano, ngrama, ordenes_a_la_vista, ordenes_escritas,
+  pagina_el_caballero, palabras_de_cerca, palabras_numeros,
+  pasos_a_la_vista, pasos_escritos, perceptron, piezas_de_una_letra,
+  prologo_kilobyte, que_inventan_las_capas, que_mira_cada_una,
+  reloj_a_mano, reparto_atencion, reparto_una_a_una,
+  respuesta_modelo, retropropagacion, romper_a_la_vista,
+  romper_la_maquina, seguir_entrenando, siete_segmentos,
+  sorpresa_a_mano, temperatura_a_mano, todo_o_nada,
+  traduccion_por_dentro, traza_escalera, trocear_a_mano,
+  una_prueba_de_memoria.
+
+PROGRAMAS QUE AYUDAN A LOS DEMÁS (8)
+
+  buscar_recordatorios, cambiar_clave, candidatos_imaginar,
+  descargar_corpus, escribir_muestras, formato, hoja_libreta,
+  infografia.
