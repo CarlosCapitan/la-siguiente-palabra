@@ -50,7 +50,7 @@ def dibujar(paleta, ruta):
     L = Lienzo("Qué es aprender, aquí",
                "Nadie escribe una regla y nadie le dice a la máquina qué es un cuatro. Esto es\n"
                "todo lo que pasa, repetido unos cientos de veces.",
-               paleta, alto=5.30)
+               paleta, alto=4.95)  # sin el hueco del pie (Orden 4; era 5,30)
 
     def caja(x, y, ancho, alto, lineas, tag=None, relleno=None, tinta=None, negrita=False,
              tam=8.0):
@@ -107,8 +107,6 @@ def dibujar(paleta, ruta):
     rotulos.append(VUELTA)
     L.texto(IZQ + ANCHO / 2 - 2.0, y_fondo + 2.4, VUELTA, tam=7.4, ha="right", color=p.suave)
 
-    L.pie("Esta figura no lleva ningún dato: dice qué pasa, no cuánto acierta. Lo único que cambia\n"
-          "en toda la vuelta son los pesos de los miembros y el listón.")
     L.guardar(ruta)
     return ruta, rotulos, cajas
 

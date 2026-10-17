@@ -116,15 +116,13 @@ def dibujar(secuencia, paleta, ruta):
     L = Lienzo("Dos páginas de la libreta",
                "La libreta de la máquina de letras con la perilla en 2: una página por cada\n"
                "pareja de letras, y un palito por cada vez que vino detrás cada letra.",
-               paleta, alto=4.10)
+               paleta, alto=3.79)  # sin el hueco del pie (Orden 4; era 4,10)
     y_tope = L.y - 1.0
     xt = contar(secuencia, PAGINA_CON_PALITOS)
     qu = contar(secuencia, PAGINA_CONTADA)
     pintados, _ = dibujar_pagina(L, 4.0, y_tope, PAGINA_CON_PALITOS, xt.most_common(), True)
     assert pintados == sum(xt.values()), (pintados, sum(xt.values()))
     dibujar_pagina(L, 52.0, y_tope, PAGINA_CONTADA, qu.most_common(), False)
-    L.pie("Las cuentas salen de contar el Quijote entero, y coinciden con las tablas de\n"
-          "datos/salidas/traza_escalera.txt («xt») y datos/salidas/casillas_vacias.txt («qu»).")
     L.guardar(ruta)
     return ruta, xt, qu
 
@@ -156,7 +154,7 @@ def selftest():
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     mini = contar(MINI, PAGINA_CON_PALITOS)
-    L = Lienzo("prueba", "", GRIS, alto=4.10)
+    L = Lienzo("prueba", "", GRIS, alto=3.79)
     pintados, _ = dibujar_pagina(L, 4.0, 40.0, PAGINA_CON_PALITOS, mini.most_common(), True)
     plt.close(L.fig)
     print(f"[2] señal implantada  «{MINI}»: {dict(mini)}; palitos dibujados: {pintados}")
@@ -188,7 +186,7 @@ def selftest():
     if max(xt.values()) > MAXIMO_DIBUJABLE or max(qu.values()) <= MAXIMO_DIBUJABLE:
         fallos.append("invariante: la página de «xt» debía caber dibujada y la de «qu» no")
     dibujar(secuencia, GRIS, "/dev/null")      # sus asserts cuentan los palitos
-    L = Lienzo("prueba", "", GRIS, alto=4.10)
+    L = Lienzo("prueba", "", GRIS, alto=3.79)
     ancho_nota = ancho_texto(L, NOTA, TAM_NOTA)
     lineas_nota = poner_nota(L, 52.0, 30.0, ANCHO_HOJA)
     plt.close(L.fig)

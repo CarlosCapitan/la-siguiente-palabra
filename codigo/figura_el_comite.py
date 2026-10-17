@@ -12,7 +12,7 @@ Aquí no hay ningún dato medido, y es a propósito. Los pesos de verdad de un c
 salen en el capítulo 3 (figuras/una_neurona.png) con sus números reales; lo que falta aquí, antes
 de eso, es el mecanismo. Así que el ejemplo de la cuenta está puesto a mano, es un comité completo
 de cuatro miembros en vez de sesenta y cuatro, y el lector puede sumarlo con el dedo y comprobar
-que el veredicto sale de ahí. La figura lo dice en su propio pie.
+que el veredicto sale de ahí. El libro lo dice en el pie de la figura, que ya no escribe el programa.
 
 El dibujo del panel 1 sí es real: es la imagen número 134 del conjunto de dígitos manuscritos que
 usan los programas del libro, con su tinta de 0 a 16 tal cual.
@@ -41,7 +41,7 @@ FILA_SENALADA, COLUMNA_SENALADA = 3, 2      # el miembro del que habla el rótul
 
 # El comité del ejemplo: completo, de cuatro miembros, para que la cuenta se pueda hacer entera.
 # «pintado» va de 0 (en blanco) a 2 (del todo); «caso» es cuánto se le hace caso a ese miembro.
-# Puestos a mano: el pie de la figura lo dice.
+# Puestos a mano: lo dice el pie de la figura, que escribe el libro.
 EJEMPLO = [("punto 1", 2, +3), ("punto 2", 1, -4), ("punto 3", 0, -5), ("punto 4", 2, +2)]
 LISTON = 5
 CUANTO_PINTADO = {0: "en blanco", 1: "a medias", 2: "del todo"}
@@ -63,7 +63,7 @@ def dibujar(paleta, ruta):
     L = Lienzo("El comité de sesenta y cuatro",
                "Un miembro por cada punto del dibujo. Ninguno ve el dibujo entero, ninguno sabe\n"
                "qué es un cuatro y ninguno manda: la decisión sale de sumar y comparar.",
-               paleta, alto=6.44)
+               paleta, alto=6.27)  # sin el hueco del pie (Orden 4; era 6,44)
 
     # --- 1. un miembro por punto --------------------------------------------------------------
     x, y, w = L.panel(1, "Cada miembro mira un punto, y nada más", 40.0)
@@ -132,8 +132,6 @@ def dibujar(paleta, ruta):
     L.texto(x, yt - 23.0, "El punto en blanco no aporta nada, tenga el peso que tenga.", tam=7.2,
             color=p.suave)
 
-    L.pie("Los cuatro miembros y sus números están puestos a mano para que puedas sumarlos: no son\n"
-          "medidas. Los pesos de verdad de un comité entrenado salen en el capítulo siguiente.")
     L.guardar(ruta)
     return ruta, total
 

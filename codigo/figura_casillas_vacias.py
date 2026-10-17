@@ -99,7 +99,7 @@ def dibujar(d, paleta, ruta):
                "Una página por cada pareja de palabras que el Quijote podría llegar a decir:\n"
                f"{d['distintas']} palabras y signos distintos dan {d['posibles']} páginas. Esto es\n"
                "lo que hay apuntado en ellas después de leer el libro entero.",
-               paleta, alto=6.25)
+               paleta, alto=5.96)  # sin el hueco del pie (Orden 4; era 6,25)
 
     y = L.y - 1.0
     L.texto(4, y, f"Cada rectangulito es una página de la libreta. Aquí hay {d['una_de_cada']}: "
@@ -153,8 +153,6 @@ def dibujar(d, paleta, ruta):
             tam=7.4)
     L.texto(x0, y_d - 15.2, "exactamente como aquí.", tam=7.4)
 
-    L.pie("Los números salen de datos/salidas/casillas_vacias.txt, medidos sobre el Quijote. Las\n"
-          f"{d['una_de_cada']} páginas se dibujan de una en una a partir de ese número.")
     L.guardar(ruta)
     return ruta
 

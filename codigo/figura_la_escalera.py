@@ -51,7 +51,7 @@ def dibujar(d, paleta, ruta):
                "Una máquina que cuenta cuántas veces va cada letra detrás de cada trozo, y luego\n"
                "escribe echando a suertes con esos recuentos. Lo único que se le cambia es cuántas\n"
                "letras mira hacia atrás. El texto contado es siempre el mismo.",
-               paleta, alto=6.24)
+               paleta, alto=5.92)  # sin el hueco del pie (Orden 4; era 6,24)
     p = paleta
     L.texto(4, L.y - 1.0, f"El Quijote entero: {d['caracteres']} letras, {d['palabras']} palabras, "
                           f"{d['distintas']} distintas.", tam=7.2, color=p.suave)
@@ -65,8 +65,6 @@ def dibujar(d, paleta, ruta):
         if n < len(PELDANOS):
             L.flecha()
 
-    L.pie("Las cinco muestras salen de datos/salidas/ngrama.txt, la salida del programa del\n"
-          "capítulo. Están recortadas para que quepan; no se ha cambiado ninguna letra.")
     L.guardar(ruta)
     return ruta
 

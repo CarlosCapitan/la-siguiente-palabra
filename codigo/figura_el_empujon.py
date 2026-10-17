@@ -19,7 +19,7 @@ Uso:
 
 DATOS = "../datos/salidas/cuentas_a_mano.csv"
 DESTINO = "../figuras/el_empujon.png"
-ALTO = 5.5                  # pulgadas
+ALTO = 5.25                 # pulgadas (sin el hueco del pie, Orden 4; era 5,5)
 ALTO_PANEL = 27             # unidades del lienzo
 X = (20, 50, 80)            # dónde van las tres neuronas
 R = 5.0                     # radio de una neurona
@@ -108,8 +108,6 @@ def dibujar(casos, paleta, ruta):
         yr = ytop - 6.0
         red(L, yr, valores, emp)
         L.texto(50, ytop - 16.8, pie, tam=7.8, ha="center")
-    L.pie("Los números de actividad son de ejemplo, como en el texto: lo que se enseña es la cuenta.\n"
-          "Propuesta de Lillicrap y otros (2020); en el cerebro no se ha comprobado.")
     L.guardar(ruta)
     return [f[1] for f in filas]
 

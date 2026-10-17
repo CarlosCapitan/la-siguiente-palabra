@@ -18,7 +18,7 @@ Uso:
 
 CAMINOS = "../datos/salidas/dos_valles.csv"
 DESTINO = "../figuras/dos_valles.png"
-ALTO = 4.3                 # pulgadas
+ALTO = 4.2                 # pulgadas (sin el hueco del pie, Orden 4; era 4,3)
 REJILLA = 160              # puntos por lado para dibujar el relieve
 NIVELES = 12               # cuántos tonos de gris
 
@@ -94,8 +94,6 @@ def dibujar(caminos, paleta, ruta):
     L.texto(35, yc, "donde se para", tam=7.2, color=p.suave)
     L.ax.plot([58, 63], [yc, yc], color=p.tinta, linewidth=1.3, linestyle=(0, (2, 1.5)))
     L.texto(64.5, yc, "el camino, cuesta abajo", tam=7.2, color=p.suave)
-    L.pie("Terreno de juguete, con dos pesos para poder dibujarlo. Una máquina de verdad tiene\n"
-          "millones: el terreno no se puede dibujar, pero el problema es el mismo.")
     L.guardar(ruta)
     return finales
 

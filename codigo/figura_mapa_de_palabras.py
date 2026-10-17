@@ -4,8 +4,8 @@ Capítulo 5 — el mapa de palabras: la distancia en el papel es el parecido (L2
 
 Cada palabra del modelo del capítulo es una lista de cien números. Aquí veintidós palabras de los
 bloques del capítulo, aplanadas de cien números a dos para poder dibujarlas: cuanto más cerca en
-el papel, más se parecen sus listas. Aplanar pierde algo, y la figura lo dice con la cifra que
-imprime el programa.
+el papel, más se parecen sus listas. Aplanar pierde algo, y la cifra de lo que se pierde la imprime el
+programa; el libro la dice, la figura ya no.
 
 Nada se calcula aquí: las posiciones, los grupos y la cifra de lo que se pierde se leen del
 bloque 8 de `datos/salidas/palabras_de_cerca.txt`.
@@ -19,7 +19,8 @@ Uso:
 
 SALIDA = "../datos/salidas/palabras_de_cerca.txt"
 DESTINO = "../figuras/mapa_de_palabras.png"
-ALTO = 4.7
+ALTO = 4.41  # pulgadas, sin el hueco del pie (Orden 4; era 4,7)
+ALTO_CON_PIE = 4.7          # lo que medía antes; de aquí sale cuánto subir lo que se ancla abajo
 DESTACADA = "banco"
 MARGEN = 0.06          # en unidades del aplanado, alrededor de cada grupo
 
@@ -33,7 +34,7 @@ from pathlib import Path
 import numpy as np
 
 from formato import leer_tablas
-from infografia import COLOR, GRIS, Lienzo
+from infografia import ANCHO_PAGINA, COLOR, GRIS, Lienzo
 
 AQUI = Path(__file__).resolve().parent
 
@@ -99,7 +100,10 @@ def dibujar(puntos, nombres, igual1, igual3, paleta, ruta):
                "papel, más se parecen las dos listas.", paleta, alto=ALTO)
     p, ax = L.p, L.ax
     xs = np.array([q[1] for q in puntos]); ys = np.array([q[2] for q in puntos])
-    x0, x1, y0, y1 = 12, 84, 27, L.y - 3
+    # El mapa y la clave se anclan desde abajo (27 y 22 unidades). Al recortar el hueco del pie
+    # (Orden 4) suben todo lo que se recortó, para que el mapa mida lo mismo y no se aplaste.
+    recorte = (ALTO_CON_PIE - ALTO) * 100 / ANCHO_PAGINA
+    x0, x1, y0, y1 = 12, 84, 27 - recorte, L.y - 3
     esc = min((x1 - x0) / max(np.ptp(xs), 1e-9), (y1 - y0) / max(np.ptp(ys), 1e-9))
     cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
     X = lambda v: cx + (v - (xs.max() + xs.min()) / 2) * esc
@@ -115,7 +119,7 @@ def dibujar(puntos, nombres, igual1, igual3, paleta, ruta):
             px, py = pos[pal]
             ax.plot([px, min(max(px, tx), tx + w)], [py, ty], color=p.suave, linewidth=0.5, zorder=2)
         L.texto(tx, ty, pal, tam=8.2 if d else 7.4, negrita=d)
-    yk = 22.0
+    yk = 22.0 - recorte
     L.texto(4, yk, "Forma del punto: de qué bloque del capítulo sale la palabra", tam=7.0,
             color=p.suave)
     for k, (g, nombre) in enumerate(sorted(nombres.items())):
@@ -124,9 +128,6 @@ def dibujar(puntos, nombres, igual1, igual3, paleta, ruta):
         marca(ax, xk, yy, g, p, grande=False,
               estrella=any(q[0] == DESTACADA and q[4] == g for q in puntos))
         L.texto(xk + 1.8, yy, nombre, tam=7.0)
-    L.pie(f"Aplanar cien números a dos pierde algo. De estas {len(puntos)} palabras, "
-          f"la más parecida a cada una\nes también la más cercana en el papel en {igual1}, "
-          f"y está entre sus tres más cercanas en {igual3}.")
     L.guardar(ruta)
     return pos
 
