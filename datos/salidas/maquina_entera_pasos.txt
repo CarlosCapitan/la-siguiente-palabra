@@ -1,0 +1,47 @@
+máquina: arm64, Darwin 25.6.0, procesador
+modelo: Qwen/Qwen2.5-0.5B en float32
+torch 2.14.0   transformers 5.17.0
+fecha: 2026-10-17
+
+--- 1. CUATRO PASOS MÁS, DETRÁS DE «La capital de Francia es la ciudad más grande de Francia,» ---
+
+::: tabla
+Cuatro pasos más de la máquina entera
+
+| paso | 1.ª opción | 2.ª opción | 3.ª opción |
+|:-:|:--|:--|:--|
+| 9 | `_con` 23,0 % | `_y` 12,4 % | `_ubic` 6,3 % |
+| 10 | `_una` 41,3 % | `_` 20,4 % | `_un` 12,8 % |
+| 11 | `_población` 93,2 % | `_superf` 3,0 % | `_pobl` 0,3 % |
+| 12 | `_de` 63,3 % | `_estim` 20,2 % | `_total` 2,4 % |
+
+Sigue la tabla de los ocho pasos de maquina_entera_detalle.txt: se elige siempre la 1.ª; las otras dos son las que perdieron. Porcentajes con una cifra decimal.
+
+Texto al acabar: «La capital de Francia es la ciudad más grande de Francia, con una población de».
+:::
+
+--- 2. «POBLACIÓN», DE CERCA ---
+
+::: tabla
+«población» detrás de «… la ciudad más grande de Francia, con una»
+
+| trozo | probabilidad | puesto |
+|:--|--:|--:|
+| `_población` | 93,2 % | 1 |
+| **«población» entera** | **93,2 %** |  |
+
+El cortador parte «población» en 1 trozo: `_población`.
+
+Es el paso 11 desde «La capital de Francia es»; el contexto es «La capital de Francia es la ciudad más grande de Francia, con una».
+:::
+
+::: tabla
+Y si empezara por `_pobl`
+
+| detrás de… | 1.ª opción | 2.ª opción | 3.ª opción |
+|:--|:--|:--|:--|
+| «La capital de Francia es la ciudad más grande de Francia, con una» | `_población` 93,2 % | `_superf` 3,0 % | `_pobl` 0,3 % |
+| …`_pobl` | `acion` 44,7 % | `ación` 38,1 % | `aci` 12,2 % |
+
+`_pobl` saca 0,3 % en el primer sitio; y `ación`, el trozo que terminaría «población» en dos, saca 38,1 % detrás de él.
+:::
