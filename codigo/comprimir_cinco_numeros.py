@@ -28,8 +28,14 @@ COMPRIMIDO_32 = "mlx-community/Qwen2.5-32B-Instruct-4bit"
 TABLA = "model.layers.0.self_attn.q_proj"   # una tabla cualquiera: la primera de la primera capa
 CUANTOS = 5                                 # cuántos números se enseñan
 BYTES_SIN_COMPRIMIR = 2                     # lo que ocupa cada número sin comprimir (bf16)
-MEMORIA_PORTATIL_GB = 36                    # la del apéndice: MacBook Pro M4 Max
-GB = 1e9                                    # gigabytes como los cuenta el fabricante del portátil
+MEMORIA_PORTATIL_GB = 36                    # lo que dice la ficha: MacBook Pro M4 Max
+# Pero la memoria no se cuenta en miles de millones de bytes: «36 GB» son 36 veces 1.024 por 1.024
+# por 1.024 bytes, 38.654.705.664 (lo que da `sysctl -n hw.memsize` en este Mac). Compararla con el
+# tamaño de las copias, que sí van en GB = 1e9, sin decirlo, era comparar 65,3 de una medida con 36
+# de la otra (17 oct 2026).
+MEMORIA_PORTATIL_BYTES = MEMORIA_PORTATIL_GB * 1024 ** 3
+CHIP_DEL_LIBRO = "Apple M4 Max"             # el portátil del que habla el libro
+GB = 1e9                                    # gigabytes como cuenta el fabricante el DISCO (no la memoria)
 
 # ==========================================================
 
@@ -42,6 +48,38 @@ import sys
 from formato import coma, miles, tabla_editorial
 
 # Desde el 8 oct 2026 las dos partes salen como tablas de libro (formato.py; REGLAS 6 ter).
+
+
+def memoria_del_mac():
+    """(chip, bytes de memoria) de este ordenador, si es un Mac; (None, None) si no."""
+    import platform
+    import subprocess
+    if platform.system() != "Darwin":
+        return None, None
+    uno = lambda k: subprocess.run(["sysctl", "-n", k], capture_output=True, text=True,
+                                   check=True).stdout.strip()
+    return uno("machdep.cpu.brand_string"), int(uno("hw.memsize"))
+
+
+def comprobar_memoria(medida=None):
+    """En el Mac del libro (el chip de CHIP_DEL_LIBRO), la constante tiene que ser la memoria que
+    dice el sistema; en cualquier otro ordenador no se compara con nada. `medida`, (chip, bytes),
+    es para probarlo: si no se da, se pregunta al sistema."""
+    chip, memoria = medida or memoria_del_mac()
+    if chip == CHIP_DEL_LIBRO:
+        assert memoria == MEMORIA_PORTATIL_BYTES, (
+            f"Se esperaba la memoria del portátil del libro, {miles(MEMORIA_PORTATIL_BYTES)} bytes; "
+            f"este {chip} dice {miles(memoria)}")
+        return True
+    return False
+
+
+def linea_memoria():
+    """La línea de la salida sobre la memoria: en GB de 1e9, como las copias, y con lo que son los
+    «36 GB» de la ficha."""
+    return (f"Memoria del portátil: {coma(MEMORIA_PORTATIL_BYTES / GB, 1)} GB, para todo: los "
+            f"«{MEMORIA_PORTATIL_GB} GB» de su ficha son {MEMORIA_PORTATIL_GB} veces 1.024 por "
+            "1.024 por 1.024 bytes.")
 
 
 def carpeta(repo):
@@ -159,7 +197,7 @@ def informe():
         "Lo que ocupa cada copia",
         ["copia", "ocupa", "cómo"],
         [[nombre, coma(b / GB, 1) + " GB", como] for nombre, b, como in filas], "idi",
-        [f"Memoria del portátil: {MEMORIA_PORTATIL_GB} GB, para todo.",
+        [linea_memoria(),
          f"Números de la de 32.000M: {miles(n32)}. Números de la de 7.000M: {miles(n7)}.",
          "Medido: lo que ocupan sus ficheros en el disco. Calculado: sus números por "
          f"{BYTES_SIN_COMPRIMIR} bytes cada uno, como la de 7.000M sin comprimir."]))
@@ -202,6 +240,19 @@ def selftest():
           f"números en total {miles(n_a)} y {miles(n_b)}")
     if peor > 1.0 or n_a != n_b:
         fallos.append("invariante: la copia comprimida no es la original comprimida")
+    comparada = comprobar_memoria()
+    ajeno = comprobar_memoria(("Intel Core", 17_179_869_184))        # otro ordenador: no se compara
+    try:
+        comprobar_memoria((CHIP_DEL_LIBRO, 36 * 10 ** 9))             # el Mac del libro, con 36e9: salta
+        salta = False
+    except AssertionError:
+        salta = True
+    print(f"                      memoria del portátil {miles(MEMORIA_PORTATIL_BYTES)} bytes: "
+          f"{'igual que hw.memsize' if comparada else 'no se compara (no es el Mac del libro)'}; "
+          f"en otro ordenador no se compara: {'sí' if not ajeno else 'NO'}; con 36 × 10^9 en el Mac "
+          f"del libro salta: {'sí' if salta else 'NO'}")
+    if ajeno or not salta:
+        fallos.append("invariante: la comprobación de la memoria no distingue el Mac del libro")
     print()
     if fallos:
         for f in fallos:

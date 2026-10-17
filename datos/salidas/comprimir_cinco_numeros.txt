@@ -41,7 +41,7 @@ Lo que ocupa cada copia
 | 32.000M sin comprimir | 65,3 GB | calculado |
 | 32.000M comprimido | 18,4 GB | medido |
 
-Memoria del portátil: 36 GB, para todo.
+Memoria del portátil: 38,7 GB, para todo: los «36 GB» de su ficha son 36 veces 1.024 por 1.024 por 1.024 bytes.
 
 Números de la de 32.000M: 32.640.013.312. Números de la de 7.000M: 7.615.616.512.
 
