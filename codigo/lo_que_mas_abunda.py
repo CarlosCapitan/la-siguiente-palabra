@@ -281,7 +281,7 @@ def main():
         f"texto de entrenamiento: {miles(len(texto))} letras, {miles(total)} palabras,",
         f"{miles(len(veces))} distintas.",
         "",
-        "--- LAS PALABRAS QUE EL CAPÍTULO LLAMA «LAS MÁS FRECUENTES» ---",
+        "--- PALABRAS QUE EL CAPÍTULO LLAMA «LAS MÁS FRECUENTES» ---",
         "",
     ]
     for l in comprobar_ancho(cabecera, ANCHO_CAJA_CITA):
@@ -318,9 +318,9 @@ def main():
             *[f"    de {n} letra{'s' if n > 1 else ''}: {miles(len(cache[n][0]))}"
               for n in sorted(cache)],
             "",
-            "El modelo no ve palabras: ve letras, una detrás de otra. Así que",
-            "ésta es la lista que le importa y no la de arriba, y es la que",
-            "explica por qué sale «ten» sin ser una palabra frecuente.",
+            "El modelo no ve palabras: ve letras, una detrás de otra. Así",
+            "que ésta es la lista que le importa y no la de arriba, y es la",
+            "que explica por qué sale «ten» sin ser una palabra frecuente.",
             ""], ANCHO_CAJA_CITA):
         print(l)
 

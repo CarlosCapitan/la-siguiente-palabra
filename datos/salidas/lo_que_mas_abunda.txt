@@ -1,6 +1,6 @@
 ##### capítulo 10: lo que más abunda, contado #####
-fecha: 2026-09-18 19:29
-máquina: Linux x86_64. No entrena ni
+fecha: 2026-10-17 17:57
+máquina: Darwin arm64. No entrena ni
 cronometra: cuenta palabras del mismo texto que se le dio al
 modelo y mide las cuatro muestras ya guardadas, así que da lo
 mismo en cualquier ordenador.
@@ -8,7 +8,7 @@ mismo en cualquier ordenador.
 texto de entrenamiento: 8.000.000 letras, 1.393.593 palabras,
 134.708 distintas.
 
---- LAS PALABRAS QUE EL CAPÍTULO LLAMA «LAS MÁS FRECUENTES» ---
+--- PALABRAS QUE EL CAPÍTULO LLAMA «LAS MÁS FRECUENTES» ---
 
    palabra       veces    puesto   del texto
 ----------   ---------   -------   ---------
@@ -41,9 +41,9 @@ de una palabra. Rachas distintas que hay, por largo:
     de 2 letras: 1.083
     de 3 letras: 10.124
 
-El modelo no ve palabras: ve letras, una detrás de otra. Así que
-ésta es la lista que le importa y no la de arriba, y es la que
-explica por qué sale «ten» sin ser una palabra frecuente.
+El modelo no ve palabras: ve letras, una detrás de otra. Así
+que ésta es la lista que le importa y no la de arriba, y es la
+que explica por qué sale «ten» sin ser una palabra frecuente.
 
 --- LA FORMA DE CADA MUESTRA, CONTRA LA DEL TEXTO REAL ---
 
@@ -52,7 +52,7 @@ explica por qué sale «ten» sin ser una palabra frecuente.
         30 pasos      23,8 %      3,50
        300 pasos      21,2 %      3,81
      3.000 pasos      19,7 %      4,08
-    52.972 pasos      19,7 %      3,98
+    50.000 pasos      21,3 %      3,70
       texto real      16,1 %      4,69
 
 «espacios» es qué parte de la muestra son espacios; «grupo»,
