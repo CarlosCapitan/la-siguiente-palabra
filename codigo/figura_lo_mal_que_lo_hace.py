@@ -26,7 +26,8 @@ Uso:
 CURVA = "../datos/en_que_orden_aprende_curva.csv"
 SALIDA_CAP10 = "../datos/salidas/en_que_orden_aprende.txt"
 DESTINO = "../figuras/lo_mal_que_lo_hace.png"
-ALTO = 4.5
+ALTO = 4.85                 # pulgadas (Orden 13: era 4,5, y el rótulo del eje de abajo salía cortado)
+ALTO_BASE = 4.5             # el alto con el que se midieron las posiciones de los ejes, en fracciones
 CERCA = 3_000               # hasta dónde llega el dibujo de cerca
 MEDIA_VENTANA = 20          # arriba: cada punto con los 20 de cada lado (el dibujo entero)
 MEDIA_CERCA = 3             # abajo, de cerca: con los 3 de cada lado (la caída es rápida)
@@ -97,13 +98,18 @@ def dibujar(curva, retratos, paleta, ruta):
     p = paleta
     W, H = L.fig.get_size_inches()
     alto_u = L.alto_u
-    arriba = L.y / alto_u
+    # Las posiciones de los ejes eran fracciones del alto de la figura, medidas con ALTO_BASE. Al
+    # subir el alto para que quepa el rótulo del eje de abajo (Orden 13), se pasan a pulgadas desde
+    # el borde de arriba y se vuelven a pasar a fracción: las dos gráficas miden y caen lo mismo,
+    # y lo que se añade es margen por debajo. Ni un texto ni un número cambian.
+    arriba_in = (alto_u - L.y) * (W / 100.0)             # de arriba a donde empiezan las gráficas
+    fraccion = lambda pulgadas_desde_arriba: 1 - (arriba_in + pulgadas_desde_arriba) / H
     tope = max(v for _, v in curva) * 1.08
     ejes = []
     marcados = []
     for k, (x0, x1) in enumerate(((0, curva[-1][0]), (0, CERCA))):
-        y_ax = arriba - 0.02 - k * 0.42
-        ax = L.fig.add_axes([0.14, y_ax - 0.31, 0.82, 0.30])
+        base = (0.02 + k * 0.42) * ALTO_BASE
+        ax = L.fig.add_axes([0.14, fraccion(base + 0.31 * ALTO_BASE), 0.82, 0.30 * ALTO_BASE / H])
         tramo = [c for c in curva if c[0] <= x1]
         t = [c[0] for c in tramo]
         v = [c[1] for c in tramo]
@@ -141,6 +147,16 @@ def dibujar(curva, retratos, paleta, ruta):
                     ha="left", va="top", color=p.suave)
         ax.set_xlabel("pasos de aprendizaje", fontsize=7.4, labelpad=1.5)
         ejes.append(ax)
+    # Nada de lo escrito sale de la figura: el rótulo del eje de abajo salía cortado (Orden 13).
+    L.fig.canvas.draw()
+    pintor = L.fig.canvas.get_renderer()
+    fuera = L.fig.bbox
+    for ax in ejes:
+        for texto in [ax.xaxis.label, *ax.get_xticklabels()]:
+            caja = texto.get_window_extent(pintor)
+            assert caja.y0 >= fuera.y0 and caja.y1 <= fuera.y1, (
+                f"«{texto.get_text()}» se sale de la figura por abajo o por arriba "
+                f"({caja.y0:.1f} < {fuera.y0:.1f}): sube el alto")
     L.guardar(ruta)
     return marcados
 
