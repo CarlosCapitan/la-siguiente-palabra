@@ -212,7 +212,7 @@ def bloque_promedios(datos, n_capas):
         [f"Todas: promedio de las {n_total} miradas del modelo. Final: promedio de las {n_tercio} "
          f"miradas de las {n_capas - desde} últimas capas, que es el recorte con el que mide "
          "reparto_atencion.py.",
-         "Cada casilla: la porción del pastel que se lleva esa palabra. «El» es la primera palabra "
+         "Cada número: la porción del pastel que se lleva esa palabra. «El» es la primera palabra "
          "de la frase: la papelera. El propio adjetivo: lo que la palabra que pregunta se queda "
          "para sí."])
 

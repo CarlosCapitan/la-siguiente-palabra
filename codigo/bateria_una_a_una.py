@@ -141,7 +141,7 @@ def bloque_tabla(usados, resp, cuentas):
     out += tabla_editorial(
         "La batería, en los cuatro tamaños", ["tarea"] + etiquetas, filas,
         "i" + "d" * len(etiquetas),
-        ["Cada casilla: cuántas de las 5 preguntas de la tarea acierta. " + NOTA_REGLA,
+        ["Cada número: cuántas de las 5 preguntas de la tarea acierta. " + NOTA_REGLA,
          f"{etiquetas[0]} quiere decir {etiquetas[0][:-1]} millones de números (pesos): es el "
          "nombre redondo con que se publicó cada modelo."])
     out += [""] + tabla_editorial(
@@ -225,7 +225,7 @@ def bloque_por_letras(usados, resp):
     return ["--- 4. LAS MISMAS RESPUESTAS, CORREGIDAS POR LETRAS ---", ""] + tabla_editorial(
         "Las mismas respuestas, corregidas por letras", ["tarea"] + etiquetas, filas,
         "i" + "d" * len(etiquetas),
-        ["Cada casilla: de las letras de la respuesta correcta, qué parte escribe bien y en su "
+        ["Cada número: de las letras de la respuesta correcta, qué parte escribe bien y en su "
          "sitio, desde la primera, antes de equivocarse; en promedio de las 5 preguntas.",
          "«libros» para «libros» vale 100 %; «lib», 50 %. Las mayúsculas no cuentan: a «¿cuál "
          "es la capital de Italia?», «rome» por «Roma» vale 75 %."])

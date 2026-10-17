@@ -16,7 +16,7 @@ La batería, en los cuatro tamaños
 | razonar sobre una frase | 1 de 5 | 2 de 5 | 3 de 5 | 3 de 5 |
 | **en total** | **4 de 30** | **14 de 30** | **19 de 30** | **19 de 30** |
 
-Cada casilla: cuántas de las 5 preguntas de la tarea acierta. Acierta si lo primero que escribe es la respuesta correcta.
+Cada número: cuántas de las 5 preguntas de la tarea acierta. Acierta si lo primero que escribe es la respuesta correcta.
 
 500M quiere decir 500 millones de números (pesos): es el nombre redondo con que se publicó cada modelo.
 :::
@@ -226,7 +226,7 @@ Las mismas respuestas, corregidas por letras
 | seguir un patrón inventado | 0 % | 0 % | 0 % | 0 % |
 | razonar sobre una frase | 20 % | 40 % | 60 % | 60 % |
 
-Cada casilla: de las letras de la respuesta correcta, qué parte escribe bien y en su sitio, desde la primera, antes de equivocarse; en promedio de las 5 preguntas.
+Cada número: de las letras de la respuesta correcta, qué parte escribe bien y en su sitio, desde la primera, antes de equivocarse; en promedio de las 5 preguntas.
 
 «libros» para «libros» vale 100 %; «lib», 50 %. Las mayúsculas no cuentan: a «¿cuál es la capital de Italia?», «rome» por «Roma» vale 75 %.
 :::
