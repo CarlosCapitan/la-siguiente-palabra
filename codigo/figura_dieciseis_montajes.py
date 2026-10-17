@@ -5,7 +5,7 @@ Capítulo 2 — la figura de los dieciséis montajes.
 Los dieciséis montajes de la lámpara del pasillo, dibujados en vez de listados: la misma
 tabla que imprime perceptron.py, con una fila por montaje y una columna por posición de los
 interruptores, pero con los interruptores dibujados en la cabecera (grandes, una sola vez,
-con los números de la figura de las cuatro posiciones) y cada casilla en amarillo si con
+con los números de la figura de las cuatro posiciones) y cada recuadro en amarillo si con
 esa posición la luz se enciende. Solo hay una lámpara: no se dibuja ninguna bombilla. El
 lector cuenta las filas con el dedo, ve que son todas distintas, y ve marcadas las dos con
 las que el perceptrón se estrella.
@@ -25,7 +25,7 @@ SALIDA = "../figuras/dieciseis_montajes.png"
 ANCHO_ALTO = (6.2, 8.06)          # pulgadas, para una página de 6 por 9
 PUNTOS = 200                     # puntos por pulgada
 
-# El orden de las filas es el de la tabla de perceptron.py: por sus cuatro casillas, de
+# El orden de las filas es el de la tabla de perceptron.py: por sus cuatro recuadros, de
 # «nunca» (no no no no) a «siempre» (sí sí sí sí).
 
 # Las cuatro posiciones (columnas), en el orden de perceptron.TABLA_DOS y con los números
@@ -68,8 +68,8 @@ def dibujar():
     """La tabla de los dieciséis, dibujada: una fila por montaje, una columna por posición
     de los interruptores. Los interruptores se dibujan UNA vez, en la cabecera —una fila
     para el de abajo y otra para el de arriba, con la palabra debajo de cada uno— y cada
-    casilla dice si con esa posición la luz se enciende. Solo hay una lámpara, y por eso no
-    se dibuja ninguna bombilla: la casilla es lo que le pasa a la luz."""
+    recuadro dice si con esa posición la luz se enciende. Solo hay una lámpara, y por eso no
+    se dibuja ninguna bombilla: el recuadro es lo que le pasa a la luz."""
     plt.rcParams["font.family"] = "serif"
     fallidas = montajes_fallidos()
     fig = plt.figure(figsize=ANCHO_ALTO)
@@ -81,7 +81,7 @@ def dibujar():
 
     X_NOMBRE = 1.8                     # borde izquierdo de la columna de nombres
     X_COL = [20.6, 25.8, 31.0, 36.2]   # centro de las cuatro columnas
-    ANCHO_CASILLA, ALTO_FILA = 4.6, 1.72
+    ANCHO_RECUADRO, ALTO_FILA = 4.6, 1.72
     Y0 = 31.4                          # centro de la primera fila
 
     # Título y cómo leerla.
@@ -121,7 +121,7 @@ def dibujar():
         ax.text(X_NOMBRE, y, NOMBRES[bits] + ("  *" if fallida else ""), ha="left",
                 va="center", fontsize=8.6, color=COLOR_BORDE_FALLIDA if fallida else COLOR_TINTA)
         for x, encendida in zip(X_COL, bits):
-            ax.add_patch(FancyBboxPatch((x - ANCHO_CASILLA / 2, y - 0.72), ANCHO_CASILLA, 1.44,
+            ax.add_patch(FancyBboxPatch((x - ANCHO_RECUADRO / 2, y - 0.72), ANCHO_RECUADRO, 1.44,
                                         boxstyle="round,pad=0.02,rounding_size=0.3",
                                         facecolor=COLOR_ENCENDIDA if encendida else COLOR_APAGADA,
                                         edgecolor="none"))
@@ -150,7 +150,7 @@ def dibujar():
 def selftest():
     fallos = []
     # 1. TEST NULO — sin entrenar nada, los dieciséis son dieciséis y todos distintos: si la
-    #    lista de nombres repitiera casillas, la cuadrícula tendría dos fichas iguales.
+    #    lista de nombres repitiera recuadros, la cuadrícula tendría dos fichas iguales.
     distintos = len(set(ORDEN))
     print(f"[1] test nulo         {distintos} montajes distintos de {len(ORDEN)}")
     if distintos != 16 or len(ORDEN) != 16:
@@ -173,7 +173,7 @@ def selftest():
 
     # 3. INVARIANTE DEL DOMINIO — cada posición está encendida en exactamente ocho de los
     #    dieciséis montajes: es lo que significa «todas las maneras de rellenar cuatro
-    #    casillas», y si faltara o sobrara un montaje, alguna columna no sumaría ocho.
+    #    recuadros», y si faltara o sobrara un montaje, alguna columna no sumaría ocho.
     sumas = [sum(bits[i] for bits in ORDEN) for i in range(4)]
     print(f"[3] invariante        cada posición encendida en {sumas} de 16 montajes")
     if sumas != [8, 8, 8, 8]:
