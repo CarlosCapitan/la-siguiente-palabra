@@ -1,13 +1,13 @@
 --- selftest ---
 [1] test nulo         letras distintas tras «qu»: barajado=29  real=5; parejas con un solo palito: barajado=84 % real=74 %
                       «dijo don quijote» en 200.000 trozos: barajado=1  real=122
-[2] señal implantada  texto de seis palabras: 3 parejas, 1 con un solo palito, 9 páginas mirando dos palabras; «quxquxqux»: una letra detrás, 3 veces
-[3] invariante        parejas contadas = trozos menos uno (442.271); parejas vistas <= páginas; todo lo que va tras «qu» está en el alfabeto
+[2] señal implantada  texto de seis palabras: 3 parejas, 1 con un solo palito, 9 hojas mirando dos palabras; «quxquxqux»: una letra detrás, 3 veces
+[3] invariante        parejas contadas = trozos menos uno (442.271); parejas vistas <= hojas; todo lo que va tras «qu» está en el alfabeto
 
 SELFTEST: las tres pruebas pasan.
 
 ########## capítulo 1: lo que no cabe en la libreta ##########
-fecha: 2026-10-17 09:21 UTC
+fecha: 2026-10-17 10:55 UTC
 máquina: Darwin arm64. La medición no
 depende de la máquina: cuenta letras y palabras de un fichero
 corpus: datos/quijote.txt, limpiado y troceado como en ngrama.py:
@@ -41,29 +41,29 @@ Símbolos distintos detrás de «qu»: 6, de los 42 que admite el programa (letr
 :::
 
 LA LIBRETA DE PAREJAS DE TROZOS
-una página por cada pareja de trozos que podría existir
+una hoja por cada pareja de trozos que podría existir
 
-  páginas posibles (trozos distintos al cuadrado)        526.794.304
-  páginas con algo apuntado (parejas vistas)                145.986
-  páginas con algo apuntado, por cada cien posibles        0,0277 %
+  hojas posibles (trozos distintos al cuadrado)          526.794.304
+  hojas con algo apuntado (parejas vistas)                  145.986
+  hojas con algo apuntado, por cada cien posibles        0,0277 %
 
-  una página con algo apuntado de cada                        3.609
+  una hoja con algo apuntado de cada                          3.609
 
   parejas que hay dentro del libro (trozos menos uno)       442.271
   de cada cien de esas parejas, cuántas son distintas        33,0 %
 
   parejas con un solo palito en todo el libro               104.231
-  páginas con más de un palito                               41.755
+  hojas con más de un palito                                 41.755
   de cada cien parejas vistas, las de un solo palito         71,4 %
 
   Quijotes de texto que harían falta para poner una sola
-  palabra en cada página                                     1.191
+  palabra en cada hoja                                       1.191
 
 SI SE MIRARAN TRES PALABRAS HACIA ATRÁS
 
-  páginas posibles                        12.090.982.865.408
+  hojas posibles                          12.090.982.865.408
   Quijotes de texto que harían falta para poner una sola
-  palabra en cada página                        27.338.341
+  palabra en cada hoja                          27.338.341
 
   libros publicados en el mundo según Google (2010,
   ediciones, no obras; constante, no medido aquí)     129.864.880

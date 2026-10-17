@@ -54,7 +54,7 @@ MOMENTOS = [0, 1_000, 5_000, 10_000, 20_000]  # cuándo se mide; el último tien
 # reparte entre 15,7 letras), y hacen falta momentos intermedios para ver cuándo.
 EJEMPLOS_PRUEBA = 20_000                  # trozos del 10 % final con los que se mide
 
-PERILLAS = [0, 1, 2, 3, 5]
+SELECTORES = [0, 1, 2, 3, 5]
 PASOS_REAPRENDER = 5_000   # apartado 7: con el reparto impuesto, cuánto se deja volver a aprender al resto
 TASA_REAPRENDER = 0.1      # y con qué poquito. Medido el 27: con «todo a la de justo antes», 1,0 y 0,3
                            # disparan los números (se parte de una máquina que de golpe se equivoca
@@ -347,7 +347,7 @@ CATEGORIAS = ["la propia letra", "la de justo antes", "un espacio",
 
 
 def clasificar(x, destino):
-    """A qué letra mira más la última de cada trozo, en cinco casillas, en este orden."""
+    """A qué letra mira más la última de cada trozo, en cinco categorías (CATEGORIAS), en este orden."""
     cuenta = dict.fromkeys(CATEGORIAS, 0)
     T = CONTEXTO
     for fila, j in zip(x, destino):
@@ -381,9 +381,9 @@ def dentro_de(inicio):
     return float((p["letra"].abs() < tam).float().mean())
 
 
-def contar_perilla(aprender, prueba, k):
-    """La máquina de contar del capítulo 1 con la perilla en k: con las k letras de antes, la que
-    más veces venía detrás en el texto de aprender. Si esa casilla está vacía, cuenta como fallo y
+def contar_selector(aprender, prueba, k):
+    """La máquina de contar del capítulo 1 con el selector en k: con las k letras de antes, la que
+    más veces venía detrás en el texto de aprender. Si esa hoja está en blanco, cuenta como fallo y
     se dice cuántas veces pasó: no se rellena con nada."""
     from collections import Counter, defaultdict
     tabla = defaultdict(Counter)
@@ -391,7 +391,7 @@ def contar_perilla(aprender, prueba, k):
     for i in range(k, len(a)):
         tabla[tuple(a[i - k:i])][a[i]] += 1
     mejor = {ctx: c.most_common(1)[0][0] for ctx, c in tabla.items()}
-    guardados = sum(len(c) for c in tabla.values())   # cada (casilla, letra) con cuenta es un número
+    guardados = sum(len(c) for c in tabla.values())   # cada (hoja, letra) con cuenta es un número
     aciertos = vacias = 0
     for fila in prueba:
         ctx = tuple(fila[CONTEXTO - k:CONTEXTO].tolist()) if k else ()
@@ -664,9 +664,9 @@ def main():
          "es casi azar."]) + [""]
 
     filas = []
-    for k in PERILLAS:
-        acc, vac, guard = contar_perilla(aprender, prueba, k)
-        filas.append([f"contar, perilla en {k}", f"{coma(100 * acc)} %", miles(guard), miles(vac)])
+    for k in SELECTORES:
+        acc, vac, guard = contar_selector(aprender, prueba, k)
+        filas.append([f"contar, selector en {k}", f"{coma(100 * acc)} %", miles(guard), miles(vac)])
     de_mirar = sum(p[n].numel() for n in ("Wp", "We", "Wc", "Wo"))
     filas += [["esta, sin mirar atrás", f"{coma(100 * med_sin[PASOS]['acierto'])} %",
                miles(cuantos_numeros(p) - de_mirar), ""],
@@ -675,10 +675,10 @@ def main():
     L += ["--- 4. ¿SIRVE DE ALGO MIRAR? ---", ""] + tabla_editorial(
         "¿Sirve de algo mirar? Las mismas letras de prueba",
         ["la máquina", "acierta", "números", "vacías"], filas, "iddd",
-        ["Números: los que guarda cada máquina. En la de contar, uno por cada casilla y letra que "
+        ["Números: los que guarda cada máquina. En la de contar, uno por cada hoja y cada letra que "
          "se ha visto detrás alguna vez.",
-         "Vacías: fragmentos de prueba cuya casilla no salió al aprender. Cuentan como fallo: "
-         "contar no tiene nada que decir ahí. Esta máquina no tiene casillas."]) + [""]
+         "Vacías: fragmentos de prueba cuya hoja quedó en blanco al aprender. Cuentan como fallo: "
+         "contar no tiene nada que decir ahí. Esta máquina no tiene libreta."]) + [""]
 
     tramo = frases[0][0]
     i_frase = texto.find(FRASE)

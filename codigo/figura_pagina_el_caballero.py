@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Capítulo 1 — la página de «el caballero» en la libreta de la máquina de palabras.
+Capítulo 1 — la hoja de «el caballero» en la libreta de la máquina de palabras.
 
-La máquina de palabras con la perilla en 2 tiene una página por cada pareja de palabras seguidas.
+La máquina de palabras con el selector en 2 tiene una hoja por cada pareja de palabras seguidas.
 Esta figura enseña una entera, la de «el caballero»: de título, esas dos palabras, y debajo una
 línea por cada palabra o signo que vino detrás, con sus palitos de cinco en cinco y el número al
 final. Son 24 líneas y 97 palitos; no se quita ninguna.
@@ -63,13 +63,13 @@ def alto_necesario(renglones):
 
 
 def dibujar(pag, paleta, ruta):
-    """Dibuja la página `pag` = [(palabra, n)] y devuelve (ruta, palitos dibujados)."""
+    """Dibuja la hoja `pag` = [(palabra, n)] y devuelve (ruta, palitos dibujados)."""
     alto = alto_necesario(len(pag))
     assert alto <= ALTO_MAXIMO, (
         f"las {len(pag)} líneas piden {alto} pulgadas y caben {ALTO_MAXIMO}: pasa la hoja a dos "
         f"columnas; no se quita ninguna línea")
     titulo = " ".join(PAGINA)
-    L = Lienzo(f"La página de «{titulo}»", SUBTITULO, paleta, alto=alto)
+    L = Lienzo(f"La hoja de «{titulo}»", SUBTITULO, paleta, alto=alto)
     ys, x_texto, x_fin, _ = hoja(L, 4.0, L.y - 1.0, ANCHO_HOJA, titulo, len(pag) + 1,
                                  ALTO_RENGLON)
     pintados = 0
@@ -89,17 +89,17 @@ def selftest():
     fallos = []
     texto = (AQUI / SALIDA).read_text(encoding="utf-8")
 
-    # 1. TEST NULO — una salida sin la tabla de la página tiene que reventar: si no, la figura
-    #    dibujaría una página que la salida no respalda.
+    # 1. TEST NULO — una salida sin la tabla de la hoja tiene que reventar: si no, la figura
+    #    dibujaría una hoja que la salida no respalda.
     try:
         pagina_de_la_salida(texto.replace("de más a menos", "de menos a más")); revienta = False
     except AssertionError:
         revienta = True
-    print(f"[1] test nulo         sin la tabla de la página, {'revienta' if revienta else 'NO revienta'}")
+    print(f"[1] test nulo         sin la tabla de la hoja, {'revienta' if revienta else 'NO revienta'}")
     if not revienta:
         fallos.append("test nulo: se lee una tabla que no está en la salida")
 
-    # 2. SEÑAL IMPLANTADA — una página inventada de tres palabras (4 + 1 + 2 palitos) se dibuja con
+    # 2. SEÑAL IMPLANTADA — una hoja inventada de tres palabras (4 + 1 + 2 palitos) se dibuja con
     #    exactamente 7 palitos; y una de más líneas de las que caben revienta en vez de recortarse.
     import matplotlib
     matplotlib.use("Agg")
@@ -111,7 +111,7 @@ def selftest():
     except AssertionError:
         revienta2 = True
     plt.close("all")
-    print(f"[2] señal implantada  página de 3 líneas: {pintados} palitos dibujados; con 60 "
+    print(f"[2] señal implantada  hoja de 3 líneas: {pintados} palitos dibujados; con 60 "
           f"líneas, {'revienta' if revienta2 else 'NO revienta'}")
     if pintados != 7 or not revienta2:
         fallos.append(f"señal implantada: se esperaban 7 palitos y que 60 líneas reventaran; "

@@ -1,12 +1,12 @@
 --- selftest ---
-[1] test nulo         la que más sale en la página de «el caballero»: barajado=14 %  real=42 %
+[1] test nulo         la que más sale en la hoja de «el caballero»: barajado=14 %  real=42 %
 [2] señal implantada  texto de 13 palabras: [('de', 2), ('andante', 1)]
 [3] invariante        97 palitos en 24 palabras o signos; la primera, «de», 42 %; de más a menos: sí; igual que la Tabla 7: sí
 
 SELFTEST: las tres pruebas pasan.
 
-########## capítulo 1: la página de «el caballero» ##########
-fecha: 2026-10-17 08:41 UTC
+########## capítulo 1: la hoja de «el caballero» ##########
+fecha: 2026-10-17 10:55 UTC
 máquina: Darwin arm64. La medición no
 depende de la máquina: cuenta palabras de un fichero de texto
 corpus: datos/quijote.txt, limpiado y troceado como en ngrama.py:
@@ -42,7 +42,7 @@ Qué viene detrás de «el caballero», de más a menos
 | «vencido» | 1 | 1,0 % |
 | «y» | 1 | 1,0 % |
 
-Las 97 veces que aparece «el caballero» en el Quijote, con la perilla en 2: un palito en la página de «el caballero» por cada una.
+Las 97 veces que aparece «el caballero» en el Quijote, con el selector en 2: un palito en la hoja de «el caballero» por cada una.
 
 Palabras o signos distintos detrás de «el caballero»: 24.
 :::

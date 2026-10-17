@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Capítulo 1 — dos páginas de la libreta de la máquina de letras, con la perilla en 2.
+Capítulo 1 — dos hojas de la libreta de la máquina de letras, con el selector en 2.
 
-La libreta tiene una página por cada contexto: arriba, de título, las dos letras que la máquina
+La libreta tiene una hoja por cada contexto: arriba, de título, las dos letras que la máquina
 tiene delante, y debajo un palito por cada vez que en el Quijote vino detrás cada letra. Esta
-figura enseña dos de esas páginas una al lado de otra, para que el lector vea lo que hay dentro
+figura enseña dos de esas hojas una al lado de otra, para que el lector vea lo que hay dentro
 de la libreta antes de que el capítulo hable de ella:
 
   - la de «xt», que solo tiene 24 palitos y caben todos dibujados, de cinco en cinco;
@@ -59,7 +59,7 @@ def titulo_tabla(par):
 
 
 def pagina_de_la_salida(texto, par):
-    """La página de `par` tal como la imprime el capítulo: [(letra, "25.972"), ...] en el orden
+    """La hoja de `par` tal como la imprime el capítulo: [(letra, "25.972"), ...] en el orden
     de la tabla, y el total que dice la nota («Las 32.709 veces que aparece…»)."""
     tablas = leer_tablas(texto)
     assert titulo_tabla(par) in tablas, f"no encuentro la tabla de «{par}» en la salida"
@@ -113,8 +113,8 @@ def dibujar_pagina(L, x, y_tope, par, cuentas, dibujar):
 
 
 def dibujar(secuencia, paleta, ruta):
-    L = Lienzo("Dos páginas de la libreta",
-               "La libreta de la máquina de letras con la perilla en 2: una página por cada\n"
+    L = Lienzo("Dos hojas de la libreta",
+               "La libreta de la máquina de letras con el selector en 2: una hoja por cada\n"
                "pareja de letras, y un palito por cada vez que vino detrás cada letra.",
                paleta, alto=3.79)  # sin el hueco del pie (Orden 4; era 4,10)
     y_tope = L.y - 1.0
@@ -137,8 +137,8 @@ def selftest():
     crudo_xt = (AQUI / SALIDA_XT).read_text(encoding="utf-8")
     crudo_qu = (AQUI / SALIDA_QU).read_text(encoding="utf-8")
 
-    # 1. TEST NULO — una salida sin la tabla de la página tiene que reventar: si no, la figura
-    #    dibujaría palitos de una página que la salida no respalda.
+    # 1. TEST NULO — una salida sin la tabla de la hoja tiene que reventar: si no, la figura
+    #    dibujaría palitos de una hoja que la salida no respalda.
     try:
         pagina_de_la_salida(crudo_qu, PAGINA_CON_PALITOS); revienta = False
     except AssertionError:
@@ -184,7 +184,7 @@ def selftest():
     if malas:
         fallos.append(f"invariante: lo contado no coincide con la tabla impresa de {malas}")
     if max(xt.values()) > MAXIMO_DIBUJABLE or max(qu.values()) <= MAXIMO_DIBUJABLE:
-        fallos.append("invariante: la página de «xt» debía caber dibujada y la de «qu» no")
+        fallos.append("invariante: la hoja de «xt» debía caber dibujada y la de «qu» no")
     dibujar(secuencia, GRIS, "/dev/null")      # sus asserts cuentan los palitos
     L = Lienzo("prueba", "", GRIS, alto=3.79)
     ancho_nota = ancho_texto(L, NOTA, TAM_NOTA)
