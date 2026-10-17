@@ -246,7 +246,7 @@ def tabla_bateria(etiqueta, columnas):
     return tabla_editorial(
         f"La batería del capítulo 11, en las tres columnas ({etiqueta})",
         ["tarea"] + COLUMNAS, filas, "iddd",
-        [f"Cada casilla: cuántas de las 5 preguntas de la tarea acierta. Las tres columnas son "
+        [f"Cada número: cuántas de las 5 preguntas de la tarea acierta. Las tres columnas son "
          f"el mismo modelo, de {NOMBRE[etiqueta]}.",
          "En crudo: sin adiestrar, con el enunciado tal cual. Adiestrado: el mismo, ya "
          "adiestrado, con el mismo enunciado. Con su formato: el enunciado va dentro del "

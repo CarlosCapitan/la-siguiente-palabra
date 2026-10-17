@@ -28,7 +28,7 @@ La forma de esta máquina
 
 Todas: promedio de las 336 miradas del modelo. Final: promedio de las 112 miradas de las 8 últimas capas, que es el recorte con el que mide reparto_atencion.py.
 
-Cada casilla: la porción del pastel que se lleva esa palabra. «El» es la primera palabra de la frase: la papelera. El propio adjetivo: lo que la palabra que pregunta se queda para sí.
+Cada número: la porción del pastel que se lleva esa palabra. «El» es la primera palabra de la frase: la papelera. El propio adjetivo: lo que la palabra que pregunta se queda para sí.
 :::
 
 ::: tabla
