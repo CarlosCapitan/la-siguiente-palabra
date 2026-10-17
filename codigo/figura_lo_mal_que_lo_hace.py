@@ -119,7 +119,7 @@ def dibujar(curva, retratos, paleta, ruta):
         ax.xaxis.set_major_formatter(__import__("matplotlib.pyplot").pyplot.FuncFormatter(
             lambda x, _: miles(int(x))))
         ax.set_ylabel("lo mal que lo hace", fontsize=7.4, color=p.tinta)
-        ax.text(x1, tope * 0.03, "el cero: acertaría todas las letras, seguro de cada una ",
+        ax.text(x1, tope * 0.03, "el cero: acertaría todas las letras, con toda la probabilidad en la buena ",
                 ha="right", va="bottom", fontsize=6.4, color=p.suave)
         for paso, rotulo in retratos:
             if not (x0 < paso <= x1):
