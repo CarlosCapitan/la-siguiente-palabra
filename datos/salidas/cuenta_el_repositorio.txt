@@ -2,11 +2,12 @@
 [1] test nulo         una carpeta sin programas: [0, 0, 0, 0]
 [2] señal implantada  8 programas, 1 .sh y 4 salidas: [1, 2, 3, 2]; como se espera: sí
 [3] invariante        162 programas en cuatro clases (13, 59, 82, 8); de los 162 .py de codigo/, cada uno en una sola: sí
+                      corpus: vacío (0, 0); tres ficheros de 10, 20 y 30 bytes (3, 60); el de verdad, 300 ficheros y 138.273.144 bytes, leídos 138.273.144
 
 SELFTEST: las tres pruebas pasan.
 
 ########## cuántos programas hay en codigo/ ##########
-fecha: 2026-10-17 18:21 UTC
+fecha: 2026-10-17 21:34 UTC
 máquina: Darwin arm64. La medición no
 depende de la máquina: cuenta ficheros
 
@@ -27,6 +28,12 @@ Programas de codigo/, por clase
 
 Cada programa está en una sola clase.
 :::
+
+EL CORPUS DE ENTRENAMIENTO
+
+  ficheros de datos/corpus_es/                           300
+  bytes que suman (los de los ficheros)          138.273.144
+  en millones de bytes                                 138,3
 
 VERIFICADORES (13)
 

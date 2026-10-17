@@ -24,6 +24,11 @@ LA REGLA. Cada programa `codigo/*.py` cae en UNA clase, mirando en este orden:
 No se cuenta ningún fichero que no sea `.py` (hay un `medir_en_mac.sh`) ni los de las carpetas
 de dentro de `datos/salidas/`.
 
+EL CORPUS (Orden 14, 17 oct 2026). El apéndice dice cuántos libros hay en `datos/corpus_es/` y
+cuántos bytes ocupan. Se cuentan los ficheros de esa carpeta (solo los de dentro, no los de
+subcarpetas) y se suman los bytes **de los ficheros** (su tamaño, el que dice `st_size`), no los
+bloques que ocupan en el disco, que dependen del disco.
+
 POR QUÉ ESTA MEDICIÓN NO DEPENDE DE LA MÁQUINA. Se cuentan ficheros.
 
 Uso:
@@ -35,6 +40,7 @@ Uso:
 
 CODIGO = "."
 SALIDAS = "../datos/salidas"
+CORPUS = "../datos/corpus_es"      # los libros de dominio público con los que se entrena
 
 CLASES = ["verificadores", "programas de figuras", "programas de medición",
           "programas que ayudan a los demás"]
@@ -48,7 +54,7 @@ import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
-from formato import ANCHO_CAJA, comprobar_ancho, partir, tabla_editorial
+from formato import ANCHO_CAJA, coma, comprobar_ancho, miles, partir, tabla_editorial
 
 AQUI = Path(__file__).resolve().parent
 
@@ -80,6 +86,13 @@ def contar(codigo, salidas):
         fuente = (Path(codigo) / n).read_text(encoding="utf-8")
         clases[clase_de(n, ficheros, fuente)].append(n[:-3])
     return clases
+
+
+def contar_corpus(carpeta):
+    """(cuántos ficheros, cuántos bytes suman) en la carpeta, sin entrar en subcarpetas. Los bytes
+    son los de los ficheros (`st_size`), no los bloques del disco."""
+    ficheros = [p for p in Path(carpeta).iterdir() if p.is_file()] if Path(carpeta).exists() else []
+    return len(ficheros), sum(p.stat().st_size for p in ficheros)
 
 
 # ---- selftest --------------------------------------------------------------------------
@@ -132,6 +145,25 @@ def selftest():
     if not ok:
         fallos.append("invariante: algún programa falta, o está en dos clases")
 
+    # y el corpus: una carpeta vacía suma cero; una de tres ficheros de 10, 20 y 30 bytes, con una
+    # subcarpeta que no cuenta, suma 3 y 60; y en el corpus de verdad, los bytes de st_size son los que
+    # se leen al abrir cada fichero.
+    with tempfile.TemporaryDirectory() as t:
+        t = Path(t)
+        (t / "vacio").mkdir()
+        (t / "tres").mkdir()
+        (t / "tres" / "sub").mkdir()
+        for nombre, n in (("a", 10), ("b", 20), ("c", 30)):
+            (t / "tres" / nombre).write_bytes(b"x" * n)
+        (t / "tres" / "sub" / "d").write_bytes(b"x" * 1000)
+        vacio, tres = contar_corpus(t / "vacio"), contar_corpus(t / "tres")
+    n_c, b_c = contar_corpus(AQUI / CORPUS)
+    leidos = sum(len(p.read_bytes()) for p in (AQUI / CORPUS).iterdir() if p.is_file())
+    print(f"                      corpus: vacío {vacio}; tres ficheros de 10, 20 y 30 bytes {tres}; "
+          f"el de verdad, {miles(n_c)} ficheros y {miles(b_c)} bytes, leídos {miles(leidos)}")
+    if vacio != (0, 0) or tres != (3, 60) or leidos != b_c or n_c == 0:
+        fallos.append(f"corpus: vacío {vacio}, tres {tres}, st_size {b_c} y leídos {leidos}")
+
     print()
     if fallos:
         for f in fallos:
@@ -173,6 +205,13 @@ def main():
             [[c, str(len(clases[c]))] for c in CLASES] + [["**en total**", f"**{total}**"]], "id",
             ["Cada programa está en una sola clase."]):
         print(l)
+    n_corpus, b_corpus = contar_corpus(AQUI / CORPUS)
+    print()
+    print("EL CORPUS DE ENTRENAMIENTO")
+    print()
+    print(f"  ficheros de datos/corpus_es/                {miles(n_corpus):>14}")
+    print(f"  bytes que suman (los de los ficheros)       {miles(b_corpus):>14}")
+    print(f"  en millones de bytes                        {coma(b_corpus / 1e6, 1):>14}")
     for c in CLASES:
         cabecera = f"{c.upper()} ({len(clases[c])})"
         print()
