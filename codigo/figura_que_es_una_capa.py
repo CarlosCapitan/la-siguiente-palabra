@@ -54,7 +54,7 @@ def dibujar(paleta, ruta):
     L = Lienzo("Qué es una capa",
                "Varios comités reciben exactamente lo mismo, y cada uno lo mira con sus\n"
                "propios pesos. Una capa es eso: varios comités en paralelo.",
-               paleta, alto=5.44)
+               paleta, alto=5.08)  # sin el hueco del pie (Orden 4; era 5,44)
 
     # --- la entrada: el mismo dibujo del capítulo anterior -----------------------------------
     y = L.y - 1.0
@@ -117,8 +117,6 @@ def dibujar(paleta, ruta):
     escribir(4, y_res - 16.6, "Tres comités es solo un ejemplo: una capa puede tener los que sea.",
              tam=7.6)
 
-    L.pie("Esta figura no lleva ningún dato medido: dice cómo está montada una capa, no cuánto\n"
-          "acierta. El dibujo de la entrada es el mismo del capítulo 2.")
     L.guardar(ruta)
     return ruta, rotulos
 

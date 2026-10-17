@@ -20,7 +20,7 @@ Uso:
 
 SALIDA = "../datos/salidas/la_e_de_acordarme.txt"
 DESTINO = "../figuras/maquina_del_quijote.png"
-ALTO = 5.0                  # pulgadas
+ALTO = 4.73                 # pulgadas (sin el hueco del pie, Orden 4; era 5,0)
 TABLAS_DE_MIRAR = ["la tabla de las preguntas", "la tabla de las etiquetas",
                    "la tabla de los contenidos", "la tabla que devuelve lo traído"]
 
@@ -117,7 +117,6 @@ def dibujar(piezas, total, quita, paleta, ruta):
                                 edgecolor=p.tinta, linewidth=1.0, linestyle=(0, (4, 3))))
     ax.text(cx + w / 2 + 3.0, (top + bot) / 2, f"sin mirar atrás\nse quita esto:\n{miles(quita)} números",
             ha="left", va="center", fontsize=7.0, color=p.tinta, family="Carlito", linespacing=1.25)
-    L.pie(f"En total, {miles(total)} números; sin mirar atrás, {miles(total - quita)}.")
     L.guardar(ruta)
     return cajas
 
@@ -144,10 +143,12 @@ def selftest():
     # 3. INVARIANTE — ninguna caja se sale de la página, en las dos paletas.
     for pal in (COLOR, GRIS):
         cajas = dibujar(piezas, total, quita, pal, "/dev/null")
-    dentro = all(0 < x < 100 and 8 < y for x, y in cajas)
+    # (Orden 4: la figura ya no lleva pie, así que el suelo de 8 unidades que se le dejaba para él
+    #  pasa a 0: lo que importa es que el centro de ninguna caja caiga fuera de la página.)
+    dentro = all(0 < x < 100 and 0 < y for x, y in cajas)
     print(f"[3] invariante        {len(cajas)} cajas, todas dentro de la página: {'sí' if dentro else 'NO'}")
     if not dentro:
-        fallos.append("invariante: una caja se sale de la página o pisa el pie")
+        fallos.append("invariante: una caja se sale de la página")
     print()
     if fallos:
         for f in fallos:

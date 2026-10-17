@@ -236,6 +236,8 @@ def main():
     p = parejas(palabras)
     posibles = casillas(len(vocabulario), 2)
     una_vez = de_una_sola_vez(p)
+    # La línea «páginas con más de un palito» (Orden 4.2) es páginas con algo apuntado menos las de
+    # un solo palito; la lee figura_lo_poco_que_hay.py, que antes la calculaba ella.
     muestra = leer_muestra(AQUI / MUESTRA, ROTULO_MUESTRA)
     trozos, reales = palabras_reales(muestra, set(solo))
     tres = casillas(len(vocabulario), 3)
@@ -297,6 +299,8 @@ def main():
         "",
         f"  parejas con un solo palito en todo el libro      "
         f"{miles(una_vez):>16}",
+        f"  páginas con más de un palito                     "
+        f"{miles(len(p) - una_vez):>16}",
         f"  de cada cien parejas vistas, las de un solo palito"
         f"{pct(una_vez / len(p), 1):>15}",
         "",

@@ -7,7 +7,7 @@
 SELFTEST: las tres pruebas pasan.
 
 ########## capítulo 1: lo que no cabe en la libreta ##########
-fecha: 2026-10-17 08:36 UTC
+fecha: 2026-10-17 09:21 UTC
 máquina: Darwin arm64. La medición no
 depende de la máquina: cuenta letras y palabras de un fichero
 corpus: datos/quijote.txt, limpiado y troceado como en ngrama.py:
@@ -53,6 +53,7 @@ una página por cada pareja de trozos que podría existir
   de cada cien de esas parejas, cuántas son distintas        33,0 %
 
   parejas con un solo palito en todo el libro               104.231
+  páginas con más de un palito                               41.755
   de cada cien parejas vistas, las de un solo palito         71,4 %
 
   Quijotes de texto que harían falta para poner una sola

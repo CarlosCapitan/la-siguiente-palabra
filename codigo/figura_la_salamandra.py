@@ -22,7 +22,7 @@ Uso:
 # ======================= CONSTANTES =======================
 
 DESTINO = "../figuras/la_salamandra.png"
-ALTO = 4.75                # pulgadas
+ALTO = 4.65                # pulgadas (sin el hueco del pie, Orden 4; era 4,75)
 ALTO_PANEL = 24            # unidades del lienzo
 X0, X1 = 26, 92            # dónde empieza y acaba la línea del tiempo
 # (rótulo, primer pulso de la célula 1, primer pulso de la célula 2), en unidades del lienzo
@@ -72,8 +72,6 @@ def dibujar(esquema, paleta, ruta):
             L.texto(X0, filas[1] - 4.6, "aparece la imagen", tam=7.0, color=p.suave, ha="center")
             L.texto(X1, filas[1] - 4.6, "tiempo", tam=7.0, color=p.suave, ha="right")
         distancias.append(t2 - t1)
-    L.pie("Esquema, sin escala. Lo medido (Gollisch y Meister, 2008): con menos contraste las dos\n"
-          "células tardan más, pero la distancia entre sus primeros pulsos casi no cambia.")
     L.guardar(ruta)
     return distancias
 

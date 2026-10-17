@@ -8,10 +8,9 @@ pasan de largo: que de las pocas páginas con algo apuntado, siete de cada diez 
 palito (71,4 %, casillas_vacias.txt); y que mirar una palabra más hacia atrás multiplica por
 22.952 el texto que haría falta.
 
-Todos los números salen de `datos/salidas/casillas_vacias.txt`. Los dos que no están escritos
-allí —las páginas con más de un palito y el cociente entre los dos montones de Quijotes— los
-calcula esta figura a partir de los que sí están, y el pie enseña las dos cuentas para que el
-lector pueda rehacerlas.
+Todos los números salen de `datos/salidas/casillas_vacias.txt`, también las páginas con más de un
+palito, que desde el 17 de octubre de 2026 (Orden 4.2) imprime esa salida y antes calculaba esta
+figura. La figura ya no lleva pie: la procedencia de los datos la dice el libro.
 
 Uso:
     python figura_lo_poco_que_hay.py --selftest
@@ -53,6 +52,8 @@ def leer(ruta):
                              "las páginas con algo apuntado"),
         "una_vez":    buscar(dos, r"parejas con un solo palito en todo el libro\s+([\d.]+)",
                              "las parejas con un solo palito"),
+        "repetidas_txt": buscar(dos, r"páginas con más de un palito\s+([\d.]+)",
+                                "las páginas con más de un palito"),
         "pc_una_vez": buscar(dos, r"las de un solo palito\s*([\d,]+) %",
                              "el porcentaje de las de un solo palito"),
         "quijotes2":  buscar(dos, r"palabra en cada página\s+([\d.]+)",
@@ -65,7 +66,7 @@ def leer(ruta):
         "veces_mas":  buscar(t, r"trozos distintos \(palabras y \d+ signos\)\s+([\d.]+)",
                              "los trozos distintos"),
     }
-    d["repetidas"] = numero(d["ocupadas"]) - numero(d["una_vez"])
+    d["repetidas"] = numero(d["repetidas_txt"])
     d["pc_repetidas"] = 100 * d["repetidas"] / numero(d["ocupadas"])
     return d
 
@@ -76,7 +77,7 @@ def dibujar(d, paleta, ruta):
     L = Lienzo("Y lo poco que hay, casi no se repite",
                "De las páginas que sí tienen algo apuntado, la mayoría tiene un solo palito.\n"
                "Y con una palabra más de memoria, la libreta se dispara.",
-               paleta, alto=4.35)
+               paleta, alto=4.13)  # sin el hueco del pie (Orden 4; era 4,35)
 
     # --- 1. de las llenas, casi todas con una sola pareja ------------------------------------
     x, y, w = L.panel(1, "Un solo palito, y nunca más", 31.0)
@@ -113,9 +114,6 @@ def dibujar(d, paleta, ruta):
             f"una palabra más de memoria cuesta {d['veces_mas']} veces más texto",
             tam=7.4, ha="center", color=p.suave)
 
-    L.pie("Los números salen de datos/salidas/casillas_vacias.txt, medidos sobre el Quijote. El\n"
-          f"calculado aquí: {miles(d['repetidas'])} = {d['ocupadas']} − {d['una_vez']}. Las "
-          f"{d['veces_mas']} veces son los trozos distintos del libro.")
     L.guardar(ruta)
     return ruta
 
@@ -141,7 +139,7 @@ def selftest():
         fallos.append("test nulo: leer() no revienta sin la sección de tres palabras")
 
     # 2. SEÑAL IMPLANTADA — cada número leído está, escrito igual, en la salida.
-    leidos = [d[k] for k in ("ocupadas", "una_vez", "pc_una_vez", "quijotes2", "quijotes3",
+    leidos = [d[k] for k in ("ocupadas", "una_vez", "repetidas_txt", "pc_una_vez", "quijotes2", "quijotes3",
                              "veces_mas")]
     fuera = [v for v in leidos if v not in crudo]
     print(f"[2] señal implantada  {len(leidos) - len(fuera)} de {len(leidos)} números leídos "

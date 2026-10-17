@@ -58,7 +58,7 @@ def pagina_de_la_salida(texto):
 
 def alto_necesario(renglones):
     """Pulgadas de alto que pide la figura con `renglones` líneas más el total, en una columna."""
-    unidades = (4 + 6.2 + 4.0 + 1.5) + 1.0 + (9.5 + (renglones + 1) * ALTO_RENGLON + 1.5) + 8.0
+    unidades = (4 + 6.2 + 4.0 + 1.5) + 1.0 + (9.5 + (renglones + 1) * ALTO_RENGLON + 1.5) + 4.0   # 4,0 de margen abajo; con el pie eran 8,0 (Orden 4)
     return math.ceil(unidades / 100 * ANCHO_PAGINA * 100) / 100
 
 
@@ -81,8 +81,6 @@ def dibujar(pag, paleta, ruta):
         L.texto(x_fin, y, miles(n), tam=7.6, ha="right")
     L.texto(x_texto, ys[-1], "en total", tam=7.2, color=paleta.suave)
     L.texto(x_fin, ys[-1], miles(sum(n for _, n in pag)), tam=7.6, ha="right", negrita=True)
-    L.pie("Las cuentas salen de contar el Quijote entero, y coinciden con la tabla de\n"
-          "datos/salidas/pagina_el_caballero.txt.")
     L.guardar(ruta)
     return ruta, pintados
 

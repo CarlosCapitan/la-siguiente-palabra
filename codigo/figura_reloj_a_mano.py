@@ -25,7 +25,7 @@ Uso:
 
 SALIDA = "../datos/salidas/reloj_a_mano.txt"
 DESTINO = "../figuras/reloj_a_mano.png"
-ALTO = 4.15                      # pulgadas (caben 6,55)
+ALTO = 3.98                      # pulgadas (caben 6,55; sin el hueco del pie, Orden 4; era 4,15)
 
 # ==========================================================
 
@@ -170,8 +170,6 @@ def dibujar(d, paleta, ruta):
             L.texto(c, yc - 1.0, puntos(t), ha="center", tam=6.8)
             L.texto(c, yc - 3.4, "pasa" if pasa else "no pasa", ha="center", tam=6.4,
                     color=p.tinta if pasa else p.suave, negrita=pasa)
-    L.pie("Pesos puestos a mano para enseñar la cuenta, comprobados con los diez dígitos del reloj.\n"
-          "No los ha encontrado una máquina, y no son una medición con dígitos escritos a mano.")
     L.guardar(ruta)
 
 

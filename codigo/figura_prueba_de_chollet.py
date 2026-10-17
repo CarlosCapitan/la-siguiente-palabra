@@ -22,7 +22,7 @@ Uso:
 
 DATOS = "../datos/arc_25ff71a9.json"
 DESTINO = "../figuras/prueba_de_chollet.png"
-ALTO = 3.9                 # pulgadas
+ALTO = 3.75                # pulgadas (sin el hueco del pie, Orden 4; era 3,9)
 EJEMPLOS = 3               # cuántos pares de ejemplo se dibujan
 LADO = 3.6                 # lado de una casilla, en unidades del lienzo
 
@@ -92,8 +92,6 @@ def dibujar(ejemplos, nueva, paleta, ruta):
                 "¿después?", tam=7.4, color=p.suave)
         dibujadas += 1
         y -= h + 4.5
-    L.pie(f"Ejercicio 25ff71a9 del conjunto público de la prueba (Chollet, 2019), que trae {EN_LETRA[len(ejemplos)]}\n"
-          f"ejemplos; aquí van {EN_LETRA[EJEMPLOS]}. En el original las casillas llevan colores; aquí, gris oscuro.")
     L.guardar(ruta)
     return dibujadas
 
