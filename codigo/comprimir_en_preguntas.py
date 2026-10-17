@@ -86,7 +86,7 @@ def bloques(a, c12):
     filas.append(["**en total**"] + [f"**{x} de 30**" for x in tot])
     t1 = tabla_editorial(
         "La batería del capítulo 11 con tres máquinas", ["tarea"] + ROTULOS_1, filas, "iddd",
-        ["Cada casilla: cuántas de las 5 preguntas de la tarea acierta. 7.000M, 32.000M: "
+        ["Cada número: cuántas de las 5 preguntas de la tarea acierta. 7.000M, 32.000M: "
          "millones de números (nominal).",
          "Comprimido: guardado con menos detalle en cada número. Sin comprimir: tal como salió "
          "del entrenamiento. Las tres máquinas están adiestradas (capítulo 12)."])
@@ -122,7 +122,7 @@ def selftest():
     finally:
         os.unlink(fh.name)
     print("[1] test nulo         un 0,5 no se deja convertir en aciertos de 5")
-    # 2. SEÑAL — la casilla que el capítulo comenta: el 32.000M acierta 0 de 5 en «saber cosas
+    # 2. SEÑAL — el número que el capítulo comenta: el 32.000M acierta 0 de 5 en «saber cosas
     #    del mundo», y el 7.000M sin comprimir y el adiestrado del 12 difieren en dos filas.
     _, tot, (t12, t13) = bloques(a, c12)
     cambian = [t for t in TAREAS if c12[t] != a[t][0]]
@@ -130,7 +130,7 @@ def selftest():
     print(f"[2] señal             32.000M en «datos del mundo»: {a['datos del mundo'][2]} de 5; "
           f"cambian: {cambian}")
     if not ok:
-        fallos.append("señal: no salen la casilla del cero ni las dos filas que cambian")
+        fallos.append("señal: no salen el número del cero ni las dos filas que cambian")
     # 3. INVARIANTE — el total en preguntas es la media del csv por treinta.
     medias = {}
     with open(AQUI / CSV_COMPRIMIR, encoding="utf-8") as fh:
