@@ -1,22 +1,23 @@
 ########## prólogo: el kilobyte del ZX81, las dos cuentas ##########
-fecha: 2026-09-17 18:20
-máquina: contenedor Linux en la nube (auditoría); la medición no depende de la máquina:
+fecha: 2026-10-17 16:17 UTC
+máquina: Darwin arm64. La medición no depende de la máquina:
 se cuentan letras de un PDF y se dividen dos números
-PDF medido: pdf/libro-completo.pdf, 104 páginas, compilado Thu Sep 17 18:10:33 2026 UTC
+PDF medido: PDF/La-siguiente-palabra-lectura.pdf, 393 páginas, compilado 2026-10-17 16:17 UTC
+página física 7: la que contiene «En la Navidad de 1983»
 
 --- selftest ---
-[1] test nulo         página vacía: cabe; de 1.024 bytes justos: cabe; una memoria consigo misma: 1 vez
-[2] señal implantada  de 1.025 bytes: NO cabe, por uno; el doble de memoria: 2 veces exactas
-[3] invariante        el cociente no cambia al medir en bytes o en kilobytes; ninguna letra ocupa menos de un byte
+[1] test nulo         página vacía: cabe; de 1.024 bytes justos: cabe; una memoria consigo misma: 1 vez; un PDF sin la frase: revienta
+[2] señal implantada  de 1.025 bytes: NO cabe, por uno; el doble de memoria: 2 veces exactas; la página con la frase, hallada por su contenido (la 4 de 5, y la partida en dos renglones)
+[3] invariante        el cociente no cambia al medir en bytes o en kilobytes; ninguna letra ocupa menos de un byte; la frase en dos páginas: revienta
 
 SELFTEST: las tres pruebas pasan.
 
 LA PÁGINA CONTRA EL KILOBYTE
 primera página impresa del prólogo, sin cabecera ni número de página
 
-  letras (incluidos espacios y saltos)             2.414
-  bytes en texto plano de un byte por letra        2.414
-  bytes en texto plano moderno (UTF-8)             2.482
+  letras (incluidos espacios y saltos)             2.412
+  bytes en texto plano de un byte por letra        2.412
+  bytes en texto plano moderno (UTF-8)             2.475
   memoria del Sinclair ZX81                        1.024
 
   ¿cabe la página en el kilobyte?                     no
