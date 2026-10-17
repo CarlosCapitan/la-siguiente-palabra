@@ -7,7 +7,7 @@
 SELFTEST: las tres pruebas pasan.
 
 ########## capítulo 1: la escalera, paso a paso ##########
-fecha: 2026-10-10 09:17 UTC
+fecha: 2026-10-17 08:35 UTC
 máquina: Darwin arm64. La medición no
 depende de la máquina: repite los sorteos de ngrama.py con su
 semilla (20260914) y sale lo mismo en cualquier ordenador
@@ -98,7 +98,7 @@ La máquina ha escrito «quijo» y tiene que sacar en un sorteo la letra siguien
 ::: tabla
 Cuántas letras pueden venir, de media, según la perilla
 
-| perilla | casillas | pueden venir, de media |
+| perilla | páginas | pueden venir, de media |
 |:--|--:|--:|
 | nada | 1 | 41,0 |
 | 1 letra | 41 | 30,8 |
@@ -106,7 +106,7 @@ Cuántas letras pueden venir, de media, según la perilla
 | 3 letras | 6.896 | 14,7 |
 | 5 letras | 103.082 | 7,7 |
 
-De media en todos los sorteos: cuántas letras distintas pueden venir en la casilla que le toca a la máquina.
+De media en todos los sorteos: cuántas letras distintas pueden venir en la página que le toca a la máquina.
 :::
 
 5. PALABRAS DEL QUIJOTE EN CADA MUESTRA

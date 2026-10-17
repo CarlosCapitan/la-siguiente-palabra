@@ -1,13 +1,13 @@
 --- selftest ---
-[1] test nulo         letras distintas tras «qu»: barajado=29  real=5; parejas de una sola vez: barajado=84 % real=74 %
+[1] test nulo         letras distintas tras «qu»: barajado=29  real=5; parejas con un solo palito: barajado=84 % real=74 %
                       «dijo don quijote» en 200.000 trozos: barajado=1  real=122
-[2] señal implantada  texto de seis palabras: 3 parejas, 1 de una sola vez, 9 casillas mirando dos palabras; «quxquxqux»: una letra detrás, 3 veces
-[3] invariante        parejas contadas = trozos menos uno (442.271); parejas vistas <= casillas; todo lo que va tras «qu» está en el alfabeto
+[2] señal implantada  texto de seis palabras: 3 parejas, 1 con un solo palito, 9 páginas mirando dos palabras; «quxquxqux»: una letra detrás, 3 veces
+[3] invariante        parejas contadas = trozos menos uno (442.271); parejas vistas <= páginas; todo lo que va tras «qu» está en el alfabeto
 
 SELFTEST: las tres pruebas pasan.
 
-########## capítulo 1: lo que no cabe en la tabla ##########
-fecha: 2026-10-09 18:42 UTC
+########## capítulo 1: lo que no cabe en la libreta ##########
+fecha: 2026-10-17 08:36 UTC
 máquina: Darwin arm64. La medición no
 depende de la máquina: cuenta letras y palabras de un fichero
 corpus: datos/quijote.txt, limpiado y troceado como en ngrama.py:
@@ -40,29 +40,29 @@ Las 32.709 veces que aparece «qu» en el Quijote.
 Símbolos distintos detrás de «qu»: 6, de los 42 que admite el programa (letras, espacio y signos de puntuación).
 :::
 
-LA TABLA DE PAREJAS DE TROZOS
-una casilla por cada pareja de trozos que podría existir
+LA LIBRETA DE PAREJAS DE TROZOS
+una página por cada pareja de trozos que podría existir
 
-  casillas posibles (trozos distintos al cuadrado)       526.794.304
-  casillas con algo dentro (parejas vistas)                 145.986
-  casillas con algo dentro, por cada cien posibles         0,0277 %
+  páginas posibles (trozos distintos al cuadrado)        526.794.304
+  páginas con algo apuntado (parejas vistas)                145.986
+  páginas con algo apuntado, por cada cien posibles        0,0277 %
 
-  una casilla con algo dentro de cada                         3.609
+  una página con algo apuntado de cada                        3.609
 
   parejas que hay dentro del libro (trozos menos uno)       442.271
   de cada cien de esas parejas, cuántas son distintas        33,0 %
 
-  parejas vistas una sola vez en todo el libro              104.231
-  de cada cien parejas vistas, las de una sola vez           71,4 %
+  parejas con un solo palito en todo el libro               104.231
+  de cada cien parejas vistas, las de un solo palito         71,4 %
 
   Quijotes de texto que harían falta para poner una sola
-  palabra en cada casilla                                    1.191
+  palabra en cada página                                     1.191
 
 SI SE MIRARAN TRES PALABRAS HACIA ATRÁS
 
-  casillas posibles                       12.090.982.865.408
+  páginas posibles                        12.090.982.865.408
   Quijotes de texto que harían falta para poner una sola
-  palabra en cada casilla                       27.338.341
+  palabra en cada página                        27.338.341
 
   libros publicados en el mundo según Google (2010,
   ediciones, no obras; constante, no medido aquí)     129.864.880
