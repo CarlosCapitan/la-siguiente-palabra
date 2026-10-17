@@ -1,13 +1,13 @@
 --- selftest ---
 [1] test nulo         letras posibles mirando 2 / sin mirar: barajado=0,83  real=0,47
-[2] señal implantada  casilla «wñ»: {'k': 300}
-[3] invariante        muestras repetidas iguales a las de ngrama.txt: 7 de 7; letras que salieron sin estar en su casilla: 0
+[2] señal implantada  página «wñ»: {'k': 300}
+[3] invariante        muestras repetidas iguales a las de ngrama.txt: 7 de 7; letras que salieron sin estar en su página: 0
 [3] invariante        muestra de 1 letra: 12 palabras del Quijote en 40 trozos (casillas_vacias.txt dice 12 en 40)
 
 SELFTEST: las tres pruebas pasan.
 
 ########## capítulo 1: la escalera, paso a paso ##########
-fecha: 2026-10-17 08:35 UTC
+fecha: 2026-10-17 08:59 UTC
 máquina: Darwin arm64. La medición no
 depende de la máquina: repite los sorteos de ngrama.py con su
 semilla (20260914) y sale lo mismo en cualquier ordenador
@@ -57,7 +57,7 @@ Los 6 primeros sorteos con la perilla en 2 letras
 | «xto có» | «có» | 10 | espacio, 43 % | «m» |
 | «xto cóm» | «óm» | 5 | «o», 80 % | «o» |
 
-Mira: las dos últimas letras escritas, que dicen a qué casilla va. Pueden venir: cuántas letras distintas hay en esa casilla. La que más sale: y cuántas veces de cada cien.
+Mira: las dos últimas letras escritas, que dicen a qué página va. Pueden venir: cuántas letras distintas hay en esa página. La que más sale: y cuántas veces de cada cien.
 
 Escrito al final: «xto cómo».
 :::

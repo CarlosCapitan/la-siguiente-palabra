@@ -383,7 +383,7 @@ def bloque_otros_valores(filas):
          "C: a la meta", "D: al letrero"],
         [[pon(a), pon(g)] + [str(c[k]) for k in MONTAJES] for a, g, c in filas], "dddddd",
         [f"Parte del camino: cuánto sube o baja el número hacia lo que vino detrás (0,5 es «a "
-         f"medio camino»; 0,1, una décima parte). Un paso más lejos: por cuánto se multiplica. Cada casilla, cuántas de las "
+         f"medio camino»; 0,1, una décima parte). Un paso más lejos: por cuánto se multiplica. Cada número, cuántas de las "
          f"{len(SEMILLAS)} tablas acaban ahí, tras {miles(PARTIDAS)} partidas.",
          f"En la fila de {pon(ALFA)} y {pon(GAMMA)} están los valores del resto del apartado."])
 

@@ -34,7 +34,8 @@ RENGLONES = 7                   # seis letras como máximo, y el total
 ALTO_RENGLON = 6.6              # unidades del lienzo
 ANCHO_HOJA = 44.0
 
-NOTA = ["demasiados palitos", "para dibujarlos:", "van contados"]
+NOTA = "demasiados palitos para dibujarlos: van contados"   # debajo de la hoja de «qu», no dentro
+TAM_NOTA = 6.4                  # cuerpo de la nota; en una línea si cabe al ancho de la hoja
 
 # Selftest
 MINI = "xtaxtaxte"              # contado a mano: detrás de «xt», dos «a» y una «e»
@@ -72,6 +73,24 @@ def contar(secuencia, par):
     return C.tras(secuencia, par)
 
 
+def ancho_texto(L, s, tam):
+    """Lo que mide `s` de ancho, en unidades del lienzo, a ese cuerpo."""
+    t = L.ax.text(0, 0, s, fontsize=tam)
+    ancho_px = t.get_window_extent(L.fig.canvas.get_renderer()).width
+    t.remove()
+    return ancho_px / (L.fig.get_size_inches()[0] * L.fig.dpi) * 100
+
+
+def poner_nota(L, x, y_base, ancho):
+    """La nota de la hoja contada, debajo de ella y fuera de las filas: en una línea si cabe al
+    ancho de la hoja; si no, en dos, partida en los dos puntos. Devuelve cuántas líneas."""
+    lineas = [NOTA] if ancho_texto(L, NOTA, TAM_NOTA) <= ancho else NOTA.split(": ")
+    for k, linea in enumerate(lineas):
+        L.texto(x + 1.0, y_base - 3.0 - 3.0 * k, linea + (":" if k < len(lineas) - 1 else ""),
+                tam=TAM_NOTA, color=L.p.suave)
+    return len(lineas)
+
+
 def dibujar_pagina(L, x, y_tope, par, cuentas, dibujar):
     """Una hoja con el título `par` y, en cada renglón, la letra, sus palitos (si `dibujar`) y su
     número. `cuentas` es [(letra, n)]. Devuelve los palitos dibujados."""
@@ -87,8 +106,7 @@ def dibujar_pagina(L, x, y_tope, par, cuentas, dibujar):
             pintados += n
         L.texto(x_fin, y, miles(n), tam=8.2, ha="right")
     if not dibujar:
-        for linea, y in zip(NOTA, ys[1:4]):
-            L.texto(x_texto + 6.5, y, linea, tam=6.4, color=L.p.suave)
+        poner_nota(L, x, y_base, ANCHO_HOJA)
     L.texto(x_texto, ys[-1], "en total", tam=7.4, color=L.p.suave)
     L.texto(x_fin, ys[-1], miles(sum(n for _, n in cuentas)), tam=8.2, ha="right", negrita=True)
     return pintados, y_base
@@ -170,6 +188,15 @@ def selftest():
     if max(xt.values()) > MAXIMO_DIBUJABLE or max(qu.values()) <= MAXIMO_DIBUJABLE:
         fallos.append("invariante: la página de «xt» debía caber dibujada y la de «qu» no")
     dibujar(secuencia, GRIS, "/dev/null")      # sus asserts cuentan los palitos
+    L = Lienzo("prueba", "", GRIS, alto=4.10)
+    ancho_nota = ancho_texto(L, NOTA, TAM_NOTA)
+    lineas_nota = poner_nota(L, 52.0, 30.0, ANCHO_HOJA)
+    plt.close(L.fig)
+    ancho_txt = f"{ancho_nota:.1f}".replace(".", ",")
+    print(f"[3] invariante        la nota mide {ancho_txt} de {ANCHO_HOJA:.0f} unidades de hoja: "
+          f"va en {lineas_nota} línea{'s' if lineas_nota > 1 else ''}, debajo de la hoja")
+    if lineas_nota > 2 or (ancho_nota <= ANCHO_HOJA) != (lineas_nota == 1):
+        fallos.append(f"invariante: la nota mide {ancho_txt} y sale en {lineas_nota} líneas")
 
     print()
     if fallos:

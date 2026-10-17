@@ -152,7 +152,7 @@ Lo mismo, con otros valores en las dos cuentas
 | 0,9 | 0,95 | 20 | 20 | 20 | 20 |
 | 0,9 | 0,99 | 20 | 20 | 20 | 20 |
 
-Parte del camino: cuánto sube o baja el número hacia lo que vino detrás (0,5 es «a medio camino»; 0,1, una décima parte). Un paso más lejos: por cuánto se multiplica. Cada casilla, cuántas de las 20 tablas acaban ahí, tras 2.000 partidas.
+Parte del camino: cuánto sube o baja el número hacia lo que vino detrás (0,5 es «a medio camino»; 0,1, una décima parte). Un paso más lejos: por cuánto se multiplica. Cada número, cuántas de las 20 tablas acaban ahí, tras 2.000 partidas.
 
 En la fila de 0,5 y 0,95 están los valores del resto del apartado.
 :::
