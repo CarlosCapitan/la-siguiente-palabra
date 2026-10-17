@@ -7,9 +7,14 @@ El prólogo hace dos afirmaciones con número y ninguna tenía un programa detr�
   (a) «Tenía un kilobyte de memoria. Un kilobyte: esta página que estás leyendo,
       en texto plano, no cabría entera.»
 
-      Se mide la página de verdad: la primera página impresa del prólogo, tal como
-      sale del PDF compilado, sin la cabecera ni el número de página, que el lector
-      no cuenta como texto de la página.
+      Se mide la página de verdad: la primera página impresa del texto del prólogo, tal
+      como sale del PDF de lectura recién construido, sin la cabecera ni el número de
+      página, que el lector no cuenta como texto de la página. Y se encuentra por lo que
+      dice, no por su número: desde el 17 de octubre de 2026 el prólogo empieza con una
+      página de entrada, una en blanco y el texto en la impar de después, y el número
+      cambia cada vez que cambia la maquetación. La página es la que contiene la frase
+      «En la Navidad de 1983» (ANCLA); si no sale en ninguna, o sale en dos, el programa
+      revienta.
 
   (b) «Aquel ZX81 tenía un kilobyte. El portátil donde se han hecho las mediciones
       de este libro tiene treinta y seis mil millones de bytes. Es treinta y seis
@@ -26,6 +31,8 @@ impresa, la que el lector tiene delante. En el Markdown no hay páginas. Si el l
 se recompone y el prólogo pasa a ocupar otra cantidad de página, esta medición cambia
 con él, que es justo lo que se quiere.
 """
+import datetime
+import platform
 import re
 import subprocess
 import sys
@@ -34,10 +41,11 @@ from pathlib import Path
 from formato import ANCHO_CAJA, coma, comprobar_ancho, miles
 
 AQUI = Path(__file__).resolve().parent
-# Todos los PDF del libro viven en libro-ia/PDF/ desde el 26 de septiembre de 2026. La salida
-# guardada es del 17, sobre el PDF de entonces (104 páginas): hay que volver a medir.
-PDF = AQUI / ".." / ".." / "PDF" / "La-siguiente-palabra.pdf"
-PAGINA_DEL_PROLOGO = 4          # página física; la 1 del libro, ver libro.toc
+# Todos los PDF del libro viven en libro-ia/PDF/ desde el 26 de septiembre de 2026. Se mide sobre
+# el de lectura, que lleva los borradores en curso (el prólogo de hoy), y se mide el que acaba de
+# construir construir_lectura.sh: cada vez que cambia la maquetación, se vuelve a medir.
+PDF = AQUI / ".." / ".." / "PDF" / "La-siguiente-palabra-lectura.pdf"
+ANCLA = "En la Navidad de 1983"  # con ella se encuentra la página; ya no hay un número fijo
 
 KILOBYTE_ZX81 = 1024            # bytes. Un kilobyte de 1981 son 1.024 bytes.
 KILO_DECIMAL = 1000             # bytes, la otra lectura posible
@@ -58,6 +66,26 @@ def limpiar_pagina(texto):
     while lineas and (lineas[-1].strip() == "" or re.fullmatch(r"\d+", lineas[-1].strip())):
         lineas.pop()
     return "\n".join(lineas)
+
+
+def paginas_del_pdf(pdf):
+    """El texto de cada página del PDF, de la 1 en adelante."""
+    t = subprocess.run(["pdftotext", str(pdf), "-"], capture_output=True, text=True,
+                       check=True).stdout
+    paginas = t.split("\f")
+    if paginas and paginas[-1] == "":
+        paginas.pop()
+    return paginas
+
+
+def pagina_con(paginas, ancla=ANCLA):
+    """El número de página (de 1 en adelante) cuyo texto contiene `ancla`, con los espacios y los
+    saltos de línea contados como uno. Revienta si no la encuentra o si la encuentra dos veces."""
+    junta = lambda s: re.sub(r"\s+", " ", s)
+    donde = [i for i, p in enumerate(paginas, 1) if junta(ancla) in junta(p)]
+    assert donde, f"no encuentro «{ancla}» en ninguna página del PDF"
+    assert len(donde) == 1, f"«{ancla}» sale en {len(donde)} páginas: {donde}"
+    return donde[0]
 
 
 def cabe_en(texto, limite_bytes, codificacion="utf-8"):
@@ -82,16 +110,27 @@ def selftest():
     assert vacio and justo and n_justo == 1024, (vacio, justo, n_justo)
     igual = cuantas_veces_mas(KILOBYTE_ZX81, KILOBYTE_ZX81)
     assert igual == 1.0, igual
+    for sin_ancla in ([], ["nada"], ["otra cosa", "y otra"]):
+        try:
+            pagina_con(sin_ancla)
+            assert False, "no revienta sin la frase"
+        except AssertionError as e:
+            assert "no encuentro" in str(e), e
     print("[1] test nulo         página vacía: cabe; de 1.024 bytes justos: cabe; "
-          "una memoria consigo misma: 1 vez")
+          "una memoria consigo misma: 1 vez; un PDF sin la frase: revienta")
 
     # [2] señal implantada: un byte de más tiene que verse.
     pasa, n_pasa = cabe_en("a" * 1025, KILOBYTE_ZX81)
     assert not pasa and n_pasa == 1025, (pasa, n_pasa)
     doble = cuantas_veces_mas(2 * KILOBYTE_ZX81, KILOBYTE_ZX81)
     assert doble == 2.0, doble
+    hueco = ["ÍNDICE\nPrólogo 5", "PRÓLOGO", "", f"{ANCLA} les pedí\na mis padres", "otra página"]
+    assert pagina_con(hueco) == 4, pagina_con(hueco)
+    cortada = ["x", "En la Navidad\nde 1983 les pedí"]            # la frase partida en dos renglones
+    assert pagina_con(cortada) == 2
     print("[2] señal implantada  de 1.025 bytes: NO cabe, por uno; "
-          "el doble de memoria: 2 veces exactas")
+          "el doble de memoria: 2 veces exactas; la página con la frase, hallada por su "
+          "contenido (la 4 de 5, y la partida en dos renglones)")
 
     # [3] invariante del dominio: la unidad no puede cambiar el cociente, y una
     #     letra acentuada nunca ocupa menos de un byte.
@@ -102,8 +141,13 @@ def selftest():
     acentos = "ñáéíóú"
     _, n_utf8 = cabe_en(acentos, KILOBYTE_ZX81)
     assert n_utf8 >= len(acentos), (n_utf8, len(acentos))
+    try:
+        pagina_con([f"{ANCLA} una vez", f"{ANCLA} otra vez"])
+        assert False, "no revienta con la frase en dos páginas"
+    except AssertionError as e:
+        assert "sale en 2 páginas" in str(e), e
     print("[3] invariante        el cociente no cambia al medir en bytes o en "
-          "kilobytes; ninguna letra ocupa menos de un byte")
+          "kilobytes; ninguna letra ocupa menos de un byte; la frase en dos páginas: revienta")
 
     print("\nSELFTEST: las tres pruebas pasan.\n")
 
@@ -111,18 +155,31 @@ def selftest():
 # ---- lo que se imprime -------------------------------------------------------------
 
 def main():
-    selftest()
     if "--selftest" in sys.argv:
+        selftest()
         return
 
     pdf = PDF.resolve()
     if not pdf.exists():
-        sys.exit(f"no encuentro el PDF compilado en {pdf}; compílalo antes (ver 4.11)")
-    crudo = subprocess.run(
-        ["pdftotext", "-f", str(PAGINA_DEL_PROLOGO), "-l", str(PAGINA_DEL_PROLOGO),
-         str(pdf), "-"],
-        capture_output=True, text=True, check=True).stdout
-    pagina = limpiar_pagina(crudo)
+        sys.exit(f"no encuentro el PDF de lectura en {pdf}; constrúyelo antes (construir_lectura.sh)")
+    paginas = paginas_del_pdf(pdf)
+    numero = pagina_con(paginas)
+    pagina = limpiar_pagina(paginas[numero - 1])
+    compilado = datetime.datetime.fromtimestamp(pdf.stat().st_mtime, datetime.timezone.utc)
+
+    # La cabecera de la salida guardada: qué se midió, dónde y cuándo.
+    for l in [
+        "########## prólogo: el kilobyte del ZX81, las dos cuentas ##########",
+        f"fecha: {datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M')} UTC",
+        f"máquina: {platform.system()} {platform.machine()}. La medición no depende de la máquina:",
+        "se cuentan letras de un PDF y se dividen dos números",
+        f"PDF medido: PDF/{pdf.name}, {len(paginas)} páginas, compilado "
+        f"{compilado.strftime('%Y-%m-%d %H:%M')} UTC",
+        f"página física {numero}: la que contiene «{ANCLA}»",
+        "",
+    ]:
+        print(l)
+    selftest()
 
     letras = len(pagina)
     cabe, n_utf8 = cabe_en(pagina, KILOBYTE_ZX81)
