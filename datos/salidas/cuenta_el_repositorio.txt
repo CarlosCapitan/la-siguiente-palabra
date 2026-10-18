@@ -1,13 +1,13 @@
 --- selftest ---
 [1] test nulo         una carpeta sin programas: [0, 0, 0, 0]
 [2] señal implantada  8 programas, 1 .sh y 4 salidas: [1, 2, 3, 2]; como se espera: sí
-[3] invariante        162 programas en cuatro clases (13, 59, 82, 8); de los 162 .py de codigo/, cada uno en una sola: sí
+[3] invariante        164 programas en cuatro clases (13, 60, 83, 8); de los 164 .py de codigo/, cada uno en una sola: sí
                       corpus: vacío (0, 0); tres ficheros de 10, 20 y 30 bytes (3, 60); el de verdad, 300 ficheros y 138.273.144 bytes, leídos 138.273.144
 
 SELFTEST: las tres pruebas pasan.
 
 ########## cuántos programas hay en codigo/ ##########
-fecha: 2026-10-17 21:34 UTC
+fecha: 2026-10-18 07:03 UTC
 máquina: Darwin arm64. La medición no
 depende de la máquina: cuenta ficheros
 
@@ -21,10 +21,10 @@ Programas de codigo/, por clase
 | clase | programas |
 |:--|--:|
 | verificadores | 13 |
-| programas de figuras | 59 |
-| programas de medición | 82 |
+| programas de figuras | 60 |
+| programas de medición | 83 |
 | programas que ayudan a los demás | 8 |
-| **en total** | **162** |
+| **en total** | **164** |
 
 Cada programa está en una sola clase.
 :::
@@ -43,7 +43,7 @@ VERIFICADORES (13)
   verificar_reglas, verificar_selftests, verificar_trato,
   verificar_vocabulario.
 
-PROGRAMAS DE FIGURAS (59)
+PROGRAMAS DE FIGURAS (60)
 
   figura_apilar, figura_casillas_vacias, figura_cien_papeletas,
   figura_cifra_a_cifra, figura_con_manos, figura_copias_muestra,
@@ -51,13 +51,14 @@ PROGRAMAS DE FIGURAS (59)
   figura_cuanto_ha_leido, figura_cuatro_posiciones,
   figura_cuatro_retratos, figura_culpa_hacia_atras,
   figura_dieciseis_montajes, figura_diez_digitos, figura_dos_valles,
-  figura_el_comite, figura_el_empujon, figura_el_reparto,
-  figura_el_terreno, figura_en_fila, figura_encuesta,
-  figura_la_escalera, figura_la_marca_del_sitio, figura_la_mezcla,
-  figura_la_rampa_del_ejemplo, figura_la_rampa_y_el_codo,
-  figura_la_red_del_pasillo, figura_la_salamandra,
-  figura_linea_circular, figura_lo_mal_que_lo_hace,
-  figura_lo_poco_que_hay, figura_lo_que_encuentra_en_un_paso,
+  figura_el_colegio, figura_el_comite, figura_el_empujon,
+  figura_el_reparto, figura_el_terreno, figura_en_fila,
+  figura_encuesta, figura_la_escalera, figura_la_marca_del_sitio,
+  figura_la_mezcla, figura_la_rampa_del_ejemplo,
+  figura_la_rampa_y_el_codo, figura_la_red_del_pasillo,
+  figura_la_salamandra, figura_linea_circular,
+  figura_lo_mal_que_lo_hace, figura_lo_poco_que_hay,
+  figura_lo_que_encuentra_en_un_paso,
   figura_los_dos_que_mas_se_parecen, figura_mapa_de_palabras,
   figura_maquina_del_quijote, figura_maquina_entera,
   figura_mirada_a_mano, figura_misma_direccion,
@@ -71,7 +72,7 @@ PROGRAMAS DE FIGURAS (59)
   figura_tres_fases, figura_trocear_a_mano, figura_una_capa,
   figura_una_neurona, figura_una_raya, figuras_el_comite_por_dentro.
 
-PROGRAMAS DE MEDICIÓN (82)
+PROGRAMAS DE MEDICIÓN (83)
 
   aprender_la_trampa, banco_segun_el_diccionario, banco_y_paris,
   bateria_una_a_una, casillas_vacias, cola_larga,
@@ -82,8 +83,8 @@ PROGRAMAS DE MEDICIÓN (82)
   cuantas_veces_sale, cuatro_retratos, cuenta_el_repositorio,
   cuentas_a_mano, culpa_hacia_atras, culpa_que_se_desvanece,
   de_cuando_es_la_biblioteca, de_donde_sale_cada_figura, dos_valles,
-  editar_contexto, el_comite_por_dentro, el_ocho_y_la_raya,
-  el_sorteo_del_arranque, elegir_lo_mas_probable,
+  editar_contexto, el_colegio, el_comite_por_dentro,
+  el_ocho_y_la_raya, el_sorteo_del_arranque, elegir_lo_mas_probable,
   en_que_orden_aprende, en_serie_o_a_la_vez, eres_consciente,
   es_un_cuatro, es_un_ocho_con_capa, idiomas_en_trozos,
   la_e_de_acordarme, la_misma_direccion, la_papelera_por_dentro,

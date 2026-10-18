@@ -176,7 +176,7 @@ def imprimir_perceptron(res, emitir):
     emitir(tabla_editorial(
         "Cuántas correcciones necesita el perceptrón con la edad",
         ["lo que tiene que decir", "¿se queda quieto?", "correcciones"], filas, "icd",
-        [f"El plazo es de {miles(PLAZO)} correcciones, como con el pasillo.",
+        [f"El plazo es de {miles(PLAZO)} correcciones.",
          "Se queda quieto cuando una vuelta entera no corrige nada."]))
     emitir([""])
     r = res["de 6 a 12"]
@@ -698,6 +698,20 @@ def comites_a_mano():
     return filas
 
 
+def tramos_de_edades(filas):
+    """Las edades seguidas con las mismas tres respuestas, juntas en una fila: [(primera edad,
+    última edad, (respuesta 1, respuesta 2, respuesta 3))]. Revienta si no salen exactamente tres."""
+    tramos = []
+    for e, a, b, _, c, _ in filas:
+        r = tuple("sí" if x else "no" for x in (a, b, c))
+        if tramos and tramos[-1][2] == r and tramos[-1][1] == e - 1:
+            tramos[-1] = (tramos[-1][0], e, r)
+        else:
+            tramos.append((e, e, r))
+    assert len(tramos) == 3, f"Se esperaban exactamente tres filas de edades; hay {len(tramos)}: {tramos}"
+    return tramos
+
+
 def imprimir_comites(emitir):
     filas = comites_a_mano()
     emitir(["--- d) LOS TRES COMITÉS A MANO ---", ""])
@@ -716,6 +730,12 @@ def imprimir_comites(emitir):
         [[str(e), "sí" if a else "no", "sí" if b else "no", str(ll), "sí" if c else "no",
           "sí" if d else "no"] for e, a, b, ll, c, d in filas], "idddcc",
         [f"El programa comprueba las 13: acierta {sum(f[4] == f[5] for f in filas)} de 13."]))
+    emitir([""])
+    emitir(tabla_editorial(
+        "Los tres comités del colegio",
+        ["la edad", "¿al menos seis?", "¿como mucho doce?", "¿entra?"],
+        [[f"de {t[0]} a {t[1]}", *t[2]] for t in tramos_de_edades(filas)], "iccc",
+        ["El tercero dice que sí si los dos primeros dicen que sí."]))
     emitir([""])
 
 

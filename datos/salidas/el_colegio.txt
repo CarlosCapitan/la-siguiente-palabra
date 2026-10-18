@@ -19,7 +19,7 @@ Cuántas correcciones necesita el perceptrón con la edad
 | sí de 6 en adelante | sí | 91 |
 | sí hasta 12 | sí | 91 |
 
-El plazo es de 100.000 correcciones, como con el pasillo.
+El plazo es de 100.000 correcciones.
 
 Se queda quieto cuando una vuelta entera no corrige nada.
 :::
@@ -666,5 +666,17 @@ Las 13 edades por los tres comités
 | 15 | sí | no | 1 | no | no |
 
 El programa comprueba las 13: acierta 13 de 13.
+:::
+
+::: tabla
+Los tres comités del colegio
+
+| la edad | ¿al menos seis? | ¿como mucho doce? | ¿entra? |
+|:--|:-:|:-:|:-:|
+| de 3 a 5 | no | sí | no |
+| de 6 a 12 | sí | sí | sí |
+| de 13 a 15 | sí | no | no |
+
+El tercero dice que sí si los dos primeros dicen que sí.
 :::
 
