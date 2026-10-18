@@ -446,15 +446,15 @@ El error de decir 0,538 a todas las edades
 |  | cuánto |
 |:--|--:|
 | lo que falla en cada una de las 7 que entran | 0,462 |
-| por sí mismo | 0,2130 |
-| 7 veces | 1,4911 |
+| por sí mismo | 0,2134 |
+| 7 veces | 1,4938 |
 | lo que falla en cada una de las 6 que no entran | 0,538 |
-| por sí mismo | 0,2899 |
-| 6 veces | 1,7396 |
+| por sí mismo | 0,2894 |
+| 6 veces | 1,7364 |
 | **entre las trece: el error** | **0,2485** |
 | el error medido, de las que se quedan así | 0,2485 |
 
-Es el error de la mejor respuesta sin distinguir ninguna edad: la proporción de las que entran, 7 de 13. 6 de las 29 se quedan así.
+Es el error de la mejor respuesta sin distinguir ninguna edad: la proporción de las que entran, 7 de 13. Cada fila sale de los números de las de encima, tal como se ven; el error es la suma de las dos veces, entre 13. 6 de las 29 se quedan así.
 :::
 
 ::: tabla

@@ -163,6 +163,22 @@ def decimales_iguales_impresos(a, b, decimales=DECIMALES_IMPRESOS):
     return n
 
 
+def cuenta_con_lo_impreso(p, entran, fuera, decimales_p=3, decimales=4):
+    """La cuenta del error de decir `p` a todas las edades, con cada fila hecha a partir de los números
+    tal como se imprimen en la fila de encima, para que el lector la rehaga con una calculadora: lo que
+    falla (1 − p, con `p` redondeado a `decimales_p`), por sí mismo (su cuadrado, a `decimales`), tantas
+    veces como edades, y lo mismo para las que no entran; el error, la suma de las dos entre las trece.
+    Devuelve las cifras de cada fila y el error. (Antes «por sí mismo» salía del 6/13 sin redondear y
+    con el 0,462 que se veía daba 0,2134 y no 0,2130; Orden 23.)"""
+    p = round(p, decimales_p)
+    falla_si, falla_no = round(1 - p, decimales_p), p
+    por_si, por_no = round(falla_si ** 2, decimales), round(falla_no ** 2, decimales)
+    veces_si, veces_no = round(entran * por_si, decimales), round(fuera * por_no, decimales)
+    error = (veces_si + veces_no) / (entran + fuera)
+    return dict(p=p, falla_si=falla_si, por_si=por_si, veces_si=veces_si, falla_no=falla_no,
+                por_no=por_no, veces_no=veces_no, error=error)
+
+
 def error_a_mano(dice_por_edad):
     """El error de una red que dice lo mismo a un grupo de edades, construido a mano: para cada
     grupo (edades, lo que dice) la suma de lo que falla por sí mismo; entre las trece."""
@@ -501,18 +517,25 @@ def bloque_e(resultados, red_capitulo_mal):
         p2 = float(np.mean(Y))
         a_mano2 = error_a_mano([p2] * len(Y))
         if abs(a_mano2 - np.mean(medido2)) < TOL_MANO:
+            e = int(sum(Y))
+            n = int(len(Y) - sum(Y))
+            c = cuenta_con_lo_impreso(p2, e, n)
+            assert coma(c["error"], 4) == coma(a_mano2, 4), \
+                f"la cuenta con lo impreso ({c['error']}) no da el error a mano ({a_mano2})"
             tabla(tabla_editorial(
-                f"El error de decir {coma(p2, 3)} a todas las edades", ["", "cuánto"],
-                [[f"lo que falla en cada una de las {int(sum(Y))} que entran", coma(1 - p2, 3)],
-                 ["por sí mismo", coma((1 - p2) ** 2, 4)],
-                 [f"{int(sum(Y))} veces", coma(sum(Y) * (1 - p2) ** 2, 4)],
-                 [f"lo que falla en cada una de las {int(len(Y) - sum(Y))} que no entran", coma(p2, 3)],
-                 ["por sí mismo", coma(p2 ** 2, 4)],
-                 [f"{int(len(Y) - sum(Y))} veces", coma((len(Y) - sum(Y)) * p2 ** 2, 4)],
-                 ["**entre las trece: el error**", f"**{coma(a_mano2, 4)}**"],
+                f"El error de decir {coma(c['p'], 3)} a todas las edades", ["", "cuánto"],
+                [[f"lo que falla en cada una de las {e} que entran", coma(c["falla_si"], 3)],
+                 ["por sí mismo", coma(c["por_si"], 4)],
+                 [f"{e} veces", coma(c["veces_si"], 4)],
+                 [f"lo que falla en cada una de las {n} que no entran", coma(c["falla_no"], 3)],
+                 ["por sí mismo", coma(c["por_no"], 4)],
+                 [f"{n} veces", coma(c["veces_no"], 4)],
+                 ["**entre las trece: el error**", f"**{coma(c['error'], 4)}**"],
                  ["el error medido, de las que se quedan así", rango(medido2)]], "id",
                 [f"Es el error de la mejor respuesta sin distinguir ninguna edad: la proporción de las "
-                 f"que entran, {int(sum(Y))} de {len(Y)}. {len(rs2)} de las {len(siguen)} se quedan así."]))
+                 f"que entran, {e} de {len(Y)}. Cada fila sale de los números de las de encima, tal como "
+                 f"se ven; el error es la suma de las dos veces, entre {len(Y)}. {len(rs2)} de las "
+                 f"{len(siguen)} se quedan así."]))
     # los pasos en que falla alguna edad, en la red del capítulo, después de 7.500
     despues = [(p_, m_) for p_, m_ in red_capitulo_mal.items() if p_ > PASO_DESDE and m_]
     tabla(tabla_editorial(
@@ -657,6 +680,16 @@ def selftest():
     otra = C.copia(red)
     otra.W[1][0, 0] = red.W[1][0, 0]
     dif_terreno = abs(otra.error(X, Y) - red.error(X, Y))
+    c538 = cuenta_con_lo_impreso(7 / 13, 7, 6)
+    rehecha = round(round(7 * round(0.462 ** 2, 4), 4) + round(6 * round(0.538 ** 2, 4), 4), 4) / 13
+    print(f"[3] invariante        la cuenta de 0,538 con lo impreso: {coma(c538['falla_si'], 3)}, "
+          f"{coma(c538['por_si'], 4)}, {coma(c538['veces_si'], 4)}; {coma(c538['falla_no'], 3)}, "
+          f"{coma(c538['por_no'], 4)}, {coma(c538['veces_no'], 4)}; error {coma(c538['error'], 4)}, y "
+          f"rehecha a mano {coma(rehecha, 4)}")
+    if (coma(c538["falla_si"], 3), coma(c538["por_si"], 4), coma(c538["veces_si"], 4)) != ("0,462", "0,2134", "1,4938") \
+            or (coma(c538["por_no"], 4), coma(c538["veces_no"], 4)) != ("0,2894", "1,7364") \
+            or coma(c538["error"], 4) != "0,2485" or coma(rehecha, 4) != coma(c538["error"], 4):
+        fallos.append("invariante: la cuenta del 0,538 con lo impreso no sale como se rehace a mano")
     cuentan = (decimales_iguales_impresos(-0.5935879966, -0.5935879967),
                decimales_iguales_impresos(0.2266538661, 0.2266538661),
                decimales_iguales_impresos(-2.8720379865, -2.8720379841),
