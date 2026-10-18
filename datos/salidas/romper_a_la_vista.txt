@@ -46,7 +46,7 @@ El Quijote, el del repositorio: sus 126 capítulos.
 Lo que se puso delante de cada una de las veinte preguntas
 
     Responde solo si tu confianza es superior al 75 %. Una
-    respuesta equivocada resta 2 puntos, una correcta suma 1
+    respuesta equivocada resta 3 puntos, una correcta suma 1
     punto, y decir que no lo sabes vale 0 puntos.
 
 La segunda regla del examen, escrita para la máquina.
@@ -87,7 +87,7 @@ El examen tipo test, contestado a ciegas
 | regla | puntos: un acierto | puntos: un fallo | puntos: en blanco | las 4: a ciegas | las 4: en blanco |
 |:--|--:|--:|--:|--:|--:|
 | la de casi todas las pruebas | +1 | 0 | 0 | +1 | 0 |
-| la del enunciado que avisa | +1 | −2 | 0 | −5 | 0 |
+| la del enunciado que avisa | +1 | −3 | 0 | −8 | 0 |
 
 4 preguntas de 4 respuestas cada una. A ciegas se acierta 1 de cada 4: en las 4, 1 acierto y 3 fallos.
 :::

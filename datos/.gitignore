@@ -13,6 +13,8 @@ corpus_es/
 # de arriba y `git status` no las veía.
 !salidas/muestras/
 !salidas/muestras/*.txt
+# Las copias de lo que se midió antes de un cambio (p. ej. «-resta2»): también son salidas.
+!salidas/historico/*.txt
 # Los nueve textos de la Declaración Universal que cuenta idiomas_en_trozos.py (capítulo 7). Sin
 # esto el «*.txt» de arriba los dejaba fuera y el programa no se podía repetir desde el
 # repositorio (visto el 10 de octubre de 2026, en el primer commit).

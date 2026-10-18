@@ -59,6 +59,7 @@ Loading weights: 100%|██████████| 339/339 [00:00<00:00, 6446
   columnas: a qué profundidad del texto se escondió la frase.
   «sí»: la encontró.
 
+Este apartado D se midió el 19 de octubre de 2026 con --solo D.
 --- D. Veinte preguntas sin respuesta posible ---
   enunciado normal       se abstiene en 13 de 20 (65 %)
     ejemplo de respuesta inventada: ¿En qué río desemboca el arroyo de Peñaflor de Alcorbe?

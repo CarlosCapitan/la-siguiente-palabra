@@ -42,10 +42,13 @@ TASA_TEXTO = 2e-3
 # diferencia no es cosmética: es la que decide si lo que sale en el libro se puede reproducir.
 #
 # Este guion acotaba por tiempo, y el reloj es lo único de este entrenamiento que no es
-# determinista: la semilla fija el modelo inicial y el orden de los lotes, así que el modelo en
-# el paso N es SIEMPRE el mismo, en cualquier máquina. Acotando por minutos, en cambio, cada
-# ordenador para en un paso distinto y escribe un texto distinto, y las tres muestras del
-# capítulo 6 dejan de ser reproducibles por nadie, ni por su autor. Fallo 4.36.
+# determinista EN EL PROCESADOR: la semilla fija el modelo inicial y el orden de los lotes, así
+# que en el procesador el modelo en el paso N es siempre el mismo (medido en un Mac: dos tiradas
+# coinciden bit a bit hasta el paso 300). En la tarjeta (mps) no: dos tiradas con la misma
+# semilla se separan desde el paso 1 (6·10⁻⁸ de diferencia en los pesos), y en el 300 ya
+# difieren en 0,4; ver `la_misma_semilla.py`. Acotando por minutos, además, cada ordenador para
+# en un paso distinto y escribe un texto distinto, y las tres muestras del capítulo 6 dejan de
+# ser reproducibles por nadie, ni por su autor. Fallo 4.36.
 #
 # El número es el de la tirada que produjo las muestras que están impresas: 19.948 pasos, que en
 # el portátil del autor fueron veintidós minutos. Ahora son 19.948 pasos en cualquier sitio, y
@@ -207,8 +210,9 @@ class RedTexto(nn.Module):
 def entrenar_texto(datos, vocabulario, pasos_pedidos, semilla=SEMILLA):
     """Entrena `pasos_pedidos` pasos y devuelve también cuánto tardó en ESTA máquina.
 
-    Los pasos son el dato —con la semilla fija, el modelo en el paso N es el mismo en cualquier
-    ordenador— y los segundos son de aquí, y por eso se etiquetan como tales.
+    Los pasos son el dato —con la semilla fija, en el procesador el modelo en el paso N es el
+    mismo, tirada tras tirada; en la tarjeta (mps) dos tiradas se separan desde el paso 1, ver
+    `la_misma_semilla.py`— y los segundos son de aquí, y por eso se etiquetan como tales.
 
     `semilla` se parametriza (antes estaba fija a SEMILLA en las dos líneas de abajo) para que
     `escribir_muestras.py` pueda entrenar varias tiradas con semillas distintas sin duplicar

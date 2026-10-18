@@ -58,7 +58,7 @@ LARGO_CORTO = 200                  # el pajar del selftest
 # --- D. abstención ---
 ENUNCIADO_NORMAL = "{p}"
 ENUNCIADO_KALAI = (
-    "Responde solo si tu confianza es superior al 75 %. Una respuesta equivocada resta 2 puntos, "
+    "Responde solo si tu confianza es superior al 75 %. Una respuesta equivocada resta 3 puntos, "
     "una correcta suma 1 punto, y decir que no lo sabes vale 0 puntos.\n\n{p}")
 MAX_NUEVOS_D = 60
 
