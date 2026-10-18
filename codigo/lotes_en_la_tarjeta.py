@@ -75,6 +75,19 @@ def os_forzar_cpu_no():
     return os.environ.get("FORZAR_CPU") != "1"
 
 
+def calentar_la_tarjeta():
+    """Una pasada de cada máquina con 64 posiciones, que se tira. La primera llamada de un proceso
+    nuevo a la tarjeta tarda un 50 % más que las siguientes aunque `cronometrar` ya calienta una vez
+    (medido el 19 oct 2026: 7,2 ms la primera vez con 64 posiciones y lote 16, y 4,7 ms las demás), y
+    sin esto esa sobrecarga caería en la primera casilla de la tabla. No cambia nada de lo que se mide."""
+    E.ANCHO, E.LOTE = ANCHOS[0], LOTES[0]
+    torch.manual_seed(E.SEMILLA)
+    for modelo in (E.EnSerie(E.ANCHO).to(E.DISPOSITIVO),
+                   E.ALaVez(E.ANCHO, E.CABEZAS).to(E.DISPOSITIVO)):
+        E.cronometrar(modelo, 64, 1)
+        E.cronometrar(modelo, 64, 1)
+
+
 def sin_memoria(error):
     """¿Es el error de falta de memoria de la tarjeta?"""
     return isinstance(error, RuntimeError) and MARCA_SIN_MEMORIA in str(error).lower()
@@ -156,6 +169,7 @@ def selftest():
 
     # 1. TEST NULO — la misma máquina contra sí misma no tiene ventaja: la que lee en orden, medida
     #    dos veces seguidas, da una razón de 1,0 con un margen del 30 %.
+    calentar_la_tarjeta()
     E.ANCHO, E.LOTE = 256, 16
     torch.manual_seed(E.SEMILLA)
     serie = E.EnSerie(256).to(E.DISPOSITIVO)
@@ -230,6 +244,7 @@ def main():
             f"python {platform.python_version()}, torch {torch.__version__}",
             f"se usa la tarjeta ({E.DISPOSITIVO}, con sincronización).",
             "Los tiempos solo valen en este portátil.", ""])
+    calentar_la_tarjeta()
     r = {}
     for ancho in ANCHOS:
         for lote in LOTES:
