@@ -1,0 +1,297 @@
+######## el colegio con la edad en años (Orden 19) ########
+fecha: 2026-10-18
+máquina: Darwin arm64
+python 3.12.14, numpy 2.5.3
+GPU: no se usa (todo en numpy). Nada de lo que sigue
+depende del ordenador: aciertos, recuentos y pesos.
+
+La edad entra en años, tal cual, salvo donde se dice.
+Las semillas, las 200 de la Orden 15.
+
+--- POR QUÉ SE ATASCAN ---
+
+Con la edad en años: 54 lo resuelven y 146 no.
+Con la edad en decenas: 171 lo resuelven y 29 no.
+
+::: tabla
+Neuronas de en medio pegadas, al acabar los 20.000 pasos
+
+|  | años: no lo resuelven | años: sí | decenas: no lo resuelven |
+|:--|--:|--:|--:|
+| 0 neuronas pegadas | 123 | 54 | 29 |
+| 1 neuronas pegadas | 22 | 0 | 0 |
+| 2 neuronas pegadas | 1 | 0 | 0 |
+| **redes** | **146** | **54** | **29** |
+
+Pegada: dice menos de 0,01 o más de 0,99 a las trece edades (dice lo mismo a todo el mundo).
+
+Los ajustes son los de la Orden 15: poquito 0,5 y 20.000 pasos.
+:::
+
+::: tabla
+Neuronas de en medio pegadas, de las 400, a lo largo del entrenamiento
+
+|  | al empezar | a los 500 pasos | a los 20.000 |
+|:--|--:|--:|--:|
+| la edad en años | 0 | 0 | 24 |
+| la edad en decenas | 0 | 0 | 0 |
+
+Doscientas redes por dos neuronas: 400. Los ajustes son los de la Orden 15.
+:::
+
+::: tabla
+Qué edades fallan las que no lo resuelven, con la edad en años
+
+| edades que fallan | redes |
+|:--|--:|
+| 13, 14, 15 | 129 |
+| 3, 4, 5, 13, 14, 15 | 6 |
+| 13 | 5 |
+| 12 | 2 |
+| 10, 11, 12 | 2 |
+| 9, 10, 11, 12 | 1 |
+| 11, 12 | 1 |
+| **redes que no lo resuelven** | **146** |
+
+Fallar: dice sí a quien no entra, o no a quien entra (lado equivocado de 0,5).
+:::
+
+::: tabla
+Qué edades fallan las que no lo resuelven, con la edad en decenas
+
+| edades que fallan | redes |
+|:--|--:|
+| 3, 4, 5, 13, 14, 15 | 24 |
+| 13, 14, 15 | 5 |
+| **redes que no lo resuelven** | **29** |
+
+Fallar: dice sí a quien no entra, o no a quien entra (lado equivocado de 0,5).
+:::
+
+::: tabla
+Lo que se mueve el peso de la edad frente al listón, en los primeros 500 pasos
+
+|  | mediana | entre el cuarto y el tres cuartos | de la menor a la mayor | neuronas |
+|:--|--:|--:|--:|--:|
+| la edad en años | 0,64 | 0,21 a 3,21 | 0,00 a 71,94 | 400 |
+| la edad en decenas | 2,62 | 1,55 a 4,14 | 0,01 a 1369,40 | 400 |
+
+Por neurona de en medio: lo que se ha movido el peso de la línea de la edad, dividido por lo que se ha movido el listón de esa neurona.
+
+Las 200 redes, con las dos neuronas de cada una; los ajustes son los de la Orden 15.
+:::
+
+--- ¿TIENE ARREGLO SIN CAMBIAR LA ENTRADA? ---
+
+::: tabla
+Cuántas de las 200 redes resuelven el colegio, con la edad en años
+
+| poquito | pasos | pesos de arranque | lo resuelven | con alguna neurona pegada |
+|:--|:--|:--|--:|--:|
+| 0,50 | 20.000 | los de ahora | 54 | 23 |
+| 0,50 | 20.000 | entre 10 | 153 | 0 |
+| 0,50 | 100.000 | los de ahora | 117 | 24 |
+| 0,50 | 100.000 | entre 10 | 170 | 3 |
+| 0,10 | 20.000 | los de ahora | 49 | 37 |
+| 0,10 | 20.000 | entre 10 | 148 | 0 |
+| 0,10 | 100.000 | los de ahora | 65 | 23 |
+| 0,10 | 100.000 | entre 10 | 159 | 0 |
+| 0,05 | 20.000 | los de ahora | 34 | 31 |
+| 0,05 | 20.000 | entre 10 | 104 | 0 |
+| 0,05 | 100.000 | los de ahora | 57 | 35 |
+| 0,05 | 100.000 | entre 10 | 152 | 0 |
+| 0,01 | 20.000 | los de ahora | 0 | 0 |
+| 0,01 | 20.000 | entre 10 | 0 | 0 |
+| 0,01 | 100.000 | los de ahora | 34 | 31 |
+| 0,01 | 100.000 | entre 10 | 104 | 0 |
+
+Pesos de arranque: «los de ahora» son los de la Orden 15 (entre −1 y 1); «entre 10», esos mismos divididos entre 10.
+
+Con alguna neurona pegada: redes (resuelvan o no) con al menos una de las dos neuronas de en medio diciendo lo mismo a las trece edades, al acabar.
+
+La fila 0,50 con 20.000 pasos y «los de ahora» es la de la Orden 15.
+:::
+
+--- LA MEJOR COMBINACIÓN ---
+
+::: tabla
+La mejor combinación
+
+|  | cuál |
+|:--|--:|
+| poquito | 0,50 |
+| pasos | 100.000 |
+| pesos de arranque | entre 10 |
+| redes que lo resuelven, de 200 | 170 |
+| con alguna neurona pegada | 3 |
+
+La que más resuelve; si empatan, la de menos pasos, y después la de poquito más grande.
+:::
+
+::: tabla
+Cuántas de las 200 redes resuelven el colegio
+
+|  | redes |
+|:--|--:|
+| arranques distintos | 200 |
+| lo resuelven (las 13 edades del lado correcto de 0,5) | 170 |
+| no lo resuelven | 30 |
+
+Las semillas, las mismas 200 de siempre; cada red, 100.000 pasos, poquito 0,50.
+:::
+
+::: tabla
+Lo que acaban haciendo las dos neuronas de en medio
+
+| una | la otra | de cada 100 | redes |
+|:--|:--|--:|--:|
+| sí desde los 6 años | sí desde los 13 años | 81 | 137 |
+| sí hasta los 5 años | sí hasta los 12 años | 19 | 33 |
+
+De 200 arranques, 170 lo resolvieron, en 2 parejas.
+
+De cada 100: de las redes que lo resolvieron.
+
+Sí desde N: dice sí (más de 0,5) desde los N años en adelante.
+
+Sí hasta N: dice sí hasta los N años.
+:::
+
+LA RED DEL CAPÍTULO (con la edad en años)
+
+::: tabla
+Cuál es la red del capítulo
+
+|  | cuál |
+|:--|--:|
+| la primera de la lista de arranques con la pareja más frecuente | la 2.ª |
+| su semilla | 318265456 |
+| una neurona de en medio | sí desde los 6 años |
+| la otra | sí desde los 13 años |
+:::
+
+::: tabla
+Los pesos y los listones de la red del capítulo
+
+| neurona | le llega la línea de | peso | listón |
+|:--|:--|--:|--:|
+| la primera | la edad | 2,570 | 14,278 |
+| la segunda | la edad | 2,142 | 26,780 |
+| la final | la primera | 14,050 | 6,604 |
+|  | la segunda | -14,955 |  |
+
+Entrenada 100.000 pasos. El listón es menos el sesgo.
+
+Lo que le llega a cada neurona de en medio es el peso por la edad.
+:::
+
+::: tabla
+Lo que dice cada neurona de en medio, edad por edad
+
+| edad | 1.ª: le llega | 1.ª: dice | 2.ª: le llega | 2.ª: dice |
+|:--|--:|--:|--:|--:|
+| 3 | 7,71 | 0,001 | 6,43 | 0,000 |
+| 4 | 10,28 | 0,018 | 8,57 | 0,000 |
+| 5 | 12,85 | 0,194 | 10,71 | 0,000 |
+| 6 | 15,42 | 0,759 | 12,85 | 0,000 |
+| 7 | 17,99 | 0,976 | 14,99 | 0,000 |
+| 8 | 20,56 | 0,998 | 17,14 | 0,000 |
+| 9 | 23,13 | 1,000 | 19,28 | 0,001 |
+| 10 | 25,70 | 1,000 | 21,42 | 0,005 |
+| 11 | 28,27 | 1,000 | 23,56 | 0,039 |
+| 12 | 30,84 | 1,000 | 25,71 | 0,255 |
+| 13 | 33,42 | 1,000 | 27,85 | 0,744 |
+| 14 | 35,99 | 1,000 | 29,99 | 0,961 |
+| 15 | 38,56 | 1,000 | 32,13 | 0,995 |
+
+Le llega: el peso por la edad, sin el listón.
+:::
+
+::: tabla
+Lo que dice la final, edad por edad
+
+| edad | le llega | dice | tendría que decir | falla |
+|:--|--:|--:|--:|--:|
+| 3 | 0,02 | 0,001 | 0 | +0,001 |
+| 4 | 0,25 | 0,002 | 0 | +0,002 |
+| 5 | 2,72 | 0,020 | 0 | +0,020 |
+| 6 | 10,66 | 0,983 | 1 | -0,017 |
+| 7 | 13,72 | 0,999 | 1 | -0,001 |
+| 8 | 14,02 | 0,999 | 1 | -0,001 |
+| 9 | 14,04 | 0,999 | 1 | -0,001 |
+| 10 | 13,98 | 0,999 | 1 | -0,001 |
+| 11 | 13,47 | 0,999 | 1 | -0,001 |
+| 12 | 10,24 | 0,974 | 1 | -0,026 |
+| 13 | 2,92 | 0,025 | 0 | +0,025 |
+| 14 | -0,32 | 0,001 | 0 | +0,001 |
+| 15 | -0,83 | 0,001 | 0 | +0,001 |
+
+Lo que falla: lo que dice menos lo que tendría que decir.
+
+Le llega: la suma de lo que dice cada una por el peso de su línea.
+:::
+
+::: tabla
+La final, si las de en medio dijeran sí o no secos
+
+| 1.ª | 2.ª | le llega | listón | pasa por | dice | → |
+|:--|:--|--:|--:|--:|--:|:-:|
+| no | no | 0,00 | 6,60 | -6,60 | 0,001 | no |
+| no | sí | -14,95 | 6,60 | -21,56 | 0,000 | no |
+| sí | no | 14,05 | 6,60 | +7,45 | 0,999 | sí |
+| sí | sí | -0,90 | 6,60 | -7,51 | 0,001 | no |
+
+Un sí seco es un 1 y un no seco es un 0.
+
+Pasa por: lo que le llega menos el listón. Dice sí si es positivo.
+:::
+
+::: tabla
+Edades del lado equivocado de 0,5, cada 500 pasos
+
+| paso | cuántas | cuáles |
+|:--|--:|:--|
+| 500 | 6 | 3, 4, 5, 13, 14, 15 |
+| 1.000 | 3 | 13, 14, 15 |
+| 1.500 | 3 | 13, 14, 15 |
+| 2.000 | 4 | 5, 13, 14, 15 |
+| 2.500 | 2 | 13, 14 |
+| 3.000 | 4 | 9, 10, 11, 12 |
+| 3.500 | 3 | 10, 11, 12 |
+| 4.000 | 1 | 13 |
+| 4.500 | 1 | 12 |
+| 5.000 | 1 | 12 |
+| 5.500 | 2 | 11, 12 |
+| 6.000 | 1 | 13 |
+| 6.500 | 2 | 11, 12 |
+| 7.000 | 1 | 13 |
+| 7.500 | 0 | ninguna |
+| 8.000 | 0 | ninguna |
+| 8.500 | 1 | 12 |
+| 9.000 | 1 | 13 |
+| 9.500 | 2 | 11, 12 |
+| 10.000 | 1 | 12 |
+| 10.500 | 0 | ninguna |
+| 11.000 | 1 | 12 |
+| 11.500 | 1 | 12 |
+| 12.000 | 1 | 13 |
+| 12.500 | 0 | ninguna |
+| 13.000 | 1 | 12 |
+| 13.500 | 0 | ninguna |
+| 14.000 | 0 | ninguna |
+| 14.500 | 0 | ninguna |
+| 15.000 | 0 | ninguna |
+| 15.500 | 1 | 12 |
+| 16.000 | 1 | 12 |
+| 16.500 | 1 | 12 |
+| 17.000 | 0 | ninguna |
+| 17.500 | 1 | 12 |
+| 18.000 | 0 | ninguna |
+
+La red del capítulo: semilla 318265456.
+
+Deja de fallar para siempre en el paso 18.000: el último múltiplo de 500 con alguna mal es el 17.500.
+
+Antes, en el paso 7.500, ninguna fallaba, y después volvió a fallar alguna.
+:::
+
