@@ -140,7 +140,7 @@ def celda(t):
 
 
 def informe(r, emitir):
-    emitir(["--- UNA PASADA DE ENTRENAMIENTO EN LA TARJETA, SEGÚN EL LOTE ---", ""])
+    emitir(["--- UNA PASADA EN LA TARJETA, SEGÚN EL LOTE ---", ""])
     filas = []
     for ancho in ANCHOS:
         for lote in LOTES:

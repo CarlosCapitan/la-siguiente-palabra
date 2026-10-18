@@ -1,0 +1,53 @@
+######## más trabajo en la tarjeta (Orden 24) ########
+fecha: 2026-10-19
+máquina: Darwin arm64, Apple M4 Max, 36 GB
+python 3.12.14, torch 2.14.0
+se usa la tarjeta (mps, con sincronización).
+Los tiempos solo valen en este portátil.
+
+--- UNA PASADA EN LA TARJETA, SEGÚN EL LOTE ---
+
+::: tabla
+Una pasada de entrenamiento con 1.024 posiciones, por modelo y lote
+
+| números por posición | lote | en orden (s) | a la vez (s) | ventaja |
+|--:|--:|--:|--:|--:|
+| 256 | 16 | 0,0534 | 0,0370 | 1,44x |
+| 256 | 32 | 0,0530 | 0,0745 | 0,71x |
+| 256 | 64 | 0,0701 | 0,1533 | 0,46x |
+| 256 | 128 | 0,0979 | 0,3067 | 0,32x |
+| 1.024 | 16 | 0,1745 | 0,1342 | 1,30x |
+| 1.024 | 32 | 0,2701 | 0,2687 | 1,01x |
+| 1.024 | 64 | 0,4917 | 0,5599 | 0,88x |
+| 1.024 | 128 | 0,9077 | 1,1505 | 0,79x |
+
+Tarjeta gráfica del portátil. Lote: cuántos textos a la vez.
+
+Ventaja: cuántas veces más rápida es la que mira todo a la vez; por debajo de 1,0x es más lenta.
+
+«no cabe»: la tarjeta se quedó sin memoria en esa casilla.
+:::
+
+::: tabla
+La ventaja, por modelo y lote
+
+| números por posición | lote 16 | lote 32 | lote 64 | lote 128 |
+|--:|--:|--:|--:|--:|
+| 256 | 1,44x | 0,71x | 0,46x | 0,32x |
+| 1.024 | 1,30x | 1,01x | 0,88x | 0,79x |
+
+Es la última columna de la tabla de arriba.
+:::
+
+::: tabla
+La comprobación contra la medición del portátil
+
+|  | ventaja |
+|:--|--:|
+| la guardada, en la tarjeta, con 1.024 posiciones | 1,2x |
+| esta, con lote 16 y modelo de 256 | 1,44x |
+| ¿a menos de un 30 % de la guardada? | sí |
+
+Si no queda a menos de un 30 %, esta medición no vale.
+:::
+

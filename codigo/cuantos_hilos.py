@@ -160,7 +160,7 @@ def informe(r, matmul, emitir):
     emitir(tabla_editorial(
         f"Una multiplicación de matrices de {miles(MATRIZ)} × {miles(MATRIZ)}",
         ["hilos", "milisegundos", "miles de millones de cuentas por segundo"],
-        [[str(n), coma(matmul[n] * 1000, 2), coma(flops / matmul[n] / 1e9, 0)] for n in HILOS[0:1] + HILOS[-1:]],
+        [[str(n), coma(matmul[n] * 1000, 2), miles(round(flops / matmul[n] / 1e9))] for n in HILOS[0:1] + HILOS[-1:]],
         "ddd",
         [f"Con {HILOS[0]} hilo tarda {coma(t1 / tn, 2)} veces lo que con {HILOS[-1]}.",
          ("Casi igual: en este Mac los hilos no reparten la multiplicación."
@@ -280,7 +280,7 @@ def main():
     emitir(tabla_editorial(
         f"¿Cae por debajo de 1,0x con {miles(LONGITUD_LARGA)} posiciones?", ["hilos", "ventaja", "¿por debajo de 1,0x?"],
         [[str(n), coma(v_poco[n], 2) + "x", "sí" if cruza[n] else "no"] for n in HILOS], "ddc",
-        ["Es lo que dice el texto del capítulo 9: con pocos núcleos, la que mira a la vez pierde."]))
+        ["El texto del capítulo 9 dice que con dos núcleos la que mira todo a la vez pierde."]))
     return 0
 
 

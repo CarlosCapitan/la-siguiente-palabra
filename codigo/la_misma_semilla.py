@@ -77,7 +77,7 @@ import torch.nn as nn
 
 import memoria_recurrente as mr
 from escribir_muestras import huella_pesos
-from formato import coma, comprobar_ancho, tabla_editorial
+from formato import coma, comprobar_ancho, miles, tabla_editorial
 
 AQUI = Path(__file__).resolve().parent
 
@@ -150,7 +150,7 @@ def una_tirada(ruta, dispositivo, deterministas):
     vistas = entrenar_con_instantaneas(datos, len(vocab), torch.device(dispositivo))
     torch.save(dict(
         vocabulario=huella_del_vocabulario(vocab), datos=huella_de_los_datos(datos),
-        palabras=len(datos), vocab=len(vocab), pytorch=torch.__version__,
+        palabras=len(datos), vocab=len(vocab), pytorch=str(torch.__version__),
         hashseed=os.environ.get("PYTHONHASHSEED", "sin fijar"), segundos=time.time() - t0,
         pasos={p: (h, hl) for p, (h, hl, _) in vistas.items()},
         pesos={p: e for p, (_, _, e) in vistas.items()}), ruta)
@@ -321,7 +321,8 @@ def main():
             f"fecha: {date.today().isoformat()}",
             f"máquina: {platform.system()} {platform.machine()}, Apple M4 Max",
             f"python {platform.python_version()}, torch {torch.__version__}",
-            f"semilla {SEMILLA}, {PASOS} pasos, {TIRADAS} tiradas por montaje, cada una en un proceso.",
+            f"semilla {SEMILLA}, {PASOS} pasos, {TIRADAS} tiradas por montaje,",
+            "cada tirada en un proceso aparte.",
             "Los montajes 3 y 4 entrenan en la tarjeta (mps).", ""])
     resultados = {}
     with tempfile.TemporaryDirectory() as carpeta:
@@ -334,8 +335,8 @@ def main():
     emitir(tabla_editorial(
         "El texto y el vocabulario, en las ocho tiradas", ["", "valor"],
         [["huellas distintas de vocabulario y datos", str(len(otros))],
-         ["palabras del texto", str(next(iter(resultados.values()))[0]["palabras"])],
-         ["palabras en el vocabulario", str(next(iter(resultados.values()))[0]["vocab"])]], "id",
+         ["palabras del texto", miles(next(iter(resultados.values()))[0]["palabras"])],
+         ["palabras en el vocabulario", miles(next(iter(resultados.values()))[0]["vocab"])]], "id",
         ["Una sola huella: las ocho tiradas leyeron lo mismo."] if len(otros) == 1 else
         ["Más de una huella: las tiradas no leyeron lo mismo."]))
     emitir([""])

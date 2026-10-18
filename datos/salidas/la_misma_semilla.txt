@@ -1,0 +1,110 @@
+######## la misma semilla (Orden 24) ########
+fecha: 2026-10-19
+máquina: Darwin arm64, Apple M4 Max
+python 3.12.14, torch 2.14.0
+semilla 20260914, 300 pasos, 2 tiradas por montaje,
+cada tirada en un proceso aparte.
+Los montajes 3 y 4 entrenan en la tarjeta (mps).
+
+--- LAS DOS TIRADAS DE CADA MONTAJE ---
+
+::: tabla
+Lo que entra: ¿coinciden las dos tiradas?
+
+| montaje | vocabulario | datos | lotes | PYTHONHASHSEED |
+|:--|:-:|:-:|:-:|:-:|
+| procesador | sí | sí | sí | sin fijar / sin fijar |
+| procesador, algoritmos deterministas | sí | sí | sí | sin fijar / sin fijar |
+| tarjeta (mps) | sí | sí | sí | sin fijar / sin fijar |
+| tarjeta, PYTHONHASHSEED=0 | sí | sí | sí | 0 / 0 |
+
+Vocabulario: la lista de palabras, en su orden. Datos: el texto ya convertido a números.
+
+Lotes: los índices que sortea el entrenamiento, en los 300 pasos.
+:::
+
+::: tabla
+Los pesos de las dos tiradas, por montaje y paso
+
+| montaje | paso | ¿coinciden bit a bit? | diferencia máxima |
+|:--|--:|:-:|--:|
+| procesador | 0 | sí | 0 |
+| procesador | 1 | sí | 0 |
+| procesador | 10 | sí | 0 |
+| procesador | 100 | sí | 0 |
+| procesador | 300 | sí | 0 |
+| procesador, algoritmos deterministas | 0 | sí | 0 |
+| procesador, algoritmos deterministas | 1 | sí | 0 |
+| procesador, algoritmos deterministas | 10 | sí | 0 |
+| procesador, algoritmos deterministas | 100 | sí | 0 |
+| procesador, algoritmos deterministas | 300 | sí | 0 |
+| tarjeta (mps) | 0 | sí | 0 |
+| tarjeta (mps) | 1 | no | 5,96e-08 |
+| tarjeta (mps) | 10 | no | 6,40e-07 |
+| tarjeta (mps) | 100 | no | 1,80e-04 |
+| tarjeta (mps) | 300 | no | 4,27e-01 |
+| tarjeta, PYTHONHASHSEED=0 | 0 | sí | 0 |
+| tarjeta, PYTHONHASHSEED=0 | 1 | no | 1,19e-07 |
+| tarjeta, PYTHONHASHSEED=0 | 10 | no | 6,31e-07 |
+| tarjeta, PYTHONHASHSEED=0 | 100 | no | 1,01e-04 |
+| tarjeta, PYTHONHASHSEED=0 | 300 | no | 4,17e-01 |
+
+Misma semilla (20260914), 300 pasos, un proceso aparte por tirada.
+
+Diferencia máxima: lo que más se separan dos pesos de las dos tiradas.
+:::
+
+::: tabla
+En qué paso se separan por primera vez
+
+| montaje | primer paso en que difieren |
+|:--|--:|
+| procesador | no se separan hasta el 300 |
+| procesador, algoritmos deterministas | no se separan hasta el 300 |
+| tarjeta (mps) | 1 |
+| tarjeta, PYTHONHASHSEED=0 | 1 |
+
+Entre los pasos que se miran: 0, 1, 10, 100, 300.
+:::
+
+::: tabla
+Las huellas de los pesos, tirada a tirada
+
+| montaje | paso | tirada 1 | tirada 2 |
+|:--|--:|:--|:--|
+| procesador | 0 | d7306b3750f0 | d7306b3750f0 |
+| procesador | 1 | 585e26647bb8 | 585e26647bb8 |
+| procesador | 10 | 953b24b12940 | 953b24b12940 |
+| procesador | 100 | 83ffa85dc238 | 83ffa85dc238 |
+| procesador | 300 | a19ccddeb48c | a19ccddeb48c |
+| procesador, algoritmos deterministas | 0 | d7306b3750f0 | d7306b3750f0 |
+| procesador, algoritmos deterministas | 1 | 585e26647bb8 | 585e26647bb8 |
+| procesador, algoritmos deterministas | 10 | 953b24b12940 | 953b24b12940 |
+| procesador, algoritmos deterministas | 100 | 83ffa85dc238 | 83ffa85dc238 |
+| procesador, algoritmos deterministas | 300 | a19ccddeb48c | a19ccddeb48c |
+| tarjeta (mps) | 0 | d7306b3750f0 | d7306b3750f0 |
+| tarjeta (mps) | 1 | 829fe297b7e9 | f179d09d97db |
+| tarjeta (mps) | 10 | 606ecd7fdc3c | 0bbc557f35e3 |
+| tarjeta (mps) | 100 | ec4dc9c4d58a | 26b3370e0328 |
+| tarjeta (mps) | 300 | 788b42e3f619 | 5e1902ff9369 |
+| tarjeta, PYTHONHASHSEED=0 | 0 | d7306b3750f0 | d7306b3750f0 |
+| tarjeta, PYTHONHASHSEED=0 | 1 | 19a5dafc94fd | dc670a4a73a6 |
+| tarjeta, PYTHONHASHSEED=0 | 10 | 6965c90cef2b | 26ab80c19088 |
+| tarjeta, PYTHONHASHSEED=0 | 100 | d0227088b7b4 | c43ccf1608d4 |
+| tarjeta, PYTHONHASHSEED=0 | 300 | 6bbe5eb71f28 | ef7500f77e79 |
+
+Doce primeras cifras hexadecimales del sha256 de los pesos, en float32 y en orden de clave.
+:::
+
+::: tabla
+El texto y el vocabulario, en las ocho tiradas
+
+|  | valor |
+|:--|--:|
+| huellas distintas de vocabulario y datos | 1 |
+| palabras del texto | 686.002 |
+| palabras en el vocabulario | 20.000 |
+
+Una sola huella: las ocho tiradas leyeron lo mismo.
+:::
+
