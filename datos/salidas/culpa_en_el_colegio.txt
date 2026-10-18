@@ -267,7 +267,7 @@ La misma culpa, a lo bruto
 
 A lo bruto: se sube el peso una cienmilésima y se mira el error; se baja una cienmilésima y se mira otra vez; la culpa es lo que va de uno a otro, entre lo que se ha movido.
 
-Las dos coinciden en sus 10 primeros decimales.
+Las dos coinciden en sus 9 primeros decimales.
 :::
 
 ::: tabla

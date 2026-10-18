@@ -6,7 +6,7 @@
 SELFTEST: las tres pruebas pasan.
 
 ########## de dónde sale cada figura del libro ##########
-fecha: 2026-10-18 08:27 UTC
+fecha: 2026-10-18 10:04 UTC
 máquina: Darwin arm64. La medición no
 depende de la máquina: lee ficheros de texto
 libro: con los borradores de en-curso/;
@@ -48,11 +48,11 @@ De dónde sale cada figura, de la 21 a la 40
 |--:|--:|:--|:--|
 | 21 | 3 | los_dos_que_mas_se_parecen | que_mira_cada_una |
 | 22 | 3 | cuadrado_del_colegio | ninguna |
-| 23 | 4 | la_red_del_pasillo | culpa_hacia_atras |
-| 24 | 4 | cuadrado_redibujado | culpa_hacia_atras_datos.csv |
-| 25 | 4 | la_rampa_del_ejemplo | culpa_hacia_atras |
-| 26 | 4 | culpa_hacia_atras | culpa_hacia_atras_datos.csv, culpa_hacia_atras |
-| 27 | 4 | el_terreno | culpa_hacia_atras_datos.csv, culpa_hacia_atras |
+| 23 | 4 | la_red_del_colegio | culpa_en_el_colegio_datos.csv |
+| 24 | 4 | de_la_regla_al_cuadrado | culpa_en_el_colegio_datos.csv |
+| 25 | 4 | la_rampa_del_colegio | culpa_en_el_colegio_datos.csv |
+| 26 | 4 | culpa_hacia_atras_colegio | culpa_en_el_colegio_datos.csv, culpa_en_el_colegio |
+| 27 | 4 | el_terreno_del_colegio | culpa_en_el_colegio_datos.csv, culpa_en_el_colegio |
 | 28 | 4 | la_rampa_y_el_codo | culpa_hacia_atras |
 | 29 | 5 | mapa_de_palabras | palabras_de_cerca |
 | 30 | 5 | misma_direccion | palabras_de_cerca |

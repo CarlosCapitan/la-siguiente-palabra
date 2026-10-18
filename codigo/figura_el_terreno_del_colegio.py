@@ -16,6 +16,7 @@ Uso:
 
 # ======================= CONSTANTES =======================
 
+DATOS = "../datos/salidas/culpa_en_el_colegio_datos.csv"   # los números, que escribe culpa_en_el_colegio.py
 SALIDA = "../datos/salidas/culpa_en_el_colegio.txt"
 DESTINO = "../figuras/el_terreno_del_colegio.png"
 ALTO = 3.3                     # pulgadas
@@ -81,7 +82,7 @@ def dibujar(d, paleta, ruta):
 
 def selftest():
     fallos = []
-    d = leer_datos()
+    d = leer_datos(AQUI / DATOS)
     t, c, cada = curvas(d)
     T = leer_tablas((AQUI / SALIDA).read_text(encoding="utf-8"))
 
@@ -135,7 +136,7 @@ def main():
     codigo = selftest()
     if codigo or args.selftest:
         sys.exit(codigo)
-    dibujar(leer_datos(), GRIS, str(AQUI / DESTINO))
+    dibujar(leer_datos(AQUI / DATOS), GRIS, str(AQUI / DESTINO))
     print(f"escrita {DESTINO}")
 
 

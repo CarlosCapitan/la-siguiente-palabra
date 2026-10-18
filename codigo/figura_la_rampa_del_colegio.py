@@ -18,9 +18,10 @@ Uso:
 
 # ======================= CONSTANTES =======================
 
+DATOS = "../datos/salidas/culpa_en_el_colegio_datos.csv"   # los números, que escribe culpa_en_el_colegio.py
 DESTINO = "../figuras/la_rampa_del_colegio.png"
 ALTO = 3.0                     # pulgadas
-LADO_TANGENTE = 0.9
+LADO_TANGENTE = 0.4            # media longitud de cada tangente: con 0,9 la de la segunda y la de la final se montaban
 NOMBRES = ["la primera", "la segunda", "la final"]
 
 # ==========================================================
@@ -63,7 +64,8 @@ def dibujar(d, paleta, ruta):
     ax = L.fig.add_axes([0.11, 0.17, 0.84, 0.50])
     xs = np.linspace(-7.5, 7.5, 400)
     ax.plot(xs, sigmoide(xs), color=p.tinta, linewidth=1.6)
-    textos = {"la primera": (4.6, 0.55), "la segunda": (-3.3, 0.92), "la final": (-4.6, 0.50)}
+    # la segunda arriba a la izquierda; la final y la primera debajo de la curva, a distinta altura
+    textos = {"la primera": (5.4, 0.50), "la segunda": (-3.4, 0.93), "la final": (2.4, 0.20)}
     for n, (x, y, pendiente) in puntos_.items():
         t = np.array([x - LADO_TANGENTE, x + LADO_TANGENTE])
         ax.plot(t, y + pendiente * (t - x), color=p.acento, linewidth=3.0, alpha=0.55, solid_capstyle="round")
@@ -85,7 +87,7 @@ def dibujar(d, paleta, ruta):
 
 def selftest():
     fallos = []
-    d = leer_datos()
+    d = leer_datos(AQUI / DATOS)
     puntos_ = puntos(d)
 
     # 1. TEST NULO — la regla «lo que dice, por lo que le falta para 1» da cero en los extremos de la
@@ -128,7 +130,7 @@ def main():
     codigo = selftest()
     if codigo or args.selftest:
         sys.exit(codigo)
-    dibujar(leer_datos(), GRIS, str(AQUI / DESTINO))
+    dibujar(leer_datos(AQUI / DATOS), GRIS, str(AQUI / DESTINO))
     print(f"escrita {DESTINO}")
 
 

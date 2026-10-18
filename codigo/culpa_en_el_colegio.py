@@ -142,6 +142,27 @@ def las_200():
         return list(pool.map(trabajo_atascada, C.sortear(), chunksize=4))
 
 
+DECIMALES_IMPRESOS = 10          # los de las tablas «La misma culpa, a lo bruto»
+
+
+def decimales_iguales_impresos(a, b, decimales=DECIMALES_IMPRESOS):
+    """Cuántos decimales coinciden tal como se imprimen: se escriben los dos con `decimales` cifras
+    (como los imprimen las tablas) y se cuentan las cifras iguales desde la coma, hasta la primera que
+    difiere. Si la parte entera o el signo ya difieren, 0. (Antes se comparaba la diferencia con
+    media unidad de la cifra, y −0,5935879966 y −0,5935879967, que se imprimen distintos en la décima
+    cifra, salían iguales en diez; Orden 21.)"""
+    ea, da = f"{a:.{decimales}f}".split(".")
+    eb, db = f"{b:.{decimales}f}".split(".")
+    if ea != eb:
+        return 0
+    n = 0
+    for x, y in zip(da, db):
+        if x != y:
+            break
+        n += 1
+    return n
+
+
 def error_a_mano(dice_por_edad):
     """El error de una red que dice lo mismo a un grupo de edades, construido a mano: para cada
     grupo (edades, lo que dice) la suma de lo que falla por sí mismo; entre las trece."""
@@ -306,7 +327,7 @@ def bloque_b(red, p):
         atajo = float(gW[capa][i, j])
         assert abs(atajo - bruta) < TOL_BRUTA, f"atajo y fuerza bruta difieren en {abs(atajo - bruta)}"
         filas.append((nombre, atajo, bruta, mas, menos))
-        juntas.append(C.decimales_iguales(atajo, bruta))
+        juntas.append(decimales_iguales_impresos(atajo, bruta))
     tabla(tabla_editorial(
         "La misma culpa, a lo bruto", ["peso", "por el atajo", "a lo bruto"],
         [[n, coma(a, 10), coma(b, 10)] for n, a, b, _, _ in filas], "idd",
@@ -636,6 +657,14 @@ def selftest():
     otra = C.copia(red)
     otra.W[1][0, 0] = red.W[1][0, 0]
     dif_terreno = abs(otra.error(X, Y) - red.error(X, Y))
+    cuentan = (decimales_iguales_impresos(-0.5935879966, -0.5935879967),
+               decimales_iguales_impresos(0.2266538661, 0.2266538661),
+               decimales_iguales_impresos(-2.8720379865, -2.8720379841),
+               decimales_iguales_impresos(1.5, -1.5))
+    print(f"[3] invariante        los decimales iguales, tal como se imprimen: {cuentan[0]} (de -0,5935879966 "
+          f"y -0,5935879967), {cuentan[1]} (de dos iguales), {cuentan[2]}, {cuentan[3]} (de 1,5 y -1,5)")
+    if cuentan != (9, 10, 8, 0):
+        fallos.append(f"invariante: los decimales iguales salen {cuentan} y deberían salir (9, 10, 8, 0)")
     print(f"[3] invariante        atajo contra fuerza bruta, diferencia máxima {peor:.1e}; la media de las "
           f"trece edades y la culpa del programa difieren en {dif_media:.1e}; el terreno en el peso de la "
           f"red da el error de la red: {'sí' if dif_terreno == 0 else 'NO'}")

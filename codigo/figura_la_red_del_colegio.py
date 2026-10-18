@@ -88,7 +88,7 @@ def que_dice_la_final(pesos, listones, a, b):
 
 
 def dibujar_red(L, pesos, listones, y_arriba, y_abajo, rotulos_linea=None, texto_neurona=None,
-                flechas_atras=False, texto_entrada=None):
+                flechas_atras=False, texto_entrada=None, t_a_la_final=0.62, separacion_a_la_final=2.6):
     """La red: la edad, dos de en medio y la final. rotulos_linea[(neurona, de)] es el texto de cada
     línea; texto_neurona[neurona] lo que va junto a cada neurona."""
     p, ax = L.p, L.ax
@@ -108,9 +108,13 @@ def dibujar_red(L, pesos, listones, y_arriba, y_abajo, rotulos_linea=None, texto
                 ax.annotate("", xy=(xa - 2.2, ya - (y1 - y0) / (x1 - x0) * 2.2), xytext=(xa, ya),
                             arrowprops=dict(arrowstyle="-|>", color=p.tinta, lw=1.0), zorder=5)
             if rotulos_linea:
-                t = 0.62
+                # las dos líneas que llegan a la final se juntan en ella: sus rótulos, más atrás y más
+                # separados (Orden 21), para que no queden pegados
+                a_la_final = destino == "la final"
+                t = t_a_la_final if a_la_final else 0.62
+                sep = separacion_a_la_final if a_la_final else 2.6
                 xr = x0 + RADIO + (x1 - x0 - 2 * RADIO) * t
-                yr = y0 + (y1 - y0) * t + (2.6 if y1 > y0 else -2.6)
+                yr = y0 + (y1 - y0) * t + (sep if y1 > y0 else -sep)
                 ax.text(xr, yr, rotulos_linea[(destino, origen)], ha="center", va="center", fontsize=7.6,
                         color=p.tinta, zorder=4,
                         bbox=dict(boxstyle="round,pad=0.15", facecolor="white", edgecolor="none"))
@@ -159,7 +163,8 @@ def dibujar(d, paleta, ruta):
     txt = {"la primera": f"listón {f(listones['la primera'], 2, False)}\n{q[0]}",
            "la segunda": f"listón {f(listones['la segunda'], 2, False)}\n{q[1]}",
            "la final": f"listón {f(listones['la final'], 2, False)}\n«¿entra en\nel colegio?»"}
-    dibujar_red(L, pesos, listones, y_arriba, y_abajo, rot, txt, texto_entrada="en años,\ntal cual")
+    dibujar_red(L, pesos, listones, y_arriba, y_abajo, rot, txt, texto_entrada="en años,\ntal cual",
+                t_a_la_final=0.40, separacion_a_la_final=3.4)
     L.pie("Línea continua: suma; de puntos: resta; cuanto más gruesa, más pesa. El número de cada línea\n"
           "es su peso; el de cada círculo, su listón.")
     L.guardar(ruta)

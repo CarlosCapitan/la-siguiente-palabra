@@ -18,8 +18,13 @@ Uso:
 
 # ======================= CONSTANTES =======================
 
+DATOS = "../datos/salidas/culpa_en_el_colegio_datos.csv"   # los números, que escribe culpa_en_el_colegio.py
 DESTINO = "../figuras/de_la_regla_al_cuadrado.png"
-ALTO = 3.9                     # pulgadas
+ALTO = 4.2                     # pulgadas
+ALTO_EJES = 0.61               # alto de la regla y del cuadrado, en fracción de la figura
+LIM_X = (-0.10, 1.50)          # el cuadrado: lo que se ve a lo ancho (a la derecha caben los rótulos)
+LIM_Y = (-0.10, 1.10)          # y a lo alto
+CERCA = 0.05                   # dos marcas a menos de esto, en las unidades del cuadrado, se pisan
 EDADES = list(range(3, 16))    # las de los datos
 RAYA_TRAMOS = 2                # cuántos cortes hacen falta en la regla para dejar solas a las que entran
 
@@ -55,6 +60,31 @@ def lado_de_la_raya(pesos, listones, x, y):
     return p["la primera"] * x + p["la segunda"] * y - listones["la final"]
 
 
+def grupos_cercanos(pts, cerca=CERCA):
+    """Las edades cuyos puntos del cuadrado quedan a menos de `cerca` unos de otros (una marca pisa a la
+    otra) van juntas: [[edades]], en orden de edad, y cada grupo lleva el punto de su primera edad."""
+    grupos = []
+    for e in EDADES:
+        for g in grupos:
+            x0, y0, _ = pts[g[0]]
+            if ((pts[e][0] - x0) ** 2 + (pts[e][1] - y0) ** 2) ** 0.5 < cerca:
+                g.append(e)
+                break
+        else:
+            grupos.append([e])
+    return grupos
+
+
+def rotulo_de_edades(g):
+    """«6», «3 y 4», «7 a 11»: las edades de un grupo, dichas como se dirían."""
+    if len(g) == 1:
+        return str(g[0])
+    seguidas = all(b == a + 1 for a, b in zip(g, g[1:]))
+    if len(g) == 2:
+        return f"{g[0]} y {g[1]}"
+    return f"{g[0]} a {g[-1]}" if seguidas else ", ".join(map(str, g[:-1])) + f" y {g[-1]}"
+
+
 def dibujar(d, paleta, ruta):
     pesos, listones = red_de(d)
     pts = puntos(d)
@@ -63,38 +93,42 @@ def dibujar(d, paleta, ruta):
                "corte los deja solos. A la derecha, las mismas edades colocadas por lo que dicen las\n"
                "dos neuronas de en medio: ahora una raya los deja solos.", paleta, alto=ALTO)
     p, fig = L.p, L.fig
-    alto_ejes = 0.47
     # la regla, en vertical
-    a1 = fig.add_axes([0.05, 0.20, 0.16, alto_ejes])
+    a1 = fig.add_axes([0.04, 0.15, 0.22, ALTO_EJES])
     for e in EDADES:
         a1.plot(0, e, "o", markersize=7, markerfacecolor=p.tinta if pts[e][2] else "white",
                 markeredgecolor=p.tinta, markeredgewidth=1.2, zorder=3)
-        a1.text(0.45, e, str(e), fontsize=6.8, va="center", color=p.tinta)
+        a1.text(0.5, e, str(e), fontsize=7.0, va="center", color=p.tinta)
     a1.set_xlim(-0.5, 1.2)
     a1.set_ylim(EDADES[0] - 0.7, EDADES[-1] + 2.0)
     a1.axis("off")
     a1.text(-0.45, EDADES[-1] + 1.0, "la regla", fontsize=7.6, fontweight="bold", color=p.tinta, va="bottom")
     # el cuadrado
-    a2 = fig.add_axes([0.46, 0.20, 0.48, alto_ejes])
-    xs = np.linspace(-0.08, 1.08, 50)
+    a2 = fig.add_axes([0.32, 0.15, 0.64, ALTO_EJES])
+    xs = np.linspace(LIM_X[0], LIM_X[1], 60)
     pa, pl = pesos["la final"], listones["la final"]
-    # la raya: pa1*x + pa2*y = listón, y = (liston - pa1*x) / pa2
-    ys = (pl - pa["la primera"] * xs) / pa["la segunda"]
-    a2.fill_between(xs, ys, -0.08, where=ys > -0.08, color="0.90", zorder=0)
+    ys = (pl - pa["la primera"] * xs) / pa["la segunda"]       # la raya: pa1*x + pa2*y = listón
+    a2.fill_between(xs, ys, LIM_Y[0], where=ys > LIM_Y[0], color="0.90", zorder=0)
     a2.plot(xs, ys, "--", color=p.suave, linewidth=1.3, zorder=2)
     for e in EDADES:
         x, y, entra = pts[e]
-        a2.plot(x, y, "o", markersize=6.5, markerfacecolor=p.tinta if entra else "white",
+        a2.plot(x, y, "o", markersize=5.5, markerfacecolor=p.tinta if entra else "white",
                 markeredgecolor=p.tinta, markeredgewidth=1.1, zorder=3)
-    # las edades, escritas junto a cada grupo
-    grupos = {"3, 4, 5": (0.0, 0.0), "6 a 12": (1.0, 0.0), "13, 14, 15": (1.0, 0.9)}
-    a2.text(0.04, 0.10, "3, 4, 5", fontsize=7, color=p.tinta, ha="left", va="bottom")
-    a2.text(0.96, 0.10, "6 a 12", fontsize=7, color=p.tinta, ha="right", va="bottom")
-    a2.text(0.96, 0.80, "13, 14, 15", fontsize=7, color=p.tinta, ha="right", va="top")
-    a2.text(0.28, 0.34, "la raya\nde la final", fontsize=7, color=p.suave, ha="left", va="center",
-            linespacing=1.1)
-    a2.set_xlim(-0.08, 1.08)
-    a2.set_ylim(-0.08, 1.08)
+    # las edades, escritas junto a cada marca o cada montón de marcas: a la derecha las de la derecha,
+    # encima las de la izquierda y las de en medio
+    for g in grupos_cercanos(pts):
+        x, y, _ = pts[g[0]]
+        if x > 0.9:
+            x_derecha = max(pts[e][0] for e in g)
+            a2.text(x_derecha + 0.07, y, rotulo_de_edades(g), fontsize=7.0, color=p.tinta, ha="left",
+                    va="center")
+        else:
+            a2.text(x, y + 0.075, rotulo_de_edades(g), fontsize=7.0, color=p.tinta, ha="center", va="bottom")
+    a2.annotate("la raya de la final", xy=(0.62, (pl - pa["la primera"] * 0.62) / pa["la segunda"]),
+                xytext=(0.18, 0.40), fontsize=7.0, color=p.suave, ha="left", va="center",
+                arrowprops=dict(arrowstyle="-|>", color=p.suave, lw=0.8))
+    a2.set_xlim(*LIM_X)
+    a2.set_ylim(*LIM_Y)
     a2.set_xticks([0, 1]); a2.set_xticklabels(["no", "sí"], fontsize=7)
     a2.set_yticks([0, 1]); a2.set_yticklabels(["no", "sí"], fontsize=7)
     a2.set_xlabel("lo que dice la primera (de 0 a 1)", fontsize=7.4, color=p.tinta)
@@ -103,13 +137,14 @@ def dibujar(d, paleta, ruta):
     for s in ("top", "right"):
         a2.spines[s].set_visible(False)
     a2.tick_params(length=2)
-    L.pie("Relleno: entra en el colegio; vacío: no entra. Sombreado: el lado de la raya donde la final dice sí.")
+    L.pie("Relleno: entra en el colegio; vacío: no entra. Sombreado: el lado de la raya donde la final dice sí.\n"
+          "Donde varias edades caen casi en el mismo punto, sus marcas se montan y van con todas sus edades.")
     L.guardar(ruta)
 
 
 def selftest():
     fallos = []
-    d = leer_datos()
+    d = leer_datos(AQUI / DATOS)
     pesos, listones = red_de(d)
     pts = puntos(d)
     entran = [pts[e][2] for e in EDADES]
@@ -141,7 +176,13 @@ def selftest():
     fuera = sum(1 for e in EDADES for k in (0, 1) if not 0 <= pts[e][k] <= 1)
     for pal in (COLOR, GRIS):
         dibujar(d, pal, "/dev/null")
-    print(f"[3] invariante        edades: {len(pts)}; respuestas fuera de 0 a 1: {fuera}")
+    grupos = grupos_cercanos(pts)
+    rotulos = [rotulo_de_edades(g) for g in grupos]
+    todas = sorted(e for g in grupos for e in g)
+    print(f"[3] invariante        edades: {len(pts)}; respuestas fuera de 0 a 1: {fuera}; marcas que se "
+          f"pisan, con sus edades: {', '.join(rotulos)}")
+    if todas != EDADES:
+        fallos.append("invariante: alguna edad se queda sin rótulo, o con dos")
     if fuera or len(pts) != 13:
         fallos.append("invariante: faltan edades o hay respuestas fuera de 0 a 1")
     print()
@@ -160,7 +201,7 @@ def main():
     codigo = selftest()
     if codigo or args.selftest:
         sys.exit(codigo)
-    dibujar(leer_datos(), GRIS, str(AQUI / DESTINO))
+    dibujar(leer_datos(AQUI / DATOS), GRIS, str(AQUI / DESTINO))
     print(f"escrita {DESTINO}")
 
 
