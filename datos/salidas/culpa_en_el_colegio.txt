@@ -1,0 +1,512 @@
+######## la culpa, en la red del colegio (Orden 20) ########
+fecha: 2026-10-18
+máquina: Darwin arm64
+python 3.12.14, numpy 2.5.3
+GPU: no se usa (todo en numpy). Nada de lo que sigue
+depende del ordenador: aciertos, recuentos y pesos.
+
+La red del colegio: semilla 318265456, la edad en años,
+100.000 pasos, poquito 0,5, pesos de arranque entre 10.
+
+--- a) LA RED ENTRENADA ---
+
+::: tabla
+Lo que dice la red entrenada, edad por edad
+
+| edad | tendría que decir | la red dice | lo que falla |
+|:--|--:|--:|--:|
+| 3 | 0 | 0,001 | +0,001 |
+| 4 | 0 | 0,002 | +0,002 |
+| 5 | 0 | 0,020 | +0,020 |
+| 6 | 1 | 0,983 | -0,017 |
+| 7 | 1 | 0,999 | -0,001 |
+| 8 | 1 | 0,999 | -0,001 |
+| 9 | 1 | 0,999 | -0,001 |
+| 10 | 1 | 0,999 | -0,001 |
+| 11 | 1 | 0,999 | -0,001 |
+| 12 | 1 | 0,974 | -0,026 |
+| 13 | 0 | 0,025 | +0,025 |
+| 14 | 0 | 0,001 | +0,001 |
+| 15 | 0 | 0,001 | +0,001 |
+
+Entrenada 100.000 pasos, con poquito 0,5 y los pesos de arranque divididos entre 10.
+
+Lo que falla: lo que dice menos lo que tendría que decir.
+:::
+
+::: tabla
+Los pesos y los listones de la red entrenada
+
+| neurona | la línea que viene de | peso | listón |
+|:--|:--|--:|--:|
+| la primera | la edad | +2,570 | 14,278 |
+| la segunda | la edad | +2,142 | 26,780 |
+| la final | la primera | +14,050 | 6,604 |
+|  | la segunda | -14,955 |  |
+
+Peso de cada línea: positivo suma, negativo resta. El listón es menos el sesgo.
+:::
+
+::: tabla
+La primera: «sí desde los 6 años»
+
+| edad | le llega | ¿pasa del listón? | dice |
+|:--|--:|:-:|--:|
+| 3 | 7,71 | no | 0,001 |
+| 4 | 10,28 | no | 0,018 |
+| 5 | 12,85 | no | 0,194 |
+| 6 | 15,42 | sí | 0,759 |
+| 7 | 17,99 | sí | 0,976 |
+| 8 | 20,56 | sí | 0,998 |
+| 9 | 23,13 | sí | 1,000 |
+| 10 | 25,70 | sí | 1,000 |
+| 11 | 28,27 | sí | 1,000 |
+| 12 | 30,84 | sí | 1,000 |
+| 13 | 33,42 | sí | 1,000 |
+| 14 | 35,99 | sí | 1,000 |
+| 15 | 38,56 | sí | 1,000 |
+
+Listón: 14,28. Le llega: el peso por la edad. Dice: cerca de 1 si le llega más que su listón, cerca de 0 si le llega menos.
+:::
+
+::: tabla
+La segunda: «sí desde los 13 años»
+
+| edad | le llega | ¿pasa del listón? | dice |
+|:--|--:|:-:|--:|
+| 3 | 6,43 | no | 0,000 |
+| 4 | 8,57 | no | 0,000 |
+| 5 | 10,71 | no | 0,000 |
+| 6 | 12,85 | no | 0,000 |
+| 7 | 14,99 | no | 0,000 |
+| 8 | 17,14 | no | 0,000 |
+| 9 | 19,28 | no | 0,001 |
+| 10 | 21,42 | no | 0,005 |
+| 11 | 23,56 | no | 0,039 |
+| 12 | 25,71 | no | 0,255 |
+| 13 | 27,85 | sí | 0,744 |
+| 14 | 29,99 | sí | 0,961 |
+| 15 | 32,13 | sí | 0,995 |
+
+Listón: 26,78. Le llega: el peso por la edad. Dice: cerca de 1 si le llega más que su listón, cerca de 0 si le llega menos.
+:::
+
+::: tabla
+La final, que escucha a las dos
+
+| edad | le llega | ¿pasa del listón? | dice |
+|:--|--:|:-:|--:|
+| 3 | 0,02 | no | 0,001 |
+| 4 | 0,25 | no | 0,002 |
+| 5 | 2,72 | no | 0,020 |
+| 6 | 10,66 | sí | 0,983 |
+| 7 | 13,72 | sí | 0,999 |
+| 8 | 14,02 | sí | 0,999 |
+| 9 | 14,04 | sí | 0,999 |
+| 10 | 13,98 | sí | 0,999 |
+| 11 | 13,47 | sí | 0,999 |
+| 12 | 10,24 | sí | 0,974 |
+| 13 | 2,92 | no | 0,025 |
+| 14 | -0,32 | no | 0,001 |
+| 15 | -0,83 | no | 0,001 |
+
+Listón: 6,60. Le llega: el peso por la edad. Dice: cerca de 1 si le llega más que su listón, cerca de 0 si le llega menos.
+:::
+
+::: tabla
+La final, si las de en medio dijeran un sí o un no secos
+
+| la primera | la segunda | le llega | ¿pasa? |
+|:-:|:-:|--:|:-:|
+| no | no | +0,00 | no |
+| no | sí | -14,95 | no |
+| sí | no | +14,05 | sí |
+| sí | sí | -0,90 | no |
+
+Sí vale 1 y no vale 0. Listón de la final: 6,60.
+:::
+
+(la edad del ejemplo es la que más falla en ese paso: 13 años)
+
+--- b) UN EJEMPLO A MEDIO ENTRENAR: PASO 1.000 ---
+
+::: tabla
+Lo que falla cada edad en el paso 1.000
+
+| edad | tendría que decir | la red dice | lo que falla | ¿del lado equivocado? |
+|:--|--:|--:|--:|:-:|
+| 3 | 0 | 0,312 | +0,312 | no |
+| 4 | 0 | 0,392 | +0,392 | no |
+| 5 | 0 | 0,471 | +0,471 | no |
+| 6 | 1 | 0,533 | -0,467 | no |
+| 7 | 1 | 0,573 | -0,427 | no |
+| 8 | 1 | 0,595 | -0,405 | no |
+| 9 | 1 | 0,606 | -0,394 | no |
+| 10 | 1 | 0,610 | -0,390 | no |
+| 11 | 1 | 0,611 | -0,389 | no |
+| 12 | 1 | 0,609 | -0,391 | no |
+| 13 | 0 | 0,607 | +0,607 | sí |
+| 14 | 0 | 0,604 | +0,604 | sí |
+| 15 | 0 | 0,601 | +0,601 | sí |
+
+La del ejemplo es la que más falla: 13 años, con 0,607.
+:::
+
+::: tabla
+Hacia delante
+
+| neurona | le llega | listón | pasa del listón por | dice |
+|:--|--:|--:|--:|--:|
+| la primera | 8,05 | 2,20 | 5,85 | 0,9971 |
+| la segunda | 1,32 | 0,04 | 1,28 | 0,7828 |
+| la final | 1,72 | 1,29 | 0,43 | 0,6068 |
+
+Paso 1.000 de 100.000. Edad: 13 años; el colegio no la admite.
+
+La final tendría que decir 0.
+:::
+
+::: tabla
+Lo que le llega a la final
+
+| viene de | lo que dice | por el peso de su línea | da |
+|:--|--:|--:|--:|
+| la primera | 0,9971 | 2,45 | 2,443 |
+| la segunda | 0,7828 | -0,93 | -0,728 |
+| **la suma** |  |  | **1,72** |
+
+La suma, redondeada a dos decimales, como en la tabla anterior.
+:::
+
+::: tabla
+Lo que falla, y el error
+
+|  | cuánto |
+|:--|--:|
+| lo que dice la final | 0,6068 |
+| lo que tendría que decir | 0 |
+| lo que falla: lo que dice menos lo que tendría que decir | +0,6068 |
+| **el error con esta edad: lo que falla por sí mismo** | **0,3682** |
+
+Los números, redondeados a cuatro cifras, y cada cuenta con los redondeados.
+:::
+
+HACIA ATRÁS
+
+::: tabla
+Tramo 1, medido: cuánto se mueven el error y lo que dice la final
+
+| qué se mide | tal cual | una millonésima más arriba | sube, en millonésimas |
+|:--|--:|--:|--:|
+| el error, si se mueve lo que dice | 0,368173411 | 0,368174625 | 1,214 |
+| lo que dice, si se mueve lo que le llega | 0,606772949 | 0,606773187 | 0,2386 |
+
+Lo que sube el error es el doble de lo que falla; lo que sube lo que dice es lo que deja pasar su rampa. La tabla siguiente lo saca con cuentas.
+:::
+
+::: tabla
+Tramo 1: la culpa de la final
+
+|  | cuánto |
+|:--|--:|
+| lo que falla | 0,6068 |
+| el doble de lo que falla | 1,214 |
+| lo que dice | 0,6068 |
+| lo que le falta para 1 | 0,3932 |
+| lo que deja pasar su rampa: lo que dice, por lo que le falta para 1 | 0,2386 |
+| **la culpa de la final: el doble de lo que falla, por lo que deja pasar su rampa** | **0,2897** |
+
+Cada cuenta, con los números redondeados a cuatro cifras.
+:::
+
+::: tabla
+Tramo 2: las dos líneas que llegan a la final
+
+| la línea que viene de | la culpa de la final | por lo que trajo esa línea | da |
+|:--|--:|--:|--:|
+| la primera | 0,2897 | 0,9971 | 0,2889 |
+| la segunda | 0,2897 | 0,7828 | 0,2268 |
+
+Lo que trajo esa línea: lo que dice la neurona de la que viene.
+:::
+
+::: tabla
+Tramo 3: cuánta le toca a cada una de las de en medio
+
+|  | la primera | la segunda |
+|:--|--:|--:|
+| la culpa de la final | 0,2897 | 0,2897 |
+| por el peso de su línea | +2,45 | -0,93 |
+| le toca | 0,7098 | -0,2694 |
+| lo que dice | 0,9971 | 0,7828 |
+| lo que le falta para 1 | 0,002868 | 0,2172 |
+| lo que deja pasar su rampa | 0,00286 | 0,17 |
+| **su culpa: lo que le toca, por lo que deja pasar su rampa** | **0,00203** | **-0,0458** |
+
+Lo que deja pasar su rampa: lo que dice, por lo que le falta para 1.
+:::
+
+::: tabla
+Tramo 4: las dos líneas de la primera capa
+
+| línea | culpa de su neurona | por lo que trajo | da |
+|:--|--:|--:|--:|
+| la primera, de la edad | 0,00203 | 13 | 0,02639 |
+| la segunda, de la edad | -0,0458 | 13 | -0,5954 |
+
+Lo que trajo la línea: la edad.
+:::
+
+::: tabla
+La misma culpa, a lo bruto
+
+| peso | por el atajo | a lo bruto |
+|:--|--:|--:|
+| la segunda, de la edad | -0,5935879966 | -0,5935879967 |
+| la final, de la segunda | 0,2266538661 | 0,2266538661 |
+
+A lo bruto: se sube el peso una cienmilésima y se mira el error; se baja una cienmilésima y se mira otra vez; la culpa es lo que va de uno a otro, entre lo que se ha movido.
+
+Las dos coinciden en sus 10 primeros decimales.
+:::
+
+::: tabla
+El error, con la segunda, de la edad movido
+
+| el peso | el error |
+|:--|--:|
+| una cienmilésima más arriba | 0,3681674758 |
+| una cienmilésima más abajo | 0,3681793476 |
+:::
+
+::: tabla
+El error, con la final, de la segunda movido
+
+| el peso | el error |
+|:--|--:|
+| una cienmilésima más arriba | 0,3681756780 |
+| una cienmilésima más abajo | 0,3681711450 |
+:::
+
+::: tabla
+Dónde cae cada neurona en su rampa, y lo que deja pasar
+
+| neurona | pasa del listón por | dice | deja pasar |
+|:--|--:|--:|--:|
+| la primera | 5,851 | 0,9971 | 0,00286 |
+| la segunda | 1,282 | 0,7828 | 0,17 |
+| la final | 0,434 | 0,6068 | 0,2386 |
+
+Pasa del listón por: lo que le llega menos su listón. Deja pasar: lo que dice, por lo que le falta para 1.
+:::
+
+--- c) EL PASO: CADA PESO SE MUEVE CONTRA SU CULPA ---
+
+::: tabla
+La culpa de la segunda, de la edad, edad a edad
+
+| edad | culpa |
+|:--|--:|
+| 3 | -0,0913 |
+| 4 | -0,1675 |
+| 5 | -0,2578 |
+| 6 | +0,2984 |
+| 7 | +0,3037 |
+| 8 | +0,3127 |
+| 9 | +0,3260 |
+| 10 | +0,3416 |
+| 11 | +0,3575 |
+| 12 | +0,3722 |
+| 13 | -0,5936 |
+| 14 | -0,6011 |
+| 15 | -0,6036 |
+| **la media** | **-0,0002** |
+
+La culpa de cada peso es la media de su culpa en las trece edades: se suman las trece y se divide entre 13.
+:::
+
+::: tabla
+El paso: cada peso se mueve contra su culpa
+
+| peso | culpa | se mueve | antes | después |
+|:--|--:|--:|--:|--:|
+| la primera, de la edad | -0,0015 | +0,0008 | 0,6194 | 0,6202 |
+| la segunda, de la edad | -0,0002 | +0,0001 | 0,1016 | 0,1017 |
+| la final, de la primera | -0,0077 | +0,0038 | 2,4531 | 2,4569 |
+| la final, de la segunda | +0,0042 | -0,0021 | -0,9274 | -0,9295 |
+
+Se mueve 0,5 veces su culpa, en contra: si la culpa es negativa, sube; si es positiva, baja.
+:::
+
+::: tabla
+El paso de los tres listones
+
+| listón | culpa | se mueve | antes | después |
+|:--|--:|--:|--:|--:|
+| la primera | -0,0096 | +0,0048 | 2,2012 | 2,2061 |
+| la segunda | -0,0010 | +0,0005 | 0,0391 | 0,0396 |
+| la final | -0,0031 | +0,0016 | 1,2863 | 1,2879 |
+
+La culpa de un listón: cuánto sube el error por cada unidad que sube el listón. Se mueve igual, contra su culpa.
+:::
+
+--- d) EL TERRENO DEL ERROR, CON UN SOLO PESO ---
+
+::: tabla
+El terreno del error, con un solo peso
+
+| dónde | peso | error |
+|:--|--:|--:|
+| donde lo dejó el entrenamiento | 14,05 | 0,00015 |
+| el fondo de esta curva | 14,2 | 0,00015 |
+| un extremo | -5 | 0,5385 |
+| el otro extremo | +30 | 0,2382 |
+
+La red entrenada; se mueve solo la línea de la primera a la final, y los demás pesos se quedan quietos. El error es la media de las trece edades.
+:::
+
+::: tabla
+Cuesta abajo, moviendo solo ese peso, desde 4,0
+
+| paso | peso | error | lo que se movió en esos 100 pasos |
+|--:|--:|--:|--:|
+| 0 | 4,00 | 0,4887 |  |
+| 100 | 8,19 | 0,1056 | 4,19 |
+| 200 | 10,09 | 0,0315 | 1,90 |
+| 300 | 11,10 | 0,0101 | 1,01 |
+| 400 | 11,61 | 0,0050 | 0,50 |
+| 500 | 11,91 | 0,0031 | 0,30 |
+| 600 | 12,12 | 0,0022 | 0,21 |
+| 700 | 12,28 | 0,0017 | 0,16 |
+| 800 | 12,41 | 0,0014 | 0,13 |
+| 900 | 12,51 | 0,0012 | 0,11 |
+| 1.000 | 12,60 | 0,0010 | 0,09 |
+| 1.100 | 12,68 | 0,0009 | 0,08 |
+| 1.200 | 12,75 | 0,0008 | 0,07 |
+| 1.300 | 12,81 | 0,0007 | 0,06 |
+| 1.400 | 12,87 | 0,0006 | 0,06 |
+| 1.500 | 12,92 | 0,0006 | 0,05 |
+| 1.600 | 12,96 | 0,0005 | 0,05 |
+| 1.700 | 13,01 | 0,0005 | 0,04 |
+| 1.800 | 13,05 | 0,0005 | 0,04 |
+| 1.900 | 13,08 | 0,0004 | 0,04 |
+| 2.000 | 13,12 | 0,0004 | 0,03 |
+
+Cada paso mueve el peso 0,5 veces su culpa, en contra.
+:::
+
+--- e) LAS QUE SE ATASCAN ---
+
+::: tabla
+Las que se atascan: 30 de 200 arranques
+
+|  | error tras 100.000 pasos | con 100.000 pasos más |
+|:--|--:|--:|
+| las 29 que siguen | 0,1622 a 0,2485 | 0,1619 a 0,2485 |
+| la que sale | 0,2131 | 0,0001 |
+| las que resuelven | 0,0002 a 0,0057 |  |
+
+29 siguen sin resolverlo y 1 sale con los pasos de más.
+:::
+
+::: tabla
+Qué edades fallan las que siguen, y qué dicen en ellas
+
+| edades que fallan | redes | lo que dicen en ellas | su error |
+|:--|--:|--:|--:|
+| 13, 14, 15 | 23 | 0,7006 | 0,1619 |
+| 3, 4, 5, 13, 14, 15 | 6 | 0,5385 | 0,2485 |
+
+Todas con 100.000 pasos de más; lo que dicen es lo que da la red en esas edades.
+:::
+
+::: tabla
+El error de decir 0,7 a los de 6 en adelante y acertar los de 3 a 5
+
+|  | cuánto |
+|:--|--:|
+| lo que falla en cada una de las 7 que entran (dice 0,7, tendría que decir 1) | 0,3 |
+| por sí mismo | 0,09 |
+| 7 veces | 0,63 |
+| lo que falla en cada una de las 3 que no entran (dice 0,7, tendría que decir 0) | 0,7 |
+| por sí mismo | 0,49 |
+| 3 veces | 1,47 |
+| en las de 3 a 5 acierta: no falla nada | 0 |
+| **entre las trece: el error** | **0,1615** |
+| el error medido, de las que se quedan así | 0,1619 |
+
+Es el error de la mejor respuesta que se puede dar sin distinguir una edad de otra entre las de 6 en adelante: la proporción de las que entran, 7 de 10.
+
+23 de las 29 que siguen se quedan así.
+:::
+
+::: tabla
+El error de decir 0,538 a todas las edades
+
+|  | cuánto |
+|:--|--:|
+| lo que falla en cada una de las 7 que entran | 0,462 |
+| por sí mismo | 0,2130 |
+| 7 veces | 1,4911 |
+| lo que falla en cada una de las 6 que no entran | 0,538 |
+| por sí mismo | 0,2899 |
+| 6 veces | 1,7396 |
+| **entre las trece: el error** | **0,2485** |
+| el error medido, de las que se quedan así | 0,2485 |
+
+Es el error de la mejor respuesta sin distinguir ninguna edad: la proporción de las que entran, 7 de 13. 6 de las 29 se quedan así.
+:::
+
+::: tabla
+Pasos en que falla alguna edad la red del capítulo, después del 7.500
+
+| paso | cuántas | cuáles |
+|:--|--:|:--|
+| 8.500 | 1 | 12 |
+| 9.000 | 1 | 13 |
+| 9.500 | 2 | 11, 12 |
+| 10.000 | 1 | 12 |
+| 11.000 | 1 | 12 |
+| 11.500 | 1 | 12 |
+| 12.000 | 1 | 13 |
+| 13.000 | 1 | 12 |
+| 15.500 | 1 | 12 |
+| 16.000 | 1 | 12 |
+| 16.500 | 1 | 12 |
+| 17.500 | 1 | 12 |
+
+Se mira cada 500 pasos, hasta el 100.000. El último paso con alguna mal es el 17.500: desde el siguiente no vuelve a fallar ninguna.
+:::
+
+--- f) LOS NÚMEROS PARA LA CADENA ---
+
+::: tabla
+La culpa de la primera neurona, antes y después de su rampa
+
+|  | cuánto |
+|:--|--:|
+| la culpa de la final | 0,2897 |
+| por el peso de su línea | +2,45 |
+| lo que le toca a la primera | 0,7098 |
+| lo que deja pasar su rampa | 0,00286 |
+| su culpa, tras pasar por su rampa | 0,00203 |
+| sin redondear: lo que le toca | 0,710298 |
+| sin redondear: su culpa | 0,002031 |
+
+En el ejemplo del paso 1.000. La rampa deja pasar de lo que le toca solo una parte: su culpa es lo que le toca por esa parte.
+:::
+
+--- g) CUÁNTOS NÚMEROS TIENE LA RED ---
+
+::: tabla
+Cuántos números tiene la red
+
+|  | cuántos |
+|:--|--:|
+| pesos de las líneas | 4 |
+| listones | 3 |
+| **en total** | **7** |
+
+Dos líneas de la edad a las de en medio, dos de las de en medio a la final, y un listón por neurona.
+:::
+
