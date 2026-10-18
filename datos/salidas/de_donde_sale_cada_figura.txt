@@ -1,12 +1,12 @@
 --- selftest ---
 [1] test nulo         una figura sin programa, con dos programas y con otra numeración: 3 de 3 revientan
 [2] señal implantada  dos figuras: a lee x; una_capa: ninguna; con y sin borradores: bien
-[3] invariante        55 figuras, cada una con su programa; numeradas de 1 a 55; 10 sin fichero; en 4 tablas de 20 filas como mucho
+[3] invariante        55 figuras, cada una con su programa; numeradas de 1 a 55; 11 sin fichero; en 4 tablas de 20 filas como mucho
 
 SELFTEST: las tres pruebas pasan.
 
 ########## de dónde sale cada figura del libro ##########
-fecha: 2026-10-18 07:04 UTC
+fecha: 2026-10-18 08:27 UTC
 máquina: Darwin arm64. La medición no
 depende de la máquina: lee ficheros de texto
 libro: con los borradores de en-curso/;
@@ -47,7 +47,7 @@ De dónde sale cada figura, de la 21 a la 40
 | fig. | cap. | programa | salidas que lee |
 |--:|--:|:--|:--|
 | 21 | 3 | los_dos_que_mas_se_parecen | que_mira_cada_una |
-| 22 | 3 | cuadrado_redibujado | culpa_hacia_atras_datos.csv |
+| 22 | 3 | cuadrado_del_colegio | ninguna |
 | 23 | 4 | la_red_del_pasillo | culpa_hacia_atras |
 | 24 | 4 | cuadrado_redibujado | culpa_hacia_atras_datos.csv |
 | 25 | 4 | la_rampa_del_ejemplo | culpa_hacia_atras |
