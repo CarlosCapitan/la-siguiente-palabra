@@ -15,3 +15,10 @@ __pycache__/
 *.pages
 *.tex
 *.idml
+# Las figuras del libro no se publican: los programas las dibujan en figuras/ al ejecutarse; viven en el repositorio privado.
+*.png
+*.jpg
+*.jpeg
+*.svg
+*.gif
+!figuras/.gitkeep

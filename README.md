@@ -1,13 +1,14 @@
 # Código compañero
 
-Repositorio público con el código, los datos y las figuras del libro. El libro cuenta qué salió;
+Repositorio público con el código y los datos del libro. El libro cuenta qué salió;
 aquí está cómo se obtuvo, para que cualquiera pueda repetirlo.
 
 Máquina de referencia: MacBook Pro M4 Max, 36 GB de memoria unificada, macOS.
 
 - `codigo/` — un fichero por experimento, sin rutas absolutas, con semilla fija.
 - `datos/` — entradas reproducibles o el guion para descargarlas.
-- `figuras/` — las figuras del libro, generadas por el código de `codigo/`.
+- `figuras/` — carpeta vacía al clonar: los programas de `codigo/` dibujan aquí las figuras al
+  ejecutarse. Las figuras no se publican (el `.gitignore` las deja fuera).
 
 ## Dónde se ejecuta cada cosa
 
@@ -39,7 +40,7 @@ normal, que es `requirements.txt`.
 ## Licencia
 
 El código (`codigo/`), los resultados que produce (`datos/salidas/` y demás ficheros de `datos/`
-generados por él) y las figuras (`figuras/`) van bajo licencia MIT (`LICENSE`, texto estándar en
+generados por él) van bajo licencia MIT (`LICENSE`, texto estándar en
 inglés). La licencia no cubre el texto del libro, cuyos derechos se reserva el autor y que no está
 en este repositorio, ni los datos de terceros, que conservan sus propias condiciones:
 
