@@ -1,0 +1,11 @@
+# Se midió con Python 3.12.14 (versiones exactas del entorno de las mediciones del libro).
+# Los capítulos con modelos piden un Mac con Apple Silicon (mlx) o una tarjeta gráfica (torch).
+gensim==4.4.0
+huggingface_hub==1.31.0
+matplotlib==3.11.2
+mlx==0.32.2
+mlx-lm==0.31.3
+numpy==2.5.3
+scikit-learn==1.9.1
+torch==2.14.0
+transformers==5.17.0

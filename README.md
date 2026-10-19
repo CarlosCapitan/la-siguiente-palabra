@@ -26,6 +26,7 @@ la máquina virtual Linux de la aplicación de escritorio, que no alcanza la GPU
 
     git clone https://github.com/CarlosCapitan/la-siguiente-palabra
     cd la-siguiente-palabra/codigo
+    python3 -m pip install -r ../requirements.txt
     bash medir_en_mac.sh
 
 Deja los resultados en `resultados_mac.txt`, con la máquina y la versión de las bibliotecas
