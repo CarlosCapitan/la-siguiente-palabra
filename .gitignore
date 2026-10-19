@@ -2,3 +2,16 @@
 __pycache__/
 *.pyc
 .venv/
+# El libro no entra nunca en el público (PDF, Word, EPUB, etc.): vive solo en el repositorio privado.
+*.pdf
+*.docx
+*.doc
+*.epub
+*.mobi
+*.azw3
+*.kpf
+*.odt
+*.rtf
+*.pages
+*.tex
+*.idml

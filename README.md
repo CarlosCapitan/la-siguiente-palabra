@@ -32,6 +32,10 @@ la máquina virtual Linux de la aplicación de escritorio, que no alcanza la GPU
 Deja los resultados en `resultados_mac.txt`, con la máquina y la versión de las bibliotecas
 anotadas en la cabecera.
 
+`requirements-mac-exacto.txt` es el `pip freeze` entero del entorno de las mediciones (un Mac con
+Apple Silicon y Python 3.12.14): sirve para repetirlas con las mismas versiones de todo, no para el uso
+normal, que es `requirements.txt`.
+
 ## Licencia
 
 El código (`codigo/`), los resultados que produce (`datos/salidas/` y demás ficheros de `datos/`
