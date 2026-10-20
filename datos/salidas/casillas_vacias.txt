@@ -1,13 +1,16 @@
 --- selftest ---
 [1] test nulo         letras distintas tras «qu»: barajado=29  real=5; parejas con un solo palito: barajado=84 % real=74 %
                       «dijo don quijote» en 200.000 trozos: barajado=1  real=122
-[2] señal implantada  texto de seis palabras: 3 parejas, 1 con un solo palito, 9 hojas mirando dos palabras; «quxquxqux»: una letra detrás, 3 veces
-[3] invariante        parejas contadas = trozos menos uno (442.271); parejas vistas <= hojas; todo lo que va tras «qu» está en el alfabeto
+                      grupo «qz» (no aparece): palabra de ejemplo = None (sin palabra, como tiene que ser)
+[2] señal implantada  texto de seis palabras: 3 parejas, 1 con un solo palito, 9 hojas mirando dos palabras; «quxquxqux»: una letra detrás, 3 veces;
+                      palabra de ejemplo en un texto fabricado: la más frecuente, y con empate la primera
+[3] invariante        parejas contadas = trozos menos uno (442.271); parejas vistas <= hojas; todo lo que va tras «qu» está en el alfabeto;
+                      las 6 palabras de ejemplo contienen «qu» y su letra, y salen en el texto
 
 SELFTEST: las tres pruebas pasan.
 
 ########## capítulo 1: lo que no cabe en la libreta ##########
-fecha: 2026-10-17 10:55 UTC
+fecha: 2026-10-20 20:36 UTC
 máquina: Darwin arm64. La medición no
 depende de la máquina: cuenta letras y palabras de un fichero
 corpus: datos/quijote.txt, limpiado y troceado como en ngrama.py:
@@ -26,14 +29,14 @@ EL TEXTO QUE SE CUENTA
 ::: tabla
 Qué letra viene detrás de «qu»
 
-| letra que sigue | veces | de cada cien veces |
-|:-:|--:|--:|
-| e | 25.972 | 79,40 % |
-| i | 5.160 | 15,78 % |
-| é | 1.019 | 3,12 % |
-| í | 554 | 1,69 % |
-| a | 3 | 0,01 % |
-| o | 1 | menos de 0,01 % |
+| letra que sigue | veces | de cada cien veces | por ejemplo |
+|:-:|--:|--:|:--|
+| e | 25.972 | 79,40 % | que |
+| i | 5.160 | 15,78 % | quijote |
+| é | 1.019 | 3,12 % | qué |
+| í | 554 | 1,69 % | aquí |
+| a | 3 | 0,01 % | quantioso |
+| o | 1 | menos de 0,01 % | aequo |
 
 Las 32.709 veces que aparece «qu» en el Quijote.
 

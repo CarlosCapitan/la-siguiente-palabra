@@ -1,13 +1,16 @@
 --- selftest ---
 [1] test nulo         letras posibles mirando 2 / sin mirar: barajado=0,83  real=0,47
+                      grupo «qz» (no aparece): palabra de ejemplo = None (sin palabra, como tiene que ser)
 [2] señal implantada  hoja «wñ»: {'k': 300}
+                      palabra de ejemplo en un texto fabricado: la más frecuente (extra, texto), con empate la primera (texte, y exterior al revés)
 [3] invariante        muestras repetidas iguales a las de ngrama.txt: 7 de 7; letras que salieron sin estar en su hoja: 0
+                      las 5 palabras de ejemplo de «xt» contienen el grupo y su letra y salen en el texto; las que no: 0
 [3] invariante        muestra de 1 letra: 12 palabras del Quijote en 40 trozos (casillas_vacias.txt dice 12 en 40)
 
 SELFTEST: las tres pruebas pasan.
 
 ########## capítulo 1: la escalera, paso a paso ##########
-fecha: 2026-10-17 10:55 UTC
+fecha: 2026-10-20 20:36 UTC
 máquina: Darwin arm64. La medición no
 depende de la máquina: repite los sorteos de ngrama.py con su
 semilla (20260914) y sale lo mismo en cualquier ordenador
@@ -30,13 +33,13 @@ un contexto de la tabla, lo escribe, y detrás empiezan los sorteos.
 ::: tabla
 Qué letra viene detrás de «xt»
 
-| letra que sigue | veces | de cada cien veces |
-|:-:|--:|--:|
-| r | 18 | 75,00 % |
-| e | 2 | 8,33 % |
-| o | 2 | 8,33 % |
-| a | 1 | 4,17 % |
-| i | 1 | 4,17 % |
+| letra que sigue | veces | de cada cien veces | por ejemplo |
+|:-:|--:|--:|:--|
+| r | 18 | 75,00 % | extraordinario |
+| e | 2 | 8,33 % | exteriores |
+| o | 2 | 8,33 % | texto |
+| a | 1 | 4,17 % | juxta |
+| i | 1 | 4,17 % | extirpar |
 
 Las 24 veces que aparece «xt» en el Quijote.
 

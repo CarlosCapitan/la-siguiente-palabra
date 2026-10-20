@@ -47,6 +47,7 @@ REPETICIONES_MARCA = 300
 
 import platform
 import random
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -212,6 +213,12 @@ def selftest(secuencia, muestras_libro, vocabulario):
         fallos.append(f"test nulo: se esperaba barajado > {COCIENTE_NULO_MIN} y real < "
                       f"{COCIENTE_REAL_MAX}; salió barajado={c_nulo:.3f}, real={c_real:.3f}")
 
+    sin_grupo = N.palabra_de_ejemplo(secuencia, "qz", "e")            # «qz» no sale en el Quijote
+    print(f"                      grupo «qz» (no aparece): palabra de ejemplo = {sin_grupo}"
+          " (sin palabra, como tiene que ser)")
+    if sin_grupo is not None:
+        fallos.append(f"test nulo: un grupo que no aparece no debe dar palabra; dio {sin_grupo}")
+
     # 2. SEÑAL IMPLANTADA — una palabra inventada, repetida, deja una hoja con una sola letra,
     #    y exactamente tantas veces como se metió.
     implantado = secuencia[:200_000] + (" " + MARCA) * REPETICIONES_MARCA
@@ -220,6 +227,19 @@ def selftest(secuencia, muestras_libro, vocabulario):
     if dict(pagina) != {MARCA[2]: REPETICIONES_MARCA}:
         fallos.append(f"señal implantada: se esperaba la hoja «{MARCA[:2]}» = "
                       f"{{'{MARCA[2]}': {REPETICIONES_MARCA}}}; salió {dict(pagina)}")
+
+    # La palabra de ejemplo, con un texto fabricado: gana la más frecuente; con empate, la que
+    # sale antes; un signo detrás del grupo no está dentro de ninguna palabra.
+    fabricado = "extra extra texto texto sexto extrano texte exterior ext otro"
+    esperado = [("xt", "r", "extra"), ("xt", "o", "texto"), ("xt", "e", "texte"),
+                ("xt", " ", None), ("xt", "z", None)]
+    obtenido = [(g, l, N.palabra_de_ejemplo(fabricado, g, l)) for g, l, _ in esperado]
+    al_reves = N.palabra_de_ejemplo("exterior texte", "xt", "e")
+    print(f"                      palabra de ejemplo en un texto fabricado: la más frecuente "
+          f"(extra, texto), con empate la primera ({obtenido[2][2]}, y {al_reves} al revés)")
+    if obtenido != esperado or al_reves != "exterior":
+        fallos.append(f"señal implantada: palabra de ejemplo, se esperaba {esperado} y "
+                      f"«exterior» al revés; salió {obtenido} y {al_reves}")
 
     # 3. INVARIANTES — los sorteos repetidos dan las muestras del libro, letra por letra; cada
     #    letra que sale estaba en su urna; y lo que se cuenta de las palabras cuadra.
@@ -235,6 +255,16 @@ def selftest(secuencia, muestras_libro, vocabulario):
                       f"que en {MUESTRAS}; este programa ya no repite los sorteos de ngrama.py")
     if fuera:
         fallos.append(f"invariante: {fuera} letras salieron sin estar en su hoja")
+    clave0, u0, _ = repetidas[PELDANO_A_MANO][3][0]
+    en_el_texto = set(re.findall(r"[^\W\d_]+", secuencia))
+    ejemplos = {x: N.palabra_de_ejemplo(secuencia, "".join(clave0), x) for x in u0}
+    malas = [x for x, e in ejemplos.items()
+             if not (e and "".join(clave0) + x in e and e in en_el_texto)]
+    print(f"                      las {len(u0)} palabras de ejemplo de «{''.join(clave0)}» "
+          f"contienen el grupo y su letra y salen en el texto; las que no: {len(malas)}")
+    if malas:
+        fallos.append(f"invariante: palabras de ejemplo que no contienen el grupo y su letra, "
+                      f"o no salen en el texto: {malas}")
     trozos, reales = palabras_reales(muestras_libro[1], vocabulario)
     print(f"[3] invariante        muestra de 1 letra: {len(reales)} palabras del Quijote en "
           f"{len(trozos)} trozos (casillas_vacias.txt dice 12 en 40)")
@@ -293,8 +323,10 @@ def main():
     E += ["", f"2. EL PRIMER SORTEO DEL SELECTOR EN {PELDANO_A_MANO}, ENTERO", ""]
     E += tabla_editorial(
         f"Qué letra viene detrás de «{''.join(clave)}»",
-        ["letra que sigue", "veces", "de cada cien veces"],
-        [[nombre_simbolo(x), miles(n), pct(n / total, 2)] for x, n in u.most_common()], "cdd",
+        ["letra que sigue", "veces", "de cada cien veces", "por ejemplo"],
+        [[nombre_simbolo(x), miles(n), pct(n / total, 2),
+          N.palabra_de_ejemplo(secuencia, "".join(clave), x) or "—"]
+         for x, n in u.most_common()], "cddi",
         [f"Las {miles(total)} veces que aparece «{''.join(clave)}» en el Quijote.",
          f"La máquina arranca con «{arranque}». Sale {letra(sale)}; escrito: «{arranque + sale}»."])
 

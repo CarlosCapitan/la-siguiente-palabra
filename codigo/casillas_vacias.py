@@ -75,6 +75,7 @@ LIBROS_GOOGLE_2010 = 129_864_880
 
 # ==========================================================
 
+import re
 import sys
 from collections import Counter
 import platform
@@ -82,7 +83,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from formato import ANCHO_CAJA, coma, comprobar_ancho, miles, pct, tabla_editorial
-from ngrama import ALFABETO, SIGNOS, cargar_corpus, normalizar, solo_palabras, trocear
+from ngrama import (ALFABETO, SIGNOS, cargar_corpus, normalizar, palabra_de_ejemplo,
+                    solo_palabras, trocear)
 
 AQUI = Path(__file__).resolve().parent
 
@@ -178,6 +180,11 @@ def selftest(secuencia=None, palabras=None):
           f"barajado={dijo_barajado}  real={dijo_real}")
     assert dijo_real > 10 * max(1, dijo_barajado), (dijo_real, dijo_barajado)
 
+    sin_grupo = palabra_de_ejemplo(secuencia, "qz", "e")           # «qz» no sale en el Quijote
+    print(f"                      grupo «qz» (no aparece): palabra de ejemplo = {sin_grupo}"
+          " (sin palabra, como tiene que ser)")
+    assert tras(secuencia, "qz") == Counter() and sin_grupo is None, sin_grupo
+
     # [2] SEÑAL IMPLANTADA — un texto diminuto cuyas respuestas se cuentan con el dedo.
     #     «a b a b a c»: parejas ab, ba, ab, ba, ac -> 3 distintas, de ellas 1 una sola
     #     vez; vocabulario de 3 palabras -> 9 hojas posibles. Y «quxquxqux»: detrás
@@ -195,8 +202,19 @@ def selftest(secuencia=None, palabras=None):
     assert lo_que_sigue(mini, "b") == Counter({"a": 2}), lo_que_sigue(mini, "b")
     trozos, reales = palabras_reales("hola, xqz hola", {"hola"})
     assert (len(trozos), len(reales)) == (3, 2), (trozos, reales)
+    # La palabra de ejemplo, con un texto fabricado: gana la más frecuente; con empate, la que
+    # sale antes; un signo detrás del grupo no está dentro de ninguna palabra.
+    fabricado = "extra extra texto texto sexto extrano texte exterior ext otro"
+    assert palabra_de_ejemplo(fabricado, "xt", "r") == "extra"          # extra 2, extrano 1
+    assert palabra_de_ejemplo(fabricado, "xt", "o") == "texto"          # texto 2, sexto 1
+    assert palabra_de_ejemplo(fabricado, "xt", "e") == "texte"          # empate: texte antes
+    assert palabra_de_ejemplo("exterior texte", "xt", "e") == "exterior"  # empate al revés
+    assert palabra_de_ejemplo(fabricado, "xt", " ") is None
+    assert palabra_de_ejemplo(fabricado, "xt", "z") is None
     print("[2] señal implantada  texto de seis palabras: 3 parejas, 1 con un solo palito, "
-          "9 hojas mirando dos palabras; «quxquxqux»: una letra detrás, 3 veces")
+          "9 hojas mirando dos palabras; «quxquxqux»: una letra detrás, 3 veces;\n"
+          "                      palabra de ejemplo en un texto fabricado: la más frecuente, y "
+          "con empate la primera")
 
     # [3] INVARIANTE DEL DOMINIO — cosas que tienen que ser verdad pase lo que pase,
     #     comprobadas sobre el Quijote entero.
@@ -211,8 +229,15 @@ def selftest(secuencia=None, palabras=None):
     for frase in FRASES_DECIR:                          # una frase no sale más que su final
         assert veces(palabras, frase) <= veces(palabras, frase.split(" ", 1)[1]), frase
     assert sum(lo_que_sigue(palabras, CONTEXTO_CORTO).values()) <= veces(palabras, CONTEXTO_CORTO)
+    en_el_texto = set(re.findall(r"[^\W\d_]+", secuencia))
+    for letra in t:
+        ejemplo = palabra_de_ejemplo(secuencia, PAR_VIGILADO, letra)
+        assert ejemplo and PAR_VIGILADO + letra in ejemplo and ejemplo in en_el_texto, (
+            letra, ejemplo)
     print(f"[3] invariante        parejas contadas = trozos menos uno ({miles(sum(p.values()))}); "
-          f"parejas vistas <= hojas; todo lo que va tras «{PAR_VIGILADO}» está en el alfabeto")
+          f"parejas vistas <= hojas; todo lo que va tras «{PAR_VIGILADO}» está en el alfabeto;\n"
+          f"                      las {len(t)} palabras de ejemplo contienen «{PAR_VIGILADO}» "
+          "y su letra, y salen en el texto")
 
     print("\nSELFTEST: las tres pruebas pasan.\n")
 
@@ -270,10 +295,11 @@ def main():
         parte = pct(n / total_par, 2)
         if parte.startswith("0,00"):
             parte = "menos de 0,01 %"      # un recuento pequeño no es un cero
-        filas_qu.append([letra, miles(n), parte])
+        filas_qu.append([letra, miles(n), parte,
+                         palabra_de_ejemplo(secuencia, PAR_VIGILADO, letra)])
     lineas += tabla_editorial(
         f"Qué letra viene detrás de «{PAR_VIGILADO}»",
-        ["letra que sigue", "veces", "de cada cien veces"], filas_qu, "cdd",
+        ["letra que sigue", "veces", "de cada cien veces", "por ejemplo"], filas_qu, "cddi",
         [f"Las {miles(total_par)} veces que aparece «{PAR_VIGILADO}» en el Quijote.",
          f"Símbolos distintos detrás de «{PAR_VIGILADO}»: {len(t)}, de los {len(ALFABETO)} que "
          "admite el programa (letras, espacio y signos de puntuación)."])

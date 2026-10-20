@@ -74,6 +74,25 @@ def normalizar(texto, alfabeto):
     return limpio
 
 
+def palabra_de_ejemplo(texto, grupo, letra):
+    """La palabra más frecuente que contiene el grupo seguido de esa letra, en el texto ya
+    normalizado (Orden 32, 20 oct 2026). Palabra: lo que va entre dos caracteres que no son
+    letras. Si empatan varias, la que sale antes en el libro. Si ninguna palabra lo contiene
+    (el grupo no aparece, o la «letra» es un espacio o un signo, que no está dentro de ninguna
+    palabra), devuelve None."""
+    buscado = grupo + letra
+    veces, primera = Counter(), {}
+    for m in re.finditer(r"[^\W\d_]+", texto):
+        palabra = m.group()
+        if buscado in palabra:
+            veces[palabra] += 1
+            primera.setdefault(palabra, m.start())
+    if not veces:
+        return None
+    mejor = max(veces.values())
+    return min((p for p, n in veces.items() if n == mejor), key=primera.__getitem__)
+
+
 def trocear(secuencia):
     """Parte el texto limpio en trozos: cada palabra es un trozo, y cada signo de puntuación,
     otro. «le dijo: dadme» -> ["le", "dijo", ":", "dadme"]."""
