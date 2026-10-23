@@ -5,7 +5,7 @@
 SELFTEST: las tres pruebas pasan.
 
 Máquina: arm64, Darwin 25.6.0.
-Medido el 2026-10-17. Semilla: 20260914.
+Medido el 2026-10-23. Semilla: 20260914.
 Biblioteca: 21.313.324 palabras, 68.927 distintas.
 Mismo modelo que palabras_numeros.txt: las vecinas de las ocho palabras coinciden.
 
@@ -284,9 +284,9 @@ El tamaño de cada lista
 |  | caballo | corcel |
 |:--|--:|--:|
 | cada número por sí mismo, sumados | 0,620 | 0,219 |
-| **el tamaño: la raíz cuadrada de esa suma** | **0,787** | **0,468** |
+| **el tamaño: la raíz cuadrada de esa suma** | **0,7872** | **0,4680** |
 
-La raíz es el número que, multiplicado por sí mismo, da la suma: 0,787 por 0,787 da 0,620.
+La raíz es el número que, multiplicado por sí mismo, da la suma: 0,7872 por 0,7872 da 0,620.
 :::
 
 ::: tabla

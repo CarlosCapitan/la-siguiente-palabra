@@ -473,10 +473,10 @@ def bloque_cuenta(m):
     tamanos = tabla_editorial(
         "El tamaño de cada lista", ["", a, b],
         [["cada número por sí mismo, sumados", coma(ta2, 3), coma(tb2, 3)],
-         ["**el tamaño: la raíz cuadrada de esa suma**", f"**{coma(ta, 3)}**", f"**{coma(tb, 3)}**"]],
+         ["**el tamaño: la raíz cuadrada de esa suma**", f"**{coma(ta, 4)}**", f"**{coma(tb, 4)}**"]],
         "idd",
-        [f"La raíz es el número que, multiplicado por sí mismo, da la suma: {coma(ta, 3)} por "
-         f"{coma(ta, 3)} da {coma(ta * ta, 3)}."])
+        [f"La raíz es el número que, multiplicado por sí mismo, da la suma: {coma(ta, 4)} por "
+         f"{coma(ta, 4)} da {coma(ta * ta, 3)}."])
     final = tabla_editorial(
         f"El parecido de «{a}» y «{b}»", ["", "cuánto"],
         [["la suma de «uno por otro»", coma(sum(prod), 3)],
