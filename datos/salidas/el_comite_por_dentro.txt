@@ -1,15 +1,17 @@
 --- selftest ---
-[1] test nulo         respuestas barajadas: acierta 61 %; parecido con la diferencia -0,03
+[1] test nulo         respuestas barajadas: acierta 61 %; parecido con la diferencia -0,01
 [2] señal implantada  la diferencia está en el punto 27; el peso más grande, en el 27
-[3] invariante        decisiones iguales en enteros y en decimales: 361 de 361; la tabla suma el total: True
+[3] invariante        peso = tinta de los cuatros corregidos menos la de los nueves: 64 de 64 puntos; listón = nueves menos cuatros corregidos: -1 (el del comité, -1)
+                      decide como dice la suma: 361 de 361 dibujos; la tabla suma el total: True
 
 SELFTEST: las tres pruebas pasan.
 
 ########## capítulo 3: el comité real, por dentro ##########
-máquina: Linux aarch64. Medido el 2026-10-09.
+máquina: Darwin arm64. Medido el 2026-10-23.
 La pregunta: ¿es un 4 o un 9? Aprende con 252 dibujos
-y acierta 100,0 % de los que no vio.
-Todo en enteros: tinta × 16, pesos × 32, listón × 512; decide igual.
+y acierta 98,2 % de los que no vio.
+La tinta va de 0 a 16, tal como viene en el conjunto de dígitos;
+los pesos y el listón salen enteros, sin multiplicar nada.
 
 1. EL DIBUJO DE UN 4: LA TINTA DE CADA PUNTO (de 0 a 16)
 
@@ -26,16 +28,16 @@ Todo en enteros: tinta × 16, pesos × 32, listón × 512; decide igual.
 2. LO QUE APRENDIÓ: EL PESO DE CADA PUNTO
 
            1     2     3     4     5     6     7     8
-   1       0     0   -20   -26   -40  -126   -60    -4
-   2       0   -24   -80     4   -72  -176   -30    20
-   3       0   -34   -16    44   -30   -96    -6    18
-   4       0    56    56     4    -8   -90    48     0
-   5       0    94   128    54   108   -20    28     0
-   6       0    58   100   150   116    10   -52     0
-   7       0    34    20   100    18   -70   -58     0
-   8       0     0    -6   -18    -4   -56   -22     0
+   1       0    -1    -3   -20   -61   -78   -31     0
+   2       0   -21   -37   -28   -49   -65   -28     8
+   3       0   -34   -28    24    15   -24    21    10
+   4       0    29    21   -11    -3    -6    42     0
+   5       0    70    86    27    68    36    30     0
+   6       0    31    55   111    59    29   -27     0
+   7       0    10    11    43    15   -29   -43    -2
+   8       0     0     5   -18     0   -45   -21    -1
 
-  el listón: -512. Dice «es un 4» si el total pasa de ahí.
+  el listón: -1. Dice «es un 4» si el total pasa de ahí.
 
 3. LA CUENTA DEL 4: TINTA POR PESO, PUNTO A PUNTO
 
@@ -44,11 +46,11 @@ Tres puntos, para ver cómo va
 
 | punto | tinta | peso | aporta |
 |:--|--:|--:|--:|
-| fila 6, columna 4 | 16 | 150 | 2.400 |
-| fila 4, columna 6 | 9 | -90 | -810 |
-| fila 2, columna 6 | 0 | -176 | 0 |
+| fila 6, columna 4 | 16 | 111 | 1.776 |
+| fila 1, columna 5 | 11 | -61 | -671 |
+| fila 1, columna 6 | 0 | -78 | 0 |
 
-Aporta: la tinta por el peso. Todo multiplicado para que salga entero: tinta por 16, pesos por 32.
+Aporta: la tinta por el peso.
 :::
 
 ::: tabla
@@ -56,22 +58,22 @@ La cuenta del 4, punto a punto
 
 | punto | tinta | peso | aporta |
 |:--|--:|--:|--:|
-| fila 6, columna 4 | 16 | 150 | 2.400 |
-| fila 5, columna 3 | 16 | 128 | 2.048 |
-| fila 6, columna 5 | 13 | 116 | 1.508 |
-| fila 6, columna 3 | 15 | 100 | 1.500 |
-| fila 3, columna 4 | 13 | 44 | 572 |
-| fila 5, columna 6 | 16 | -20 | -320 |
-| fila 1, columna 5 | 11 | -40 | -440 |
-| fila 2, columna 5 | 8 | -72 | -576 |
-| fila 7, columna 6 | 10 | -70 | -700 |
-| fila 4, columna 6 | 9 | -90 | -810 |
-| los otros 54 puntos |  |  | 2.202 |
-| **total del 4** |  |  | **7.384** |
+| fila 6, columna 4 | 16 | 111 | 1.776 |
+| fila 5, columna 3 | 16 | 86 | 1.376 |
+| fila 6, columna 3 | 15 | 55 | 825 |
+| fila 6, columna 5 | 13 | 59 | 767 |
+| fila 5, columna 6 | 16 | 36 | 576 |
+| fila 8, columna 6 | 4 | -45 | -180 |
+| fila 2, columna 4 | 7 | -28 | -196 |
+| fila 7, columna 6 | 10 | -29 | -290 |
+| fila 2, columna 5 | 8 | -49 | -392 |
+| fila 1, columna 5 | 11 | -61 | -671 |
+| los otros 54 puntos |  |  | 2.291 |
+| **total del 4** |  |  | **5.882** |
 
 Los 5 puntos que más suman, los 5 que más restan y lo que suman juntos todos los demás. Aporta: la tinta por el peso.
 
-El listón es -512: dice «es un 4» si el total pasa de ahí.
+El listón es -1: dice «es un 4» si el total pasa de ahí.
 :::
 
 ::: tabla
@@ -79,8 +81,8 @@ El 4 y el 9, contra el listón
 
 | dibujo | total | listón | ¿pasa del listón? |
 |:--|--:|--:|:-:|
-| un 4 | 7.384 | -512 | sí |
-| un 9 | -5.586 | -512 | no |
+| un 4 | 5.882 | -1 | sí |
+| un 9 | -923 | -1 | no |
 
 La misma cuenta, tinta por peso en los 64 puntos, sumada.
 :::
@@ -125,11 +127,78 @@ Cuánto se parecen los pesos a cada cosa
 
 | los pesos, comparados con | cuánto se parecen |
 |:--|--:|
-| el 4 medio | 0,42 |
-| la diferencia | 0,86 |
-| puntos donde peso y diferencia empujan al mismo lado | 39 de 43 |
+| el 4 medio | 0,44 |
+| la diferencia | 0,80 |
+| puntos donde peso y diferencia empujan al mismo lado | 38 de 42 |
 
 Cuánto se parecen: de −1 a 1; 1 quiere decir iguales salvo el tamaño de los números, y 0, que no tienen nada que ver.
 
 Mismo lado: se cuentan solo los puntos donde ni el peso ni la diferencia valen cero.
+:::
+
+5. DE DÓNDE SALEN LOS PESOS
+
+::: tabla
+Las correcciones que hizo el comité al aprender
+
+|  | cuántas |
+|:--|--:|
+| correcciones en total | 31 |
+| de ellas, con un cuatro | 16 |
+| de ellas, con un nueve | 15 |
+| vueltas por todos los dibujos | 6 |
+
+Con un cuatro: el comité no lo reconocía y se sumó a cada peso la tinta del dibujo. Con un nueve: lo tomó por un cuatro y se restó.
+
+Vueltas: en las 5 primeras corrigió algo; en la última ya no tuvo que corregir nada y se quedó quieto.
+:::
+
+::: tabla
+De dónde sale el peso de los dos puntos que más cuentan
+
+| punto | tinta sumada con los cuatros | tinta restada con los nueves | peso |
+|:--|--:|--:|--:|
+| fila 6, columna 4 | 168 | 57 | 111 |
+| fila 1, columna 6 | 34 | 112 | -78 |
+
+Tinta sumada con los cuatros: la suma de la tinta de ese punto en las 16 correcciones con un cuatro. Tinta restada con los nueves: lo mismo en las 15 correcciones con un nueve. El peso es la primera menos la segunda.
+
+Son el punto de peso más positivo y el de peso más negativo.
+:::
+
+::: tabla
+De dónde sale el listón
+
+|  | listón |
+|:--|--:|
+| empieza en | 0 |
+| baja con los 16 cuatros corregidos, un punto cada vez | -16 |
+| sube con los 15 nueves corregidos, un punto cada vez | +15 |
+| **acaba en** | **-1** |
+
+Dice «es un cuatro» si el total pasa del listón.
+:::
+
+::: tabla
+Lo que acierta de los dibujos que no vio
+
+|  | dibujos |
+|:--|--:|
+| dibujos que no vio | 109 |
+| los que acierta | 107 |
+| los que falla, que son un cuatro | 0 |
+| los que falla, que son un nueve | 2 |
+
+Acierto: 98,2 %.
+:::
+
+::: tabla
+Cuántos dibujos tienen tinta 8 o más en esos dos puntos
+
+| punto | de los cuatros para aprender | de los nueves para aprender |
+|:--|--:|--:|
+| fila 6, columna 4 | 110 de 126 (87 %) | 2 de 126 (2 %) |
+| fila 1, columna 6 | 10 de 126 (8 %) | 40 de 126 (32 %) |
+
+Los dibujos con los que aprendió: 126 cuatros y 126 nueves. Tinta 8 o más: de la mitad de arriba de la escala, que va de 0 a 16.
 :::

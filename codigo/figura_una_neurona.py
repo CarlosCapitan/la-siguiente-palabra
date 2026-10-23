@@ -36,6 +36,7 @@ ESCALA = 1.0 / 0.72
 DIGITO_SI = 4                    # la pregunta del comité en el libro: ¿esto es un cuatro?
 DIGITO_NO = 9                    # el que más se le parece escrito a mano
 LADO = 8                         # los dibujos son de ocho puntos por ocho
+TINTA_MAXIMA = 16                # la tinta del conjunto de dígitos va de 0 a 16 (entera)
 SEMILLA_FIGURA = 20260916
 TOLERANCIA = 1e-9                # al recalcular el total a mano
 
@@ -81,7 +82,7 @@ def entrenar_el_comite(semilla=SEMILLA_FIGURA, permutar=False):
     """Un perceptrón que separa DIGITO_SI de DIGITO_NO, con la regla de Rosenblatt.
 
     Con permutar=True se le barajan las etiquetas: es el test nulo."""
-    X, t = cargar_digitos()
+    X, t = cargar_digitos(enteros=True)       # la tinta tal como viene, de 0 a 16 (Orden 38)
     mask = (t == DIGITO_SI) | (t == DIGITO_NO)
     Xs = X[mask]
     ys = np.where(t[mask] == DIGITO_SI, 1, -1)
@@ -93,6 +94,7 @@ def entrenar_el_comite(semilla=SEMILLA_FIGURA, permutar=False):
     tr, te = idx[:corte], idx[corte:]
     w, b, _ = entrenar(Xs[tr], ys[tr])
     return {"w": w, "b": b, "X": Xs, "y": ys, "prueba": (Xs[te], ys[te]),
+            "entrenamiento": (Xs[tr], ys[tr]),     # lo que aprendió (Orden 38: el comité del cap. 3 lo cuenta)
             "acierto": acierto(Xs[te], ys[te], w, b)}
 
 
@@ -114,7 +116,7 @@ def puntos_y_liston(m, indices):
 
 
 def panel_dibujo(ax, imagen):
-    ax.imshow(imagen.reshape(LADO, LADO), cmap="gray_r", vmin=0, vmax=1)
+    ax.imshow(imagen.reshape(LADO, LADO), cmap="gray_r", vmin=0, vmax=TINTA_MAXIMA)
     ax.set_xticks([]); ax.set_yticks([])
     for s in ax.spines.values():
         s.set_linewidth(0.8)

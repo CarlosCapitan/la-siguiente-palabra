@@ -11,15 +11,20 @@ falta para hacerlo con el dedo:
   2. los 64 casos que aprendió el comité, uno por punto;
   3. la cuenta de tres puntos, la de los que más suman y más restan, el total y el listón, y el
      total de un nueve;
-  4. el cuatro medio, el nueve medio y su diferencia, y cuánto se parecen los casos a cada cosa.
+  4. el cuatro medio, el nueve medio y su diferencia, y cuánto se parecen los casos a cada cosa;
+  5. de dónde salen los pesos: las correcciones una a una, y cómo cada peso y el listón son una
+     suma de tinta.
 
 El comité es el de `figura_una_neurona.py` (el mismo entrenamiento, la misma semilla).
 
-LOS NÚMEROS ENTEROS. El comité trabaja con la tinta de 0 a 1 y con pesos que son múltiplos de
-1/32 (la regla de Rosenblatt suma medio dibujo cada vez que corrige, y la tinta va en dieciseisavos).
-Multiplicar la tinta por 16, los pesos por 32 y el listón por 16 × 32 = 512 no cambia ninguna
-decisión: todo queda multiplicado por lo mismo. Y así todas las cuentas salen enteras, como las del
-comité del capítulo 2. El selftest comprueba que decide igual en todos los dibujos.
+LA TINTA, TAL COMO VIENE (Orden 38, 23 oct 2026). El comité se entrena con la tinta tal como la da el
+conjunto de dígitos, enteros de 0 a 16, sin dividir entre 16. Así la regla de Rosenblatt es
+literalmente la del capítulo 2: si el comité no reconoce un cuatro, se suma a cada miembro la tinta
+que ve y el listón baja un punto; si toma un nueve por un cuatro, se resta y el listón sube un punto.
+Todo sale entero sin multiplicar nada (antes, con la tinta de 0 a 1, los pesos salían en múltiplos de
+1/32 y había que multiplicar la tinta por 16, los pesos por 32 y el listón por 512). Y cada peso es,
+por construcción, la tinta de ese punto en los cuatros corregidos menos la de los nueves corregidos:
+el apartado 5 lo cuenta y el selftest lo comprueba en los 64 puntos.
 
 Uso:
     python el_comite_por_dentro.py --selftest
@@ -28,10 +33,10 @@ Uso:
 
 # ======================= CONSTANTES =======================
 
-POR_TINTA = 16                 # la tinta del conjunto va de 0 a 16
-POR_PESO = 32                  # los pesos de la regla son múltiplos de 1/32
 LADO = 8
 PUNTOS_EN_TABLA = 5            # cuántos de los que más suman y de los que más restan se enseñan
+TINTA_ALTA = 8                 # «mucha tinta»: de 8 a 16, la mitad de arriba (apartado 5)
+PALABRA = {4: "cuatro", 9: "nueve"}   # cómo se dicen los dos dígitos del comité, en las tablas del apartado 5
 
 # Selftest
 ACIERTO_NULO_MAX = 0.75        # con las respuestas barajadas no puede acertar mucho más que el azar
@@ -50,20 +55,51 @@ import numpy as np
 
 from formato import ANCHO_CAJA, coma, comprobar_ancho, miles, pct, tabla_editorial
 from figura_una_neurona import DIGITO_NO, DIGITO_SI, ejemplos, entrenar_el_comite
-from perceptron import entrenar
+from perceptron import PASOS_MAX, SEMILLA, TASA, entrenar
 
 
 def en_enteros(m):
-    """Los casos, la tinta y el listón del comité, en números enteros (ver el docstring)."""
-    casos = POR_PESO * m["w"]
-    assert np.allclose(casos, np.round(casos), atol=TOLERANCIA), \
-        "se esperaban pesos múltiplos de 1/32; la regla de perceptron.py ha cambiado"
-    tinta = POR_TINTA * m["X"]
-    assert np.allclose(tinta, np.round(tinta), atol=TOLERANCIA), \
-        "se esperaba tinta en dieciseisavos; el conjunto de dígitos ha cambiado"
-    liston = -POR_TINTA * POR_PESO * m["b"]
-    assert abs(liston - round(liston)) < TOLERANCIA, "se esperaba un listón entero"
+    """Los casos (pesos), la tinta y el listón del comité, que salen enteros sin tocarlos: la
+    tinta es entera y la regla suma o resta tinta entera y un punto de listón cada vez."""
+    casos = m["w"]
+    assert np.array_equal(casos, np.round(casos)), \
+        "se esperaban pesos enteros; la regla de perceptron.py o la tinta han cambiado"
+    tinta = m["X"]
+    assert np.array_equal(tinta, np.round(tinta)) and tinta.min() == 0 and tinta.max() <= 16, \
+        "se esperaba tinta entera de 0 a 16; el conjunto de dígitos ha cambiado"
+    liston = -m["b"]
+    assert liston == round(liston), "se esperaba un listón entero"
     return np.round(casos).astype(int), np.round(tinta).astype(int), int(round(liston))
+
+
+def correcciones(m):
+    """Las correcciones del entrenamiento, una a una: se repite el aprendizaje de
+    `perceptron.entrenar` (la misma semilla, el mismo orden) apuntando cada vez que corrige. Devuelve
+    la lista de (vuelta, dibujo, +1 si era un cuatro y -1 si era un nueve) y cuántas vueltas dio,
+    contando la última, en la que ya no hubo nada que corregir. Se comprueba que acaba en los mismos
+    pesos y el mismo listón que el comité de verdad."""
+    X, y = m["entrenamiento"]
+    X = np.round(X).astype(int)
+    rng = np.random.default_rng(SEMILLA)
+    w, b = np.zeros(X.shape[1], dtype=int), 0
+    orden = np.arange(len(X))
+    apuntes = []
+    for vuelta in range(1, PASOS_MAX + 1):
+        rng.shuffle(orden)
+        errores = 0
+        for i in orden:
+            if y[i] * (X[i] @ w + b) <= 0:
+                assert TASA == 1.0, "se esperaba la tasa de la regla del capítulo 2 (1)"
+                w += y[i] * X[i]
+                b += y[i]
+                apuntes.append((vuelta, int(i), int(y[i])))
+                errores += 1
+        if errores == 0:
+            break
+    assert errores == 0, "se esperaba que el comité dejara de corregirse"
+    assert np.array_equal(w, m["w"]) and b == m["b"], \
+        "las correcciones repetidas no dan los pesos y el listón del comité"
+    return apuntes, vuelta, X, y
 
 
 def lugar(k):
@@ -102,7 +138,7 @@ def selftest():
     # 1. TEST NULO — con las respuestas barajadas, el comité no aprende nada que se parezca a la
     #    diferencia entre un cuatro y un nueve.
     nulo = entrenar_el_comite(permutar=True)
-    casos_nulo = POR_PESO * nulo["w"]
+    casos_nulo = nulo["w"]
     p_nulo = parecido(casos_nulo, diferencia)
     print(f"[1] test nulo         respuestas barajadas: acierta {pct(nulo['acierto'], 0)}; "
           f"parecido con la diferencia {coma(p_nulo, 2)}")
@@ -123,8 +159,16 @@ def selftest():
     if mayor != PUNTO_IMPLANTADO:
         fallos.append(f"señal implantada: el peso más grande cae en {mayor}, no en {PUNTO_IMPLANTADO}")
 
-    # 3. INVARIANTE — en enteros decide lo mismo que con decimales, en todos los dibujos; y la
-    #    tabla de la cuenta suma exactamente el total.
+    # 3. INVARIANTE — cada peso es la tinta de ese punto en los cuatros corregidos menos la de los
+    #    nueves corregidos, en los 64 puntos, y el listón es los nueves corregidos menos los cuatros
+    #    (las correcciones repetidas dan los mismos pesos que el comité); el comité decide como dice
+    #    su suma en todos los dibujos; y la tabla de la cuenta suma exactamente el total.
+    apuntes, vueltas, Xtr, ytr = correcciones(m)
+    de_cuatros = [i for _, i, s in apuntes if s == 1]
+    de_nueves = [i for _, i, s in apuntes if s == -1]
+    pesos_rehechos = Xtr[de_cuatros].sum(0) - Xtr[de_nueves].sum(0)
+    pesos_bien = int((pesos_rehechos == casos).sum())
+    liston_rehecho = len(de_nueves) - len(de_cuatros)
     total_ent = tinta @ casos
     decide_ent = total_ent > liston
     decide_dec = (m["X"] @ m["w"] + m["b"]) > 0
@@ -134,10 +178,18 @@ def selftest():
     arriba, abajo = orden[::-1][:PUNTOS_EN_TABLA], orden[:PUNTOS_EN_TABLA]
     resto = np.setdiff1d(np.arange(LADO * LADO), np.concatenate([arriba, abajo]))
     cuadra = aporta[arriba].sum() + aporta[abajo].sum() + aporta[resto].sum() == total_ent[i_si]
-    print(f"[3] invariante        decisiones iguales en enteros y en decimales: "
-          f"{int((decide_ent == decide_dec).sum())} de {len(y)}; la tabla suma el total: {cuadra}")
+    print(f"[3] invariante        peso = tinta de los cuatros corregidos menos la de los nueves: "
+          f"{pesos_bien} de {LADO * LADO} puntos; listón = nueves menos cuatros corregidos: "
+          f"{liston_rehecho} (el del comité, {liston})")
+    print(f"                      decide como dice la suma: {int((decide_ent == decide_dec).sum())} "
+          f"de {len(y)} dibujos; la tabla suma el total: {cuadra}")
+    if pesos_bien != LADO * LADO:
+        fallos.append(f"invariante: solo {pesos_bien} de 64 pesos son la tinta de los cuatros "
+                      "corregidos menos la de los nueves")
+    if liston_rehecho != liston:
+        fallos.append(f"invariante: el listón sale {liston_rehecho} de las correcciones y es {liston}")
     if not (decide_ent == decide_dec).all():
-        fallos.append("invariante: en enteros no decide lo mismo que con decimales")
+        fallos.append("invariante: no decide lo que dice la suma de tinta por peso más el listón")
     if not cuadra:
         fallos.append("invariante: la tabla de la cuenta no suma el total")
 
@@ -171,10 +223,10 @@ def main():
         f"La pregunta: ¿es un {DIGITO_SI} o un {DIGITO_NO}? Aprende con "
         f"{miles(int(len(y) * 0.7))} dibujos",
         f"y acierta {pct(m['acierto'], 1)} de los que no vio.",
-        f"Todo en enteros: tinta × {POR_TINTA}, pesos × {POR_PESO}, listón × "
-        f"{POR_TINTA * POR_PESO}; decide igual.",
+        "La tinta va de 0 a 16, tal como viene en el conjunto de dígitos;",
+        "los pesos y el listón salen enteros, sin multiplicar nada.",
         "",
-        f"1. EL DIBUJO DE UN {DIGITO_SI}: LA TINTA DE CADA PUNTO (de 0 a {POR_TINTA})",
+        f"1. EL DIBUJO DE UN {DIGITO_SI}: LA TINTA DE CADA PUNTO (de 0 a 16)",
         "",
     ]
     L += cuadricula(tinta[i_si], 4)
@@ -195,8 +247,7 @@ def main():
         "Tres puntos, para ver cómo va", ["punto", "tinta", "peso", "aporta"],
         [[lugar(k), str(tinta[i_si][k]), miles(int(casos[k])), miles(int(aporta[k]))]
          for k in (mas, menos, sin_tinta)], "iddd",
-        ["Aporta: la tinta por el peso. Todo multiplicado para que salga entero: tinta por "
-         f"{POR_TINTA}, pesos por {POR_PESO}."]))
+        ["Aporta: la tinta por el peso."]))
     arriba, abajo = orden[::-1][:PUNTOS_EN_TABLA], orden[:PUNTOS_EN_TABLA]
     resto = np.setdiff1d(np.arange(LADO * LADO), np.concatenate([arriba, abajo]))
     filas = [[lugar(k), str(tinta[i_si][k]), miles(int(casos[k])), miles(int(aporta[k]))]
@@ -243,6 +294,85 @@ def main():
         ["Cuánto se parecen: de −1 a 1; 1 quiere decir iguales salvo el tamaño de los números, y "
          "0, que no tienen nada que ver.",
          "Mismo lado: se cuentan solo los puntos donde ni el peso ni la diferencia valen cero."])))
+    de_donde_salen_los_pesos(m, casos, tinta, liston)
+
+
+def de_donde_salen_los_pesos(m, casos, tinta, liston):
+    """El apartado 5: cada peso y el listón, contados corrección a corrección."""
+    apuntes, vueltas, Xtr, ytr = correcciones(m)
+    de_cuatros = [i for _, i, s in apuntes if s == 1]
+    de_nueves = [i for _, i, s in apuntes if s == -1]
+    n4, n9 = len(de_cuatros), len(de_nueves)
+    si, no = PALABRA[DIGITO_SI], PALABRA[DIGITO_NO]       # «cuatro», «nueve»
+    con_correccion = len({v for v, _, _ in apuntes})
+    print()
+    print(f"5. DE DÓNDE SALEN LOS PESOS")
+    print()
+    print("\n".join(tabla_editorial(
+        "Las correcciones que hizo el comité al aprender",
+        ["", "cuántas"],
+        [["correcciones en total", str(n4 + n9)],
+         [f"de ellas, con un {si}", str(n4)],
+         [f"de ellas, con un {no}", str(n9)],
+         ["vueltas por todos los dibujos", str(vueltas)]], "id",
+        [f"Con un {si}: el comité no lo reconocía y se sumó a cada peso la tinta del "
+         f"dibujo. Con un {no}: lo tomó por un {si} y se restó.",
+         f"Vueltas: en las {con_correccion} primeras corrigió algo; en la última ya no tuvo que "
+         "corregir nada y se quedó quieto."])))
+    mas, menos = int(np.argmax(casos)), int(np.argmin(casos))
+    filas = []
+    for k in (mas, menos):
+        suma4 = int(Xtr[de_cuatros][:, k].sum())
+        suma9 = int(Xtr[de_nueves][:, k].sum())
+        assert suma4 - suma9 == casos[k], (k, suma4, suma9, casos[k])
+        filas.append([lugar(k), miles(suma4), miles(suma9), miles(int(casos[k]))])
+    print()
+    print("\n".join(tabla_editorial(
+        "De dónde sale el peso de los dos puntos que más cuentan",
+        ["punto", f"tinta sumada con los {si}s", f"tinta restada con los {no}s",
+         "peso"], filas, "iddd",
+        [f"Tinta sumada con los {si}s: la suma de la tinta de ese punto en las {n4} "
+         f"correcciones con un {si}. Tinta restada con los {no}s: lo mismo en las "
+         f"{n9} correcciones con un {no}. El peso es la primera menos la segunda.",
+         "Son el punto de peso más positivo y el de peso más negativo."])))
+    baja, sube = n4, n9
+    assert 0 - baja + sube == liston, (baja, sube, liston)
+    print()
+    print("\n".join(tabla_editorial(
+        "De dónde sale el listón",
+        ["", "listón"],
+        [["empieza en", "0"],
+         [f"baja con los {n4} {si}s corregidos, un punto cada vez", miles(-baja)],
+         [f"sube con los {n9} {no}s corregidos, un punto cada vez", f"+{miles(sube)}"],
+         ["**acaba en**", f"**{miles(liston)}**"]], "id",
+        [f"Dice «es un {si}» si el total pasa del listón."])))
+    Xp, yp = m["prueba"]
+    pred = np.where(Xp @ m["w"] + m["b"] > 0, 1, -1)
+    mal = pred != yp
+    fallos4, fallos9 = int((mal & (yp == 1)).sum()), int((mal & (yp == -1)).sum())
+    print()
+    print("\n".join(tabla_editorial(
+        "Lo que acierta de los dibujos que no vio",
+        ["", "dibujos"],
+        [["dibujos que no vio", str(len(yp))],
+         ["los que acierta", str(int((~mal).sum()))],
+         [f"los que falla, que son un {si}", str(fallos4)],
+         [f"los que falla, que son un {no}", str(fallos9)]], "id",
+        [f"Acierto: {pct(float((~mal).mean()), 1)}."])))
+    cuatros, nueves = Xtr[ytr == 1], Xtr[ytr == -1]
+    filas = []
+    for k in (mas, menos):
+        a4 = int((cuatros[:, k] >= TINTA_ALTA).sum())
+        a9 = int((nueves[:, k] >= TINTA_ALTA).sum())
+        filas.append([lugar(k), f"{a4} de {len(cuatros)} ({pct(a4 / len(cuatros), 0)})",
+                      f"{a9} de {len(nueves)} ({pct(a9 / len(nueves), 0)})"])
+    print()
+    print("\n".join(tabla_editorial(
+        f"Cuántos dibujos tienen tinta {TINTA_ALTA} o más en esos dos puntos",
+        ["punto", f"de los {si}s para aprender", f"de los {no}s para aprender"],
+        filas, "idd",
+        [f"Los dibujos con los que aprendió: {len(cuatros)} {si}s y {len(nueves)} {no}s. "
+         f"Tinta {TINTA_ALTA} o más: de la mitad de arriba de la escala, que va de 0 a 16."])))
 
 
 if __name__ == "__main__":

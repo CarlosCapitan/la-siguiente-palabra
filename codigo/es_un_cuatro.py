@@ -21,6 +21,7 @@ Uso:
 # ======================= CONSTANTES =======================
 
 DIGITO_DEL_CAPITULO = 4      # el cuatro, que es el que sale en el capítulo
+TABLA_DEL_CAPITULO = "../datos/salidas/perceptron.txt"   # donde está la tabla «Dos dígitos»
 FRACCION_PRUEBA = 0.3        # parte de los datos reservada para evaluar, como en perceptron.py
 PASOS_MAX = 100_000          # correcciones antes de rendirse, como en perceptron.py
 
@@ -37,7 +38,7 @@ from datetime import date
 import numpy as np
 
 from formato import comprobar_ancho, coma, miles, pct, tabla_editorial
-from perceptron import SEMILLA, acierto, cargar_digitos, entrenar
+from perceptron import PAREJAS_DIGITOS, SEMILLA, acierto, cargar_digitos, entrenar, tarea_digitos
 
 
 TITULO_DE_LOS_DIEZ = "La misma pregunta para cada uno de los diez dígitos"
@@ -90,6 +91,33 @@ def pareja(X, t, a, b, rng):
     return acierto(Xs[te], ys[te], w, sesgo), pasos is not None
 
 
+def pareja_de_la_tabla(X, t, a, b):
+    """El a contra el b EXACTAMENTE como sale en la tabla «Dos dígitos» de perceptron.py: las
+    cuatro tareas, una detrás de otra, con un solo generador, así que cada una parte del estado en
+    que la deja la anterior. (Orden 38: antes se usaba un generador nuevo para el 4 contra el 9, que
+    es otro reparto de los dibujos: salía el 100 % en las dos medidas por coincidencia. Con la tinta
+    entera el reparto de la tabla da el 98 % y el de aquí, el 100 %, y la comparación dejó de ser
+    una comprobación.)"""
+    rng = np.random.default_rng(SEMILLA)
+    for x, y in PAREJAS_DIGITOS:
+        r = tarea_digitos(X, t, x, y, rng)
+        if (x, y) == (a, b):
+            return r["acierto_prueba"], r["converge"], r["correcciones"]
+    raise AssertionError(f"la pareja {a}, {b} no está en la tabla de perceptron.py")
+
+
+def lo_que_dice_la_tabla(a, b, ruta=None):
+    """La fila «distinguir un a de un b» de la tabla «Dos dígitos» de la salida de perceptron.py:
+    (acierto en tanto por ciento, correcciones)."""
+    import re
+    from pathlib import Path
+    ruta = Path(__file__).resolve().parent / (ruta or TABLA_DEL_CAPITULO)
+    m = re.search(rf"\| distinguir un {a} de un {b} \| \d+ \| (\d+) % \| ([\d.]+) \|",
+                  ruta.read_text(encoding="utf-8"))
+    assert m, f"se esperaba la fila «distinguir un {a} de un {b}» en {ruta}"
+    return int(m.group(1)), int(m.group(2).replace(".", ""))
+
+
 # ---- El aspecto de los bloques ---------------------------------------------------
 # ---------------------------------------------------------------------------------
 
@@ -129,7 +157,7 @@ def bloque_de_los_diez(filas):
 def selftest():
     fallos = []
     rng = np.random.default_rng(SEMILLA)
-    X, t = cargar_digitos()
+    X, t = cargar_digitos(enteros=True)   # tinta de 0 a 16, como en perceptron.py (Orden 38)
 
     # 1. TEST NULO — etiquetas permutadas: no hay nada que aprender. Se mira el acierto
     #    EQUILIBRADO, porque el acierto a secas se queda en el 90 % diciendo «no» siempre.
@@ -156,13 +184,17 @@ def selftest():
         )
 
     # 3. INVARIANTE DEL DOMINIO — la tabla del capítulo dice que el 4 contra el 9 sale al
-    #    100 % y converge. Este programa usa la misma regla de Rosenblatt: tiene que salirle
-    #    lo mismo. Si no, es que una de las dos mediciones no mide lo que dice medir.
-    a_49, conv_49 = pareja(X, t, 4, 9, np.random.default_rng(SEMILLA))
-    print(f"[3] invariante        el 4 contra el 9: acierto {pct(a_49, 0)} y converge {'sí' if conv_49 else 'NO'}"
-          f" (la tabla del capítulo: 100 % y sí)")
-    if round(100 * a_49) != 100 or not conv_49:
-        fallos.append(f"invariante: el 4 contra el 9 debe dar 100 % y converger; dio {pct(a_49)} y {conv_49}")
+    #    el acierto y las correcciones del 4 contra el 9 (sale en perceptron.txt). Este programa usa la
+    #    misma regla de Rosenblatt y repite el mismo reparto de dibujos: tiene que salirle lo mismo.
+    #    Si no, es que una de las dos mediciones no mide lo que dice medir.
+    a_49, conv_49, corr_49 = pareja_de_la_tabla(X, t, 4, 9)
+    dice_pct, dice_corr = lo_que_dice_la_tabla(4, 9)
+    print(f"[3] invariante        el 4 contra el 9: acierto {pct(a_49, 0)}, converge "
+          f"{'sí' if conv_49 else 'NO'}, {corr_49} correcciones "
+          f"(la tabla del capítulo: {dice_pct} %, {dice_corr})")
+    if round(100 * a_49) != dice_pct or not conv_49 or corr_49 != dice_corr:
+        fallos.append(f"invariante: el 4 contra el 9 debe dar lo que dice la tabla del capítulo "
+                      f"({dice_pct} %, {dice_corr} correcciones); dio {pct(a_49)} y {corr_49}")
 
     print()
     if fallos:
@@ -182,7 +214,7 @@ def main():
 
     print(f"Máquina: {platform.machine()}, {platform.system()} {platform.release()}.")
     print(f"Medido el {date.today().isoformat()}. Semilla: {SEMILLA}.")
-    X, t = cargar_digitos()
+    X, t = cargar_digitos(enteros=True)   # tinta de 0 a 16, como en perceptron.py (Orden 38)
     print(f"Dígitos manuscritos: {miles(len(X))} imágenes de 8 por 8 puntos.\n")
 
     print("--- 1. LA PREGUNTA CON LA QUE ABRE EL CAPÍTULO ---")
@@ -201,9 +233,9 @@ def main():
     print(f"\ndejan de corregirse solos {cuantos} de los diez dígitos.")
 
     print("\n--- 3. COMPROBACIÓN CRUZADA CON LA TABLA DEL CAPÍTULO ---")
-    a_49, conv_49 = pareja(X, t, 4, 9, np.random.default_rng(SEMILLA))
+    a_49, conv_49, corr_49 = pareja_de_la_tabla(X, t, 4, 9)
     print(f"el 4 contra el 9 (la tabla del capítulo): {pct(a_49, 0)} y converge "
-          f"{'sí' if conv_49 else 'NO'}")
+          f"{'sí' if conv_49 else 'NO'}, con {corr_49} correcciones")
 
 
 if __name__ == "__main__":

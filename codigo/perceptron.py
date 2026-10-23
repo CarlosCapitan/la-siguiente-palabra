@@ -70,9 +70,23 @@ def acierto(X, y, w, b):
     return float((pred == y).mean())
 
 
-def cargar_digitos():
+def cargar_digitos(enteros=False):
+    """Los dígitos manuscritos de scikit-learn: 1.797 dibujos de 8 por 8 puntos.
+
+    Por omisión la tinta va de 0 a 1 (se divide entre 16), que es lo que usan las redes que se
+    entrenan de otra manera. Con `enteros=True` es la tinta tal como la da el conjunto: enteros de
+    0 a 16. Orden 38 (23 oct 2026): lo que se entrena con la regla de Rosenblatt (la tabla «Dos
+    dígitos», «¿es un cuatro?» y el comité del capítulo 3) usa la tinta entera, para que la regla
+    sea literalmente la del capítulo 2: si no reconoce un cuatro, se suma a cada miembro la tinta
+    que ve y el listón baja un punto; si toma un nueve por un cuatro, se resta y el listón sube un
+    punto. Antes se dividía entre 16 y los pesos salían en múltiplos de 1/32 (y las cuentas del
+    capítulo 3 había que multiplicarlas por 16, por 32 y por 512 para que salieran enteras)."""
     from sklearn.datasets import load_digits
     d = load_digits()
+    if enteros:
+        assert np.array_equal(d.data, np.round(d.data)) and d.data.min() == 0 and d.data.max() == 16, \
+            "se esperaba tinta entera de 0 a 16; el conjunto de dígitos ha cambiado"
+        return d.data, d.target
     return d.data / 16.0, d.target
 
 
@@ -243,7 +257,7 @@ def medir_xor():
 def selftest():
     fallos = []
     rng = np.random.default_rng(SEMILLA)
-    X, t = cargar_digitos()
+    X, t = cargar_digitos(enteros=True)       # con la tinta con la que se entrena en main()
 
     # 1. TEST NULO — etiquetas permutadas al azar: no hay nada que aprender, el acierto en
     #    datos no vistos debe quedarse cerca del azar.
@@ -295,7 +309,7 @@ def main():
         sys.exit(selftest())
 
     rng = np.random.default_rng(SEMILLA)
-    X, t = cargar_digitos()
+    X, t = cargar_digitos(enteros=True)       # tinta de 0 a 16, tal como viene (Orden 38)
     print(f"Dígitos manuscritos: {len(X)} imágenes de 8 por 8 puntos.\n")
 
     filas = []

@@ -1,5 +1,5 @@
 Máquina: arm64, Darwin 25.6.0.
-Medido el 2026-10-09. Semilla: 20260914.
+Medido el 2026-10-23. Semilla: 20260914.
 Dígitos manuscritos: 1.797 imágenes de 8 por 8 puntos.
 
 --- 1. LA PREGUNTA CON LA QUE ABRE EL CAPÍTULO ---
@@ -11,11 +11,11 @@ Dígitos manuscritos: 1.797 imágenes de 8 por 8 puntos.
 | dibujos que se le enseñan para aprender | 1.257 |
 | de ésos, los que sí son un cuatro | 131 |
 | dibujos que no ve nunca, para evaluarlo | 540 |
-| acierta sobre los dibujos que no vio | 99,6 % |
-| de ésos, sobre los que sí son un cuatro | 100,0 % |
-| de ésos, sobre los que no son un cuatro | 99,6 % |
+| acierta sobre los dibujos que no vio | 99,4 % |
+| de ésos, sobre los que sí son un cuatro | 96,0 % |
+| de ésos, sobre los que no son un cuatro | 99,8 % |
 | deja de corregirse solo | sí |
-| correcciones hasta quedarse quieto | 227 |
+| correcciones hasta quedarse quieto | 168 |
 :::
 
 --- 2. LA MISMA PREGUNTA PARA LOS DIEZ DÍGITOS ---
@@ -24,19 +24,19 @@ La misma pregunta para cada uno de los diez dígitos
 
 | la pregunta | acierta sobre los que no vio | deja de corregirse |
 |:--|--:|:-:|
-| ¿es un 0? | 99,4 % | sí |
-| ¿es un 1? | 98,0 % | sí |
+| ¿es un 0? | 100,0 % | sí |
+| ¿es un 1? | 95,9 % | **no** |
 | ¿es un 2? | 100,0 % | sí |
-| ¿es un 3? | 97,6 % | sí |
-| ¿es un 4? | 99,6 % | sí |
-| ¿es un 5? | 98,7 % | sí |
+| ¿es un 3? | 97,0 % | sí |
+| ¿es un 4? | 99,4 % | sí |
+| ¿es un 5? | 99,1 % | sí |
 | ¿es un 6? | 99,1 % | sí |
-| ¿es un 7? | 99,1 % | sí |
-| ¿es un 8? | 95,9 % | **no** |
-| ¿es un 9? | 96,1 % | sí |
+| ¿es un 7? | 99,3 % | sí |
+| ¿es un 8? | 94,8 % | **no** |
+| ¿es un 9? | 95,9 % | sí |
 :::
 
-dejan de corregirse solos 9 de los diez dígitos.
+dejan de corregirse solos 8 de los diez dígitos.
 
 --- 3. COMPROBACIÓN CRUZADA CON LA TABLA DEL CAPÍTULO ---
-el 4 contra el 9 (la tabla del capítulo): 100 % y converge sí
+el 4 contra el 9 (la tabla del capítulo): 98 % y converge sí, con 37 correcciones

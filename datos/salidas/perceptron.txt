@@ -8,8 +8,8 @@ Dos dígitos, con la regla de Rosenblatt
 |:--|--:|--:|--:|
 | distinguir un 0 de un 1 | 251 | 100 % | 6 |
 | distinguir un 1 de un 7 | 252 | 100 % | 15 |
-| distinguir un 3 de un 5 | 255 | 100 % | 53 |
-| distinguir un 4 de un 9 | 252 | 100 % | 36 |
+| distinguir un 3 de un 5 | 255 | 100 % | 41 |
+| distinguir un 4 de un 9 | 252 | 98 % | 37 |
 
 Ejemplos: dibujos que se le enseñaron para aprender.
 
