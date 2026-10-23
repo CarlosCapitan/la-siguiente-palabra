@@ -1,43 +1,46 @@
 --- selftest ---
-[1] test nulo         respuestas barajadas: acierta 61 %; parecido con la diferencia -0,01
+[0] el del cap. 2     168 correcciones y acierta 99,4 %; es_un_cuatro.txt: 168 y 99,4 %; como se espera: sí
+[1] test nulo         respuestas barajadas: acierto equilibrado 0,54 (azar = 0,5); parecido con la diferencia 0,02
 [2] señal implantada  la diferencia está en el punto 27; el peso más grande, en el 27
-[3] invariante        peso = tinta de los cuatros corregidos menos la de los nueves: 64 de 64 puntos; listón = nueves menos cuatros corregidos: -1 (el del comité, -1)
-                      decide como dice la suma: 361 de 361 dibujos; la tabla suma el total: True
+[3] invariante        peso = tinta de los cuatros corregidos menos la de los otros: 64 de 64 puntos; listón = otros menos cuatros corregidos: 0 (el del comité, 0)
+                      decide como dice la suma: 1797 de 1797 dibujos; la tabla suma el total: True
 
 SELFTEST: las tres pruebas pasan.
 
 ########## capítulo 3: el comité real, por dentro ##########
 máquina: Darwin arm64. Medido el 2026-10-23.
-La pregunta: ¿es un 4 o un 9? Aprende con 252 dibujos
-y acierta 98,2 % de los que no vio.
+La pregunta: ¿es un 4? Un solo comité, con los otros
+nueve dígitos enfrente. Es el de «¿Es un cuatro?» del capítulo 2.
+Aprende con 1.257 dibujos (131 cuatros) y acierta 99,4 %
+de los 540 que no vio.
 La tinta va de 0 a 16, tal como viene en el conjunto de dígitos;
 los pesos y el listón salen enteros, sin multiplicar nada.
 
 1. EL DIBUJO DE UN 4: LA TINTA DE CADA PUNTO (de 0 a 16)
 
          1   2   3   4   5   6   7   8
-   1     0   0   0   1  11   0   0   0
-   2     0   0   0   7   8   0   0   0
-   3     0   0   1  13   6   2   2   0
-   4     0   0   7  15   0   9   8   0
-   5     0   5  16  10   0  16   6   0
-   6     0   4  15  16  13  16   1   0
-   7     0   0   0   3  15  10   0   0
-   8     0   0   0   2  16   4   0   0
+   1     0   0   0   6  16   6   0   0
+   2     0   0   3  16   9   0   0   0
+   3     0   1  13  13   1   2   1   0
+   4     0   7  16   5   1  14  10   0
+   5     0  12  16   8  12  16   2   0
+   6     0   2  12  15  16  11   0   0
+   7     0   0   0   8  16   4   0   0
+   8     0   0   0   8  15   0   0   0
 
 2. LO QUE APRENDIÓ: EL PESO DE CADA PUNTO
 
            1     2     3     4     5     6     7     8
-   1       0    -1    -3   -20   -61   -78   -31     0
-   2       0   -21   -37   -28   -49   -65   -28     8
-   3       0   -34   -28    24    15   -24    21    10
-   4       0    29    21   -11    -3    -6    42     0
-   5       0    70    86    27    68    36    30     0
-   6       0    31    55   111    59    29   -27     0
-   7       0    10    11    43    15   -29   -43    -2
-   8       0     0     5   -18     0   -45   -21    -1
+   1       0    -3   -18  -129  -116  -118  -131     3
+   2       0    -2   -42  -106  -178  -128   -90     9
+   3       0    26    59    82    -8    41    -7     2
+   4       4    26    86     1   -31    62   175     1
+   5       0    77    23     3    65    28   101     0
+   6       3   141   -27   125   120    59    10     0
+   7       8    98   -46    25    56  -125  -128    -3
+   8       0     0   -54  -123   -73  -138   -38    -2
 
-  el listón: -1. Dice «es un 4» si el total pasa de ahí.
+  el listón: 0. Dice «es un 4» si el total pasa de ahí.
 
 3. LA CUENTA DEL 4: TINTA POR PESO, PUNTO A PUNTO
 
@@ -46,9 +49,9 @@ Tres puntos, para ver cómo va
 
 | punto | tinta | peso | aporta |
 |:--|--:|--:|--:|
-| fila 6, columna 4 | 16 | 111 | 1.776 |
-| fila 1, columna 5 | 11 | -61 | -671 |
-| fila 1, columna 6 | 0 | -78 | 0 |
+| fila 6, columna 5 | 16 | 120 | 1.920 |
+| fila 1, columna 5 | 16 | -116 | -1.856 |
+| fila 8, columna 6 | 0 | -138 | 0 |
 
 Aporta: la tinta por el peso.
 :::
@@ -58,82 +61,85 @@ La cuenta del 4, punto a punto
 
 | punto | tinta | peso | aporta |
 |:--|--:|--:|--:|
-| fila 6, columna 4 | 16 | 111 | 1.776 |
-| fila 5, columna 3 | 16 | 86 | 1.376 |
-| fila 6, columna 3 | 15 | 55 | 825 |
-| fila 6, columna 5 | 13 | 59 | 767 |
-| fila 5, columna 6 | 16 | 36 | 576 |
-| fila 8, columna 6 | 4 | -45 | -180 |
-| fila 2, columna 4 | 7 | -28 | -196 |
-| fila 7, columna 6 | 10 | -29 | -290 |
-| fila 2, columna 5 | 8 | -49 | -392 |
-| fila 1, columna 5 | 11 | -61 | -671 |
-| los otros 54 puntos |  |  | 2.291 |
-| **total del 4** |  |  | **5.882** |
+| fila 6, columna 5 | 16 | 120 | 1.920 |
+| fila 6, columna 4 | 15 | 125 | 1.875 |
+| fila 4, columna 7 | 10 | 175 | 1.750 |
+| fila 4, columna 3 | 16 | 86 | 1.376 |
+| fila 3, columna 4 | 13 | 82 | 1.066 |
+| fila 8, columna 4 | 8 | -123 | -984 |
+| fila 8, columna 5 | 15 | -73 | -1.095 |
+| fila 2, columna 5 | 9 | -178 | -1.602 |
+| fila 2, columna 4 | 16 | -106 | -1.696 |
+| fila 1, columna 5 | 16 | -116 | -1.856 |
+| los otros 54 puntos |  |  | 4.225 |
+| **total del 4** |  |  | **4.979** |
 
 Los 5 puntos que más suman, los 5 que más restan y lo que suman juntos todos los demás. Aporta: la tinta por el peso.
 
-El listón es -1: dice «es un 4» si el total pasa de ahí.
+El listón es 0: dice «es un 4» si el total pasa de ahí.
 :::
 
 ::: tabla
-El 4 y el 9, contra el listón
+Un 4 y un 1, contra el listón
 
 | dibujo | total | listón | ¿pasa del listón? |
 |:--|--:|--:|:-:|
-| un 4 | 5.882 | -1 | sí |
-| un 9 | -923 | -1 | no |
+| un 4 | 4.979 | 0 | sí |
+| un 1 | -2.650 | 0 | no |
 
-La misma cuenta, tinta por peso en los 64 puntos, sumada.
+La misma cuenta, tinta por peso en los 64 puntos, sumada. El 1 es el dígito que el comité más veces tomó por un 4 mientras aprendía.
 :::
 
-4. EL 4 MEDIO, EL 9 MEDIO Y SU DIFERENCIA (tinta media, redondeada)
+4. EL 4 MEDIO, LA MEDIA DE LOS OTROS NUEVE Y SU DIFERENCIA
+(tinta media, redondeada)
 
-  el 4 medio (181 dibujos)
+  el 4 medio (131 dibujos)
          1   2   3   4   5   6   7   8
    1     0   0   0   7  11   2   0   0
-   2     0   0   3  13   8   2   1   0
-   3     0   1  10  11   5   6   4   0
-   4     0   5  14   6   7  11   6   0
-   5     0   9  15  10  13  14   5   0
-   6     0   6  11  12  15  10   2   0
-   7     0   1   3   8  13   4   0   0
+   2     0   0   4  13   8   2   1   0
+   3     0   1  11  11   5   6   3   0
+   4     0   5  14   6   8  10   6   0
+   5     0   9  15  10  13  14   6   0
+   6     0   7  12  12  15  10   2   0
+   7     0   1   3   8  14   4   0   0
    8     0   0   1   8  12   2   0   0
 
-  el 9 medio (180 dibujos)
+  la media de los otros nueve (1.126 dibujos)
          1   2   3   4   5   6   7   8
-   1     0   0   6  12  11   6   2   0
-   2     0   2  13  10  10  11   3   0
-   3     0   4  12   6   8  14   3   0
-   4     0   2  10  12  13  14   4   0
-   5     0   0   3   5   5  12   5   0
-   6     0   0   1   1   2  10   6   0
-   7     0   1   6   5   6  11   5   0
-   8     0   0   6  12  13   9   2   0
+   1     0   0   6  12  12   6   2   0
+   2     0   2  11  12  11   9   2   0
+   3     0   3  10   6   7   8   2   0
+   4     0   2   8   9  10   7   2   0
+   5     0   2   7   9  10   8   3   0
+   6     0   1   6   7   7   8   4   0
+   7     0   1   8  10   9   9   4   0
+   8     0   0   6  13  12   7   2   0
 
-  la diferencia: el 4 medio menos el 9 medio
+  la diferencia: el 4 medio menos la media de los otros nueve
          1   2   3   4   5   6   7   8
    1     0   0  -5  -5   0  -4  -1   0
-   2     0  -2  -9   4  -2  -9  -1   0
-   3     0  -3  -2   6  -3  -8   1   0
-   4     0   3   4  -6  -6  -3   2   0
-   5     0   8  12   5   8   2   0   0
-   6     0   6  11  12  12   1  -4   0
-   7     0   0  -3   3   8  -6  -5   0
-   8     0   0  -5  -4  -1  -7  -2   0
+   2     0  -2  -8   2  -2  -7  -1   0
+   3     0  -2   1   5  -2  -2   2   0
+   4     0   3   6  -3  -2   3   4   0
+   5     0   7   8   1   3   6   3   0
+   6     0   6   5   6   8   2  -2   0
+   7     0   1  -5  -2   4  -5  -4   0
+   8     0   0  -6  -5   0  -5  -2   0
 
 ::: tabla
 Cuánto se parecen los pesos a cada cosa
 
 | los pesos, comparados con | cuánto se parecen |
 |:--|--:|
-| el 4 medio | 0,44 |
-| la diferencia | 0,80 |
-| puntos donde peso y diferencia empujan al mismo lado | 38 de 42 |
+| el 4 medio | 0,25 |
+| la diferencia | 0,70 |
+| puntos donde peso y diferencia empujan al mismo lado | 36 de 44 |
 
 Cuánto se parecen: de −1 a 1; 1 quiere decir iguales salvo el tamaño de los números, y 0, que no tienen nada que ver.
 
 Mismo lado: se cuentan solo los puntos donde ni el peso ni la diferencia valen cero.
+
+La media de los otros nueve y la diferencia, con los 1.257 dibujos con los que aprendió.
 :::
 
 5. DE DÓNDE SALEN LOS PESOS
@@ -143,25 +149,44 @@ Las correcciones que hizo el comité al aprender
 
 |  | cuántas |
 |:--|--:|
-| correcciones en total | 31 |
-| de ellas, con un cuatro | 16 |
-| de ellas, con un nueve | 15 |
-| vueltas por todos los dibujos | 6 |
+| correcciones en total | 168 |
+| de ellas, con un cuatro | 84 |
+| de ellas, con otro dígito | 84 |
+| vueltas por todos los dibujos | 18 |
 
-Con un cuatro: el comité no lo reconocía y se sumó a cada peso la tinta del dibujo. Con un nueve: lo tomó por un cuatro y se restó.
+Con un cuatro: el comité no lo reconocía y se sumó a cada peso la tinta del dibujo. Con otro dígito: lo tomó por un cuatro y se restó.
 
-Vueltas: en las 5 primeras corrigió algo; en la última ya no tuvo que corregir nada y se quedó quieto.
+Vueltas: en las 17 primeras corrigió algo; en la última ya no tuvo que corregir nada y se quedó quieto.
+:::
+
+::: tabla
+De qué dígito eran las correcciones con otro dígito
+
+| dígito | correcciones |
+|:--|--:|
+| 1 | 26 |
+| 7 | 20 |
+| 6 | 11 |
+| 0 | 10 |
+| 9 | 9 |
+| 5 | 4 |
+| 8 | 3 |
+| 3 | 1 |
+| 2 | 0 |
+| **en total** | **84** |
+
+Cada una es una vez que el comité tomó ese dígito por un cuatro y hubo que restarle su tinta.
 :::
 
 ::: tabla
 De dónde sale el peso de los dos puntos que más cuentan
 
-| punto | tinta sumada con los cuatros | tinta restada con los nueves | peso |
+| punto | tinta sumada con los cuatros | tinta restada con los otros dígitos | peso |
 |:--|--:|--:|--:|
-| fila 6, columna 4 | 168 | 57 | 111 |
-| fila 1, columna 6 | 34 | 112 | -78 |
+| fila 4, columna 7 | 382 | 207 | 175 |
+| fila 2, columna 5 | 800 | 978 | -178 |
 
-Tinta sumada con los cuatros: la suma de la tinta de ese punto en las 16 correcciones con un cuatro. Tinta restada con los nueves: lo mismo en las 15 correcciones con un nueve. El peso es la primera menos la segunda.
+Tinta sumada con los cuatros: la suma de la tinta de ese punto en las 84 correcciones con un cuatro. Tinta restada con los otros dígitos: lo mismo en las 84 correcciones con otro dígito. El peso es la primera menos la segunda.
 
 Son el punto de peso más positivo y el de peso más negativo.
 :::
@@ -172,11 +197,11 @@ De dónde sale el listón
 |  | listón |
 |:--|--:|
 | empieza en | 0 |
-| baja con los 16 cuatros corregidos, un punto cada vez | -16 |
-| sube con los 15 nueves corregidos, un punto cada vez | +15 |
-| **acaba en** | **-1** |
+| baja con los 84 cuatros corregidos, un punto cada vez | -84 |
+| sube con los 84 otros dígitos corregidos, un punto cada vez | +84 |
+| **acaba en** | **0** |
 
-Dice «es un cuatro» si el total pasa del listón.
+Dice «es un 4» si el total pasa del listón.
 :::
 
 ::: tabla
@@ -184,21 +209,21 @@ Lo que acierta de los dibujos que no vio
 
 |  | dibujos |
 |:--|--:|
-| dibujos que no vio | 109 |
-| los que acierta | 107 |
-| los que falla, que son un cuatro | 0 |
-| los que falla, que son un nueve | 2 |
+| dibujos que no vio | 540 |
+| los que acierta | 537 |
+| los que falla, que son un cuatro | 2 |
+| los que falla, que son un 7 | 1 |
 
-Acierto: 98,2 %.
+Acierto: 99,4 %.
 :::
 
 ::: tabla
 Cuántos dibujos tienen tinta 8 o más en esos dos puntos
 
-| punto | de los cuatros para aprender | de los nueves para aprender |
+| punto | de los cuatros para aprender | de los otros dígitos para aprender |
 |:--|--:|--:|
-| fila 6, columna 4 | 110 de 126 (87 %) | 2 de 126 (2 %) |
-| fila 1, columna 6 | 10 de 126 (8 %) | 40 de 126 (32 %) |
+| fila 4, columna 7 | 55 de 131 (42 %) | 125 de 1.126 (11 %) |
+| fila 2, columna 5 | 73 de 131 (56 %) | 841 de 1.126 (75 %) |
 
-Los dibujos con los que aprendió: 126 cuatros y 126 nueves. Tinta 8 o más: de la mitad de arriba de la escala, que va de 0 a 16.
+Los dibujos con los que aprendió: 131 cuatros y 1.126 de otros dígitos. Tinta 8 o más: de la mitad de arriba de la escala, que va de 0 a 16.
 :::

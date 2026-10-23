@@ -2,7 +2,7 @@
 """
 Capítulo 3 — los dos comités de en medio que más se parecen, uno al lado del otro (L24, A03).
 
-La pareja y su parecido (−0,44, con la cuenta del cuatro y el nueve) se leen del último bloque de
+La pareja y su parecido (−0,44, con la cuenta de los pesos del cuatro) se leen del último bloque de
 `datos/salidas/que_mira_cada_una.txt`. Los pesos salen de la misma red que dibuja la figura de los
 ocho comités (`que_mira_cada_una.entrenar_con_capa`, misma semilla). Tres cuadros: el primero de la
 pareja, el segundo, y el segundo en negativo (blanco donde era negro), que es con el que hay que
@@ -37,7 +37,7 @@ AQUI = Path(__file__).resolve().parent
 
 def leer(ruta):
     # Desde el 9 de octubre de 2026, de la tabla editorial, por su título.
-    titulo = "Cuánto se parecen, con la cuenta del cuatro y el nueve"
+    titulo = "Cuánto se parecen, con la cuenta de los pesos del cuatro"
     T = leer_tablas(Path(ruta).read_text(encoding="utf-8"))
     assert titulo in T, f"no encuentro la tabla «{titulo}» en {ruta}"
     _, filas, _ = T[titulo]

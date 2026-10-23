@@ -82,7 +82,7 @@ De cada 100 dígitos que nunca había visto, cuántos acierta. Se le cuenta: la 
 :::
 
 ::: tabla
-Cuánto se parecen, con la cuenta del cuatro y el nueve
+Cuánto se parecen, con la cuenta de los pesos del cuatro
 
 | los dos que más se parecen | parecido |
 |:--|--:|

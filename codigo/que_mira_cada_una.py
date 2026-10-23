@@ -56,7 +56,7 @@ TITULO_5 = "LO QUE MEJORA LA CAPA, SEGÚN QUÉ DOS SE COMPAREN"
 SUBTITULO_5 = "(en puntos: de cada 100 dígitos, cuántos más acierta)"
 TITULO_6 = "CADA COMITÉ DE EN MEDIO, LEÍDO DE LAS DOS MANERAS"
 SUBTITULO_6 = "(de cada 100 dígitos que nunca había visto, cuántos acierta)"
-TITULO_7 = "CUÁNTO SE PARECEN, CON LA CUENTA DEL CUATRO Y EL NUEVE"
+TITULO_7 = "CUÁNTO SE PARECEN, CON LA CUENTA DE LOS PESOS DEL CUATRO"
 SUBTITULO_7 = ["(de -1 a 1: 1, iguales salvo el tamaño de los números;",
                "0, nada que ver; -1, uno es el negativo del otro)"]
 

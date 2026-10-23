@@ -7,8 +7,8 @@ Cada figura cuenta una sola cosa, en el orden en que trabaja el comité:
 
   comite_la_tinta.png        lo que recibe: un cuatro, con la tinta de cada punto
   comite_los_pesos.png       lo que aprendió: el peso de cada punto
-  comite_el_liston.png       la decisión: el total del cuatro y el del nueve contra el listón
-  comite_la_diferencia.png   por qué: los casos se parecen a «cuatro menos nueve», no al cuatro
+  comite_el_liston.png       la decisión: el total de un cuatro y el de un 1 contra el listón
+  comite_la_diferencia.png   por qué: los casos se parecen a «cuatro menos los otros», no al cuatro
   de_un_comite_a_una_red.png y una red es muchos de éstos (mecanismo, sin datos; la maqueta de
                              Carlos de L8)
 
@@ -83,20 +83,23 @@ def leer(ruta):
     d["tinta"] = _cuadricula(L, linea("1. EL DIBUJO DE UN"))
     d["casos"] = _cuadricula(L, linea("2. LO QUE APRENDIÓ"))
     d["liston"] = _numero(re.search(r"el listón: (-?[\d.]+)\.", texto).group(1))
-    d["si"], d["no"] = [int(x) for x in re.search(r"¿es un (\d) o un (\d)\?", texto).groups()]
+    # El comité es el de «¿Es un cuatro?» del capítulo 2 (Orden 41): la pregunta es «¿es un 4?», y el
+    # segundo dibujo de la decisión es el de un dígito rival (el que más veces tomó por cuatro).
+    d["si"] = int(re.search(r"La pregunta: ¿es un (\d)\?", texto).group(1))
+    d["no"] = int(re.search(r"Un \d y un (\d), contra el listón", texto).group(1))
     # Desde el 9 de octubre de 2026, los totales y los parecidos se leen de las tablas
     # editoriales de la salida, por su título (la salida dejó de imprimir renglones sangrados y
     # este lector se había quedado atrás).
     from formato import leer_tablas
     T = leer_tablas(texto)
-    t_liston = f"El {d['si']} y el {d['no']}, contra el listón"
+    t_liston = f"Un {d['si']} y un {d['no']}, contra el listón"
     assert t_liston in T, f"se esperaba la tabla «{t_liston}» en {ruta}"
     rot, filas, _ = T[t_liston]
     assert rot[:2] == ["dibujo", "total"], rot
     tot = {f[0]: _numero(f[1]) for f in filas}
     d["total_si"], d["total_no"] = tot[f"un {d['si']}"], tot[f"un {d['no']}"]
     d["media_si"] = _cuadricula(L, linea(f"  el {d['si']} medio"))
-    d["media_no"] = _cuadricula(L, linea(f"  el {d['no']} medio"))
+    d["media_no"] = _cuadricula(L, linea("  la media de los otros nueve"))
     d["diferencia"] = _cuadricula(L, linea("  la diferencia:"))
     par = [f for rot, fs, _ in T.values() if rot and rot[0] == "los pesos, comparados con"
            for f in fs]
@@ -147,7 +150,7 @@ def figura_tinta(d, paleta, ruta):
 def figura_casos(d, paleta, ruta):
     L = Lienzo("Lo que aprendió el comité",
                "Un número por punto, su peso: cuánto se le hace caso. Positivo, empuja hacia «es un "
-               f"{d['si']}»;\nnegativo, hacia «es un {d['no']}». Nadie los escribió: salen de "
+               f"{d['si']}»;\nnegativo, hacia «no es un {d['si']}». Nadie los escribió: salen de "
                "corregirse.",
                paleta, alto=3.95)
     lado = 7.2
@@ -158,8 +161,8 @@ def figura_casos(d, paleta, ruta):
     # empuja) a negro (sí) y a blanco (no).
     tono = 0.5 + 0.5 * c / tope
     _rejilla(L, 21, L.y - 3.0, lado, c, tono, c, tam=6.2)
-    L.pie(f"Oscuro: empuja hacia el {d['si']}. Claro: hacia el {d['no']}. Gris medio: casi no "
-          "cuenta.")
+    L.pie(f"Oscuro: empuja hacia «es un {d['si']}». Claro: hacia «no es un {d['si']}». Gris medio: "
+          "casi no cuenta.")
     L.guardar(ruta)
 
 
@@ -181,8 +184,8 @@ def figura_liston(d, paleta, ruta):
         return f"{v:,}".replace(",", ".").replace("-", "\u2212")
 
     y1, y2, alto = L.y - 5.0, L.y - 13.0, 5.0
-    for yy, total, nombre in ((y1, d["total_si"], f"el {d['si']}"),
-                              (y2, d["total_no"], f"el {d['no']}")):
+    for yy, total, nombre in ((y1, d["total_si"], f"un {d['si']}"),
+                              (y2, d["total_no"], f"un {d['no']}")):
         pasa = total > d["liston"]
         L.ax.add_patch(Rectangle((min(x(0), x(total)), yy - alto / 2), abs(x(total) - x(0)), alto,
                                  facecolor=p.acento if pasa else p.neutro, edgecolor="none"))
@@ -199,8 +202,8 @@ def figura_liston(d, paleta, ruta):
 
 def figura_diferencia(d, paleta, ruta):
     L = Lienzo("Lo que dibujan los pesos no es un cuatro",
-               f"El {d['si']} medio, el {d['no']} medio, lo que va del uno al otro, y los pesos "
-               "que aprendió\nel comité. Los pesos se parecen a la tercera, no a la primera.",
+               f"El {d['si']} medio, la media de los otros nueve dígitos, la diferencia entre las dos y "
+               "los pesos\nque aprendió el comité. Los pesos se parecen a la tercera, no a la primera.",
                paleta, alto=2.2)
     lado = 2.3
     ancho = LADO * lado
@@ -208,8 +211,8 @@ def figura_diferencia(d, paleta, ruta):
     y = L.y - 4.0
     paneles = [
         (f"el {d['si']} medio", d["media_si"] / 16.0),
-        (f"el {d['no']} medio", d["media_no"] / 16.0),
-        (f"{d['si']} menos {d['no']}", 0.5 + 0.5 * d["diferencia"] / np.abs(d["diferencia"]).max()),
+        ("los otros nueve", d["media_no"] / 16.0),
+        (f"{d['si']} menos los otros", 0.5 + 0.5 * d["diferencia"] / np.abs(d["diferencia"]).max()),
         ("los pesos", 0.5 + 0.5 * d["casos"] / np.abs(d["casos"]).max()),
     ]
     for k, (titulo, tono) in enumerate(paneles):
