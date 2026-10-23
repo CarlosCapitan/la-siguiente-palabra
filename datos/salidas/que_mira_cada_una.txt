@@ -3,14 +3,14 @@
 
 |  | media | el peor | el mejor |
 |:--|--:|--:|--:|
-| un solo comité, sin capa | 91,9 % | 90,4 % | 93,0 % |
-| una capa de ocho comités en medio | 97,9 % | 96,3 % | 98,7 % |
+| una capa de un solo comité | 91,9 % | 90,4 % | 93,0 % |
+| dos capas: ocho comités en la primera | 97,9 % | 96,3 % | 98,7 % |
 
 De cada 100 dígitos que nunca había visto, cuántos acierta. Media de 5 entrenamientos desde cero, con 5 semillas distintas, las mismas en todas las filas; al lado, el peor y el mejor de los 5.
 :::
 
 ::: tabla
-Lo que acierta, él solo, cada uno de los ocho comités de en medio
+Lo que acierta, él solo, cada uno de los ocho comités de la primera capa
 
 |  | acierta |
 |:--|--:|
@@ -24,7 +24,7 @@ Lo que acierta, él solo, cada uno de los ocho comités de en medio
 | el comité número 8 | 81,1 % |
 | **el mejor de los ocho** | **81,1 %** |
 
-De cada 100 dígitos que nunca había visto, cuántos acierta cada comité de en medio, él solo, con la lectura que mejor le va.
+De cada 100 dígitos que nunca había visto, cuántos acierta cada comité de la primera capa, él solo, con la lectura que mejor le va.
 :::
 
 ::: tabla
@@ -38,34 +38,34 @@ Cuánto se parecen entre sí esos ocho comités
 :::
 
 ::: tabla
-¿Y si en medio hay más comités, o menos?
+¿Y si en la primera capa hay más comités, o menos?
 
-| comités en medio | media | el peor | el mejor |
+| comités en la primera capa | media | el peor | el mejor |
 |:--|--:|--:|--:|
-| ninguno, un solo comité | 91,9 % | 90,4 % | 93,0 % |
-| 1 comité en medio | 91,4 % | 89,8 % | 92,6 % |
-| 2 comités en medio | 95,6 % | 94,8 % | 96,5 % |
-| 4 comités en medio | 97,9 % | 97,0 % | 98,3 % |
-| 8 comités en medio | 97,9 % | 96,3 % | 98,7 % |
-| 16 comités en medio | 98,6 % | 98,0 % | 99,1 % |
+| ninguno: una capa de un solo comité | 91,9 % | 90,4 % | 93,0 % |
+| 1 comité en la primera capa | 91,4 % | 89,8 % | 92,6 % |
+| 2 comités en la primera capa | 95,6 % | 94,8 % | 96,5 % |
+| 4 comités en la primera capa | 97,9 % | 97,0 % | 98,3 % |
+| 8 comités en la primera capa | 97,9 % | 96,3 % | 98,7 % |
+| 16 comités en la primera capa | 98,6 % | 98,0 % | 99,1 % |
 
 De cada 100 dígitos que nunca había visto, cuántos acierta. Media de 5 entrenamientos desde cero, con 5 semillas distintas, las mismas en todas las filas; al lado, el peor y el mejor de los 5.
 :::
 
 ::: tabla
-Lo que mejora la capa, según qué dos se comparen
+Lo que mejoran las dos capas, según qué dos se comparen
 
-| qué dos se comparan | sin capa | con capa | mejora |
+| qué dos se comparan | una capa | dos capas | mejora |
 |:--|--:|--:|--:|
 | las dos medias de 5 | 91,9 | 97,9 | 6,0 |
-| la mejor sin capa y la peor con capa | 93,0 | 96,3 | 3,3 |
-| la peor sin capa y la mejor con capa | 90,4 | 98,7 | 8,3 |
+| la mejor con una capa y la peor con dos | 93,0 | 96,3 | 3,3 |
+| la peor con una capa y la mejor con dos | 90,4 | 98,7 | 8,3 |
 
-De cada 100 dígitos que nunca había visto, cuántos acierta. Mejora: cuántos más acierta con capa, en puntos.
+De cada 100 dígitos que nunca había visto, cuántos acierta. Mejora: cuántos más acierta con dos capas, en puntos.
 :::
 
 ::: tabla
-Cada comité de en medio, leído de las dos maneras
+Cada comité de la primera capa, leído de las dos maneras
 
 |  | si pasar de la mitad es: «par» | si pasar de la mitad es: «impar» | se le cuenta |
 |:--|--:|--:|--:|

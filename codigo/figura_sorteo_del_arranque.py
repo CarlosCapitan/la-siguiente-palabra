@@ -4,7 +4,8 @@ Capítulo 3 — el sorteo del arranque, dibujado (Carlos, 1 de octubre de 2026).
 
 Los 64 pesos de un solo comité, en su cuadrícula de ocho por ocho, en dos de las cinco tiradas de
 `el_sorteo_del_arranque.py`: la que menos acierta y la que más. A la izquierda, como salen del
-sorteo; a la derecha, después de las 20.000 correcciones. Se marcan los tres puntos de la tabla.
+sorteo; a la derecha, después de las 20.000 correcciones. Sin recuadros: la tabla de los tres
+puntos ya no está en el capítulo (Orden 45).
 
 Qué tirada es la peor y la mejor, cuánto aciertan y los pesos de arranque de los tres puntos se
 leen de `datos/salidas/el_sorteo_del_arranque.txt`; los 64 pesos salen de la misma cuenta
@@ -34,7 +35,6 @@ import sys
 from pathlib import Path
 
 import numpy as np
-from matplotlib.patches import Rectangle
 
 from infografia import COLOR, GRIS, Lienzo, ANCHO_PAGINA
 from el_sorteo_del_arranque import una_tirada, indice, PUNTOS, PUNTO_SIN_TINTA, LADO
@@ -80,8 +80,8 @@ def dibujar(peor, mejor, tiradas, paleta, ruta):
     L = Lienzo("El sorteo del arranque",
                "Los 64 pesos de un solo comité, en la peor y en la mejor de las cinco tiradas.\n"
                "Negro: tinta en ese punto empuja hacia «par»; blanco, hacia «impar»; gris\n"
-               "medio, ni una cosa ni otra. Recuadrados, los tres puntos de la tabla. Cada\n"
-               f"columna, con su escala: al arrancar no pasan de 1, y al final llegan a {coma(lim_final)}.",
+               "medio, ni una cosa ni otra. Cada columna, con su escala: al arrancar no\n"
+               f"pasan de 1, y al final llegan a {coma(lim_final)}.",
                paleta, alto=ALTO)
     W, H = ANCHO_PAGINA, ALTO
     for x, rotulo in zip(X_CUADROS, ("como salen\ndel sorteo", "después de 20.000\ncorrecciones")):
@@ -96,10 +96,6 @@ def dibujar(peor, mejor, tiradas, paleta, ruta):
             ax = L.fig.add_axes([x / W, y / H, LADO_CUADRO / W, LADO_CUADRO / H])
             ax.imshow(pesos.reshape(LADO, LADO), cmap="gray_r", vmin=-lim, vmax=lim)
             ax.set_xticks([]); ax.set_yticks([])
-            for f, c in PUNTOS:
-                for grosor, color in ((2.4, "black"), (1.0, "white")):
-                    ax.add_patch(Rectangle((c - 1.5, f - 1.5), 1, 1, fill=False,
-                                           edgecolor=color, linewidth=grosor))
     L.guardar(ruta)
 
 

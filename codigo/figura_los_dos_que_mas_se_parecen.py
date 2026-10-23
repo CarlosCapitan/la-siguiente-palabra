@@ -48,7 +48,7 @@ def leer(ruta):
 
 def dibujar(W, a, b, r, paleta, ruta):
     L = Lienzo(f"Los comités {a} y {b}",
-               f"Los dos de en medio que más se parecen: {str(r).replace('.', ',').replace('-', '−')}. En medio, el {b} en\n"
+               f"Los dos de la primera capa que más se parecen: {str(r).replace('.', ',').replace('-', '−')}. En el centro, el {b} en\n"
                f"negativo, al lado del {a}. Negro: tinta ahí sube el número de ese comité (en el\n"
                f"cuadro del medio, lo baja); blanco: al revés.",
                paleta, alto=ALTO)

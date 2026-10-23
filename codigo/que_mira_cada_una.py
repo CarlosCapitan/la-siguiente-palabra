@@ -44,17 +44,17 @@ TITULO_1 = "¿ES PAR ESTE DÍGITO ESCRITO A MANO?"
 SUBTITULO_1A = "de cada 100 dígitos que nunca había visto, cuántos acierta"
 SUBTITULO_1B = "media de {repeticiones} entrenamientos desde cero; entre paréntesis,"
 SUBTITULO_1C = "el peor y el mejor de los {repeticiones}"
-TITULO_2 = "LO QUE ACIERTA, ÉL SOLO, CADA UNO DE LOS OCHO COMITÉS DE EN MEDIO"
+TITULO_2 = "LO QUE ACIERTA, ÉL SOLO, CADA UNO DE LOS OCHO COMITÉS DE LA PRIMERA CAPA"
 TITULO_3 = "CUÁNTO SE PARECEN ENTRE SÍ ESOS OCHO COMITÉS"
 SUBTITULO_3 = "(0 % serían ocho preguntas sin nada en común; 100 %, ocho copias)"
-TITULO_4 = "¿Y SI EN MEDIO HAY MÁS COMITÉS, O MENOS?"
+TITULO_4 = "¿Y SI EN LA PRIMERA CAPA HAY MÁS COMITÉS, O MENOS?"
 SUBTITULO_4A = "media de {repeticiones} entrenamientos desde cero; entre paréntesis,"
 SUBTITULO_4B = "el peor y el mejor de los {repeticiones}"
 
 # L24 (28 de septiembre): tres bloques nuevos al final de la salida, sin tocar lo de arriba.
-TITULO_5 = "LO QUE MEJORA LA CAPA, SEGÚN QUÉ DOS SE COMPAREN"
+TITULO_5 = "LO QUE MEJORAN LAS DOS CAPAS, SEGÚN QUÉ DOS SE COMPAREN"
 SUBTITULO_5 = "(en puntos: de cada 100 dígitos, cuántos más acierta)"
-TITULO_6 = "CADA COMITÉ DE EN MEDIO, LEÍDO DE LAS DOS MANERAS"
+TITULO_6 = "CADA COMITÉ DE LA PRIMERA CAPA, LEÍDO DE LAS DOS MANERAS"
 SUBTITULO_6 = "(de cada 100 dígitos que nunca había visto, cuántos acierta)"
 TITULO_7 = "CUÁNTO SE PARECEN, CON LA CUENTA DE LOS PESOS DEL CUATRO"
 SUBTITULO_7 = ["(de -1 a 1: 1, iguales salvo el tamaño de los números;",
@@ -193,26 +193,26 @@ def imprimir(m, aciertos, parecido, sola, con_capa):
     T = []
     T.append(tabla_editorial(
         frase(TITULO_1), ["", "media", "el peor", "el mejor"],
-        [["un solo comité, sin capa"] + media_peor_mejor(sola),
-         [f"una capa de {EN_LETRA.get(EN_MEDIO, EN_MEDIO)} comités en medio"]
+        [["una capa de un solo comité"] + media_peor_mejor(sola),
+         [f"dos capas: {EN_LETRA.get(EN_MEDIO, EN_MEDIO)} comités en la primera"]
          + media_peor_mejor(con_capa)], "iddd",
         [nota_media()]))
     filas = [[f"el comité número {j}", pct(a)] for j, a in enumerate(aciertos, 1)]
     filas.append(["**el mejor de los ocho**", f"**{pct(aciertos.max())}**"])
     T.append(tabla_editorial(
         frase(TITULO_2), ["", "acierta"], filas, "id",
-        ["De cada 100 dígitos que nunca había visto, cuántos acierta cada comité de en medio, "
-         "él solo, con la lectura que mejor le va."]))
+        ["De cada 100 dígitos que nunca había visto, cuántos acierta cada comité de la primera "
+         "capa, él solo, con la lectura que mejor le va."]))
     T.append(tabla_editorial(
         frase(TITULO_3), ["", "parecido"], [["los dos que más se parecen", pct(parecido)]],
         "id", ["0 % serían ocho preguntas sin nada en común; 100 %, ocho copias."]))
-    filas = [["ninguno, un solo comité"] + media_peor_mejor(sola)]
+    filas = [["ninguno: una capa de un solo comité"] + media_peor_mejor(sola)]
     for n, med, lo, hi in barrido_de_anchura():
         # «1 comité» y «2 comités»: el plural se dice bien o no se dice.
-        filas.append([f"{n} comité" + ("s" if n > 1 else "") + " en medio",
+        filas.append([f"{n} comité" + ("s" if n > 1 else "") + " en la primera capa",
                       pct(med), pct(lo), pct(hi)])
     T.append(tabla_editorial(
-        frase(TITULO_4), ["comités en medio", "media", "el peor", "el mejor"],
+        frase(TITULO_4), ["comités en la primera capa", "media", "el peor", "el mejor"],
         filas, "iddd", [nota_media()]))
     for t in T:
         print("\n".join(t))
@@ -239,12 +239,12 @@ def imprimir_l24(m, sola, con_capa):
     (sm, sp, sb), (cm, cp, cb) = sola, con_capa
     filas = [[rotulo, coma(100 * de), coma(100 * a), coma(100 * (a - de))]
              for rotulo, de, a in (("las dos medias de 5", sm, cm),
-                                   ("la mejor sin capa y la peor con capa", sb, cp),
-                                   ("la peor sin capa y la mejor con capa", sp, cb))]
+                                   ("la mejor con una capa y la peor con dos", sb, cp),
+                                   ("la peor con una capa y la mejor con dos", sp, cb))]
     T = [tabla_editorial(
-        frase(TITULO_5), ["qué dos se comparan", "sin capa", "con capa", "mejora"], filas,
+        frase(TITULO_5), ["qué dos se comparan", "una capa", "dos capas", "mejora"], filas,
         "iddd", ["De cada 100 dígitos que nunca había visto, cuántos acierta. Mejora: cuántos "
-                 "más acierta con capa, en puntos."])]
+                 "más acierta con dos capas, en puntos."])]
     filas = []
     for j in range(m["medio"].shape[1]):
         a = float(((m["medio"][:, j] > UMBRAL) == (m["yte"] > UMBRAL)).mean())

@@ -97,16 +97,16 @@ def una_tirada(semilla, permutar=False):
 
 
 def leer_tabla(ruta):
-    """La fila «un solo comité, sin capa» de la salida de que_mira_cada_una.py: media, peor y
+    """La fila «una capa de un solo comité» de la salida de que_mira_cada_una.py: media, peor y
     mejor. Desde el 9 de octubre de 2026, de su tabla editorial (la salida dejó de imprimir
     renglones sangrados y este lector se había quedado atrás)."""
     from formato import leer_tablas
     for rot, filas, _ in leer_tablas(Path(ruta).read_text(encoding="utf-8")).values():
         if rot and rot[1:] == ["media", "el peor", "el mejor"]:
             for f in filas:
-                if f[0] == "un solo comité, sin capa":
+                if f[0] == "una capa de un solo comité":
                     return tuple(float(x.replace(" %", "").replace(",", ".")) for x in f[1:])
-    raise AssertionError(f"Se esperaba la fila «un solo comité, sin capa» en {ruta}; no está")
+    raise AssertionError(f"Se esperaba la fila «una capa de un solo comité» en {ruta}; no está")
 
 
 def miles(n):

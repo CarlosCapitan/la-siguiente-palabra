@@ -28,7 +28,7 @@ PARECIDO_MAXIMO_ADMISIBLE = 0.90   # por encima de esto, dos neuronas son la mis
 # El título y la clave. Ocho cuadros grises sin rótulo no dicen nada: hay que decir qué
 # es un cuadro (los 64 puntos del dígito), qué es el negro y qué es el blanco. La figura
 # tiene que poder entenderse sin el párrafo que la presenta.
-TITULO = "LO QUE MIRA CADA UNO DE LOS OCHO COMITÉS DE EN MEDIO"
+TITULO = "LO QUE MIRA CADA UNO DE LOS OCHO COMITÉS DE LA PRIMERA CAPA"
 SUBTITULO = "cada cuadro son los 64 puntos del dígito, como los ve ese comité"
 # L24 (A02): la clave decía «negro: este punto empuja hacia «es par»», pero qué extremo de un comité
 # es el «par» depende de la lectura que se le deje elegir (acierto_de_cada_una). La clave dice ahora
