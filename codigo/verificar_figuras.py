@@ -24,6 +24,14 @@ su número (\ref{fig-x}), así que a esa figura no se le mira el texto de detrá
 primera «figura N» del PDF tiene que estar en la página de la figura o en la anterior; o más
 atrás, si lo que hay en medio son solo páginas de otra figura sin texto.
 
+Y otra, decidida por Carlos el 23 de octubre de 2026: la cita tiene que llegar donde el texto
+empieza a hablar de la figura, y hay figuras que reúnen cosas que el texto presenta en dos
+momentos (la del comité del cap. 2: su recuadro 1 se explica veinte líneas antes que el 2). Para
+esas no vale exigirlo a la PRIMERA cita. Ahora se exige: (1) que la última cita antes de la figura
+esté en su página o en la anterior, y (2) que toda cita de más atrás diga en qué página está la
+figura («Figura N, en la página P», lo que escribe la macro «dondeesta» cuando está lejos). Así el lector
+nunca lee la explicación sin saber dónde está el dibujo.
+
 Uso:
     python verificar_figuras.py ../../libro-ia-libro ../../PDF/La-siguiente-palabra.pdf
     python verificar_figuras.py ../../libro-ia-libro ../../PDF/La-siguiente-palabra.pdf --selftest
@@ -166,6 +174,30 @@ def solo_figuras_entre(desde, hasta, imgs, figs, paginas):
     return True
 
 
+def juzgar_flotante(fig, n, pag_img, imgs, figs, paginas):
+    """La regla de las flotantes (9 y 23 oct 2026). Devuelve el fallo, o None si pasa."""
+    cita = re.compile(rf"[Ff]igura {n}(?!\d)")
+    con_pagina = re.compile(rf"[Ff]igura {n}, en la página \d+")
+    pag_pie = imgs[n - 1] if n - 1 < len(imgs) else None
+    citas = [p for p in sorted(paginas)
+             if len(cita.findall(paginas[p])) > (1 if p == pag_pie else 0)]
+    if not citas:
+        return f"{fig}: flota, y no encuentro en el PDF ninguna cita «figura {n}»"
+    previas = [p for p in citas if p <= pag_img]
+    if not previas:
+        return (f"{fig}: flota y está en la página {pag_img}; todas sus citas, «figura {n}», "
+                f"vienen detrás, la primera en la {citas[0]}")
+    cerca = lambda p: p in (pag_img, pag_img - 1) or solo_figuras_entre(p, pag_img, imgs, figs, paginas)
+    if not cerca(max(previas)):
+        return (f"{fig}: flota y está en la página {pag_img}; tenía que haber una cita, «figura "
+                f"{n}», en esa página o en la anterior, y la más cercana está en la {max(previas)}")
+    for p in previas:
+        if not cerca(p) and len(cita.findall(paginas[p])) > len(con_pagina.findall(paginas[p])):
+            return (f"{fig}: flota y está en la página {pag_img}; la cita de la página {p} está "
+                    f"lejos y no dice en qué página está («figura {n}, en la página …»)")
+    return None
+
+
 def revisar(raiz, pdf, desplazar=0):
     figs = figuras_del_manuscrito(raiz)
     imgs = paginas_con_figura(pdf)
@@ -186,23 +218,12 @@ def revisar(raiz, pdf, desplazar=0):
             entera = pagina_solo_con_la_figura(paginas[pag_img], f["pie"])
             esperada = pag_img + 1 if entera else pag_img
             if f["flota"]:
-                # La flotante se busca por su cita: «Figura N» en el texto. El pie también dice
-                # «Figura N:», así que en la página del pie se cuenta una de menos. La primera cita
-                # tiene que estar en la página de la figura o en la anterior.
+                # La flotante se busca por su cita: «Figura N» en el texto (juzgar_flotante).
                 # (Con «desplazar», el selftest busca a propósito la cita de otra figura.)
                 n = (k + desplazar) % len(figs) + 1
-                cita = re.compile(rf"[Ff]igura {n}(?!\d)")
-                pag_pie = imgs[n - 1] if n - 1 < len(imgs) else None
-                citas = [p for p in paginas
-                         if len(cita.findall(paginas[p])) > (1 if p == pag_pie else 0)]
-                if not citas:
-                    fallos.append(f"{f['figura']}: flota, y no encuentro en el PDF ninguna cita "
-                                  f"«figura {n}»")
-                elif citas[0] not in (pag_img, pag_img - 1) and not solo_figuras_entre(
-                        citas[0], pag_img, imgs, figs, paginas):
-                    fallos.append(f"{f['figura']}: flota y está en la página {pag_img}; la "
-                                  f"primera cita, «figura {n}», tenía que estar en esa página "
-                                  f"o en la anterior, y está en la {citas[0]}")
+                fallo = juzgar_flotante(f["figura"], n, pag_img, imgs, figs, paginas)
+                if fallo:
+                    fallos.append(fallo)
             elif pag_txt != esperada and entera:
                 fallos.append(f"{f['figura']}: ocupa la página {pag_img} entera, así que su "
                               f"explicación tenía que empezar en la {esperada}, y empieza "
@@ -223,8 +244,8 @@ def imprimir(filas, fallos):
             print("FALLA:", f)
         return 1
     print(f"PASA: las {len(filas)} figuras caen en la misma página que su explicación, las "
-          f"de página entera, justo delante de ella, y las flotantes, en la página de su cita "
-          f"o en la siguiente.")
+          f"de página entera, justo delante de ella, y las flotantes, con una cita en su página "
+          f"o en la anterior y las citas de más atrás diciendo su página.")
     return 0
 
 
@@ -248,6 +269,37 @@ def selftest(raiz, pdf):
     if not f2:
         fallos.append("señal implantada: emparejé cada figura con la explicación de otra "
                       "y no se quejó de ninguna")
+
+    # [2 bis] Señales implantadas en la regla del 23 oct, sobre la primera flotante del libro:
+    #   (a) se le quitan las citas cercanas y se le pone una lejana que sí dice su página:
+    #       tiene que saltar, porque falta la cita cerca;
+    #   (b) se le deja todo y se añade una cita lejana que NO dice su página: tiene que saltar;
+    #   (c) se le añade una cita lejana que sí la dice: tiene que pasar.
+    figs = figuras_del_manuscrito(raiz)
+    imgs = paginas_con_figura(pdf)
+    k = next((j for j, g in enumerate(figs) if g["flota"] and imgs[j] > 3), None)
+    if k is None:
+        fallos.append("señal implantada 23 oct: no hay ninguna flotante donde probar")
+    else:
+        n, pi = k + 1, imgs[k]
+        cita = re.compile(rf"[Ff]igura {n}(?!\d)(?!:)")
+        lejos = pi - 3
+        a = dict(paginas)
+        for p in (pi - 1, pi):
+            a[p] = cita.sub("Figura X", a[p])
+        a[lejos] = a[lejos] + f" la Figura {n}, en la página 99, "
+        b = dict(paginas); b[lejos] = b[lejos] + f" la Figura {n}. "
+        c = dict(paginas); c[lejos] = c[lejos] + f" la Figura {n}, en la página 99, "
+        ra, rb, rc = (juzgar_flotante("prueba", n, pi, imgs, figs, x) for x in (a, b, c))
+        print(f"[2] señal implantada  flotante {n}: sin cita cerca {'salta' if ra else 'NO salta'}; "
+              f"cita lejos sin página {'salta' if rb else 'NO salta'}; "
+              f"cita lejos con página {'pasa' if not rc else 'NO pasa'}")
+        if not ra:
+            fallos.append("señal implantada: una flotante sin cita cerca pasó")
+        if not rb:
+            fallos.append("señal implantada: una cita lejana sin su página pasó")
+        if rc:
+            fallos.append(f"señal implantada: una cita lejana con su página no pasó: {rc}")
 
     # [3] Invariante del dominio: el libro tal como está, tiene que pasar.
     filas, f3 = revisar(raiz, pdf)

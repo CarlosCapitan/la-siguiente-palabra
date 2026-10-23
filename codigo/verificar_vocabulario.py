@@ -22,6 +22,7 @@ VOCABULARIO = "notas/VOCABULARIO.md"
 ORDEN = "manuscript/Book.txt"
 MANUSCRITO = "manuscript"
 MARCADO = r'`\\[a-záéíóúñ]+\{(.*?)\}`\{=latex\}'   # envoltorio de imprenta: es formato, no texto
+CITA = r'`\\(?:ref|dondeesta|pageref|vpageref)\{[^}]*\}`\{=latex\}'   # cita a una figura o tabla: la etiqueta no es texto
 SECCION_JUBILADAS = "## Palabras jubiladas"
 
 # ==========================================================
@@ -109,7 +110,7 @@ def lineas_del_libro(raiz, orden):
     for f in orden:
         with open(os.path.join(raiz, MANUSCRITO, f), encoding="utf-8") as fh:
             for n, linea in enumerate(fh, 1):
-                yield f, n, re.sub(MARCADO, r"\1", linea.rstrip("\n"))
+                yield f, n, re.sub(MARCADO, r"\1", re.sub(CITA, "", linea.rstrip("\n")))
 
 
 def sitio(lineas, condicion):
@@ -215,8 +216,9 @@ def selftest(raiz):
         copia = os.path.join(tmp, "libro")
         shutil.copytree(raiz, copia, ignore=shutil.ignore_patterns(".git", "pdf"))
         cap = os.path.join(copia, MANUSCRITO, "cap02-perceptron.md")
-        texto = open(cap, encoding="utf-8").read().replace(
-            "## Dieciséis maneras de montarla", "## Dieciséis lámparas posibles", 1)
+        # Se añade un título nuevo al final, en vez de cambiar uno que existe: así la
+        # prueba no depende de cómo se llamen hoy los apartados del capítulo 2.
+        texto = open(cap, encoding="utf-8").read() + "\n\n## Dieciséis lámparas posibles\n"
         open(cap, "w", encoding="utf-8").write(texto)
         _, f2b, _ = revisar(copia)
         ok = any("jubilada «lámparas»" in x for x in f2b)
