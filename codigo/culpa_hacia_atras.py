@@ -275,7 +275,8 @@ def bloque_3(red):
         ["la primera", "la segunda", "le llega", "¿pasa?"],
         [[nombre[a], nombre[b], firmado(a * W1[0] + b * W1[1], 2), "sí" if v else "no"]
          for (a, b), v in esquinas.items()], "ccdc",
-        [f"Sí vale 1 y no vale 0. Listón de la final: {coma(-b1, 2)}."]))
+        [f"Aquí «sí» vale 1 y «no» vale 0. Para pasar, a la final le tienen que llegar más de "
+         f"{coma(-b1, 2)}, su listón."]))
     return regla
 
 
@@ -389,13 +390,14 @@ def bloque_4(red, p):
               s4(m["pasa_final"])],
              ["**la culpa de la final: el doble de lo que falla, por lo que deja pasar su rampa**",
               f"**{s4(m['culpa_final'])}**"]], "id",
-            ["Cada cuenta, con los números redondeados a cuatro cifras."]),
+            ["Cada cuenta está hecha con los números redondeados a cuatro cifras, para que se "
+             "pueda repetir con el dedo."]),
         tabla_editorial(
             "Tramo 2: las dos líneas que llegan a la final",
             ["la línea que viene de", "la culpa de la final", "por lo que trajo esa línea", "da"],
             [[NEURONAS[j], s4(m["culpa_final"]), s4(m["dice_medio"][j]),
               s4(m["lineas_final"][j])] for j in range(2)], "iddd",
-            ["Lo que trajo esa línea: lo que dice la neurona de la que viene."]),
+            ["Lo que trae cada línea es lo que dice la neurona de la que sale."]),
         tabla_editorial(
             "Tramo 3: cuánta le toca a cada una de las dos de la primera capa",
             ["", NEURONAS[0], NEURONAS[1]],
@@ -407,7 +409,7 @@ def bloque_4(red, p):
              ["lo que deja pasar su rampa", s4(m["pasa_medio"][0]), s4(m["pasa_medio"][1])],
              ["**su culpa: lo que le toca, por lo que deja pasar su rampa**",
               f"**{s4(m['culpa_medio'][0])}**", f"**{s4(m['culpa_medio'][1])}**"]], "idd",
-            ["Lo que deja pasar su rampa: lo que dice, por lo que le falta para 1."]),
+            ["Lo que deja pasar la rampa de cada una es lo que dice, por lo que le falta para 1."]),
         tabla_editorial(
             "Tramo 4: las cuatro líneas de la primera capa",
             ["línea", "culpa de su neurona", "por lo que trajo", "da"],
@@ -437,11 +439,10 @@ def bloque_4_bruto(red, p, c):
         tabla_editorial(
             "La misma culpa, a lo bruto", ["peso", "por el atajo", "a lo bruto"],
             [[n, coma(a, 10), coma(b, 10)] for n, a, b, _, _ in filas], "idd",
-            ["A lo bruto: se sube el peso una cienmilésima y se mira el error; se baja una "
-             "cienmilésima y se mira otra vez; la culpa es lo que va de uno a otro, entre lo que "
-             "se ha movido.",
-             "Las dos, iguales en sus diez primeros decimales: lo que va de una a otra no llega a "
-             "una diezmilmillonésima."]),
+            ["«A lo bruto» quiere decir sin atajo: se sube el peso una cienmilésima y se mira el "
+             "error, se baja una cienmilésima y se mira otra vez, y la culpa es lo que va de un "
+             "error a otro, dividido entre lo que se ha movido el peso. Las dos columnas "
+             "coinciden en sus diez primeros decimales."]),
         tabla_editorial(
             f"El error, con {nombre} movido", ["el peso", "el error"],
             [["una cienmilésima más arriba", coma(mas, 10)],
@@ -482,8 +483,9 @@ def bloque_5(red):
         tabla_editorial(
             "El paso: cada peso se mueve contra su culpa",
             ["peso", "culpa", "se mueve", "antes", "después"], pasos, "idddd",
-            [f"Se mueve {coma(POQUITO, 1)} veces su culpa, en contra: si la culpa es negativa, "
-             "sube; si es positiva, baja."]))
+            [("Cada peso se mueve la mitad de su culpa" if POQUITO == 0.5 else
+              f"Cada peso se mueve {coma(POQUITO, 1)} veces su culpa")
+             + ", en contra: si la culpa es negativa, sube; si es positiva, baja."]))
     return gW
 
 
@@ -542,13 +544,12 @@ def bloque_7():
             f"La culpa, capa a capa, en la red de {PROFUNDIDAD_CADENA + 1} capas",
             ["capa de líneas, de la final hacia la entrada", "culpa",
              "de cada 1 de la de encima, le llega"], filas, "idd",
-            [f"Como en los 80: {ANCHO} neuronas por capa, recién arrancada, sin entrenar; la "
-             f"culpa se mide con {len(Xc)} ejemplos de {ANCHO} números puestos al azar, cada uno "
-             "con un sí o un no al azar.",
-             f"Una red de {PROFUNDIDAD_CADENA + 1} capas tiene {n} capas de líneas, una delante de cada "
-             "capa de neuronas; se cuentan desde la entrada: la 1.ª es la que sale de la entrada. "
-             "La culpa de una capa de líneas es la media de la culpa de sus pesos, sin mirar el "
-             "signo."]),
+            [f"La red está armada como en los 80, con {ANCHO} neuronas por capa, recién arrancada y "
+             f"sin entrenar; la culpa se mide con {len(Xc)} ejemplos de {ANCHO} números puestos al "
+             "azar, cada uno con un sí o un no también al azar. Una red de "
+             f"{PROFUNDIDAD_CADENA + 1} capas tiene {n} capas de líneas, una delante de cada capa "
+             "de neuronas, y se cuentan desde la entrada: la 1.ª es la que sale de ella. La culpa "
+             "de una capa de líneas es la media de la culpa de sus pesos, sin mirar el signo."]),
         tabla_editorial(
             "De la última capa de líneas a la primera", ["", "cuánto"],
             [["la culpa de la última", coma(m[-1], 7)],
@@ -622,8 +623,8 @@ def bloque_7_escala(factor_20):
     tabla(tabla_editorial(
         "A escala", ["la culpa de la capa de líneas", "con 21 capas"],
         [["la última", "1 kilómetro"], ["la primera", f"{coma(mm, 3)} mm"]], "id",
-        ["Si la culpa de la última capa de líneas fuera un kilómetro, lo que le llegaría a la "
-         "primera, como en los 80."]))
+        ["Si la culpa que le llega a la última capa de líneas fuera un kilómetro, esto es lo que "
+         "le llegaría a la primera, en una red armada como en los 80."]))
 
 
 def terreno(red):

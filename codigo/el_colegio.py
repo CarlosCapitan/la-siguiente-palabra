@@ -60,6 +60,7 @@ COMITES = [
 ]
 
 NEURONAS = ["la primera", "la segunda"]
+EN_LETRA = {2: "dos", 7: "siete", 10: "diez", 13: "trece", 9: "nueve"}   # las notas lo dicen con letra (Orden 50)
 ANCHO_SALIDA = 62                   # líneas de no más de 62 caracteres, fuera de las tablas (que se componen
                                     # con su propio ancho, como en las demás salidas)
 
@@ -321,11 +322,12 @@ def imprimir_red(res, emitir):
     emitir(tabla_editorial(
         "Lo que acaban haciendo las dos neuronas de la primera capa",
         ["una", "la otra", "de cada 100", "redes"], filas, "iidd",
-        [f"De {ARRANQUES} arranques, {res['resueltas']} lo resolvieron, en {len(res['orden'])} "
-         f"parejas.",
-         "De cada 100: de las redes que lo resolvieron.",
-         "Sí desde N: dice sí (más de 0,5) desde los N años en adelante.",
-         "Sí hasta N: dice sí hasta los N años."]))
+        [f"Se entrenaron {ARRANQUES} redes, cada una desde su propio arranque, y {res['resueltas']} "
+         f"lo resolvieron. Todas esas {res['resueltas']} acabaron haciendo una de estas "
+         f"{EN_LETRA.get(len(res['orden']), len(res['orden']))} parejas de preguntas. «Sí desde los "
+         "6 años» quiere decir que esa neurona dice que sí (más de 0,5) a los de seis años en "
+         "adelante, y que no a los más pequeños; «sí hasta los 5 años» es al revés. La columna "
+         f"«de cada 100» cuenta solo las {res['resueltas']} que lo resolvieron."]))
     emitir([""])
     # --- la red del capítulo
     red = red_entrenada(cap["semilla"], escala)
@@ -565,9 +567,9 @@ def imprimir_culpa(res, emitir):
                       coma(c["pasa_medio"][j], 2), dice_s(c["dice_medio"][j])])
     filas.append(["la final", coma(c["llega_final"], 2), coma(c["liston_final"], 2),
                   coma(c["pasa_final"], 2), dice_s(c["dice_final"])])
-    contexto = (f"Paso {miles(paso)} de {miles(PASOS)}. Edad: {edad} años; el colegio "
-                f"{'la admite' if deberia else 'no la admite'}.")
-    contexto2 = f"La final tendría que decir {deberia}."
+    contexto = (f"Es el paso {miles(paso)} de los {miles(PASOS)} del entrenamiento, con la edad de "
+                f"{edad} años, que el colegio {'admite' if deberia else 'no admite'}: la final "
+                f"tendría que decir {deberia}.")
     dos = [r4(m["dice_medio"][j] * W1[j]) for j in range(2)]
     notas_entrada = ([] if escala == 1.0 else [f"La entrada es la edad entre 10: {x_txt}."])
     casi_uno = [NEURONAS[j] for j in range(2) if dice_r(c["dice_medio"][j]) != r4(c["dice_medio"][j])]
@@ -578,7 +580,7 @@ def imprimir_culpa(res, emitir):
                           "le falta para 1 saldría 0: se redondea lo que le falta, y se resta."]
     emitir(tabla_editorial(
         "Hacia delante", ["neurona", "le llega", "listón", "pasa del listón por", "dice"],
-        filas, "idddd", [contexto, contexto2] + notas_entrada))
+        filas, "idddd", [contexto] + notas_entrada))
     emitir([""])
     emitir(tabla_editorial(
         "Lo que le llega a la final",
@@ -620,14 +622,15 @@ def imprimir_culpa(res, emitir):
           s4(m["pasa_final"])],
          ["**la culpa de la final: el doble de lo que falla, por lo que deja pasar su rampa**",
           f"**{s4(m['culpa_final'])}**"]], "id",
-        ["Cada cuenta, con los números redondeados a cuatro cifras."]))
+        ["Cada cuenta está hecha con los números redondeados a cuatro cifras, para que se pueda "
+         "repetir con el dedo."]))
     emitir([""])
     emitir(tabla_editorial(
         "Tramo 2: las dos líneas que llegan a la final",
         ["la línea que viene de", "la culpa de la final", "por lo que trajo esa línea", "da"],
         [[NEURONAS[j], s4(m["culpa_final"]), dice_s(c["dice_medio"][j]), s4(m["lineas_final"][j])]
          for j in range(2)], "iddd",
-        ["Lo que trajo esa línea: lo que dice la neurona de la que viene."]))
+        ["Lo que trae cada línea es lo que dice la neurona de la que sale."]))
     emitir([""])
     emitir(tabla_editorial(
         "Tramo 3: cuánta le toca a cada una de las dos de la primera capa",
@@ -640,15 +643,15 @@ def imprimir_culpa(res, emitir):
          ["lo que deja pasar su rampa", s4(m["pasa_medio"][0]), s4(m["pasa_medio"][1])],
          ["**su culpa: lo que le toca, por lo que deja pasar su rampa**",
           f"**{s4(m['culpa_medio'][0])}**", f"**{s4(m['culpa_medio'][1])}**"]], "idd",
-        ["Lo que deja pasar su rampa: lo que dice, por lo que le falta para 1."]))
+        ["Lo que deja pasar la rampa de cada una es lo que dice, por lo que le falta para 1."]))
     emitir([""])
     emitir(tabla_editorial(
         "Tramo 4: las dos líneas de la primera capa",
         ["línea", "culpa de su neurona", "por lo que trajo", "da"],
         [[f"{NEURONAS[j]}, de la edad", s4(m["culpa_medio"][j]), x_txt, s4(m["lineas_primera"][j])]
          for j in range(2)], "iddd",
-        ["Lo que trajo la línea: la edad." if escala == 1.0
-         else "Lo que trajo la línea: la edad entre 10."]))
+        [f"Lo que trae cada una de estas dos líneas es la edad{'' if escala == 1.0 else ' entre 10'}, "
+         f"{x_txt}."]))
     emitir([""])
     # la comprobación a lo bruto de dos pesos, sin redondear
     gW, _ = red.gradiente_retro(X[p:p + 1], DEBERIA[p:p + 1])
@@ -663,10 +666,10 @@ def imprimir_culpa(res, emitir):
     emitir(tabla_editorial(
         "La misma culpa, a lo bruto", ["peso", "por el atajo", "a lo bruto"],
         [[n, coma(a, 10), coma(b, 10)] for n, a, b, _, _ in filas], "idd",
-        ["A lo bruto: se sube el peso una cienmilésima y se mira el error; se baja una "
-         "cienmilésima y se mira otra vez; la culpa es lo que va de uno a otro, entre lo "
-         "que se ha movido.",
-         f"Las dos coinciden en sus {min(juntas)} primeros decimales."]))
+        ["«A lo bruto» quiere decir sin atajo: se sube el peso una cienmilésima y se mira el "
+         "error, se baja una cienmilésima y se mira otra vez, y la culpa es lo que va de un "
+         "error a otro, dividido entre lo que se ha movido el peso. Las dos columnas coinciden en "
+         f"sus {EN_LETRA.get(min(juntas), min(juntas))} primeros decimales."]))
     emitir([""])
     for n, _, _, mas, menos in filas:
         emitir(tabla_editorial(

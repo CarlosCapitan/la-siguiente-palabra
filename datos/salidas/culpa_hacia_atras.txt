@@ -87,7 +87,7 @@ La final, si las dos de la primera capa dijeran un sí o un no secos
 | sí | no | +9,53 | sí |
 | sí | sí | -0,73 | no |
 
-Sí vale 1 y no vale 0. Listón de la final: 4,39.
+Aquí «sí» vale 1 y «no» vale 0. Para pasar, a la final le tienen que llegar más de 4,39, su listón.
 :::
 
 (la posición del ejemplo es la que más falla en ese paso)
@@ -156,7 +156,7 @@ Tramo 1: la culpa de la final
 | lo que deja pasar su rampa: lo que dice, por lo que le falta para 1 | 0,2413 |
 | **la culpa de la final: el doble de lo que falla, por lo que deja pasar su rampa** | **0,2864** |
 
-Cada cuenta, con los números redondeados a cuatro cifras.
+Cada cuenta está hecha con los números redondeados a cuatro cifras, para que se pueda repetir con el dedo.
 :::
 
 ::: tabla
@@ -167,7 +167,7 @@ Tramo 2: las dos líneas que llegan a la final
 | la primera | 0,2864 | 0,9982 | 0,2859 |
 | la segunda | 0,2864 | 0,8238 | 0,2359 |
 
-Lo que trajo esa línea: lo que dice la neurona de la que viene.
+Lo que trae cada línea es lo que dice la neurona de la que sale.
 :::
 
 ::: tabla
@@ -183,7 +183,7 @@ Tramo 3: cuánta le toca a cada una de las dos de la primera capa
 | lo que deja pasar su rampa | 0,001797 | 0,1452 |
 | **su culpa: lo que le toca, por lo que deja pasar su rampa** | **0,001652** | **-0,07277** |
 
-Lo que deja pasar su rampa: lo que dice, por lo que le falta para 1.
+Lo que deja pasar la rampa de cada una es lo que dice, por lo que le falta para 1.
 :::
 
 ::: tabla
@@ -207,9 +207,7 @@ La misma culpa, a lo bruto
 | la segunda, del de arriba | -0,0727725679 | -0,0727725679 |
 | la final, de la segunda | 0,2358950686 | 0,2358950686 |
 
-A lo bruto: se sube el peso una cienmilésima y se mira el error; se baja una cienmilésima y se mira otra vez; la culpa es lo que va de uno a otro, entre lo que se ha movido.
-
-Las dos, iguales en sus diez primeros decimales: lo que va de una a otra no llega a una diezmilmillonésima.
+«A lo bruto» quiere decir sin atajo: se sube el peso una cienmilésima y se mira el error, se baja una cienmilésima y se mira otra vez, y la culpa es lo que va de un error a otro, dividido entre lo que se ha movido el peso. Las dos columnas coinciden en sus diez primeros decimales.
 :::
 
 ::: tabla
@@ -251,7 +249,7 @@ El paso: cada peso se mueve contra su culpa
 | la final, de la primera | -0,0073 | +0,0036 | 3,2065 | 3,2101 |
 | la final, de la segunda | +0,0063 | -0,0032 | -1,7506 | -1,7538 |
 
-Se mueve 0,5 veces su culpa, en contra: si la culpa es negativa, sube; si es positiva, baja.
+Cada peso se mueve la mitad de su culpa, en contra: si la culpa es negativa, sube; si es positiva, baja.
 :::
 
 6. LO QUE DEJA PASAR CADA UNA
@@ -290,9 +288,7 @@ La culpa, capa a capa, en la red de 6 capas
 | la 2.ª | 0,0002636 | 0,585 |
 | la 1.ª, la primera | 0,0000469 | 0,178 |
 
-Como en los 80: 16 neuronas por capa, recién arrancada, sin entrenar; la culpa se mide con 64 ejemplos de 16 números puestos al azar, cada uno con un sí o un no al azar.
-
-Una red de 6 capas tiene 6 capas de líneas, una delante de cada capa de neuronas; se cuentan desde la entrada: la 1.ª es la que sale de la entrada. La culpa de una capa de líneas es la media de la culpa de sus pesos, sin mirar el signo.
+La red está armada como en los 80, con 16 neuronas por capa, recién arrancada y sin entrenar; la culpa se mide con 64 ejemplos de 16 números puestos al azar, cada uno con un sí o un no también al azar. Una red de 6 capas tiene 6 capas de líneas, una delante de cada capa de neuronas, y se cuentan desde la entrada: la 1.ª es la que sale de ella. La culpa de una capa de líneas es la media de la culpa de sus pesos, sin mirar el signo.
 :::
 
 ::: tabla
@@ -348,7 +344,7 @@ A escala
 | la última | 1 kilómetro |
 | la primera | 0,066 mm |
 
-Si la culpa de la última capa de líneas fuera un kilómetro, lo que le llegaría a la primera, como en los 80.
+Si la culpa que le llega a la última capa de líneas fuera un kilómetro, esto es lo que le llegaría a la primera, en una red armada como en los 80.
 :::
 
 8. EL TERRENO DEL ERROR, CON UN SOLO PESO

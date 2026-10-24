@@ -56,13 +56,6 @@ TITULO = "¿De qué depende que la culpa se desvanezca?"
 # era la tercera cosa con ese nombre en ocho páginas, y «función» es una palabra que el lector no
 # tiene); «uniformes» se dice con palabras, y los pesos de arranque llevan su tamaño.
 # L24 (9 de octubre): tabla editorial (regla 6 ter); el subtítulo y el pie pasan a notas.
-NOTAS_ARRIBA = ["Cuántas veces menos culpa le llega a la primera capa de líneas (las que salen de "
-                "la entrada) que a la última (las que llegan a la final).",
-                f"Redes de {ANCHO} neuronas por capa, recién arrancadas; la culpa se mide con "
-                f"{EJEMPLOS} ejemplos de {ANCHO} números puestos al azar.",
-                "La culpa se reparte hacia atrás exactamente igual en las cuatro filas: lo único "
-                "que cambia es cómo son los pesos de arranque y qué hay dentro de cada neurona "
-                "menos la final."]
 CAB_CAPAS = "capas"
 CAB_MONTAJE = "cómo se arma"
 CAB = {"ochenta": "como en los 80", "repartida": "más pequeños",
@@ -76,23 +69,28 @@ def _entre(montaje, entradas=ANCHO):
     return float(np.sqrt(montaje["ganancia"] / entradas))
 
 
-def pie():
-    """Las notas de debajo: qué es cada fila. Los tamaños de los pesos de arranque los calcula
-    el programa."""
+def notas():
+    """Las notas de debajo de la tabla, en dos párrafos (Orden 50): qué es cada número y qué es
+    cada fila. Los tamaños de los pesos de arranque los calcula el programa."""
     chico = _entre(MONTAJES[1])
     doble = _entre(MONTAJES[3])
     c = lambda x: f"{x:.2f}".replace(".", ",")
     return [
-        "Como en los 80: los pesos de arranque, puestos al azar entre -1 y +1, cualquier valor "
-        "con la misma oportunidad; en cada neurona, la rampa corta.",
-        "Más pequeños: los mismos pesos de arranque, encogidos según cuántas entradas tiene la "
-        f"neurona: con las {ANCHO} de estas redes, entre -{c(chico)} y +{c(chico)}.",
-        "El codo: los pesos de arranque de los 80, y en cada neurona menos la final, en vez de la "
-        "rampa, el codo: lo que pasa del listón, tal cual; si no llega, cero.",
-        "Las dos cosas: las dos a la vez (aquí los pesos de arranque quedan entre "
-        f"-{c(doble)} y +{c(doble)}).",
-        "Un número por debajo de 1 quiere decir que a la primera capa le llega más culpa que a "
-        "la última."]
+        "Cada número es cuántas veces menos culpa le llega a la primera capa de líneas, la que "
+        "sale de la entrada, que a la última, la que llega a la final; si es menor que 1, a la "
+        f"primera le llega más que a la última. Son redes de {ANCHO} neuronas por capa, recién "
+        f"arrancadas, y la culpa se mide con {EJEMPLOS} ejemplos de {ANCHO} números puestos al "
+        "azar. En las cuatro filas la culpa se reparte hacia atrás exactamente igual: lo único "
+        "que cambia es cómo son los pesos de arranque y qué hay dentro de cada neurona, menos la "
+        "final.",
+        "La primera fila, «como en los 80», tiene los pesos de arranque al azar entre -1 y +1, "
+        "cualquier valor con la misma oportunidad, y la rampa corta en cada neurona. La segunda, "
+        "«más pequeños», encoge esos pesos según cuántas entradas tiene la neurona: con las "
+        f"{ANCHO} de estas redes, quedan entre -{c(chico)} y +{c(chico)}. La tercera, «el codo», "
+        "deja los pesos de los 80 y pone en cada neurona, menos la final, el codo en vez de la "
+        "rampa: lo que pasa del listón, tal cual, y si no llega, cero. La cuarta, «las dos "
+        "cosas», junta las dos (aquí los pesos de arranque quedan entre "
+        f"-{c(doble)} y +{c(doble)})."]
 
 # ==========================================================
 
@@ -213,6 +211,16 @@ def factores(montaje, profundidades=PROFUNDIDADES):
     return salida
 
 
+def nota_de_una_fila():
+    """La nota de la tabla de una sola fila (Orden 50, escrita por Claude y aprobada por Carlos)."""
+    return ("Cada número es cuántas veces menos culpa le llega a la primera capa de líneas, la que "
+            "sale de la entrada, que a la última, la que llega a la final. Son redes de "
+            f"{ANCHO} neuronas por capa, recién arrancadas, y la culpa se mide con {EJEMPLOS} "
+            f"ejemplos de {ANCHO} números puestos al azar. Armadas como en los 80 quiere decir con "
+            "los pesos de arranque puestos al azar entre -1 y +1, cualquier valor con la misma "
+            "oportunidad, y con la rampa corta en cada neurona.")
+
+
 def imprimir(tabla):
     """Las filas son las cuatro maneras de armar la red y las columnas la profundidad, con un
     rótulo de grupo («capas en medio») encima de las cuatro.
@@ -222,8 +230,13 @@ def imprimir(tabla):
     filas = [[CAB[m["clave"]]] + [escribir_veces(f["veces"]) for f in tabla[m["clave"]]]
              for m in MONTAJES]
     rotulos = [CAB_MONTAJE] + [f"{CAB_CAPAS}: {p + 1}" for p in PROFUNDIDADES]   # N capas en medio + la final
+    # Orden 51: primero, la tabla de una sola fila («como en los 80»), la que el capítulo 4 enseña
+    # antes de las cuatro; las cifras son las de la primera fila de la de abajo, no se recalculan.
+    print("\n".join(tabla_editorial(TITULO, rotulos, filas[:1], "i" + "d" * len(PROFUNDIDADES),
+                                    [nota_de_una_fila()])))
+    print()
     print("\n".join(tabla_editorial(TITULO, rotulos, filas, "i" + "d" * len(PROFUNDIDADES),
-                                    NOTAS_ARRIBA + pie())))
+                                    notas())))
 
 
 def guardar(tabla):

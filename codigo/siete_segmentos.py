@@ -150,9 +150,11 @@ def bloque_tabla(X, nombre_solo):
         "Los diez dígitos de un reloj digital, segmento a segmento",
         [(nombre, ["sí" if X[d, j] else "no" for d in range(10)])
          for j, nombre in enumerate(SEGMENTOS)],
-        ["Sí: el segmento está encendido en ese dígito.",
-         "¿Hay un solo segmento encendido en los cinco pares y apagado en los cinco impares? "
-         + (f"Sí: {nombre_solo}." if nombre_solo else "No, ninguno.")])
+        ["Un «sí» quiere decir que ese segmento está encendido en ese dígito. "
+         + (f"Un solo segmento está encendido en los cinco pares y apagado en los cinco impares: "
+            f"{nombre_solo}." if nombre_solo else
+            "No hay ningún segmento que esté en «sí» en las cinco columnas de los pares y en «no» en las "
+            "cinco de los impares.")])
 
 
 def texto_liston(liston):
@@ -165,8 +167,8 @@ def bloque_comite(X, w, b):
         "El comité que sí lo consigue, con los siete segmentos",
         ["el segmento", "puntos que suma"],
         [[nombre, f"{peso:+.0f}"] for nombre, peso in zip(SEGMENTOS, w)], "id",
-        [f"Para decir «par», el total tiene que pasar de {texto_liston(-b)}. Pesos aprendidos "
-         "con la regla del capítulo 2, empezando de cero."])
+        ["Estos pesos los ha aprendido una máquina con la regla del capítulo 2, empezando de cero. "
+         f"Para decir «par», el total tiene que pasar de {texto_liston(-b)}."])
     filas = []
     for d in range(10):
         total = X[d] @ w + b

@@ -6,7 +6,7 @@
 | una capa de un solo comité | 91,9 % | 90,4 % | 93,0 % |
 | dos capas: ocho comités en la primera | 97,9 % | 96,3 % | 98,7 % |
 
-De cada 100 dígitos que nunca había visto, cuántos acierta. Media de 5 entrenamientos desde cero, con 5 semillas distintas, las mismas en todas las filas; al lado, el peor y el mejor de los 5.
+Cada número es cuántos dígitos acierta de cada 100 que nunca había visto. Cada máquina se entrenó cinco veces desde cero, con cinco semillas distintas, las mismas en las dos filas: la columna «media» es la media de las cinco, y al lado están la peor y la mejor.
 :::
 
 ::: tabla
@@ -49,7 +49,7 @@ Cuánto se parecen entre sí esos ocho comités
 | 8 comités en la primera capa | 97,9 % | 96,3 % | 98,7 % |
 | 16 comités en la primera capa | 98,6 % | 98,0 % | 99,1 % |
 
-De cada 100 dígitos que nunca había visto, cuántos acierta. Media de 5 entrenamientos desde cero, con 5 semillas distintas, las mismas en todas las filas; al lado, el peor y el mejor de los 5.
+Cada número es cuántos dígitos acierta de cada 100 que nunca había visto. Cada máquina se entrenó cinco veces desde cero, con cinco semillas distintas, las mismas en todas las filas: la columna «media» es la media de las cinco, y al lado están la peor y la mejor.
 :::
 
 ::: tabla
@@ -61,7 +61,7 @@ Lo que mejoran las dos capas, según qué dos se comparen
 | la mejor con una capa y la peor con dos | 93,0 | 96,3 | 3,3 |
 | la peor con una capa y la mejor con dos | 90,4 | 98,7 | 8,3 |
 
-De cada 100 dígitos que nunca había visto, cuántos acierta. Mejora: cuántos más acierta con dos capas, en puntos.
+Cada número es cuántos dígitos acierta de cada 100 que nunca había visto. La columna «mejora» es cuántos más acierta con dos capas que con una, en puntos.
 :::
 
 ::: tabla
@@ -78,7 +78,7 @@ Cada comité de la primera capa, leído de las dos maneras
 | el comité 7 | 30,9 % | 69,1 % | 69,1 % |
 | el comité 8 | 81,1 % | 18,9 % | 81,1 % |
 
-De cada 100 dígitos que nunca había visto, cuántos acierta. Se le cuenta: la lectura que mejor le va.
+Cada número es cuántos dígitos acierta de cada 100 que nunca había visto. Como nadie ha fijado qué extremo es el «sí», cada comité se lee de las dos maneras, y la última columna le cuenta la que mejor le va.
 :::
 
 ::: tabla
@@ -88,8 +88,6 @@ Cuánto se parecen, con la cuenta de los pesos del cuatro
 |:--|--:|
 | el comité 1 y el comité 3 | -0,44 |
 
-De −1 a 1: 1, iguales salvo el tamaño de los números; 0, nada que ver; −1, uno es el negativo del otro.
-
-Se cuenta como parecido también que uno sea el negativo del otro.
+El parecido va de −1 a 1: 1 quiere decir que los dos son iguales salvo el tamaño de los números; 0, que no tienen nada que ver; y −1, que uno es el otro en negativo. El negativo también cuenta como parecido, porque es la misma pregunta al revés.
 :::
 

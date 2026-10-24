@@ -11,9 +11,7 @@ Los diez dígitos de un reloj digital, segmento a segmento
 | el de abajo derecha | sí | no | sí | sí | sí | sí | sí | sí | sí | sí |
 | el de abajo | sí | sí | no | sí | sí | no | sí | sí | no | sí |
 
-Sí: el segmento está encendido en ese dígito.
-
-¿Hay un solo segmento encendido en los cinco pares y apagado en los cinco impares? No, ninguno.
+Un «sí» quiere decir que ese segmento está encendido en ese dígito. No hay ningún segmento que esté en «sí» en las cinco columnas de los pares y en «no» en las cinco de los impares.
 :::
 
 ::: tabla
@@ -29,7 +27,7 @@ El comité que sí lo consigue, con los siete segmentos
 | el de abajo derecha | -2 |
 | el de abajo | -1 |
 
-Para decir «par», el total tiene que pasar de 0. Pesos aprendidos con la regla del capítulo 2, empezando de cero.
+Estos pesos los ha aprendido una máquina con la regla del capítulo 2, empezando de cero. Para decir «par», el total tiene que pasar de 0.
 :::
 
 ::: tabla

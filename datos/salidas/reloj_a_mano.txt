@@ -23,7 +23,7 @@ Qué dígitos se saltan la regla, segmento a segmento
 | el de abajo derecha | 2 | 1 3 5 7 9 | 6 |
 | el de abajo | 4 | 3 5 9 | 4 |
 
-La regla: encendido en los cinco pares y apagado en los cinco impares. Se la saltan los pares que tienen el segmento apagado y los impares que lo tienen encendido.
+La regla es estar encendido en los cinco pares y apagado en los cinco impares. Se la saltan los pares que tienen el segmento apagado y los impares que lo tienen encendido, y la última columna los cuenta.
 :::
 
 ::: tabla
@@ -47,7 +47,7 @@ Lo que tiene el cuatro y no tiene ningún otro
 | el de arriba izquierda | sí | no | sí | sí | sí | no | no | sí | no | sí |
 | el de arriba | sí | sí | no | sí | sí | no | sí | sí | sí | sí |
 
-Encendido el de arriba izquierda y apagado el de arriba: el 4.
+El único dígito con el de arriba izquierda encendido y el de arriba apagado es el 4.
 :::
 
 3. TRES PESOS PUESTOS A MANO, Y LA CUENTA DE LOS DIEZ
@@ -81,8 +81,6 @@ La cuenta de los diez dígitos
 | 8 | -1 | +1 | +2 | +2 | par |
 | 9 | -1 | +1 | 0 | 0 | impar |
 
-Un segmento encendido suma sus puntos; uno apagado, nada. El listón, 0,5.
-
-Los mismos pesos y el mismo listón aciertan 10 de 10.
+Un segmento encendido aporta sus puntos al total, y uno apagado, nada. Con el listón en 0,5, estos tres pesos aciertan los diez dígitos.
 :::
 

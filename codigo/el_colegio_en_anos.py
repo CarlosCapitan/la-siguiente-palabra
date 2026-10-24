@@ -40,6 +40,7 @@ DIVISORES = [1.0, 10.0]                   # pesos de arranque: los de ahora, o d
 CADA_CUANTOS = 500                        # cada cuántos pasos se mira qué edades falla la red del capítulo
 MAX_PATRONES = 8                          # patrones de fallo que se enseñan
 ANCHO_SALIDA = 62                         # líneas de no más de 62 caracteres, fuera de las tablas
+EN_LETRA = {2: "dos"}                     # la nota de «Lo que acaban haciendo…» lo dice con letra (Orden 50)
 # Los ajustes «de ahora» (poquito 0,5, 20.000 pasos, 200 arranques, semilla base 20260916, umbral 0,5)
 # son los de `que_inventan_las_capas.py` y `el_colegio.py`, y se importan de allí.
 
@@ -317,10 +318,11 @@ def bloque_194(res, tabla, emitir):
     emitir(tabla_editorial(
         "Lo que acaban haciendo las dos neuronas de la primera capa",
         ["una", "la otra", "de cada 100", "redes"], filas, "iidd",
-        [f"De 200 arranques, {resueltas} lo resolvieron, en {len(orden)} parejas.",
-         "De cada 100: de las redes que lo resolvieron.",
-         "Sí desde N: dice sí (más de 0,5) desde los N años en adelante.",
-         "Sí hasta N: dice sí hasta los N años."]))
+        [f"Se entrenaron 200 redes, cada una desde su propio arranque, y {resueltas} lo resolvieron. "
+         f"Todas esas {resueltas} acabaron haciendo una de estas {EN_LETRA.get(len(orden), len(orden))} "
+         "parejas de preguntas. «Sí desde los 6 años» quiere decir que esa neurona dice que sí "
+         "(más de 0,5) a los de seis años en adelante, y que no a los más pequeños; «sí hasta los 5 "
+         f"años» es al revés. La columna «de cada 100» cuenta solo las {resueltas} que lo resolvieron."]))
     emitir([""])
     mas = cuenta[orden[0]]
     elegida = min((c for c in orden if cuenta[c] == mas), key=lambda c: primera[c])

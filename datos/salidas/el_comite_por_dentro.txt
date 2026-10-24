@@ -8,7 +8,7 @@
 SELFTEST: las tres pruebas pasan.
 
 ########## capítulo 3: el comité real, por dentro ##########
-máquina: Darwin arm64. Medido el 2026-10-23.
+máquina: Darwin arm64. Medido el 2026-10-24.
 La pregunta: ¿es un 4? Un solo comité, con los otros
 nueve dígitos enfrente. Es el de «¿Es un cuatro?» del capítulo 2.
 Aprende con 1.257 dibujos (131 cuatros) y acierta 99,4 %
@@ -53,7 +53,7 @@ Tres puntos, para ver cómo va
 | fila 1, columna 5 | 16 | -116 | -1.856 |
 | fila 8, columna 6 | 0 | -138 | 0 |
 
-Aporta: la tinta por el peso.
+La última columna, «aporta», es la tinta del punto por su peso.
 :::
 
 ::: tabla
@@ -74,9 +74,7 @@ La cuenta del 4, punto a punto
 | los otros 54 puntos |  |  | 4.225 |
 | **total del 4** |  |  | **4.979** |
 
-Los 5 puntos que más suman, los 5 que más restan y lo que suman juntos todos los demás. Aporta: la tinta por el peso.
-
-El listón es 0: dice «es un 4» si el total pasa de ahí.
+Arriba, los cinco puntos que más suman; debajo, los cinco que más restan; y en una sola fila, lo que suman juntos todos los demás. Lo que aporta cada punto es su tinta por su peso. El listón es 0: si el total pasa de ahí, el comité dice «es un 4».
 :::
 
 ::: tabla
@@ -135,11 +133,7 @@ Cuánto se parecen los pesos a cada cosa
 | la diferencia | 0,70 |
 | puntos donde peso y diferencia empujan al mismo lado | 36 de 44 |
 
-Cuánto se parecen: de −1 a 1; 1 quiere decir iguales salvo el tamaño de los números, y 0, que no tienen nada que ver.
-
-Mismo lado: se cuentan solo los puntos donde ni el peso ni la diferencia valen cero.
-
-La media de los otros nueve y la diferencia, con los 1.257 dibujos con los que aprendió.
+La columna «cuánto se parecen» va de −1 a 1: 1 quiere decir que las dos cuadrículas son iguales salvo el tamaño de los números, y 0, que no tienen nada que ver. En la última fila solo se cuentan los puntos donde ni el peso ni la diferencia valen cero. La media de los otros nueve dígitos y la diferencia salen de los 1.257 dibujos con los que aprendió el comité.
 :::
 
 5. DE DÓNDE SALEN LOS PESOS

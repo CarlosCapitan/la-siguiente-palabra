@@ -167,7 +167,7 @@ def media_de_varias(funcion, semilla=SEMILLA):
     return float(np.mean(a)), float(np.min(a)), float(np.max(a))
 
 
-EN_LETRA = {8: "ocho"}   # el libro escribe «ocho comités», con letra
+EN_LETRA = {5: "cinco", 8: "ocho"}   # el libro escribe «ocho comités» y «cinco veces», con letra
 
 
 def frase(titulo):
@@ -178,10 +178,14 @@ def frase(titulo):
     return t[:k] + t[k].upper() + t[k + 1:]
 
 
-def nota_media():
-    return (f"De cada 100 dígitos que nunca había visto, cuántos acierta. Media de {REPETICIONES} "
-            f"entrenamientos desde cero, con {REPETICIONES} semillas distintas, las mismas en "
-            f"todas las filas; al lado, el peor y el mejor de los {REPETICIONES}.")
+def nota_media(filas):
+    """La nota de las dos tablas de medias («¿Es par…?» y «¿Y si en la primera capa…?»); `filas`
+    es cómo se dicen las filas que comparten semillas: «las dos filas» o «todas las filas»."""
+    cinco = EN_LETRA[REPETICIONES]
+    return ("Cada número es cuántos dígitos acierta de cada 100 que nunca había visto. Cada "
+            f"máquina se entrenó {cinco} veces desde cero, con {cinco} semillas distintas, las "
+            f"mismas en {filas}: la columna «media» es la media de las {cinco}, y al lado están "
+            "la peor y la mejor.")
 
 
 def imprimir(m, aciertos, parecido, sola, con_capa):
@@ -196,7 +200,7 @@ def imprimir(m, aciertos, parecido, sola, con_capa):
         [["una capa de un solo comité"] + media_peor_mejor(sola),
          [f"dos capas: {EN_LETRA.get(EN_MEDIO, EN_MEDIO)} comités en la primera"]
          + media_peor_mejor(con_capa)], "iddd",
-        [nota_media()]))
+        [nota_media("las dos filas")]))
     filas = [[f"el comité número {j}", pct(a)] for j, a in enumerate(aciertos, 1)]
     filas.append(["**el mejor de los ocho**", f"**{pct(aciertos.max())}**"])
     T.append(tabla_editorial(
@@ -213,7 +217,7 @@ def imprimir(m, aciertos, parecido, sola, con_capa):
                       pct(med), pct(lo), pct(hi)])
     T.append(tabla_editorial(
         frase(TITULO_4), ["comités en la primera capa", "media", "el peor", "el mejor"],
-        filas, "iddd", [nota_media()]))
+        filas, "iddd", [nota_media("todas las filas")]))
     for t in T:
         print("\n".join(t))
         print()
@@ -243,8 +247,8 @@ def imprimir_l24(m, sola, con_capa):
                                    ("la peor con una capa y la mejor con dos", sp, cb))]
     T = [tabla_editorial(
         frase(TITULO_5), ["qué dos se comparan", "una capa", "dos capas", "mejora"], filas,
-        "iddd", ["De cada 100 dígitos que nunca había visto, cuántos acierta. Mejora: cuántos "
-                 "más acierta con dos capas, en puntos."])]
+        "iddd", ["Cada número es cuántos dígitos acierta de cada 100 que nunca había visto. La "
+                 "columna «mejora» es cuántos más acierta con dos capas que con una, en puntos."])]
     filas = []
     for j in range(m["medio"].shape[1]):
         a = float(((m["medio"][:, j] > UMBRAL) == (m["yte"] > UMBRAL)).mean())
@@ -253,16 +257,17 @@ def imprimir_l24(m, sola, con_capa):
         frase(TITULO_6),
         ["", "si pasar de la mitad es: «par»", "si pasar de la mitad es: «impar»", "se le cuenta"],
         filas, "iddd",
-        ["De cada 100 dígitos que nunca había visto, cuántos acierta. Se le cuenta: la lectura "
-         "que mejor le va."]))
+        ["Cada número es cuántos dígitos acierta de cada 100 que nunca había visto. Como nadie ha "
+         "fijado qué extremo es el «sí», cada comité se lee de las dos maneras, y la última "
+         "columna le cuenta la que mejor le va."]))
     a, b, r = parecido_con_signo(m["red"])
     T.append(tabla_editorial(
         frase(TITULO_7),
         ["los dos que más se parecen", "parecido"],
         [[f"el comité {a + 1} y el comité {b + 1}", coma(r, 2)]], "id",
-        ["De −1 a 1: 1, iguales salvo el tamaño de los números; 0, nada que ver; −1, uno es el "
-         "negativo del otro.",
-         "Se cuenta como parecido también que uno sea el negativo del otro."]))
+        ["El parecido va de −1 a 1: 1 quiere decir que los dos son iguales salvo el tamaño de los "
+         "números; 0, que no tienen nada que ver; y −1, que uno es el otro en negativo. El "
+         "negativo también cuenta como parecido, porque es la misma pregunta al revés."]))
     for t in T:
         print("\n".join(t))
         print()

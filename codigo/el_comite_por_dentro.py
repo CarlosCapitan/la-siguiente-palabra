@@ -37,6 +37,7 @@ Uso:
 
 LADO = 8
 PUNTOS_EN_TABLA = 5            # cuántos de los que más suman y de los que más restan se enseñan
+EN_LETRA = {5: "cinco"}        # la nota de esa tabla lo dice con letra (Orden 50)
 TINTA_ALTA = 8                 # «mucha tinta»: de 8 a 16, la mitad de arriba (apartado 5)
 ES_UN_CUATRO = "../datos/salidas/es_un_cuatro.txt"    # donde el capítulo 2 imprime este comité
 
@@ -325,7 +326,7 @@ def main():
         "Tres puntos, para ver cómo va", ["punto", "tinta", "peso", "aporta"],
         [[lugar(k), str(tinta[i_si][k]), miles(int(casos[k])), miles(int(aporta[k]))]
          for k in (mas, menos, sin_tinta)], "iddd",
-        ["Aporta: la tinta por el peso."]))
+        ["La última columna, «aporta», es la tinta del punto por su peso."]))
     arriba, abajo = orden[::-1][:PUNTOS_EN_TABLA], orden[:PUNTOS_EN_TABLA]
     resto = np.setdiff1d(np.arange(LADO * LADO), np.concatenate([arriba, abajo]))
     filas = [[lugar(k), str(tinta[i_si][k]), miles(int(casos[k])), miles(int(aporta[k]))]
@@ -335,9 +336,10 @@ def main():
     T.append(tabla_editorial(
         f"La cuenta del {DIGITO_SI}, punto a punto", ["punto", "tinta", "peso", "aporta"], filas,
         "iddd",
-        [f"Los {PUNTOS_EN_TABLA} puntos que más suman, los {PUNTOS_EN_TABLA} que más restan y lo "
-         "que suman juntos todos los demás. Aporta: la tinta por el peso.",
-         f"El listón es {miles(liston)}: dice «es un {DIGITO_SI}» si el total pasa de ahí."]))
+        [f"Arriba, los {EN_LETRA[PUNTOS_EN_TABLA]} puntos que más suman; debajo, los "
+         f"{EN_LETRA[PUNTOS_EN_TABLA]} que más restan; y en una sola fila, lo que suman juntos todos "
+         "los demás. Lo que aporta cada punto es su tinta por su peso. "
+         f"El listón es {miles(liston)}: si el total pasa de ahí, el comité dice «es un {DIGITO_SI}»."]))
     T.append(tabla_editorial(
         f"Un {DIGITO_SI} y un {rival}, contra el listón",
         ["dibujo", "total", "listón", "¿pasa del listón?"],
@@ -370,11 +372,11 @@ def main():
          ["la diferencia", coma(parecido(casos, diferencia), 2)],
          ["puntos donde peso y diferencia empujan al mismo lado", f"{iguales} de {vivos}"]],
          "id",
-        ["Cuánto se parecen: de −1 a 1; 1 quiere decir iguales salvo el tamaño de los números, y "
-         "0, que no tienen nada que ver.",
-         "Mismo lado: se cuentan solo los puntos donde ni el peso ni la diferencia valen cero.",
-         f"La media de los otros nueve y la diferencia, con los {miles(len(y_ap))} dibujos con los "
-         "que aprendió."])))
+        ["La columna «cuánto se parecen» va de −1 a 1: 1 quiere decir que las dos cuadrículas son "
+         "iguales salvo el tamaño de los números, y 0, que no tienen nada que ver. En la última "
+         "fila solo se cuentan los puntos donde ni el peso ni la diferencia valen cero. La media "
+         f"de los otros nueve dígitos y la diferencia salen de los {miles(len(y_ap))} dibujos con "
+         "los que aprendió el comité."])))
     de_donde_salen_los_pesos(m, casos, liston)
 
 

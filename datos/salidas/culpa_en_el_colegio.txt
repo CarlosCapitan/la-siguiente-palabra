@@ -29,9 +29,7 @@ Lo que dice la red entrenada, edad por edad
 | 14 | 0 | 0,001 | +0,001 |
 | 15 | 0 | 0,001 | +0,001 |
 
-Entrenada 100.000 pasos, con poquito 0,5 y los pesos de arranque divididos entre 10.
-
-Lo que falla: lo que dice menos lo que tendría que decir.
+La red se entrenó 100.000 pasos, con los ajustes que se explican más adelante en el capítulo: en cada paso, cada peso se mueve la mitad de su culpa, y los pesos de arranque, puestos al azar, se dividen entre 10. La última columna, «lo que falla», es lo que dice la red menos lo que tendría que decir.
 :::
 
 ::: tabla
@@ -66,7 +64,7 @@ La primera: «sí desde los 6 años»
 | 14 | 35,99 | sí | 1,000 |
 | 15 | 38,56 | sí | 1,000 |
 
-Listón: 14,28. Le llega: el peso por la edad. Dice: cerca de 1 si le llega más que su listón, cerca de 0 si le llega menos.
+La primera neurona necesita que le lleguen más de 14,28, su listón. Lo que le llega es su peso por la edad. Lo que dice está cerca de 1 si le llega más que su listón, y cerca de 0 si le llega menos.
 :::
 
 ::: tabla
@@ -88,7 +86,7 @@ La segunda: «sí desde los 13 años»
 | 14 | 29,99 | sí | 0,961 |
 | 15 | 32,13 | sí | 0,995 |
 
-Listón: 26,78. Le llega: el peso por la edad. Dice: cerca de 1 si le llega más que su listón, cerca de 0 si le llega menos.
+La segunda neurona necesita que le lleguen más de 26,78, su listón. Lo que le llega es su peso por la edad. Lo que dice está cerca de 1 si le llega más que su listón, y cerca de 0 si le llega menos.
 :::
 
 ::: tabla
@@ -123,7 +121,7 @@ La final, si las dos de la primera capa dijeran un sí o un no secos
 | sí | no | +14,05 | sí |
 | sí | sí | -0,90 | no |
 
-Sí vale 1 y no vale 0. Listón de la final: 6,60.
+Aquí «sí» vale 1 y «no» vale 0. Para pasar, a la final le tienen que llegar más de 6,60, su listón.
 :::
 
 (la edad del ejemplo es la que más falla en ese paso: 13 años)
@@ -161,9 +159,7 @@ Hacia delante
 | la segunda | 1,32 | 0,04 | 1,28 | 0,7828 |
 | la final | 1,72 | 1,29 | 0,43 | 0,6068 |
 
-Paso 1.000 de 100.000. Edad: 13 años; el colegio no la admite.
-
-La final tendría que decir 0.
+Es el paso 1.000 de los 100.000 del entrenamiento, con la edad de 13 años, que el colegio no admite: la final tendría que decir 0.
 :::
 
 ::: tabla
@@ -216,7 +212,7 @@ Tramo 1: la culpa de la final
 | lo que deja pasar su rampa: lo que dice, por lo que le falta para 1 | 0,2386 |
 | **la culpa de la final: el doble de lo que falla, por lo que deja pasar su rampa** | **0,2897** |
 
-Cada cuenta, con los números redondeados a cuatro cifras.
+Cada cuenta está hecha con los números redondeados a cuatro cifras, para que se pueda repetir con el dedo.
 :::
 
 ::: tabla
@@ -227,7 +223,7 @@ Tramo 2: las dos líneas que llegan a la final
 | la primera | 0,2897 | 0,9971 | 0,2889 |
 | la segunda | 0,2897 | 0,7828 | 0,2268 |
 
-Lo que trajo esa línea: lo que dice la neurona de la que viene.
+Lo que trae cada línea es lo que dice la neurona de la que sale.
 :::
 
 ::: tabla
@@ -243,7 +239,7 @@ Tramo 3: cuánta le toca a cada una de las dos de la primera capa
 | lo que deja pasar su rampa | 0,00286 | 0,17 |
 | **su culpa: lo que le toca, por lo que deja pasar su rampa** | **0,00203** | **-0,0458** |
 
-Lo que deja pasar su rampa: lo que dice, por lo que le falta para 1.
+Lo que deja pasar la rampa de cada una es lo que dice, por lo que le falta para 1.
 :::
 
 ::: tabla
@@ -254,7 +250,7 @@ Tramo 4: las dos líneas de la primera capa
 | la primera, de la edad | 0,00203 | 13 | 0,02639 |
 | la segunda, de la edad | -0,0458 | 13 | -0,5954 |
 
-Lo que trajo la línea: la edad.
+Lo que trae cada una de estas dos líneas es la edad, 13.
 :::
 
 ::: tabla
@@ -265,9 +261,7 @@ La misma culpa, a lo bruto
 | la segunda, de la edad | -0,5935879966 | -0,5935879967 |
 | la final, de la segunda | 0,2266538661 | 0,2266538661 |
 
-A lo bruto: se sube el peso una cienmilésima y se mira el error; se baja una cienmilésima y se mira otra vez; la culpa es lo que va de uno a otro, entre lo que se ha movido.
-
-Las dos coinciden en sus 9 primeros decimales.
+«A lo bruto» quiere decir sin atajo: se sube el peso una cienmilésima y se mira el error, se baja una cienmilésima y se mira otra vez, y la culpa es lo que va de un error a otro, dividido entre lo que se ha movido el peso. Las dos columnas coinciden en sus nueve primeros decimales.
 :::
 
 ::: tabla
@@ -322,7 +316,7 @@ La culpa de la segunda, de la edad, edad a edad
 | 15 | -0,6036 |
 | **la media** | **-0,0002** |
 
-La culpa de cada peso es la media de su culpa en las trece edades: se suman las trece y se divide entre 13.
+La culpa con la que se mueve el peso es la media de las trece: se suman y se divide entre 13.
 :::
 
 ::: tabla
@@ -335,7 +329,7 @@ El paso: cada peso se mueve contra su culpa
 | la final, de la primera | -0,0077 | +0,0038 | 2,4531 | 2,4569 |
 | la final, de la segunda | +0,0042 | -0,0021 | -0,9274 | -0,9295 |
 
-Se mueve 0,5 veces su culpa, en contra: si la culpa es negativa, sube; si es positiva, baja.
+Cada peso se mueve la mitad de su culpa, en contra: si la culpa es negativa, sube; si es positiva, baja.
 :::
 
 ::: tabla
@@ -406,7 +400,7 @@ Las que se atascan: 30 de 200 arranques
 | la que sale | 0,2131 | 0,0001 |
 | las que resuelven | 0,0002 a 0,0057 |  |
 
-29 siguen sin resolverlo y 1 sale con los pasos de más.
+De las 30 que se atascaron, 29 siguen sin resolverlo con los 100.000 pasos de más, y 1 sale.
 :::
 
 ::: tabla
@@ -417,7 +411,7 @@ Qué edades fallan las que siguen, y qué dicen en ellas
 | 13, 14, 15 | 23 | 0,7006 | 0,1619 |
 | 3, 4, 5, 13, 14, 15 | 6 | 0,5385 | 0,2485 |
 
-Todas con 100.000 pasos de más; lo que dicen es lo que da la red en esas edades.
+Todas, después de los 100.000 pasos de más. La columna «lo que dicen en ellas» es lo que contesta la red a esas edades.
 :::
 
 ::: tabla
@@ -435,9 +429,7 @@ El error de decir 0,7 a los de 6 en adelante y acertar los de 3 a 5
 | **entre las trece: el error** | **0,1615** |
 | el error medido, de las que se quedan así | 0,1619 |
 
-Es el error de la mejor respuesta que se puede dar sin distinguir una edad de otra entre las de 6 en adelante: la proporción de las que entran, 7 de 10.
-
-23 de las 29 que siguen se quedan así.
+Es el error de la mejor respuesta que se puede dar sin distinguir una edad de otra entre las de 6 en adelante: de esas diez, entran siete, y siete entre diez da 0,7. Así se quedan 23 de las 29 redes que siguen atascadas.
 :::
 
 ::: tabla

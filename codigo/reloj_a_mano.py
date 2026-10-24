@@ -41,6 +41,8 @@ PESOS = {
 LISTON = 0.5                     # para decir «par», el total tiene que pasar de aquí
 LISTON_DE_LA_MAQUETA = 1         # la maqueta decía «si el total llega a 1»
 
+EN_LETRA = {3: "tres"}   # la nota de «La cuenta de los diez dígitos» lo dice con letra (Orden 50)
+
 # ==========================================================
 
 import argparse
@@ -115,8 +117,9 @@ def bloques(X):
         ["el segmento", "pares apagados", "impares encendidos", "cuántos"],
         [[nombre, lista(pa), lista(ie), str(c)]
          for nombre, (pa, ie), c in zip(SEGMENTOS, saltan, cuentas)], "iiid",
-        ["La regla: encendido en los cinco pares y apagado en los cinco impares. Se la saltan "
-         "los pares que tienen el segmento apagado y los impares que lo tienen encendido."]))
+        ["La regla es estar encendido en los cinco pares y apagado en los cinco impares. Se la "
+         "saltan los pares que tienen el segmento apagado y los impares que lo tienen encendido, "
+         "y la última columna los cuenta."]))
     j = mejor
     enc = X[:, j] > 0
     fallan = [d for d in range(10) if enc[d] != es_par[d]]
@@ -135,8 +138,10 @@ def bloques(X):
         "Lo que tiene el cuatro y no tiene ningún otro",
         [("el de arriba izquierda", ["sí" if X[d, a] else "no" for d in range(10)]),
          ("el de arriba", ["sí" if X[d, b] else "no" for d in range(10)])],
-        ["Encendido el de arriba izquierda y apagado el de arriba: "
-         + ", ".join(f"el {d}" for d in solo) + "."]))
+        [("El único dígito con el de arriba izquierda encendido y el de arriba apagado es el "
+          f"{solo[0]}." if len(solo) == 1 else
+          "Los dígitos con el de arriba izquierda encendido y el de arriba apagado son "
+          + ", ".join(f"el {d}" for d in solo) + ".")]))
 
     # ---- 3. tres pesos y un listón
     filas = [[s, signo(PESOS[s])] for s in SEGMENTOS if s in PESOS]
@@ -156,8 +161,9 @@ def bloques(X):
         ["dígito"] + [f"puntos que suma el segmento de: {s.removeprefix('el de ')}" for s in cols]
         + ["total", "dice"],
         filas, "c" + "d" * len(cols) + "dc",
-        [f"Un segmento encendido suma sus puntos; uno apagado, nada. El listón, {coma(LISTON)}.",
-         f"Los mismos pesos y el mismo listón aciertan {bien} de 10."]))
+        [f"Un segmento encendido aporta sus puntos al total, y uno apagado, nada. Con el listón en "
+         f"{coma(LISTON)}, estos {EN_LETRA[len(cols)]} pesos aciertan "
+         + ("los diez dígitos." if bien == 10 else f"{bien} de los diez dígitos.")]))
     return out
 
 

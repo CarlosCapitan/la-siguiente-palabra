@@ -80,13 +80,7 @@ Lo que acaban haciendo las dos neuronas de la primera capa
 | sí desde los 6 años | sí desde los 12 años | 4 | 2 |
 | sí hasta los 5 años | sí hasta los 11 años | 2 | 1 |
 
-De 200 arranques, 54 lo resolvieron, en 6 parejas.
-
-De cada 100: de las redes que lo resolvieron.
-
-Sí desde N: dice sí (más de 0,5) desde los N años en adelante.
-
-Sí hasta N: dice sí hasta los N años.
+Se entrenaron 200 redes, cada una desde su propio arranque, y 54 lo resolvieron. Todas esas 54 acabaron haciendo una de estas 6 parejas de preguntas. «Sí desde los 6 años» quiere decir que esa neurona dice que sí (más de 0,5) a los de seis años en adelante, y que no a los más pequeños; «sí hasta los 5 años» es al revés. La columna «de cada 100» cuenta solo las 54 que lo resolvieron.
 :::
 
 LA RED DEL CAPÍTULO (en años)
@@ -209,9 +203,7 @@ Hacia delante
 | la segunda | 7,21 | 6,22 | 1,00 | 0,7303 |
 | la final | 3,47 | 3,15 | 0,32 | 0,5789 |
 
-Paso 2.500 de 20.000. Edad: 13 años; el colegio no la admite.
-
-La final tendría que decir 0.
+Es el paso 2.500 de los 20.000 del entrenamiento, con la edad de 13 años, que el colegio no admite: la final tendría que decir 0.
 
 A cuatro cifras, lo que dice la primera saldría 1 y lo que le falta para 1 saldría 0: se redondea lo que le falta, y se resta.
 :::
@@ -266,7 +258,7 @@ Tramo 1: la culpa de la final
 | lo que deja pasar su rampa: lo que dice, por lo que le falta para 1 | 0,2438 |
 | **la culpa de la final: el doble de lo que falla, por lo que deja pasar su rampa** | **0,2823** |
 
-Cada cuenta, con los números redondeados a cuatro cifras.
+Cada cuenta está hecha con los números redondeados a cuatro cifras, para que se pueda repetir con el dedo.
 :::
 
 ::: tabla
@@ -277,7 +269,7 @@ Tramo 2: las dos líneas que llegan a la final
 | la primera | 0,2823 | 0,99998005 | 0,2823 |
 | la segunda | 0,2823 | 0,7303 | 0,2062 |
 
-Lo que trajo esa línea: lo que dice la neurona de la que viene.
+Lo que trae cada línea es lo que dice la neurona de la que sale.
 :::
 
 ::: tabla
@@ -293,7 +285,7 @@ Tramo 3: cuánta le toca a cada una de las dos de la primera capa
 | lo que deja pasar su rampa | 0,00001995 | 0,197 |
 | **su culpa: lo que le toca, por lo que deja pasar su rampa** | **0,00003587** | **-0,2208** |
 
-Lo que deja pasar su rampa: lo que dice, por lo que le falta para 1.
+Lo que deja pasar la rampa de cada una es lo que dice, por lo que le falta para 1.
 :::
 
 ::: tabla
@@ -304,7 +296,7 @@ Tramo 4: las dos líneas de la primera capa
 | la primera, de la edad | 0,00003587 | 13 | 0,0004663 |
 | la segunda, de la edad | -0,2208 | 13 | -2,87 |
 
-Lo que trajo la línea: la edad.
+Lo que trae cada una de estas dos líneas es la edad, 13.
 :::
 
 ::: tabla
@@ -315,9 +307,7 @@ La misma culpa, a lo bruto
 | la segunda, de la edad | -2,8720379865 | -2,8720379841 |
 | la final, de la segunda | 0,2061236291 | 0,2061236291 |
 
-A lo bruto: se sube el peso una cienmilésima y se mira el error; se baja una cienmilésima y se mira otra vez; la culpa es lo que va de uno a otro, entre lo que se ha movido.
-
-Las dos coinciden en sus 8 primeros decimales.
+«A lo bruto» quiere decir sin atajo: se sube el peso una cienmilésima y se mira el error, se baja una cienmilésima y se mira otra vez, y la culpa es lo que va de un error a otro, dividido entre lo que se ha movido el peso. Las dos columnas coinciden en sus 8 primeros decimales.
 :::
 
 ::: tabla
@@ -370,13 +360,7 @@ Lo que acaban haciendo las dos neuronas de la primera capa
 | sí hasta los 12 años | sí desde los 6 años | 12 | 21 |
 | sí hasta los 5 años | sí hasta los 11 años | 1 | 2 |
 
-De 200 arranques, 171 lo resolvieron, en 5 parejas.
-
-De cada 100: de las redes que lo resolvieron.
-
-Sí desde N: dice sí (más de 0,5) desde los N años en adelante.
-
-Sí hasta N: dice sí hasta los N años.
+Se entrenaron 200 redes, cada una desde su propio arranque, y 171 lo resolvieron. Todas esas 171 acabaron haciendo una de estas 5 parejas de preguntas. «Sí desde los 6 años» quiere decir que esa neurona dice que sí (más de 0,5) a los de seis años en adelante, y que no a los más pequeños; «sí hasta los 5 años» es al revés. La columna «de cada 100» cuenta solo las 171 que lo resolvieron.
 :::
 
 LA RED DEL CAPÍTULO (en decenas)
@@ -499,9 +483,7 @@ Hacia delante
 | la segunda | -0,27 | 0,00 | -0,27 | 0,4326 |
 | la final | 0,41 | 0,24 | 0,17 | 0,5427 |
 
-Paso 2.500 de 20.000. Edad: 15 años; el colegio no la admite.
-
-La final tendría que decir 0.
+Es el paso 2.500 de los 20.000 del entrenamiento, con la edad de 15 años, que el colegio no admite: la final tendría que decir 0.
 
 La entrada es la edad entre 10: 1,5.
 :::
@@ -556,7 +538,7 @@ Tramo 1: la culpa de la final
 | lo que deja pasar su rampa: lo que dice, por lo que le falta para 1 | 0,2482 |
 | **la culpa de la final: el doble de lo que falla, por lo que deja pasar su rampa** | **0,2693** |
 
-Cada cuenta, con los números redondeados a cuatro cifras.
+Cada cuenta está hecha con los números redondeados a cuatro cifras, para que se pueda repetir con el dedo.
 :::
 
 ::: tabla
@@ -567,7 +549,7 @@ Tramo 2: las dos líneas que llegan a la final
 | la primera | 0,2693 | 0,6361 | 0,1713 |
 | la segunda | 0,2693 | 0,4326 | 0,1165 |
 
-Lo que trajo esa línea: lo que dice la neurona de la que viene.
+Lo que trae cada línea es lo que dice la neurona de la que sale.
 :::
 
 ::: tabla
@@ -583,7 +565,7 @@ Tramo 3: cuánta le toca a cada una de las dos de la primera capa
 | lo que deja pasar su rampa | 0,2315 | 0,2455 |
 | **su culpa: lo que le toca, por lo que deja pasar su rampa** | **0,02931** | **0,01719** |
 
-Lo que deja pasar su rampa: lo que dice, por lo que le falta para 1.
+Lo que deja pasar la rampa de cada una es lo que dice, por lo que le falta para 1.
 :::
 
 ::: tabla
@@ -594,7 +576,7 @@ Tramo 4: las dos líneas de la primera capa
 | la primera, de la edad | 0,02931 | 1,5 | 0,04396 |
 | la segunda, de la edad | 0,01719 | 1,5 | 0,02579 |
 
-Lo que trajo la línea: la edad entre 10.
+Lo que trae cada una de estas dos líneas es la edad entre 10, 1,5.
 :::
 
 ::: tabla
@@ -605,9 +587,7 @@ La misma culpa, a lo bruto
 | la segunda, de la edad | 0,0257648148 | 0,0257648148 |
 | la final, de la segunda | 0,1165388126 | 0,1165388126 |
 
-A lo bruto: se sube el peso una cienmilésima y se mira el error; se baja una cienmilésima y se mira otra vez; la culpa es lo que va de uno a otro, entre lo que se ha movido.
-
-Las dos coinciden en sus 10 primeros decimales.
+«A lo bruto» quiere decir sin atajo: se sube el peso una cienmilésima y se mira el error, se baja una cienmilésima y se mira otra vez, y la culpa es lo que va de un error a otro, dividido entre lo que se ha movido el peso. Las dos columnas coinciden en sus diez primeros decimales.
 :::
 
 ::: tabla
