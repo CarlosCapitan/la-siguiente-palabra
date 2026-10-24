@@ -34,6 +34,14 @@ MUESTRA_A_MANO = 36
 OTRA_A_MANO = 173
 PALABRAS_ARRANQUE = 3
 
+# Cómo se imprime la tabla del capítulo (Orden 57): el orden de las filas, de quien menos copia
+# a quien más, y cómo se llama cada una. Los nombres de dentro (techo, contar_3, red_s20260914_t1…)
+# no cambian: solo lo que se ve.
+ORDEN_IMPRESO = ["suelo", "contar_1", "red_s20260914_t1", "contar_2", "contar_3", "techo"]
+ETIQUETAS = {"suelo": "libros que no vio", "contar_1": "contar, 1 palabra", "red_s20260914_t1": "la red",
+             "contar_2": "contar, 2 palabras", "contar_3": "contar, 3 palabras",
+             "techo": "el texto real"}
+
 # ==========================================================
 
 import argparse
@@ -250,19 +258,22 @@ def bloque_tabla(puntos, palabras, corpus, umbral, cache=None):
         if ruta:
             os.makedirs(cache, exist_ok=True)
             json.dump(res[nombre], open(ruta, "w"))
+    assert sorted(ORDEN_IMPRESO) == sorted(FILAS_TABLA) == sorted(ETIQUETAS)
     filas = []
-    for nombre in FILAS_TABLA:
+    for nombre in ORDEN_IMPRESO:
         med, mx, cop = res[nombre]
-        filas.append([nombre, coma(med, 1), coma(mx, 0), pct(cop, 1, de_uno=False)])
+        filas.append([ETIQUETAS[nombre], coma(med, 1), coma(mx, 0), pct(cop, 1, de_uno=False)])
     lin = ["--- 5. LA TABLA DEL CAPÍTULO ---", ""] + tabla_editorial(
-        "Rachas y copiado, por generador",
-        ["generador", "racha, en palabras: mediana", "racha, en palabras: máximo",
+        "Rachas y copiado, según quién escribe",
+        ["quién escribe", "racha, en palabras: mediana", "racha, en palabras: máximo",
          "copiado: mediana"], filas, "iddd",
-        [f"{L.VENTANAS} muestras de {largo} palabras por generador.",
-         "Techo: el texto real que sigue a cada arranque. contar_k: máquina de contar con k "
-         "palabras de contexto. red_sX_tY: la red, semilla X, tirada Y. Suelo: seis libros que no "
-         "entraron en el entrenamiento.",
-         f"Copiado: racha de {umbral} palabras o más: una más que el máximo de contar_1."])
+        [f"{L.VENTANAS} muestras de {largo} palabras en cada fila.",
+         "Los libros que no vio son seis de la misma época que no entraron en el entrenamiento. "
+         "«Contar» es la máquina del capítulo 1, mirando una, dos o tres palabras hacia atrás. La "
+         "red es la de las muestras de arriba. El texto real es lo que sigue a cada comienzo en su "
+         "libro.",
+         f"Una racha cuenta como copia desde {umbral} palabras: una más que la más larga de la "
+         "máquina de contar con una palabra."])
     return lin, res
 
 

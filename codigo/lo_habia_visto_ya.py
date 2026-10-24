@@ -470,9 +470,9 @@ def _reportar_muestras(ruta_fichero, puntos, palabras, corpus, rng_ngrama):
         filas.append([str(i), arranque, str(racha_max), pct(copiado, 1, de_uno=False)])
     print("\n".join(tabla_editorial(
         "Racha y copiado de cada muestra", ["muestra", "arranque", "racha", "copiado"], filas, "didd",
-        ["Racha: la más larga de la muestra, en palabras.",
-         f"Copiado: la parte de la muestra dentro de alguna racha de {int(umbral)} palabras o más "
-         f"(el máximo de contar_1, más {MARGEN_UMBRAL})."])))
+        ["La racha es la más larga de cada muestra, en palabras.",
+         f"El copiado es la parte de la muestra que cae dentro de rachas de {int(umbral)} palabras "
+         "o más: una más que la más larga de la máquina de contar con una palabra."])))
 
 
 def _medir_largo(largo, n_ventanas, puntos, palabras, primera, corpus, ajenas, puntos_ajenos,
