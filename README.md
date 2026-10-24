@@ -25,7 +25,7 @@ el portátil del que habla el libro, un MacBook Pro M4 Max con 36 GB, y usando s
 Para eso está `codigo/medir_en_mac.sh`, que hay que lanzar desde el Terminal de macOS —no desde
 la máquina virtual Linux de la aplicación de escritorio, que no alcanza la GPU del Mac—:
 
-    git clone https://github.com/CarlosCapitan/la-siguiente-palabra
+    git clone https://github.com/HypothesisNulla/la-siguiente-palabra
     cd la-siguiente-palabra/codigo
     python3 -m pip install -r ../requirements.txt
     bash medir_en_mac.sh
