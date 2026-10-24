@@ -315,7 +315,7 @@ def bloque_194(res, tabla, emitir):
     filas = [[a, b, str(round(100 * cuenta[(a, b)] / resueltas)), str(cuenta[(a, b)])]
              for a, b in orden]
     emitir(tabla_editorial(
-        "Lo que acaban haciendo las dos neuronas de en medio",
+        "Lo que acaban haciendo las dos neuronas de la primera capa",
         ["una", "la otra", "de cada 100", "redes"], filas, "iidd",
         [f"De 200 arranques, {resueltas} lo resolvieron, en {len(orden)} parejas.",
          "De cada 100: de las redes que lo resolvieron.",

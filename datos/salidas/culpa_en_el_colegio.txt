@@ -1,5 +1,5 @@
 ######## la culpa, en la red del colegio (Orden 20) ########
-fecha: 2026-10-18
+fecha: 2026-10-24
 máquina: Darwin arm64
 python 3.12.14, numpy 2.5.3
 GPU: no se usa (todo en numpy). Nada de lo que sigue
@@ -114,7 +114,7 @@ Listón: 6,60. Le llega: el peso por la edad. Dice: cerca de 1 si le llega más 
 :::
 
 ::: tabla
-La final, si las de en medio dijeran un sí o un no secos
+La final, si las dos de la primera capa dijeran un sí o un no secos
 
 | la primera | la segunda | le llega | ¿pasa? |
 |:-:|:-:|--:|:-:|
@@ -231,7 +231,7 @@ Lo que trajo esa línea: lo que dice la neurona de la que viene.
 :::
 
 ::: tabla
-Tramo 3: cuánta le toca a cada una de las de en medio
+Tramo 3: cuánta le toca a cada una de las dos de la primera capa
 
 |  | la primera | la segunda |
 |:--|--:|--:|

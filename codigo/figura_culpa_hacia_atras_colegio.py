@@ -73,10 +73,10 @@ def dibujar(d, paleta, ruta):
     dibujar_red(L, pesos, listones, y_arriba, y_abajo, rot, txt, flechas_atras=True,
                 texto_entrada=f"trae {edad}")
     for x, s in ((X_FINAL, "1. la final"), ((X_MEDIO + X_FINAL) / 2 + 2, "2. sus dos\nlíneas"),
-                 (X_MEDIO, "3. las de\nen medio"), (X_ENTRADA + 9.0, "4. las líneas de la\nprimera capa")):
+                 (X_MEDIO, "3. las dos de la\nprimera capa"), (X_ENTRADA + 9.0, "4. las líneas de la\nprimera capa")):
         L.texto(x, L.y - 3.0, s, ha="center", tam=7.6, negrita=True)
     pie_abajo(L, "La culpa va de derecha a izquierda, en los cuatro tramos del texto. El grosor de cada línea\n"
-              "es su peso, como en la figura de la red. A cada una de en medio le toca la culpa de la final por el\n"
+              "es su peso, como en la figura de la red. A cada neurona de la primera capa le toca la culpa de la final por el\n"
               "peso de su línea; la de cada línea es la culpa de su neurona por lo que trajo esa línea (la edad).\n"
               "Culpa positiva: si ese peso sube, el error sube; negativa: si sube, el error baja.")
     L.guardar(ruta)
@@ -101,7 +101,7 @@ def selftest():
     # 2. SEÑAL — lo que la figura escribe es lo que imprime la salida: tramos 1, 3 y 4 (las celdas
     #    de `leer_tablas` vienen sin la negrita).
     t1 = {f[0]: f[1] for f in T["Tramo 1: la culpa de la final"][1]}
-    t3 = {f[0]: f[1:] for f in T["Tramo 3: cuánta le toca a cada una de las de en medio"][1]}
+    t3 = {f[0]: f[1:] for f in T["Tramo 3: cuánta le toca a cada una de las dos de la primera capa"][1]}
     t4 = T["Tramo 4: las dos líneas de la primera capa"][1]
     hay_final = [x for k, x in t1.items() if k.startswith("la culpa de la final")][0]
     hay_culpa = [x for k, x in t3.items() if k.startswith("su culpa")][0]

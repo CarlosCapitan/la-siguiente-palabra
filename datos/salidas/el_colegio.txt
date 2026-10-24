@@ -1,5 +1,5 @@
 ########## el colegio: de 6 a 12 años (Orden 15) ##########
-fecha: 2026-10-18
+fecha: 2026-10-24
 máquina: Darwin arm64
 python 3.12.14, numpy 2.5.3
 GPU: no se usa (todo en numpy). Nada de lo que sigue
@@ -69,7 +69,7 @@ Cada red: 20.000 pasos, poquito 0,5.
 :::
 
 ::: tabla
-Lo que acaban haciendo las dos neuronas de en medio
+Lo que acaban haciendo las dos neuronas de la primera capa
 
 | una | la otra | de cada 100 | redes |
 |:--|:--|--:|--:|
@@ -281,7 +281,7 @@ Lo que trajo esa línea: lo que dice la neurona de la que viene.
 :::
 
 ::: tabla
-Tramo 3: cuánta le toca a cada una de las de en medio
+Tramo 3: cuánta le toca a cada una de las dos de la primera capa
 
 |  | la primera | la segunda |
 |:--|--:|--:|
@@ -360,7 +360,7 @@ Cada red: 20.000 pasos, poquito 0,5.
 :::
 
 ::: tabla
-Lo que acaban haciendo las dos neuronas de en medio
+Lo que acaban haciendo las dos neuronas de la primera capa
 
 | una | la otra | de cada 100 | redes |
 |:--|:--|--:|--:|
@@ -571,7 +571,7 @@ Lo que trajo esa línea: lo que dice la neurona de la que viene.
 :::
 
 ::: tabla
-Tramo 3: cuánta le toca a cada una de las de en medio
+Tramo 3: cuánta le toca a cada una de las dos de la primera capa
 
 |  | la primera | la segunda |
 |:--|--:|--:|

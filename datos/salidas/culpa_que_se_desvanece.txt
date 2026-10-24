@@ -1,7 +1,7 @@
 ::: tabla
 ¿De qué depende que la culpa se desvanezca?
 
-| cómo se arma | capas en medio: 2 | capas en medio: 5 | capas en medio: 10 | capas en medio: 20 |
+| cómo se arma | capas: 3 | capas: 6 | capas: 11 | capas: 21 |
 |:--|--:|--:|--:|--:|
 | como en los 80 | 65 | 777 | 7.192 | 15.048.831 |
 | más pequeños | 127 | 2.828 | 437.860.883 | 85.989 billones |
@@ -12,13 +12,13 @@ Cuántas veces menos culpa le llega a la primera capa de líneas (las que salen 
 
 Redes de 16 neuronas por capa, recién arrancadas; la culpa se mide con 64 ejemplos de 16 números puestos al azar.
 
-La culpa se reparte hacia atrás exactamente igual en las cuatro filas: lo único que cambia es cómo son los pesos de arranque y qué hay dentro de cada neurona de en medio.
+La culpa se reparte hacia atrás exactamente igual en las cuatro filas: lo único que cambia es cómo son los pesos de arranque y qué hay dentro de cada neurona menos la final.
 
 Como en los 80: los pesos de arranque, puestos al azar entre -1 y +1, cualquier valor con la misma oportunidad; en cada neurona, la rampa corta.
 
 Más pequeños: los mismos pesos de arranque, encogidos según cuántas entradas tiene la neurona: con las 16 de estas redes, entre -0,25 y +0,25.
 
-El codo: los pesos de arranque de los 80, y en cada neurona de en medio, en vez de la rampa, el codo: lo que pasa del listón, tal cual; si no llega, cero.
+El codo: los pesos de arranque de los 80, y en cada neurona menos la final, en vez de la rampa, el codo: lo que pasa del listón, tal cual; si no llega, cero.
 
 Las dos cosas: las dos a la vez (aquí los pesos de arranque quedan entre -0,35 y +0,35).
 

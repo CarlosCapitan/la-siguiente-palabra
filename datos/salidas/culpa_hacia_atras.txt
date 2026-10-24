@@ -78,7 +78,7 @@ Listón: 4,39. Le llega: la suma de lo que trae cada línea por su peso. Dice: c
 :::
 
 ::: tabla
-La final, si las de en medio dijeran un sí o un no secos
+La final, si las dos de la primera capa dijeran un sí o un no secos
 
 | la primera | la segunda | le llega | ¿pasa? |
 |:-:|:-:|--:|:-:|
@@ -171,7 +171,7 @@ Lo que trajo esa línea: lo que dice la neurona de la que viene.
 :::
 
 ::: tabla
-Tramo 3: cuánta le toca a cada una de las de en medio
+Tramo 3: cuánta le toca a cada una de las dos de la primera capa
 
 |  | la primera | la segunda |
 |:--|--:|--:|
@@ -276,10 +276,10 @@ Deja pasar: cuánto se mueve lo que dice la neurona por cada unidad que se mueve
 Lo más que deja pasar la rampa corta, en cualquier sitio: 0,250, en el centro, donde pasa del listón por 0.
 :::
 
-7. LA CULPA, CAPA A CAPA, EN LA RED DE 5 CAPAS EN MEDIO
+7. LA CULPA, CAPA A CAPA, EN LA RED DE 6 CAPAS
 
 ::: tabla
-La culpa, capa a capa, en la red de 5 capas en medio
+La culpa, capa a capa, en la red de 6 capas
 
 | capa de líneas, de la final hacia la entrada | culpa | de cada 1 de la de encima, le llega |
 |:--|--:|--:|
@@ -292,7 +292,7 @@ La culpa, capa a capa, en la red de 5 capas en medio
 
 Como en los 80: 16 neuronas por capa, recién arrancada, sin entrenar; la culpa se mide con 64 ejemplos de 16 números puestos al azar, cada uno con un sí o un no al azar.
 
-Entre la entrada, las 5 capas de en medio y la final hay 6 capas de líneas; se cuentan desde la entrada: la 1.ª es la que sale de la entrada. La culpa de una capa de líneas es la media de la culpa de sus pesos, sin mirar el signo.
+Una red de 6 capas tiene 6 capas de líneas, una delante de cada capa de neuronas; se cuentan desde la entrada: la 1.ª es la que sale de la entrada. La culpa de una capa de líneas es la media de la culpa de sus pesos, sin mirar el signo.
 :::
 
 ::: tabla
@@ -310,7 +310,7 @@ Uno entre el producto da casi el 777: lo que falta es el redondeo de los cinco n
 :::
 
 ::: tabla
-Una neurona de la 3.ª capa de en medio, con un ejemplo
+Una neurona de la 3.ª capa, con un ejemplo
 
 | de la de encima | su culpa | por el peso | da |
 |:--|--:|--:|--:|
@@ -343,7 +343,7 @@ Su culpa es más que la media de las de encima, porque las que llegan por sus l�
 ::: tabla
 A escala
 
-| la culpa de la capa de líneas | con 20 capas en medio |
+| la culpa de la capa de líneas | con 21 capas |
 |:--|--:|
 | la última | 1 kilómetro |
 | la primera | 0,066 mm |

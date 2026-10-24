@@ -271,7 +271,7 @@ def bloque_3(red):
     regla = [k for k, v in esquinas.items() if v]
     nombre = {0: "no", 1: "sí"}
     tabla(tabla_editorial(
-        "La final, si las de en medio dijeran un sí o un no secos",
+        "La final, si las dos de la primera capa dijeran un sí o un no secos",
         ["la primera", "la segunda", "le llega", "¿pasa?"],
         [[nombre[a], nombre[b], firmado(a * W1[0] + b * W1[1], 2), "sí" if v else "no"]
          for (a, b), v in esquinas.items()], "ccdc",
@@ -397,7 +397,7 @@ def bloque_4(red, p):
               s4(m["lineas_final"][j])] for j in range(2)], "iddd",
             ["Lo que trajo esa línea: lo que dice la neurona de la que viene."]),
         tabla_editorial(
-            "Tramo 3: cuánta le toca a cada una de las de en medio",
+            "Tramo 3: cuánta le toca a cada una de las dos de la primera capa",
             ["", NEURONAS[0], NEURONAS[1]],
             [["la culpa de la final", s4(m["culpa_final"]), s4(m["culpa_final"])],
              ["por el peso de su línea", firmado(W1[0], 2), firmado(W1[1], 2)],
@@ -536,17 +536,17 @@ def bloque_7():
     producto = 1.0
     for f in factores:
         producto *= f
-    titulo(f"7. LA CULPA, CAPA A CAPA, EN LA RED DE {PROFUNDIDAD_CADENA} CAPAS EN MEDIO")
+    titulo(f"7. LA CULPA, CAPA A CAPA, EN LA RED DE {PROFUNDIDAD_CADENA + 1} CAPAS")
     tabla(
         tabla_editorial(
-            f"La culpa, capa a capa, en la red de {PROFUNDIDAD_CADENA} capas en medio",
+            f"La culpa, capa a capa, en la red de {PROFUNDIDAD_CADENA + 1} capas",
             ["capa de líneas, de la final hacia la entrada", "culpa",
              "de cada 1 de la de encima, le llega"], filas, "idd",
             [f"Como en los 80: {ANCHO} neuronas por capa, recién arrancada, sin entrenar; la "
              f"culpa se mide con {len(Xc)} ejemplos de {ANCHO} números puestos al azar, cada uno "
              "con un sí o un no al azar.",
-             f"Entre la entrada, las {PROFUNDIDAD_CADENA} capas de en medio y la final hay {n} "
-             "capas de líneas; se cuentan desde la entrada: la 1.ª es la que sale de la entrada. "
+             f"Una red de {PROFUNDIDAD_CADENA + 1} capas tiene {n} capas de líneas, una delante de cada "
+             "capa de neuronas; se cuentan desde la entrada: la 1.ª es la que sale de la entrada. "
              "La culpa de una capa de líneas es la media de la culpa de sus pesos, sin mirar el "
              "signo."]),
         tabla_editorial(
@@ -601,7 +601,7 @@ def suma_de_encima(red, X, y):
     filas.append(["**la suma**", "", "", f"**{s4(total)}**"])
     tabla(
         tabla_editorial(
-            f"Una neurona de la {capa}.ª capa de en medio, con un ejemplo",
+            f"Una neurona de la {capa}.ª capa, con un ejemplo",
             ["de la de encima", "su culpa", "por el peso", "da"], filas, "iddd",
             [f"La de su capa a la que más culpa le llega. Recibe culpa de las {len(encima)} "
              "neuronas de la capa de encima, cada una por el peso de la línea que las une."]),
@@ -620,7 +620,7 @@ def suma_de_encima(red, X, y):
 def bloque_7_escala(factor_20):
     mm = KILOMETRO_EN_MM / factor_20
     tabla(tabla_editorial(
-        "A escala", ["la culpa de la capa de líneas", "con 20 capas en medio"],
+        "A escala", ["la culpa de la capa de líneas", "con 21 capas"],
         [["la última", "1 kilómetro"], ["la primera", f"{coma(mm, 3)} mm"]], "id",
         ["Si la culpa de la última capa de líneas fuera un kilómetro, lo que le llegaría a la "
          "primera, como en los 80."]))

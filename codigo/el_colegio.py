@@ -319,7 +319,7 @@ def imprimir_red(res, emitir):
     filas = [[a, b, str(round(100 * res["cuenta"][(a, b)] / res["resueltas"])),
               str(res["cuenta"][(a, b)])] for a, b in res["orden"]]
     emitir(tabla_editorial(
-        "Lo que acaban haciendo las dos neuronas de en medio",
+        "Lo que acaban haciendo las dos neuronas de la primera capa",
         ["una", "la otra", "de cada 100", "redes"], filas, "iidd",
         [f"De {ARRANQUES} arranques, {res['resueltas']} lo resolvieron, en {len(res['orden'])} "
          f"parejas.",
@@ -630,7 +630,7 @@ def imprimir_culpa(res, emitir):
         ["Lo que trajo esa línea: lo que dice la neurona de la que viene."]))
     emitir([""])
     emitir(tabla_editorial(
-        "Tramo 3: cuánta le toca a cada una de las de en medio",
+        "Tramo 3: cuánta le toca a cada una de las dos de la primera capa",
         ["", NEURONAS[0], NEURONAS[1]],
         [["la culpa de la final", s4(m["culpa_final"]), s4(m["culpa_final"])],
          ["por el peso de su línea", firmado(W1[0], 2), firmado(W1[1], 2)],

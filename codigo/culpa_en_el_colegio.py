@@ -240,7 +240,7 @@ def bloque_a(red):
             secas.append([("sí" if m1 else "no"), ("sí" if m2 else "no"), firmado(llega, 2),
                           "sí" if pasa > 0 else "no"])
     tabla(tabla_editorial(
-        "La final, si las de en medio dijeran un sí o un no secos",
+        "La final, si las dos de la primera capa dijeran un sí o un no secos",
         ["la primera", "la segunda", "le llega", "¿pasa?"], secas, "ccdc",
         [f"Sí vale 1 y no vale 0. Listón de la final: {coma(-b1, 2)}."]))
     return nombres
@@ -320,7 +320,7 @@ def bloque_b(red, p):
              for j in range(2)], "iddd",
             ["Lo que trajo esa línea: lo que dice la neurona de la que viene."]),
         tabla_editorial(
-            "Tramo 3: cuánta le toca a cada una de las de en medio", ["", NEURONAS[0], NEURONAS[1]],
+            "Tramo 3: cuánta le toca a cada una de las dos de la primera capa", ["", NEURONAS[0], NEURONAS[1]],
             [["la culpa de la final", s4(m["culpa_final"]), s4(m["culpa_final"])],
              ["por el peso de su línea", firmado(W1[0], 2), firmado(W1[1], 2)],
              ["le toca", s4(m["le_toca"][0]), s4(m["le_toca"][1])],

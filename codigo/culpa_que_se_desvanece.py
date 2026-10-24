@@ -61,9 +61,9 @@ NOTAS_ARRIBA = ["Cuántas veces menos culpa le llega a la primera capa de línea
                 f"Redes de {ANCHO} neuronas por capa, recién arrancadas; la culpa se mide con "
                 f"{EJEMPLOS} ejemplos de {ANCHO} números puestos al azar.",
                 "La culpa se reparte hacia atrás exactamente igual en las cuatro filas: lo único "
-                "que cambia es cómo son los pesos de arranque y qué hay dentro de cada neurona de "
-                "en medio."]
-CAB_CAPAS = "capas en medio"
+                "que cambia es cómo son los pesos de arranque y qué hay dentro de cada neurona "
+                "menos la final."]
+CAB_CAPAS = "capas"
 CAB_MONTAJE = "cómo se arma"
 CAB = {"ochenta": "como en los 80", "repartida": "más pequeños",
        "funcion": "el codo", "las_dos": "las dos cosas"}
@@ -87,7 +87,7 @@ def pie():
         "con la misma oportunidad; en cada neurona, la rampa corta.",
         "Más pequeños: los mismos pesos de arranque, encogidos según cuántas entradas tiene la "
         f"neurona: con las {ANCHO} de estas redes, entre -{c(chico)} y +{c(chico)}.",
-        "El codo: los pesos de arranque de los 80, y en cada neurona de en medio, en vez de la "
+        "El codo: los pesos de arranque de los 80, y en cada neurona menos la final, en vez de la "
         "rampa, el codo: lo que pasa del listón, tal cual; si no llega, cero.",
         "Las dos cosas: las dos a la vez (aquí los pesos de arranque quedan entre "
         f"-{c(doble)} y +{c(doble)}).",
@@ -221,7 +221,7 @@ def imprimir(tabla):
     tiene que poder saber qué son sus números y qué cambia de una fila a otra (regla 9)."""
     filas = [[CAB[m["clave"]]] + [escribir_veces(f["veces"]) for f in tabla[m["clave"]]]
              for m in MONTAJES]
-    rotulos = [CAB_MONTAJE] + [f"{CAB_CAPAS}: {p}" for p in PROFUNDIDADES]
+    rotulos = [CAB_MONTAJE] + [f"{CAB_CAPAS}: {p + 1}" for p in PROFUNDIDADES]   # N capas en medio + la final
     print("\n".join(tabla_editorial(TITULO, rotulos, filas, "i" + "d" * len(PROFUNDIDADES),
                                     NOTAS_ARRIBA + pie())))
 

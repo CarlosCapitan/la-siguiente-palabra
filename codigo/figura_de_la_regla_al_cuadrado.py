@@ -91,7 +91,7 @@ def dibujar(d, paleta, ruta):
     L = Lienzo("De la regla al cuadrado",
                "A la izquierda, las edades en una regla: los siete de primaria quedan en medio y ningún\n"
                "corte los deja solos. A la derecha, las mismas edades colocadas por lo que dicen las\n"
-               "dos neuronas de en medio: ahora una raya los deja solos.", paleta, alto=ALTO)
+               "dos neuronas de la primera capa: ahora una raya los deja solos.", paleta, alto=ALTO)
     p, fig = L.p, L.fig
     # la regla, en vertical
     a1 = fig.add_axes([0.04, 0.15, 0.22, ALTO_EJES])

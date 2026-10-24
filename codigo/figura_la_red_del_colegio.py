@@ -153,7 +153,7 @@ def preguntas(pesos, listones):
 def dibujar(d, paleta, ruta):
     pesos, listones = red_de(d)
     L = Lienzo("La red del colegio, entrenada",
-               "La edad en años, tal cual; una capa de en medio con dos neuronas, y la final. Cada\n"
+               "La edad en años, tal cual; la primera capa, con dos neuronas, y la final. Cada\n"
                "círculo es un comité: suma lo que le llega por sus líneas, cada una por su peso, y lo\n"
                "compara con su listón. Éstos son los números que aprendió.", paleta, alto=ALTO)
     p = L.p
