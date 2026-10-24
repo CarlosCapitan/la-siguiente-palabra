@@ -14,6 +14,8 @@ Las vecinas más próximas, con un libro (el Quijote)
 | cura | nuestro, tierra, decía, estaba, mal |
 
 El modelo aprendió con el Quijote entero, 383.637 palabras de texto, y le dio una lista de números a 3.020 palabras distintas.
+
+Una palabra que sale menos de 10 veces en el texto no tiene lista de números propia, y la tabla lo dice con «no aparece bastante».
 :::
 
 ::: tabla
@@ -45,6 +47,8 @@ Las vecinas más próximas, con una biblioteca (300 libros)
 | cura | laubepin, canuto, boticario, médico, jorobado |
 
 El modelo aprendió con los trescientos libros, 21.313.324 palabras de texto, y le dio una lista de números a 68.927 palabras distintas.
+
+Una palabra que sale menos de 10 veces en el texto no tiene lista de números propia, y la tabla lo dice con «no aparece bastante».
 :::
 
 ::: tabla

@@ -33,6 +33,8 @@ Puesto de cada palabra entre las vecinas de «banco», en las cinco tiradas
 | a media tabla |  | 34.463 | 34.463 | 34.463 | 34.463 | 34.463 |
 
 Cada número es el puesto de esa palabra entre las 68.926 vecinas de «banco»: el 1 es la más parecida. La mediana de un grupo es el puesto del medio cuando se ordenan los de sus palabras: la mitad sale en ese puesto o más arriba. La última fila es el puesto del medio de toda la tabla, el que saca una palabra cualquiera.
+
+Las palabras de cada grupo son los sustantivos de las definiciones de «banco» en el Diccionario de la lengua española (https://dle.rae.es/banco, consultado el 28 de septiembre de 2026): las acepciones 1 y 2, el asiento y la mesa de carpintero, para el mueble, y la 5, la empresa de operaciones financieras, para el dinero. Todas están en el modelo.
 :::
 
 ::: tabla

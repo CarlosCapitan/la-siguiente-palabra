@@ -34,6 +34,8 @@ Uso:
 PALABRA = "banco"
 FUENTE = "https://dle.rae.es/banco"
 CONSULTADO = "2026-09-28"
+MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre",
+         "octubre", "noviembre", "diciembre"]
 MUEBLE = ["asiento", "respaldo", "personas",                                   # acepción 1
           "madero", "pies", "mesa", "labores", "carpinteros", "artesanos"]     # acepción 2
 DINERO = ["empresa", "operaciones", "dinero", "accionistas", "depósitos", "clientes"]  # acep. 5
@@ -73,6 +75,12 @@ def medir_tirada(semilla, frases):
             "puestos": puestos(wv, PALABRA, MUEBLE + DINERO)}
 
 
+def fecha_larga(iso):
+    """'2026-09-28' -> '28 de septiembre de 2026'."""
+    a, m, d = (int(x) for x in iso.split("-"))
+    return f"{d} de {MESES[m - 1]} de {a}"
+
+
 def mediana(valores):
     v = [x for x in valores if x is not None]
     assert v, "ninguna palabra del grupo está en el modelo"
@@ -100,7 +108,15 @@ def informe(tiradas):
         [f"Cada número es el puesto de esa palabra entre las {miles(n)} vecinas de «{PALABRA}»: el 1 "
          "es la más parecida. La mediana de un grupo es el puesto del medio cuando se ordenan los de "
          "sus palabras: la mitad sale en ese puesto o más arriba. La última fila es el puesto del "
-         "medio de toda la tabla, el que saca una palabra cualquiera."])
+         "medio de toda la tabla, el que saca una palabra cualquiera.",
+         # Orden 56: la fuente de los dos grupos y la comprobación de que están en el modelo, que
+         # la nota de la Orden 55 había dejado fuera.
+         f"Las palabras de cada grupo son los sustantivos de las definiciones de «{PALABRA}» en el "
+         f"Diccionario de la lengua española ({FUENTE}, consultado el {fecha_larga(CONSULTADO)}): "
+         "las acepciones 1 y 2, el asiento y la mesa de carpintero, para el mueble, y la 5, la "
+         "empresa de operaciones financieras, para el dinero. "
+         + ("Todas están en el modelo." if not fuera else
+            f"Faltan en el modelo: {', '.join(fuera)}.")])
     vecinas = tabla_editorial(
         f"Las {VECINAS} vecinas de «{PALABRA}» en cada tirada",
         ["tirada", f"las {VECINAS} más parecidas"],

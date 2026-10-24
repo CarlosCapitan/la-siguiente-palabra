@@ -217,7 +217,9 @@ def main():
             f"Las vecinas más próximas, {etiqueta}",
             ["palabra", f"sus {VECINOS} vecinas más próximas, de la más parecida a la menos"],
             filas, "ii",
-            [cuantas])))
+            [cuantas,
+             f"Una palabra que sale menos de {MIN_APARICIONES} veces en el texto no tiene lista de "
+             "números propia, y la tabla lo dice con «no aparece bastante»."])))
 
         aciertos, evaluadas, detalle = probar_analogias(modelo)
         filas = []
