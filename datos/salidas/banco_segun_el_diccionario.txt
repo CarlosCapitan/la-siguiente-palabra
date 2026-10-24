@@ -5,7 +5,7 @@
 SELFTEST: las tres pruebas pasan.
 
 Máquina: arm64, Darwin 25.6.0.
-Medido el 2026-10-09. Semillas: 20260914, 20260915, 20260916, 20260917, 20260918.
+Medido el 2026-10-24. Semillas: 20260914, 20260915, 20260916, 20260917, 20260918.
 Biblioteca: 21.313.324 palabras.
 
 ::: tabla
@@ -32,13 +32,7 @@ Puesto de cada palabra entre las vecinas de «banco», en las cinco tiradas
 | **mediana** | **el dinero** | **47.552** | **47.042** | **41.420** | **45.623** | **46.137** |
 | a media tabla |  | 34.463 | 34.463 | 34.463 | 34.463 | 34.463 |
 
-Puesto entre las 68.926 vecinas de «banco»; el puesto 1 es la más parecida.
-
-Mediana: la mitad de las palabras del grupo sale en ese puesto o más arriba. A media tabla: el puesto del medio, el que saca de media una palabra cualquiera.
-
-Los dos grupos: los sustantivos de las definiciones de «banco» en el Diccionario de la lengua española (https://dle.rae.es/banco, consultado el 2026-09-28). El mueble, acepciones 1 y 2 (asiento; mesa de carpintero); el dinero, acepción 5 (empresa de operaciones financieras).
-
-Fuera, por no estar en el modelo: ninguna.
+Cada número es el puesto de esa palabra entre las 68.926 vecinas de «banco»: el 1 es la más parecida. La mediana de un grupo es el puesto del medio cuando se ordenan los de sus palabras: la mitad sale en ese puesto o más arriba. La última fila es el puesto del medio de toda la tabla, el que saca una palabra cualquiera.
 :::
 
 ::: tabla

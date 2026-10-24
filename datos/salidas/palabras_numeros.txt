@@ -13,9 +13,7 @@ Las vecinas más próximas, con un libro (el Quijote)
 | banco | no aparece bastante |
 | cura | nuestro, tierra, decía, estaba, mal |
 
-383.637 palabras de texto; 3.020 palabras distintas aprendidas.
-
-No aparece bastante: sale menos de 10 veces en el texto.
+El modelo aprendió con el Quijote entero, 383.637 palabras de texto, y le dio una lista de números a 3.020 palabras distintas.
 :::
 
 ::: tabla
@@ -46,9 +44,7 @@ Las vecinas más próximas, con una biblioteca (300 libros)
 | banco | escritorio, almacén, baúl, ferrocarril, armario |
 | cura | laubepin, canuto, boticario, médico, jorobado |
 
-21.313.324 palabras de texto; 68.927 palabras distintas aprendidas.
-
-No aparece bastante: sale menos de 10 veces en el texto.
+El modelo aprendió con los trescientos libros, 21.313.324 palabras de texto, y le dio una lista de números a 68.927 palabras distintas.
 :::
 
 ::: tabla

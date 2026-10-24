@@ -200,12 +200,14 @@ def main():
         sys.exit(selftest())
 
     # L24 (9 de octubre): tablas editoriales (regla 6 ter). Las cuentas no cambian.
-    for etiqueta, origen in (("con un libro (el Quijote)", CORPUS_LIBRO),
-                             ("con una biblioteca (300 libros)", CORPUS_BIBLIOTECA)):
+    for etiqueta, origen, aprendio in (("con un libro (el Quijote)", CORPUS_LIBRO,
+                                        "el Quijote entero"),
+                                       ("con una biblioteca (300 libros)", CORPUS_BIBLIOTECA,
+                                        "los trescientos libros")):
         frases, total = cargar_corpus(origen)
         modelo = entrenar(frases)
-        cuantas = (f"{miles(total)} palabras de texto; "
-                   f"{miles(len(modelo.wv.index_to_key))} palabras distintas aprendidas.")
+        cuantas = (f"El modelo aprendió con {aprendio}, {miles(total)} palabras de texto, y le dio "
+                   f"una lista de números a {miles(len(modelo.wv.index_to_key))} palabras distintas.")
         filas = []
         for sonda in SONDAS:
             v = vecinos(modelo, sonda)
@@ -215,7 +217,7 @@ def main():
             f"Las vecinas más próximas, {etiqueta}",
             ["palabra", f"sus {VECINOS} vecinas más próximas, de la más parecida a la menos"],
             filas, "ii",
-            [cuantas, f"No aparece bastante: sale menos de {MIN_APARICIONES} veces en el texto."])))
+            [cuantas])))
 
         aciertos, evaluadas, detalle = probar_analogias(modelo)
         filas = []

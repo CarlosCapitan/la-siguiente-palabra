@@ -97,14 +97,10 @@ def informe(tiradas):
         f"Puesto de cada palabra entre las vecinas de «{PALABRA}», en las cinco tiradas",
         ["sentido", "palabra"] + [f"tirada: {k + 1}" for k in range(len(tiradas))], filas,
         "ii" + "d" * len(tiradas),
-        [f"Puesto entre las {miles(n)} vecinas de «{PALABRA}»; el puesto 1 es la más parecida.",
-         "Mediana: la mitad de las palabras del grupo sale en ese puesto o más arriba. A media "
-         "tabla: el puesto del medio, el que saca de media una palabra cualquiera.",
-         f"Los dos grupos: los sustantivos de las definiciones de «{PALABRA}» en el Diccionario "
-         f"de la lengua española ({FUENTE}, consultado el {CONSULTADO}). El mueble, acepciones 1 "
-         "y 2 (asiento; mesa de carpintero); el dinero, acepción 5 (empresa de operaciones "
-         "financieras).",
-         f"Fuera, por no estar en el modelo: {', '.join(fuera) if fuera else 'ninguna'}."])
+        [f"Cada número es el puesto de esa palabra entre las {miles(n)} vecinas de «{PALABRA}»: el 1 "
+         "es la más parecida. La mediana de un grupo es el puesto del medio cuando se ordenan los de "
+         "sus palabras: la mitad sale en ese puesto o más arriba. La última fila es el puesto del "
+         "medio de toda la tabla, el que saca una palabra cualquiera."])
     vecinas = tabla_editorial(
         f"Las {VECINAS} vecinas de «{PALABRA}» en cada tirada",
         ["tirada", f"las {VECINAS} más parecidas"],
