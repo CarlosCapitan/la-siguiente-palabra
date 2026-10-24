@@ -1,13 +1,13 @@
 --- selftest ---
 [1] test nulo         una carpeta sin programas: [0, 0, 0, 0]
 [2] señal implantada  8 programas, 1 .sh y 4 salidas: [1, 2, 3, 2]; como se espera: sí
-[3] invariante        166 programas en cuatro clases (13, 58, 87, 8); de los 166 .py de codigo/, cada uno en una sola: sí
+[3] invariante        167 programas en cuatro clases (14, 58, 87, 8); de los 167 .py de codigo/, cada uno en una sola: sí
                       corpus: vacío (0, 0); tres ficheros de 10, 20 y 30 bytes (3, 60); el de verdad, 300 ficheros y 138.273.144 bytes, leídos 138.273.144
 
 SELFTEST: las tres pruebas pasan.
 
 ########## cuántos programas hay en codigo/ ##########
-fecha: 2026-10-19 06:59 UTC
+fecha: 2026-10-24 11:30 UTC
 máquina: Darwin arm64. La medición no
 depende de la máquina: cuenta ficheros
 
@@ -20,11 +20,11 @@ Programas de codigo/, por clase
 
 | clase | programas |
 |:--|--:|
-| verificadores | 13 |
+| verificadores | 14 |
 | programas de figuras | 58 |
 | programas de medición | 87 |
 | programas que ayudan a los demás | 8 |
-| **en total** | **166** |
+| **en total** | **167** |
 
 Cada programa está en una sola clase.
 :::
@@ -35,13 +35,13 @@ EL CORPUS DE ENTRENAMIENTO
   bytes que suman (los de los ficheros)          138.273.144
   en millones de bytes                                 138,3
 
-VERIFICADORES (13)
+VERIFICADORES (14)
 
   verificar_anchos, verificar_asepsia, verificar_catalogo,
   verificar_cifras, verificar_conclusiones, verificar_figuras,
   verificar_muestras, verificar_notas, verificar_referencias,
-  verificar_reglas, verificar_selftests, verificar_trato,
-  verificar_vocabulario.
+  verificar_reglas, verificar_selftests, verificar_titulos,
+  verificar_trato, verificar_vocabulario.
 
 PROGRAMAS DE FIGURAS (58)
 
